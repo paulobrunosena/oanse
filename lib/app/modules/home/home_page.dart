@@ -45,8 +45,8 @@ class HomePageState extends State<HomePage> {
                 children: <Widget>[
                   CardMenuWidget(
                     icone: Icons.people,
-                    label: "CARGOS",
-                    route: "/login/",
+                    label: "CARGO",
+                    route: "/cargo/",
                   ),
                   CardMenuWidget(
                     icone: Icons.add_business_rounded,
