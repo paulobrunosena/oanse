@@ -1,3 +1,4 @@
+import 'package:flutter_modular/flutter_modular.dart';
 import 'package:mobx/mobx.dart';
 
 part 'login_store.g.dart';
@@ -5,11 +6,7 @@ part 'login_store.g.dart';
 class LoginStore = LoginStoreBase with _$LoginStore;
 
 abstract class LoginStoreBase with Store {
-  @observable
-  int value = 0;
-
-  @action
-  void increment() {
-    value++;
+  Future<void> login() async {
+    Modular.to.pushNamed("/home/");
   }
 }

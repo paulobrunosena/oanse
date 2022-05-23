@@ -76,8 +76,11 @@ class LoginPageState extends State<LoginPage> {
                             const SizedBox(
                               height: 50,
                             ),
-                            const RoundedButton(
+                            RoundedButton(
                               buttonText: 'Login',
+                              onpressed: () async {
+                                await store.login();
+                              },
                             ),
                             const SizedBox(
                               height: 50,
