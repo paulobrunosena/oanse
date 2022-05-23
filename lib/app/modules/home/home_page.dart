@@ -46,32 +46,32 @@ class HomePageState extends State<HomePage> {
                   CardMenuWidget(
                     icone: Icons.people,
                     label: "CARGOS",
-                    route: "/cargos",
+                    route: "/login/",
                   ),
                   CardMenuWidget(
                     icone: Icons.add_business_rounded,
                     label: "CLUBES",
-                    route: "/clubes",
+                    route: "/login/",
                   ),
                   CardMenuWidget(
                     icone: Icons.add_shopping_cart_rounded,
                     label: "MATERIAL",
-                    route: "/material",
+                    route: "/login/",
                   ),
                   CardMenuWidget(
                     icone: Icons.border_color_sharp,
                     label: "MANUAL",
-                    route: "/manual",
+                    route: "/login/",
                   ),
                   CardMenuWidget(
                     icone: Icons.accessibility_new,
                     label: "LÍDERES",
-                    route: "/lideres",
+                    route: "/login/",
                   ),
                   CardMenuWidget(
                     icone: Icons.add_reaction,
                     label: "OANSISTAS",
-                    route: "/oansistas",
+                    route: "/login/",
                   ),
                 ],
               ),
