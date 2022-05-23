@@ -1,6 +1,7 @@
-import 'package:oanse/app/modules/login/login_Page.dart';
-import 'package:oanse/app/modules/login/login_store.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+
+import 'login_page.dart';
+import 'login_store.dart';
 
 class LoginModule extends Module {
   @override

@@ -2,8 +2,8 @@ import 'package:asuka/asuka.dart' as asuka;
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:mobx/mobx.dart';
-import 'package:oanse/app/modules/cargo/model/cargo.dart';
 
+import 'model/cargo.dart';
 import 'services/interfaces/cargo_service_interface.dart';
 
 part 'cargo_store.g.dart';

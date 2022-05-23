@@ -1,8 +1,9 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
-import 'package:oanse/app/modules/cargo/cargo_store.dart';
-import 'package:flutter/material.dart';
-import 'package:oanse/app/modules/cargo/model/cargo.dart';
+
+import 'cargo_store.dart';
+import 'model/cargo.dart';
 
 class CargoPage extends StatefulWidget {
   final String title;
@@ -13,6 +14,12 @@ class CargoPage extends StatefulWidget {
 
 class CargoPageState extends State<CargoPage> {
   final CargoStore store = Modular.get();
+
+  @override
+  void initState() {
+    store.list();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +46,8 @@ class CargoPageState extends State<CargoPage> {
                       Cargo item = store.listCargo[index];
                       return ListTile(
                         title: Text(item.nome),
-                        subtitle: Text(item.descricao),
+                        subtitle: Text("Descrição: ${item.descricao}"),
+                        trailing: const Icon(Icons.arrow_forward_ios_rounded),
                       );
                     },
                     separatorBuilder: (_, __) {
@@ -51,6 +59,11 @@ class CargoPageState extends State<CargoPage> {
             },
           ))
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {},
+        tooltip: 'Adicionar',
+        child: const Icon(Icons.add),
       ),
     );
   }

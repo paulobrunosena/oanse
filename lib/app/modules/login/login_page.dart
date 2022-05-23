@@ -1,13 +1,13 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:oanse/app/modules/login/login_store.dart';
-import 'package:flutter/material.dart';
 
 import '../../shared/palatte.dart';
 import '../../shared/widgets/background_image.dart';
 import '../../shared/widgets/password_input.dart';
 import '../../shared/widgets/rounded_button.dart';
 import '../../shared/widgets/text_input.dart';
+import 'login_store.dart';
 
 class LoginPage extends StatefulWidget {
   final String title;

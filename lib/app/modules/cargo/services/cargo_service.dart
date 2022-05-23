@@ -1,7 +1,7 @@
 import 'package:dartz/dartz.dart';
-import 'package:oanse/app/modules/cargo/model/cargo.dart';
 
 import '../../../shared/errors/errors.dart';
+import '../model/cargo.dart';
 import '../repository/interfaces/cargo_repository_interface.dart';
 import 'interfaces/cargo_service_interface.dart';
 

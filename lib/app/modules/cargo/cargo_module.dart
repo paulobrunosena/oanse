@@ -1,8 +1,8 @@
 import 'package:dio/native_imp.dart';
-import 'package:oanse/app/modules/cargo/cargo_Page.dart';
-import 'package:oanse/app/modules/cargo/cargo_store.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 
+import 'cargo_page.dart';
+import 'cargo_store.dart';
 import 'repository/cargo_repository.dart';
 import 'repository/interfaces/cargo_repository_interface.dart';
 import 'services/cargo_service.dart';
