@@ -1,4 +1,5 @@
 import 'package:dartz/dartz.dart';
+import 'package:oanse/app/modules/cargo/model/user.dart';
 
 import '../../../shared/errors/errors.dart';
 import '../model/cargo.dart';
@@ -28,6 +29,11 @@ class CargoService implements ICargoService {
   @override
   Future<Either<Failure, int?>> delete(int id) {
     return _repository.delete(id);
+  }
+
+  @override
+  Future<Either<Failure, List<User>?>> listUser() {
+    return _repository.listUser();
   }
 
   @override

@@ -2,6 +2,7 @@ import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:dio/native_imp.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:oanse/app/modules/cargo/model/user.dart';
 
 import '../../../shared/custom_dio/custom_error.dart';
 import '../../../shared/errors/errors.dart';
@@ -41,6 +42,22 @@ class CargoRepository extends Disposable implements ICargoRepository {
   @override
   Future<Either<Failure, int?>> insert(Map<String, dynamic> data) {
     throw UnimplementedError();
+  }
+
+  @override
+  Future<Either<Failure, List<User>?>> listUser() async {
+    try {
+      var dio = Dio();
+      var response = await dio.get('https://gorest.co.in/public/v2/users');
+
+      var users =
+          List<User>.from((response.data as List).map((e) => User.fromJson(e)));
+      return Right(users);
+    } on DioError catch (err) {
+      return Left(DioFailure(
+          message: CustomError.getErrorMessage(err),
+          statusCode: err.response?.statusCode ?? -1));
+    }
   }
 
   //dispose will be called automatically
