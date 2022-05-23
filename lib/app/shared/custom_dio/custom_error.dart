@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 
 class CustomError {
   static String getErrorMessageLogin(e) {
@@ -15,6 +16,7 @@ class CustomError {
 
   static String getErrorMessage(e) {
     String error;
+
     if (e is DioError) {
       switch (e.type) {
         case DioErrorType.connectTimeout:
@@ -33,7 +35,12 @@ class CustomError {
           error = "Requisição cancelada, tente novamente";
           break;
         default:
-          error = "Ocorreu um erro na conexão, tente novamente";
+          error = e.message;
+      }
+
+      if (kDebugMode) {
+        print("objeto de erro");
+        print(e);
       }
     } else if (e is String) {
       error = e;

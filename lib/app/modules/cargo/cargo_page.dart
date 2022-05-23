@@ -17,8 +17,8 @@ class CargoPageState extends State<CargoPage> {
 
   @override
   void initState() {
-    //store.list();
-    store.listUsers();
+    store.list();
+    //store.listUsers();
     super.initState();
   }
   //Tela exemplo de usuários pegando os dados de uma api em produção
