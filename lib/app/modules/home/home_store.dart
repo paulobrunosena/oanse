@@ -1,3 +1,4 @@
+import 'package:flutter_modular/flutter_modular.dart';
 import 'package:mobx/mobx.dart';
 
 part 'home_store.g.dart';
@@ -10,5 +11,9 @@ abstract class HomeStoreBase with Store {
 
   Future<void> increment() async {
     counter = counter + 1;
+  }
+
+  Future<void> logout() async {
+    Modular.to.pushNamed("/login/");
   }
 }
