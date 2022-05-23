@@ -18,7 +18,7 @@ class HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Counter'),
+        title: const Text('Counter Oanse'),
       ),
       body: Observer(
         builder: (context) => Text('${store.counter}'),

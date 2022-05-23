@@ -29,6 +29,7 @@ scripts:
   mobx_build: $clean & $get & $runner build --delete-conflicting-outputs
   mobx_watch: $clean & $get & $runner watch --delete-conflicting-outputs
   update_plugins: flutter pub upgrade --null-safety
+  gerar_flutter_web: flutter pub global run peanut:peanut
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
