@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 class CargoPage extends StatefulWidget {
   final String title;
-  const CargoPage({Key? key, this.title = 'CargoPage'}) : super(key: key);
+  const CargoPage({Key? key, this.title = 'Cargo'}) : super(key: key);
   @override
   CargoPageState createState() => CargoPageState();
 }
