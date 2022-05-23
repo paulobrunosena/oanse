@@ -7,6 +7,6 @@ class LoginStore = LoginStoreBase with _$LoginStore;
 
 abstract class LoginStoreBase with Store {
   Future<void> login() async {
-    Modular.to.pushNamed("/home/");
+    Modular.to.pushReplacementNamed("/home/");
   }
 }
