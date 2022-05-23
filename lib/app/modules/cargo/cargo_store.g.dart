@@ -9,39 +9,43 @@ part of 'cargo_store.dart';
 // ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic, no_leading_underscores_for_local_identifiers
 
 mixin _$CargoStore on CargoStoreBase, Store {
-  late final _$valueAtom = Atom(name: 'CargoStoreBase.value', context: context);
+  late final _$loadingListAtom =
+      Atom(name: 'CargoStoreBase.loadingList', context: context);
 
   @override
-  int get value {
-    _$valueAtom.reportRead();
-    return super.value;
+  bool get loadingList {
+    _$loadingListAtom.reportRead();
+    return super.loadingList;
   }
 
   @override
-  set value(int value) {
-    _$valueAtom.reportWrite(value, super.value, () {
-      super.value = value;
+  set loadingList(bool value) {
+    _$loadingListAtom.reportWrite(value, super.loadingList, () {
+      super.loadingList = value;
     });
   }
 
-  late final _$CargoStoreBaseActionController =
-      ActionController(name: 'CargoStoreBase', context: context);
+  late final _$isInitialAtom =
+      Atom(name: 'CargoStoreBase.isInitial', context: context);
 
   @override
-  void increment() {
-    final _$actionInfo = _$CargoStoreBaseActionController.startAction(
-        name: 'CargoStoreBase.increment');
-    try {
-      return super.increment();
-    } finally {
-      _$CargoStoreBaseActionController.endAction(_$actionInfo);
-    }
+  bool get isInitial {
+    _$isInitialAtom.reportRead();
+    return super.isInitial;
+  }
+
+  @override
+  set isInitial(bool value) {
+    _$isInitialAtom.reportWrite(value, super.isInitial, () {
+      super.isInitial = value;
+    });
   }
 
   @override
   String toString() {
     return '''
-value: ${value}
+loadingList: ${loadingList},
+isInitial: ${isInitial}
     ''';
   }
 }
