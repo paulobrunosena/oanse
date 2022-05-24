@@ -14,7 +14,7 @@ class AppModule extends Module {
     Bind.lazySingleton(
       (i) => BaseOptions(
         baseUrl: baseUrl,
-        connectTimeout: 15000,
+        //connectTimeout: 15000,
       ),
     ),
   ];
