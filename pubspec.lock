@@ -70,7 +70,7 @@ packages:
       name: build_resolvers
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.8"
+    version: "2.0.9"
   build_runner:
     dependency: "direct dev"
     description:
@@ -450,13 +450,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.1"
-  modular_test:
-    dependency: "direct dev"
-    description:
-      name: modular_test
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "2.0.0"
   nm:
     dependency: transitive
     description:

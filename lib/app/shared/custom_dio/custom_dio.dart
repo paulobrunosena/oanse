@@ -1,13 +1,12 @@
-import 'package:dio/adapter_browser.dart';
 import 'package:dio/dio.dart';
 import 'package:dio/native_imp.dart';
-import 'package:flutter/foundation.dart';
 
 class CustomDio extends DioForNative {
   CustomDio([BaseOptions? options]) : super(options) {
     //interceptors.add(CustomIntercetors());
-    if (kIsWeb) {
+    //TODO ativar quando for gerar o flutter web
+    /*if (kIsWeb) {
       httpClientAdapter = BrowserHttpClientAdapter();
-    }
+    }*/
   }
 }
