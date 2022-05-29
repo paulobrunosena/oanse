@@ -14,7 +14,7 @@ import 'services/interfaces/cargo_service_interface.dart';
 class CargoModule extends Module {
   @override
   final List<Bind> binds = [
-    Bind.lazySingleton((i) => AddStore()),
+    Bind.lazySingleton((i) => AddStore(i<ICargoService>())),
     Bind.lazySingleton((i) => EditStore()),
     Bind.lazySingleton((i) => CargoStore(i<ICargoService>())),
     Bind.lazySingleton((i) => CargoService(i<ICargoRepository>())),
