@@ -97,12 +97,12 @@ class EditPageState extends State<EditPage> {
         ),
         actions: <Widget>[
           TextButton(
-            onPressed: () => Navigator.pop(context, 'Não'),
-            child: const Text('Não'),
+            onPressed: () => Navigator.pop(context, "Sim"),
+            child: const Text('Sim'),
           ),
           TextButton(
-            onPressed: () => Navigator.pop(context, 'Sim'),
-            child: const Text('Sim'),
+            onPressed: () => Navigator.pop(context, "Não"),
+            child: const Text('Não'),
           ),
         ],
       ),
