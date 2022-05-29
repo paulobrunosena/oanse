@@ -18,7 +18,6 @@ class CargoPageState extends State<CargoPage> {
   @override
   void initState() {
     store.list();
-    //store.listUsers();
     super.initState();
   }
 
