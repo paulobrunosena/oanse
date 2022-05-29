@@ -21,8 +21,8 @@ class CargoService implements ICargoService {
   }
 
   @override
-  Future<Either<Failure, int?>> update(Map<String, dynamic> data) {
-    throw UnimplementedError();
+  Future<Either<Failure, int?>> update(int id, Map<String, dynamic> data) {
+    return _repository.update(id, data);
   }
 
   @override

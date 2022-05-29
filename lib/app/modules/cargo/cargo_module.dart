@@ -5,6 +5,7 @@ import 'cargo_page.dart';
 import 'cargo_store.dart';
 import 'pages/add/add_page.dart';
 import 'pages/add/add_store.dart';
+import 'pages/edit/edit_page.dart';
 import 'pages/edit/edit_store.dart';
 import 'repository/cargo_repository.dart';
 import 'repository/interfaces/cargo_repository_interface.dart';
@@ -15,7 +16,7 @@ class CargoModule extends Module {
   @override
   final List<Bind> binds = [
     Bind.lazySingleton((i) => AddStore(i<ICargoService>())),
-    Bind.lazySingleton((i) => EditStore()),
+    Bind.lazySingleton((i) => EditStore(i<ICargoService>())),
     Bind.lazySingleton((i) => CargoStore(i<ICargoService>())),
     Bind.lazySingleton((i) => CargoService(i<ICargoRepository>())),
     Bind.lazySingleton((i) => CargoRepository(i<DioForNative>())),
@@ -25,5 +26,9 @@ class CargoModule extends Module {
   final List<ModularRoute> routes = [
     ChildRoute('/', child: (_, args) => const CargoPage()),
     ChildRoute('/add', child: (_, args) => const AddPage()),
+    ChildRoute('/edit',
+        child: (_, args) => EditPage(
+              cargo: args.data,
+            )),
   ];
 }

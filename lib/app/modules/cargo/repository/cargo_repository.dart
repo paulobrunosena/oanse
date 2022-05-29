@@ -47,8 +47,22 @@ class CargoRepository extends Disposable implements ICargoRepository {
   }
 
   @override
-  Future<Either<Failure, int?>> update(Map<String, dynamic> data) {
-    throw UnimplementedError();
+  Future<Either<Failure, int?>> update(
+      int id, Map<String, dynamic> data) async {
+    try {
+      var response = await _dio.put('cargo/$id', data: data);
+
+      if (response.statusCode == 200) {
+        return const Right(200);
+      } else {
+        return Left(DioFailure(
+            message: "Erro no servidor ", statusCode: response.statusCode));
+      }
+    } on DioError catch (err) {
+      return Left(DioFailure(
+          message: CustomError.getErrorMessage(err),
+          statusCode: err.response?.statusCode ?? -1));
+    }
   }
 
   @override

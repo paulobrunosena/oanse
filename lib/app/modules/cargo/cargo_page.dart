@@ -48,6 +48,15 @@ class CargoPageState extends State<CargoPage> {
                         title: Text(item.nome ?? "Nome"),
                         subtitle: Text("Descrição: ${item.descricao}"),
                         trailing: const Icon(Icons.arrow_forward_ios_rounded),
+                        onTap: () {
+                          Modular.to
+                              .pushNamed("/cargo/edit", arguments: item)
+                              .then((value) async {
+                            if (value != null && value as bool) {
+                              await store.list();
+                            }
+                          });
+                        },
                       );
                     },
                     separatorBuilder: (_, __) {
