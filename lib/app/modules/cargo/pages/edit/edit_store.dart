@@ -41,6 +41,27 @@ abstract class EditStoreBase with Store {
     }
   }
 
+  Future<void> delete() async {
+    if (formController.validate()) {
+      EasyLoading.show(status: "Salvando dados, aguarde...");
+
+      var result = await _service.delete(cargo.idCargo!);
+      result.fold((failure) {
+        EasyLoading.dismiss();
+        asuka.showSnackBar(SnackBar(
+            content: Text(failure.message!),
+            backgroundColor: Colors.redAccent,
+            duration: const Duration(seconds: 3)));
+      }, (retorno) {
+        asuka.showSnackBar(const SnackBar(
+            content: Text("Registro deletado com sucesso"),
+            backgroundColor: Colors.green,
+            duration: Duration(seconds: 3)));
+        EasyLoading.dismiss().then((value) => Modular.to.pop(true));
+      });
+    }
+  }
+
   String? validateNome(String? value) {
     if (value == null || value.isEmpty) return "Nome obrigatório";
     return null;

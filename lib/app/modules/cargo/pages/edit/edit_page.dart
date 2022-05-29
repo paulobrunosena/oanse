@@ -30,7 +30,7 @@ class EditPageState extends State<EditPage> {
         actions: [
           IconButton(
             icon: const Icon(Icons.delete),
-            onPressed: () {},
+            onPressed: deletar,
           ),
         ],
       ),
@@ -85,5 +85,33 @@ class EditPageState extends State<EditPage> {
             )),
       ),
     );
+  }
+
+  deletar() {
+    showDialog<String>(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: const Text('Deletar cargo'),
+        content: const Text(
+          'Deseja realmente deletar o cargo?',
+        ),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => Navigator.pop(context, 'Não'),
+            child: const Text('Não'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, 'Sim'),
+            child: const Text('Sim'),
+          ),
+        ],
+      ),
+    ).then((returnVal) {
+      if (returnVal != null) {
+        if (returnVal.contains("Sim")) {
+          controller.delete();
+        }
+      }
+    });
   }
 }

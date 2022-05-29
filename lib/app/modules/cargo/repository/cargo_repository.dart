@@ -66,8 +66,21 @@ class CargoRepository extends Disposable implements ICargoRepository {
   }
 
   @override
-  Future<Either<Failure, int?>> delete(int id) {
-    throw UnimplementedError();
+  Future<Either<Failure, int?>> delete(int id) async {
+    try {
+      var response = await _dio.delete('cargo/$id');
+
+      if (response.statusCode == 200) {
+        return const Right(200);
+      } else {
+        return Left(DioFailure(
+            message: "Erro no servidor ", statusCode: response.statusCode));
+      }
+    } on DioError catch (err) {
+      return Left(DioFailure(
+          message: CustomError.getErrorMessage(err),
+          statusCode: err.response?.statusCode ?? -1));
+    }
   }
 
   //dispose will be called automatically
