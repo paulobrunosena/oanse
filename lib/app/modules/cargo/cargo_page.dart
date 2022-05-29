@@ -62,7 +62,11 @@ class CargoPageState extends State<CargoPage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Modular.to.pushNamed('/cargo/add');
+          Modular.to.pushNamed('/cargo/add').then((value) async {
+            if (value != null && value as bool) {
+              await store.list();
+            }
+          });
         },
         tooltip: 'Adicionar',
         child: const Icon(Icons.add),

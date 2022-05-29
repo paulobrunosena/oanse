@@ -34,7 +34,7 @@ abstract class AddStoreBase with Store {
             content: Text("Registro salvo com sucesso"),
             backgroundColor: Colors.green,
             duration: Duration(seconds: 3)));
-        EasyLoading.dismiss().then((value) => Modular.to.pop());
+        EasyLoading.dismiss().then((value) => Modular.to.pop(true));
       });
     }
   }
