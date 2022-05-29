@@ -1,10 +1,11 @@
-import 'package:oanse/app/modules/cargo/pages/add/add_store.dart';
-import 'package:oanse/app/modules/cargo/pages/edit/edit_store.dart';
 import 'package:dio/native_imp.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 
 import 'cargo_page.dart';
 import 'cargo_store.dart';
+import 'pages/add/add_page.dart';
+import 'pages/add/add_store.dart';
+import 'pages/edit/edit_store.dart';
 import 'repository/cargo_repository.dart';
 import 'repository/interfaces/cargo_repository_interface.dart';
 import 'services/cargo_service.dart';
@@ -23,5 +24,6 @@ class CargoModule extends Module {
   @override
   final List<ModularRoute> routes = [
     ChildRoute('/', child: (_, args) => const CargoPage()),
+    ChildRoute('/add', child: (_, args) => const AddPage()),
   ];
 }

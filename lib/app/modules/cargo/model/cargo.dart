@@ -1,9 +1,9 @@
 class Cargo {
-  int idCargo = -1;
-  String nome = "nomeCargo";
-  String descricao = "descricaoCargo";
+  int? idCargo;
+  String? nome;
+  String? descricao;
 
-  Cargo({required this.idCargo, required this.nome, required this.descricao});
+  Cargo({this.idCargo, this.nome, this.descricao});
 
   Cargo.fromJson(Map<String, dynamic> json) {
     idCargo = json['id_cargo'];
