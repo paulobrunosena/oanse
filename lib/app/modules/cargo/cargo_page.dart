@@ -49,8 +49,8 @@ class CargoPageState extends State<CargoPage> {
                         title: Text(item.nome ?? "Nome"),
                         subtitle: Text("Descrição: ${item.descricao}"),
                         trailing: const Icon(Icons.arrow_forward_ios_rounded),
-                        onTap: () {
-                          showDialog(
+                        onTap: () async {
+                          await showDialog(
                               barrierDismissible: false,
                               context: context,
                               builder: (_) {
@@ -64,13 +64,6 @@ class CargoPageState extends State<CargoPage> {
                               await store.list();
                             }
                           });
-                          /*Modular.to
-                              .pushNamed("/cargo/edit", arguments: item)
-                              .then((value) async {
-                            if (value != null && value as bool) {
-                              await store.list();
-                            }
-                          });*/
                         },
                       );
                     },
@@ -85,8 +78,8 @@ class CargoPageState extends State<CargoPage> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          showDialog(
+        onPressed: () async {
+          await showDialog(
               barrierDismissible: false,
               context: context,
               builder: (_) {
