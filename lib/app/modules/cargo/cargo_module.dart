@@ -1,3 +1,4 @@
+import 'package:oanse/app/modules/cargo/components/form_dialog_store.dart';
 import 'package:dio/native_imp.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 
@@ -15,6 +16,7 @@ import 'services/interfaces/cargo_service_interface.dart';
 class CargoModule extends Module {
   @override
   final List<Bind> binds = [
+    Bind.lazySingleton((i) => FormDialogStore(i<ICargoService>())),
     Bind.lazySingleton((i) => AddStore(i<ICargoService>())),
     Bind.lazySingleton((i) => EditStore(i<ICargoService>())),
     Bind.lazySingleton((i) => CargoStore(i<ICargoService>())),

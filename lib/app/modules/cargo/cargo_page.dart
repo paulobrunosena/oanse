@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:oanse/app/modules/cargo/components/form_dialog_widget.dart';
 
 import 'cargo_store.dart';
 import 'model/cargo.dart';
@@ -49,13 +50,27 @@ class CargoPageState extends State<CargoPage> {
                         subtitle: Text("Descrição: ${item.descricao}"),
                         trailing: const Icon(Icons.arrow_forward_ios_rounded),
                         onTap: () {
-                          Modular.to
+                          showDialog(
+                              barrierDismissible: false,
+                              context: context,
+                              builder: (_) {
+                                return FormDialogWidget(
+                                  title: "Editar cargo",
+                                  labelButton: "Editar",
+                                  cargo: item,
+                                );
+                              }).then((value) async {
+                            if (value != null && value as bool) {
+                              await store.list();
+                            }
+                          });
+                          /*Modular.to
                               .pushNamed("/cargo/edit", arguments: item)
                               .then((value) async {
                             if (value != null && value as bool) {
                               await store.list();
                             }
-                          });
+                          });*/
                         },
                       );
                     },
@@ -71,7 +86,12 @@ class CargoPageState extends State<CargoPage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Modular.to.pushNamed('/cargo/add').then((value) async {
+          showDialog(
+              barrierDismissible: false,
+              context: context,
+              builder: (_) {
+                return const FormDialogWidget();
+              }).then((value) async {
             if (value != null && value as bool) {
               await store.list();
             }

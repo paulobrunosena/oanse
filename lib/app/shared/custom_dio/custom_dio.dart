@@ -4,15 +4,15 @@ import 'package:dio/native_imp.dart';
 class CustomDio extends DioForNative {
   CustomDio([BaseOptions? options]) : super(options) {
     //interceptors.add(CustomIntercetors());
-    /*if (kIsWeb) {
-      httpClientAdapter = BrowserHttpClientAdapter();
-      if (kDebugMode) {
-        print("está rodando flutter web");
-      }
-    } else {
+    /*if (Platform.isIOS || Platform.isAndroid) {
       httpClientAdapter = DefaultHttpClientAdapter();
       if (kDebugMode) {
         print("está rodando flutter mobile");
+      }
+    } else {
+      httpClientAdapter = BrowserHttpClientAdapter();
+      if (kDebugMode) {
+        print("está rodando flutter web");
       }
     }*/
   }
