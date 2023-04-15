@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 
+import '../../shared/widgets/custom_icon_button.dart';
+import '../../shared/widgets/custom_text_field.dart';
 import 'login_controller.dart';
+import 'model/login_model.dart';
 
 class LoginPage extends StatefulWidget {
   final String title;
@@ -13,22 +17,176 @@ class LoginPage extends StatefulWidget {
 
 class LoginPageState extends State<LoginPage> {
   final controller = Modular.get<LoginController>();
+  final _key = GlobalKey<ScaffoldMessengerState>();
+  final LoginModel _data = LoginModel();
+  late Image logo;
+  late DecorationImage decorationImage;
+
+  @override
+  void initState() {
+    super.initState();
+    init();
+  }
+
+  init() {
+    logo = Image.asset(
+      "images/awana.png",
+      width: 200,
+      //height: 100,
+      fit: BoxFit.contain,
+    );
+
+    decorationImage = const DecorationImage(
+      image: AssetImage('images/login_bg.jpg'),
+      fit: BoxFit.cover,
+      colorFilter: ColorFilter.mode(Colors.black45, BlendMode.darken),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-        centerTitle: true,
-      ),
-      body: ListView(
-        children: <Widget>[
-          Column(
-            children: const <Widget>[
-              Text("Tela Login"),
+    return Stack(
+      children: [
+        backgroundImage,
+        Scaffold(
+            backgroundColor: Colors.transparent,
+            key: _key,
+            body: GestureDetector(
+              onTap: () => hideKeyboard(context),
+              child: CustomScrollView(
+                slivers: [
+                  SliverList(
+                      delegate: SliverChildListDelegate([
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        const SizedBox(
+                          height: 80,
+                        ),
+                        logoOanse,
+                        const SizedBox(
+                          height: 80,
+                        ),
+                        camposLogin,
+                      ],
+                    )
+                  ]))
+                ],
+              ),
+            )),
+      ],
+    );
+  }
+
+  Widget get backgroundImage => ShaderMask(
+        shaderCallback: (bounds) => const LinearGradient(
+          colors: [Colors.black, Colors.black12],
+          begin: Alignment.bottomCenter,
+          end: Alignment.center,
+        ).createShader(bounds),
+        blendMode: BlendMode.darken,
+        child: Container(
+          decoration: BoxDecoration(
+            image: decorationImage,
+          ),
+        ),
+      );
+
+  Widget get logoOanse => Container(
+        padding: const EdgeInsets.only(left: 50, right: 50),
+        height: 150,
+        child: logo,
+      );
+
+  Widget get camposLogin => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10),
+        child: Form(
+          key: controller.formController.key,
+          child: Column(
+            children: <Widget>[
+              email,
+              const SizedBox(
+                height: 20,
+              ),
+              senha,
+              const SizedBox(
+                height: 20,
+              ),
+              botaoAcessar,
+              const SizedBox(
+                height: 20,
+              ),
+              botaoCadastrese,
             ],
           ),
+        ),
+      );
+  Widget get email => CustomTextField(
+        hint: 'E-mail',
+        prefix: const Icon(Icons.email),
+        textInputType: TextInputType.emailAddress,
+        onSaved: _data.setEmail,
+        onChanged: controller.setEmail,
+        textInputAction: TextInputAction.next,
+      );
+
+  Widget get senha => Observer(
+        builder: (_) {
+          return CustomTextField(
+            hint: 'Senha',
+            prefix: const Icon(Icons.lock),
+            obscure: !controller.senhaVisible,
+            onSaved: _data.setSenha,
+            onChanged: controller.setSenha,
+            suffix: CustomIconButton(
+              radius: 32,
+              iconData: controller.senhaVisible
+                  ? Icons.visibility_off
+                  : Icons.visibility,
+              onTap: controller.toggleSenhaVisibility,
+            ),
+            textInputAction: TextInputAction.go,
+            onFieldSubmitted: (value) async {
+              //await controller.login();
+            },
+          );
+        },
+      );
+
+  Widget get botaoAcessar => Row(
+        children: <Widget>[
+          Expanded(
+            child: SizedBox(
+              height: 60,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.indigo,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(50.0),
+                  ),
+                ),
+                onPressed: () async {
+                  hideKeyboard(context);
+                  //await controller.login();
+                },
+                child: const Text(
+                  'ACESSAR',
+                  style: TextStyle(fontSize: 18),
+                ),
+              ),
+            ),
+          )
         ],
-      ),
-    );
+      );
+
+  Widget get botaoCadastrese => TextButton(
+      onPressed: () {},
+      child: const Text("CADASTRE-SE", style: TextStyle(color: Colors.white)));
+
+  void hideKeyboard(BuildContext context) {
+    var currentFocus = FocusScope.of(context);
+    if (!currentFocus.hasPrimaryFocus) {
+      currentFocus.unfocus();
+    }
   }
 }

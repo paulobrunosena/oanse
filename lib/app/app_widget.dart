@@ -10,7 +10,7 @@ class AppWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp.router(
       title: 'Oanse',
-      theme: ThemeData(primarySwatch: Colors.blue),
+      theme: ThemeData(primarySwatch: Colors.indigo),
       routeInformationParser: Modular.routeInformationParser,
       routerDelegate: Modular.routerDelegate,
       builder: EasyLoading.init(builder: Asuka.builder),
