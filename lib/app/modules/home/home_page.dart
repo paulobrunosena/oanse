@@ -32,7 +32,9 @@ class HomePageState extends State<HomePage> {
               const Text("Tela Home"),
               ElevatedButton(
                 child: const Text("Listar Usuário"),
-                onPressed: () {},
+                onPressed: () async {
+                  await controller.allUsers();
+                },
               ),
               ElevatedButton(
                 child: const Text("Logout"),
