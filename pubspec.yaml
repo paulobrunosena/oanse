@@ -41,6 +41,7 @@ dependencies:
   brasil_fields: ^1.11.0
   internet_connection_checker: ^1.0.0+1
   connectivity_plus: ^3.0.4
+  shared_preferences: ^2.1.0
 
 
   # The following adds the Cupertino Icons font to your application.

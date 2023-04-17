@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 
+import '../../shared/model/login/login_model.dart';
 import '../../shared/widgets/custom_icon_button.dart';
 import '../../shared/widgets/custom_text_field.dart';
 import 'login_controller.dart';
-import 'model/login_model.dart';
 
 class LoginPage extends StatefulWidget {
   final String title;
@@ -41,6 +42,11 @@ class LoginPageState extends State<LoginPage> {
       fit: BoxFit.cover,
       colorFilter: ColorFilter.mode(Colors.black45, BlendMode.darken),
     );
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
+          overlays: SystemUiOverlay.values);
+    });
   }
 
   @override

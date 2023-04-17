@@ -4,7 +4,9 @@ import 'package:flutter_modular/flutter_modular.dart';
 import 'package:mobx/mobx.dart';
 
 import '../../shared/constants.dart';
+import '../../shared/model/login/login_model.dart';
 import '../../shared/model/login/login_request.dart';
+import '../../shared/model/login/login_response.dart';
 import '../../shared/services/interfaces/usuario_service_interface.dart';
 import '../../shared/utils/form_controller.dart';
 import '../../shared/utils/network_check.dart';
@@ -53,8 +55,8 @@ abstract class LoginControllerBase with Store {
         );
         var result = await _userService.login(requestLogin);
         result.when(
-          (success) {
-            //await _salvarDadosUsuarioLocal(result);
+          (success) async {
+            await _salvarDadosUsuarioLocal(success);
             Modular.to.pushReplacementNamed('$routeHome/');
           },
           (error) {
@@ -69,28 +71,11 @@ abstract class LoginControllerBase with Store {
     EasyLoading.dismiss();
   }
 
-  /*Future<UsuarioModel> _salvarDadosUsuarioLocal(LoginResponse result) async {
-    UsuarioModel dadosUsuarioLogin = UsuarioModel(
-      login: result.cpf,
-      senha: password,
-      matriculaAgente: result.matricula,
-      nomeAgente: result.nome,
-      orgao: result.codOrgao,
-      dataInclusao: DateTime.now().toString(),
-      logado: 1,
+  Future<void> _salvarDadosUsuarioLocal(LoginResponse result) async {
+    LoginModel data = LoginModel(
+      email: email,
     );
-    /**Deleta qualquer dado de usuário do banco local */
-    var deletar = await _userService.deleteUsuarioLocal();
-    deletar.fold((failure) {
-      AsukaSnackbar.alert(failure.message!).show();
-    }, (r) async {
-      /**Salva os dados do usuário no banco local */
-      var salvar = await _userService.setUsuarioLocal(dadosUsuarioLogin);
-      salvar.fold((failure) {
-        AsukaSnackbar.alert(failure.message!).show();
-      }, (r) => null);
-    });
-
-    return dadosUsuarioLogin;
-  }*/
+    data.setToken(result.authorization);
+    await _userService.saveDadosUsuarioLocal(data);
+  }
 }

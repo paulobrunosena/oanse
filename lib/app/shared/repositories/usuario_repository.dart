@@ -1,10 +1,14 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:multiple_result/multiple_result.dart';
 import 'package:oanse/app/shared/model/exception/exception_response.dart';
 import 'package:oanse/app/shared/model/login/login_response.dart';
 
+import '../model/login/login_model.dart';
 import '../model/login/login_request.dart';
+import '../services/local_storage_service.dart';
 import 'interfaces/usuario_repository_interface.dart';
 
 class UsuarioRepository implements IUsuarioRepository {
@@ -34,6 +38,13 @@ class UsuarioRepository implements IUsuarioRepository {
         return Error(Exception(error.message));
       }
     }
+  }
+
+  @override
+  Future<bool> saveDadosUsuarioLocal(LoginModel data) async {
+    bool result = await LocalStorageService.setValue<String>(
+        'dados_usuario_local', jsonEncode(data.toJson()));
+    return result;
   }
 
   @override
