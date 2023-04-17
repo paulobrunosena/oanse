@@ -30,16 +30,17 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  uno: ^1.1.6
+  dio: ^5.1.1
   multiple_result: ^4.0.0
   flutter_modular: ^5.0.3
   flutter_mobx: ^2.0.6+5
   mobx: ^2.1.4
   asuka: ^2.0.2
   flutter_easyloading: ^3.0.5
-  font_awesome_flutter: ^10.4.0
   validatorless: ^1.2.3
   brasil_fields: ^1.11.0
+  internet_connection_checker: ^1.0.0+1
+  connectivity_plus: ^3.0.4
 
 
   # The following adds the Cupertino Icons font to your application.

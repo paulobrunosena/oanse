@@ -147,7 +147,7 @@ class LoginPageState extends State<LoginPage> {
             ),
             textInputAction: TextInputAction.go,
             onFieldSubmitted: (value) async {
-              //await controller.login();
+              await controller.login();
             },
           );
         },
@@ -167,7 +167,7 @@ class LoginPageState extends State<LoginPage> {
                 ),
                 onPressed: () async {
                   hideKeyboard(context);
-                  //await controller.login();
+                  await controller.login();
                 },
                 child: const Text(
                   'ACESSAR',
