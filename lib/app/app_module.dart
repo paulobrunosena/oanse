@@ -5,13 +5,18 @@ import 'modules/home/home_module.dart';
 import 'modules/login/login_module.dart';
 import 'modules/splash/splash_module.dart';
 import 'shared/constants.dart';
+import 'shared/repositories/auth_repository.dart';
+import 'shared/repositories/interfaces/auth_repository_interface.dart';
 import 'shared/repositories/interfaces/usuario_repository_interface.dart';
 import 'shared/repositories/usuario_repository.dart';
+import 'shared/services/auth_service.dart';
 import 'shared/services/usuario_service.dart';
 
 class AppModule extends Module {
   @override
   final List<Bind> binds = [
+    Bind.lazySingleton((i) => AuthService(i<IAuthRepository>())),
+    Bind.lazySingleton((i) => AuthRepository(i<Dio>())),
     Bind.lazySingleton((i) => UsuarioService(i<IUsuarioRepository>())),
     Bind.lazySingleton((i) => UsuarioRepository(i<Dio>())),
     Bind((i) => Dio(i<BaseOptions>())),

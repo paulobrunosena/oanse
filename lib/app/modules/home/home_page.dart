@@ -28,8 +28,18 @@ class HomePageState extends State<HomePage> {
       body: ListView(
         children: <Widget>[
           Column(
-            children: const <Widget>[
-              Text("Tela Home"),
+            children: <Widget>[
+              const Text("Tela Home"),
+              ElevatedButton(
+                child: const Text("Listar Usuário"),
+                onPressed: () {},
+              ),
+              ElevatedButton(
+                child: const Text("Logout"),
+                onPressed: () async {
+                  await controller.logout();
+                },
+              ),
             ],
           ),
         ],
