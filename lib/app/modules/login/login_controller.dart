@@ -7,7 +7,7 @@ import '../../shared/constants.dart';
 import '../../shared/model/login/login_model.dart';
 import '../../shared/model/login/login_request.dart';
 import '../../shared/model/login/login_response.dart';
-import '../../shared/services/interfaces/usuario_service_interface.dart';
+import '../../shared/services/interfaces/auth_service_interface.dart';
 import '../../shared/utils/form_controller.dart';
 import '../../shared/utils/network_check.dart';
 
@@ -16,8 +16,8 @@ part 'login_controller.g.dart';
 class LoginController = LoginControllerBase with _$LoginController;
 
 abstract class LoginControllerBase with Store {
-  LoginControllerBase(this._userService);
-  final IUsuarioService _userService;
+  LoginControllerBase(this._authService);
+  final IAuthService _authService;
   final FormController formController = FormController();
 
   @observable
@@ -53,7 +53,7 @@ abstract class LoginControllerBase with Store {
           email: email,
           password: senha,
         );
-        var result = await _userService.login(requestLogin);
+        var result = await _authService.login(requestLogin);
         result.when(
           (success) async {
             await _salvarDadosUsuarioLocal(success);
@@ -76,6 +76,6 @@ abstract class LoginControllerBase with Store {
       email: email,
     );
     data.setToken(result.authorization);
-    await _userService.saveDadosUsuarioLocal(data);
+    await _authService.saveDadosUsuarioLocal(data);
   }
 }

@@ -9,12 +9,12 @@ import 'package:oanse/app/shared/model/login/login_response.dart';
 import '../model/login/login_model.dart';
 import '../model/login/login_request.dart';
 import '../services/local_storage_service.dart';
-import 'interfaces/usuario_repository_interface.dart';
+import 'interfaces/auth_repository_interface.dart';
 
-class UsuarioRepository implements IUsuarioRepository {
+class AuthRepository implements IAuthRepository {
   final Dio client;
 
-  UsuarioRepository(this.client);
+  AuthRepository(this.client);
 
   @override
   Future<Result<LoginResponse, Exception>> login(LoginRequest data) async {

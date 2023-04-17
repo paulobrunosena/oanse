@@ -1,13 +1,13 @@
 import 'package:flutter_modular/flutter_modular.dart';
 
-import '../../shared/services/interfaces/usuario_service_interface.dart';
+import '../../shared/services/interfaces/auth_service_interface.dart';
 import 'login_controller.dart';
 import 'login_page.dart';
 
 class LoginModule extends Module {
   @override
   final List<Bind> binds = [
-    Bind.lazySingleton((i) => LoginController(i<IUsuarioService>())),
+    Bind.lazySingleton((i) => LoginController(i<IAuthService>())),
   ];
 
   @override
