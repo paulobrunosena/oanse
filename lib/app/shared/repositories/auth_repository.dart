@@ -3,11 +3,11 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:multiple_result/multiple_result.dart';
-import 'package:oanse/app/shared/model/exception/exception_response.dart';
-import 'package:oanse/app/shared/model/login/login_response.dart';
 
+import '../model/exception/exception_response.dart';
 import '../model/login/login_model.dart';
 import '../model/login/login_request.dart';
+import '../model/login/login_response.dart';
 import '../model/logout/logout_response.dart';
 import '../services/local_storage_service.dart';
 import 'interfaces/auth_repository_interface.dart';
