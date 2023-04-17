@@ -8,6 +8,7 @@ import 'package:oanse/app/shared/model/login/login_response.dart';
 
 import '../model/login/login_model.dart';
 import '../model/login/login_request.dart';
+import '../model/logout/logout_response.dart';
 import '../services/local_storage_service.dart';
 import 'interfaces/auth_repository_interface.dart';
 
@@ -29,6 +30,33 @@ class AuthRepository implements IAuthRepository {
         debugPrint("Erro no login");
         debugPrint(response.data);
         return Error(Exception("Erro no login"));
+      }
+    } on DioError catch (error) {
+      if (error.response != null) {
+        var responseException =
+            ExceptionResponse.fromJson(error.response!.data);
+        return Error(Exception(responseException.message));
+      } else {
+        return Error(Exception(error.message));
+      }
+    }
+  }
+
+  @override
+  Future<Result<LogoutResponse, Exception>> logout() async {
+    try {
+      client.options.headers["authorization"] =
+          " Authorization ${client.options.headers["authorization"]}";
+      var response = await client.post('auth/logout');
+
+      if (response.statusCode == 200) {
+        LogoutResponse result = LogoutResponse.fromJson(response.data);
+        client.options.headers["authorization"] = "";
+        return Success(result);
+      } else {
+        debugPrint("Erro no logout");
+        debugPrint(response.data);
+        return Error(Exception("Erro no logout"));
       }
     } on DioError catch (error) {
       if (error.response != null) {
