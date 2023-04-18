@@ -4,6 +4,7 @@ import 'package:flutter_modular/flutter_modular.dart';
 import 'modules/home/home_module.dart';
 import 'modules/login/login_module.dart';
 import 'modules/splash/splash_module.dart';
+import 'modules/user/user_module.dart';
 import 'shared/constants.dart';
 import 'shared/repositories/auth_repository.dart';
 import 'shared/repositories/interfaces/auth_repository_interface.dart';
@@ -37,5 +38,6 @@ class AppModule extends Module {
     ModuleRoute(Modular.initialRoute, module: SplashModule()),
     ModuleRoute(routeLogin, module: LoginModule()),
     ModuleRoute(routeHome, module: HomeModule()),
+    ModuleRoute(routeUser, module: UserModule()),
   ];
 }

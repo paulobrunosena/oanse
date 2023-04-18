@@ -9,7 +9,7 @@ class UserAddPage extends StatefulWidget {
 
   const UserAddPage({
     Key? key,
-    this.title = "Cadastrar Usuário",
+    this.title = "Cadastre-se",
   }) : super(key: key);
 
   @override
@@ -26,17 +26,16 @@ class UserAddPageState extends State<UserAddPage> {
         title: Text(widget.title),
         centerTitle: true,
         actions: [bntSave],
+        leading: IconButton(
+            icon: const Icon(Icons.close), onPressed: Modular.to.pop),
       ),
       body: form,
     );
   }
 
-  Widget get bntSave => TextButton(
+  Widget get bntSave => IconButton(
         onPressed: controller.register,
-        child: const Text(
-          "SALVAR",
-          style: TextStyle(color: Colors.white),
-        ),
+        icon: const Icon(Icons.save_rounded),
       );
 
   Widget get form => Form(

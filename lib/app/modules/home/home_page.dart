@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:oanse/app/shared/constants.dart';
 
 import 'home_controller.dart';
 
@@ -8,7 +9,7 @@ class HomePage extends StatefulWidget {
 
   const HomePage({
     Key? key,
-    this.title = "Talão Eletrônico",
+    this.title = "Oanse App",
   }) : super(key: key);
 
   @override
@@ -24,22 +25,22 @@ class HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: Text(widget.title),
         centerTitle: true,
+        actions: [
+          IconButton(
+              onPressed: () async {
+                await controller.logout();
+              },
+              icon: const Icon(Icons.logout))
+        ],
       ),
       body: ListView(
         children: <Widget>[
           Column(
             children: <Widget>[
-              const Text("Tela Home"),
               ElevatedButton(
                 child: const Text("Listar Usuário"),
                 onPressed: () async {
-                  await controller.allUsers();
-                },
-              ),
-              ElevatedButton(
-                child: const Text("Logout"),
-                onPressed: () async {
-                  await controller.logout();
+                  Modular.to.pushNamed('$routeUser/');
                 },
               ),
             ],

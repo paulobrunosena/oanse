@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 
+import '../../shared/constants.dart';
 import '../../shared/model/login/login_model.dart';
 import '../../shared/widgets/custom_icon_button.dart';
 import '../../shared/widgets/custom_text_field.dart';
@@ -186,7 +187,9 @@ class LoginPageState extends State<LoginPage> {
       );
 
   Widget get botaoCadastrese => TextButton(
-      onPressed: () {},
+      onPressed: () {
+        Modular.to.pushNamed('$routeUser/add');
+      },
       child: const Text("CADASTRE-SE", style: TextStyle(color: Colors.white)));
 
   void hideKeyboard(BuildContext context) {
