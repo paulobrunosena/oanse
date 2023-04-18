@@ -23,8 +23,28 @@ class AuthService implements IAuthService {
   }
 
   @override
-  Future<bool> saveDadosUsuarioLocal(LoginModel data) async {
-    return await _repository.saveDadosUsuarioLocal(data);
+  Future<bool> setDataUserLocal(LoginModel data) async {
+    return await _repository.setDataUserLocal(data);
+  }
+
+  @override
+  Future<LoginModel?> getDataUserLocal() async {
+    return await _repository.getDataUserLocal();
+  }
+
+  @override
+  Future<bool> removeDataUserLocal() async {
+    return await _repository.removeDataUserLocal();
+  }
+
+  @override
+  void setToken(String? token) {
+    _repository.setToken(token);
+  }
+
+  @override
+  String? getToken() {
+    return _repository.getToken();
   }
 
   @override

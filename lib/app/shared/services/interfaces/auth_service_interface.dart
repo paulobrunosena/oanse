@@ -9,5 +9,9 @@ import '../../model/logout/logout_response.dart';
 abstract class IAuthService implements Disposable {
   Future<Result<LoginResponse, Exception>> login(LoginRequest data);
   Future<Result<LogoutResponse, Exception>> logout();
-  Future<bool> saveDadosUsuarioLocal(LoginModel data);
+  Future<bool> setDataUserLocal(LoginModel data);
+  Future<LoginModel?> getDataUserLocal();
+  Future<bool> removeDataUserLocal();
+  void setToken(String? token);
+  String? getToken();
 }

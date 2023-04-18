@@ -51,14 +51,14 @@ class AuthRepository implements IAuthRepository {
 
       if (response.statusCode == 200) {
         LogoutResponse result = LogoutResponse.fromJson(response.data);
-        client.options.headers["authorization"] = "";
+        client.options.headers["authorization"] = null;
         return Success(result);
       } else {
-        debugPrint("Erro no logout");
-        debugPrint(response.data);
+        client.options.headers["authorization"] = null;
         return Error(Exception("Erro no logout"));
       }
     } on DioError catch (error) {
+      client.options.headers["authorization"] = null;
       if (error.response != null) {
         var responseException =
             ExceptionResponse.fromJson(error.response!.data);
@@ -70,10 +70,36 @@ class AuthRepository implements IAuthRepository {
   }
 
   @override
-  Future<bool> saveDadosUsuarioLocal(LoginModel data) async {
-    bool result = await LocalStorageService.setValue<String>(
+  Future<bool> setDataUserLocal(LoginModel data) async {
+    return await LocalStorageService.setValue<String>(
         'dados_usuario_local', jsonEncode(data.toJson()));
-    return result;
+  }
+
+  @override
+  Future<LoginModel?> getDataUserLocal() async {
+    var contains = await LocalStorageService.cointains('dados_usuario_local');
+    if (contains) {
+      var res = jsonDecode(
+          await LocalStorageService.getValue<String>('dados_usuario_local'));
+      return LoginModel.fromJson(res);
+    } else {
+      return null;
+    }
+  }
+
+  @override
+  Future<bool> removeDataUserLocal() async {
+    return await LocalStorageService.removeValue('dados_usuario_local');
+  }
+
+  @override
+  void setToken(String? token) {
+    client.options.headers["authorization"] = token;
+  }
+
+  @override
+  String? getToken() {
+    return client.options.headers["authorization"];
   }
 
   @override

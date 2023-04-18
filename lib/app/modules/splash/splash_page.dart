@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 
-import '../../shared/constants.dart';
 import 'components/logo_transition.dart';
 import 'splash_controller.dart';
 
@@ -44,7 +43,7 @@ class SplashPageState extends State<SplashPage>
           _controller.reverse();
         });
       } else if (status == AnimationStatus.dismissed) {
-        Modular.to.pushReplacementNamed('$routeLogin/');
+        controller.redirectPage();
       }
     });
     _controller.forward();

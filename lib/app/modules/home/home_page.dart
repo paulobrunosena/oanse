@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:oanse/app/shared/constants.dart';
 
@@ -18,6 +19,15 @@ class HomePage extends StatefulWidget {
 
 class HomePageState extends State<HomePage> {
   final controller = Modular.get<HomeController>();
+
+  @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
+          overlays: SystemUiOverlay.values);
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {

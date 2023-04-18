@@ -21,14 +21,18 @@ abstract class HomeControllerBase with Store {
     EasyLoading.show(status: "Realizando logout, aguarde...");
     var result = await _authService.logout();
 
-    result.when((success) {
+    result.when((success) async {
       debugPrint("Message logout: ${success.message}");
       EasyLoading.dismiss();
+      await _authService.removeDataUserLocal();
       Modular.to.pushNamedAndRemoveUntil(
           '$routeLogin/', ModalRoute.withName(routeLogin));
-    }, (error) {
+    }, (error) async {
       EasyLoading.dismiss();
       AsukaSnackbar.alert(error.toString()).show();
+      await _authService.removeDataUserLocal();
+      Modular.to.pushNamedAndRemoveUntil(
+          '$routeLogin/', ModalRoute.withName(routeLogin));
     });
   }
 

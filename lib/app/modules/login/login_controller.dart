@@ -76,6 +76,6 @@ abstract class LoginControllerBase with Store {
       email: email,
     );
     data.setToken(result.authorization);
-    await _authService.saveDadosUsuarioLocal(data);
+    await _authService.setDataUserLocal(data);
   }
 }
