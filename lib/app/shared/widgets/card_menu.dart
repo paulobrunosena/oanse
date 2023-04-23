@@ -4,19 +4,21 @@ import 'package:flutter_modular/flutter_modular.dart';
 class CardMenuWidget extends StatelessWidget {
   final Color? backGroundColor;
   final Color? frontGroundColor;
-  final IconData icone;
+  final IconData? icone;
+  final Image? image;
   final String label;
   final String route;
   final Object? arguments;
 
   const CardMenuWidget({
     Key? key,
-    required this.icone,
+    this.icone,
     required this.label,
     required this.route,
     this.arguments,
     this.backGroundColor = Colors.indigoAccent,
     this.frontGroundColor = Colors.white,
+    this.image,
   }) : super(key: key);
 
   @override
@@ -35,11 +37,15 @@ class CardMenuWidget extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Icon(
-                  icone,
-                  color: frontGroundColor,
-                  size: 30.0,
-                ),
+                icone != null
+                    ? Icon(
+                        icone,
+                        color: frontGroundColor,
+                        size: 30.0,
+                      )
+                    : Container(
+                        child: image,
+                      ),
                 const SizedBox(
                   height: 10.0,
                 ),

@@ -58,7 +58,7 @@ class HomePageState extends State<HomePage> {
                       CardMenuWidget(
                         icone: FontAwesomeIcons.noteSticky,
                         label: "CLUBES",
-                        route: "$routeUser/",
+                        route: "$routeClub/",
                       ),
                       CardMenuWidget(
                         icone: FontAwesomeIcons.peopleGroup,
@@ -72,12 +72,6 @@ class HomePageState extends State<HomePage> {
                       ),
                     ],
                   )),
-              /*ElevatedButton(
-                child: const Text("Listar Usuário"),
-                onPressed: () async {
-                  Modular.to.pushNamed('$routeUser/');
-                },
-              ),*/
             ],
           ),
         ],
