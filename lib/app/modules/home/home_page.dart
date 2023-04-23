@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_modular/flutter_modular.dart';
-import 'package:oanse/app/shared/constants.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
+import '../../shared/constants.dart';
+import '../../shared/widgets/card_menu.dart';
 import 'home_controller.dart';
 
 class HomePage extends StatefulWidget {
@@ -47,12 +49,35 @@ class HomePageState extends State<HomePage> {
         children: <Widget>[
           Column(
             children: <Widget>[
-              ElevatedButton(
+              Container(
+                  width: MediaQuery.of(context).size.width,
+                  alignment: Alignment.center,
+                  child: Wrap(
+                    direction: Axis.horizontal,
+                    children: const <Widget>[
+                      CardMenuWidget(
+                        icone: FontAwesomeIcons.noteSticky,
+                        label: "CLUBES",
+                        route: "$routeUser/",
+                      ),
+                      CardMenuWidget(
+                        icone: FontAwesomeIcons.peopleGroup,
+                        label: "LÍDERES",
+                        route: "$routeUser/",
+                      ),
+                      CardMenuWidget(
+                        icone: FontAwesomeIcons.user,
+                        label: "USUÁRIOS",
+                        route: "$routeUser/",
+                      ),
+                    ],
+                  )),
+              /*ElevatedButton(
                 child: const Text("Listar Usuário"),
                 onPressed: () async {
                   Modular.to.pushNamed('$routeUser/');
                 },
-              ),
+              ),*/
             ],
           ),
         ],
