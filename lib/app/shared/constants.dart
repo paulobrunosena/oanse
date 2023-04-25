@@ -4,6 +4,7 @@ const routeLogin = '/login';
 const routeHome = '/home';
 const routeUser = '/user';
 const routeClub = '/club';
+const routeOansist = '/oansist';
 
 const ursinho = "Ursinho";
 const faisca = "Faísca";

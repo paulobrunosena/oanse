@@ -23,6 +23,9 @@ class ClubPageState extends State<ClubPage> {
   final controller = Modular.get<ClubController>();
   late Image logoUrsinho;
   late Image logoFaisca;
+  late Image logoFlama;
+  late Image logoTocha;
+  late Image logoJv;
 
   @override
   void initState() {
@@ -39,6 +42,24 @@ class ClubPageState extends State<ClubPage> {
 
     logoFaisca = Image.asset(
       "images/faisca.png",
+      width: 35,
+      fit: BoxFit.contain,
+    );
+
+    logoFlama = Image.asset(
+      "images/flama.png",
+      width: 35,
+      fit: BoxFit.contain,
+    );
+
+    logoTocha = Image.asset(
+      "images/tocha.png",
+      width: 35,
+      fit: BoxFit.contain,
+    );
+
+    logoJv = Image.asset(
+      "images/jv.png",
       width: 35,
       fit: BoxFit.contain,
     );
@@ -77,7 +98,7 @@ class ClubPageState extends State<ClubPage> {
     for (var club in controller.clubs) {
       IconData? clubIcon;
       Image? clubImage;
-      String clubRoute = "$routeHome/";
+      String clubRoute = "$routeOansist/";
       Color clubColor = Colors.indigo;
       switch (club.name) {
         case ursinho:
@@ -90,15 +111,15 @@ class ClubPageState extends State<ClubPage> {
           break;
         case flama:
           clubColor = Colors.green;
-          clubIcon = FontAwesomeIcons.fireFlameSimple;
+          clubImage = logoFlama;
           break;
         case tocha:
           clubColor = Colors.blue;
-          clubIcon = FontAwesomeIcons.fireFlameCurved;
+          clubImage = logoTocha;
           break;
         case jv:
           clubColor = Colors.black;
-          clubIcon = FontAwesomeIcons.j;
+          clubImage = logoJv;
           break;
         default:
           clubColor = Colors.green[900]!;
