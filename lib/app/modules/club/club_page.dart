@@ -4,6 +4,7 @@ import 'package:flutter_modular/flutter_modular.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../shared/constants.dart';
+import '../../shared/model/club/club_model.dart';
 import '../../shared/widgets/card_menu.dart';
 import 'club_controller.dart';
 
@@ -100,10 +101,13 @@ class ClubPageState extends State<ClubPage> {
       Image? clubImage;
       String clubRoute = "$routeOansist/";
       Color clubColor = Colors.indigo;
+      ClubModel? arguments;
       switch (club.name) {
         case ursinho:
           clubColor = Colors.red;
           clubImage = logoUrsinho;
+          clubRoute = "$routeClub$routeClubDetails";
+          arguments = club;
           break;
         case faisca:
           clubColor = Colors.yellow;
@@ -130,6 +134,7 @@ class ClubPageState extends State<ClubPage> {
         icone: clubIcon,
         image: clubImage,
         route: clubRoute,
+        arguments: arguments,
         backGroundColor: clubColor,
       ));
     }

@@ -12,12 +12,15 @@ import 'shared/repositories/auth_repository.dart';
 import 'shared/repositories/club_repository.dart';
 import 'shared/repositories/interfaces/auth_repository_interface.dart';
 import 'shared/repositories/interfaces/club_repository_interface.dart';
+import 'shared/repositories/interfaces/meeting_repository_interface.dart';
 import 'shared/repositories/interfaces/oansist_repository_interface.dart';
 import 'shared/repositories/interfaces/user_repository_interface.dart';
+import 'shared/repositories/meeting_repository.dart';
 import 'shared/repositories/oansist_repository.dart';
 import 'shared/repositories/user_repository.dart';
 import 'shared/services/auth_service.dart';
 import 'shared/services/club_service.dart';
+import 'shared/services/meeting_service.dart';
 import 'shared/services/oansist_service.dart';
 import 'shared/services/user_service.dart';
 
@@ -32,6 +35,8 @@ class AppModule extends Module {
     Bind.lazySingleton((i) => ClubRepository(i<Dio>())),
     Bind.lazySingleton((i) => OansistService(i<IOansistRepository>())),
     Bind.lazySingleton((i) => OansistRepository(i<Dio>())),
+    Bind.lazySingleton((i) => MeetingService(i<IMeetingRepository>())),
+    Bind.lazySingleton((i) => MeetingRepository(i<Dio>())),
     Bind((i) => Dio(i<BaseOptions>())),
     Bind(
       (i) => BaseOptions(

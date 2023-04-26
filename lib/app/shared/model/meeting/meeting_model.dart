@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:intl/intl.dart';
+
 List<MeetingModel> meetingModelFromJson(List<dynamic> str) =>
     List<MeetingModel>.from(str.map((x) => MeetingModel.fromJson(x)));
 
@@ -24,4 +26,7 @@ class MeetingModel {
         "id": id,
         "date": date.toIso8601String(),
       };
+
+  String get dataFormatada =>
+      DateFormat.yMMMMd().format(date); //DateFormat('dd/MM/yyyy').format(date);
 }
