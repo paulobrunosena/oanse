@@ -32,8 +32,8 @@ class CardMenuWidget extends StatelessWidget {
             Modular.to.pushNamed(route, arguments: arguments);
           },
           child: SizedBox(
-            height: 110.0,
-            width: 110.0,
+            height: 108.0,
+            width: 108.0,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[

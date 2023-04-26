@@ -38,11 +38,15 @@ class HomePageState extends State<HomePage> {
         title: Text(widget.title),
         centerTitle: true,
         actions: [
-          IconButton(
-              onPressed: () async {
-                await controller.logout();
-              },
-              icon: const Icon(Icons.logout))
+          TextButton(
+            onPressed: () async {
+              await controller.logout();
+            },
+            child: const Text(
+              "Sair",
+              style: TextStyle(color: Colors.white),
+            ),
+          )
         ],
       ),
       body: ListView(
