@@ -112,6 +112,8 @@ class ClubPageState extends State<ClubPage> {
         case faisca:
           clubColor = Colors.yellow;
           clubImage = logoFaisca;
+          clubRoute = "$routeClub$routeClubWeeklyScore";
+          arguments = club;
           break;
         case flama:
           clubColor = Colors.green;

@@ -5,6 +5,7 @@ const routeHome = '/home';
 const routeUser = '/user';
 const routeClub = '/club';
 const routeClubDetails = '/club_details';
+const routeClubWeeklyScore = '/club_weekly_score';
 const routeOansist = '/oansist';
 
 const ursinho = "Ursinho";
