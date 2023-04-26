@@ -30,4 +30,6 @@ abstract class WeeklyScoreControllerBase with Store {
       AsukaSnackbar.alert(error.toString()).show();
     });
   }
+
+  Future<void> save() async {}
 }
