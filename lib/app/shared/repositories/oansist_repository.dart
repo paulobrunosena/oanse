@@ -44,8 +44,14 @@ class OansistRepository implements IOansistRepository {
       var response = await client.get('oansist/');
 
       if (response.statusCode == 200) {
-        List<OansistModel> result = oanseModelFromJson(response.data);
-        return Success(result);
+        bool? status = response.data['status'];
+        if (status != null && status) {
+          List<OansistModel> result =
+              oanseModelFromJson(response.data['response']);
+          return Success(result);
+        } else {
+          return Error(Exception("Não existem datas cadastradas"));
+        }
       } else {
         debugPrint("Erro no allUsers");
         debugPrint(response.data.toString());

@@ -35,7 +35,7 @@ abstract class ClubControllerBase with Store {
     EasyLoading.show(
         status: "Buscando todos os clubes cadastrados, aguarde...");
     //var result = await _clubService.allClubs();
-    var result = await _clubService.allClubsMock();
+    var result = await _clubService.allClubs();
     clubs.clear();
     result.when((success) {
       clubs.addAll(success);

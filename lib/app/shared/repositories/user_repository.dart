@@ -10,15 +10,21 @@ import 'interfaces/user_repository_interface.dart';
 class UserRepository implements IUserRepository {
   UserRepository(this.client);
   final Dio client;
-
+  //TODO corrigir o response
   @override
   Future<Result<List<User>, Exception>> allUsers() async {
     try {
       var response = await client.get('user/');
 
       if (response.statusCode == 200) {
-        UserResponse result = UserResponse.allUsersfromJson(response.data);
-        return Success(result.listAllUsers ?? []);
+        bool? status = response.data['status'];
+        if (status != null && status) {
+          UserResponse result =
+              UserResponse.allUsersfromJson(response.data['response']);
+          return Success(result.listAllUsers ?? []);
+        } else {
+          return Error(Exception("Não existem datas cadastradas"));
+        }
       } else {
         debugPrint("Erro no allUsers");
         debugPrint(response.data);

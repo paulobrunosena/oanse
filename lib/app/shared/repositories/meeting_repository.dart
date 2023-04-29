@@ -43,8 +43,14 @@ class MeetingRepository implements IMeetingRepository {
       var response = await client.get('meeting/');
 
       if (response.statusCode == 200) {
-        List<MeetingModel> result = meetingModelFromJson(response.data);
-        return Success(result);
+        bool? status = response.data['status'];
+        if (status != null && status) {
+          List<MeetingModel> result =
+              meetingModelFromJson(response.data['response']);
+          return Success(result);
+        } else {
+          return Error(Exception("Não existem datas cadastradas"));
+        }
       } else {
         debugPrint("Erro no allUsers");
         debugPrint(response.data.toString());

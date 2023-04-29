@@ -16,8 +16,13 @@ class ClubRepository implements IClubRepository {
       var response = await client.get('club/');
 
       if (response.statusCode == 200) {
-        List<ClubModel> result = clubModelFromJson(response.data);
-        return Success(result);
+        bool? status = response.data['status'];
+        if (status != null && status) {
+          List<ClubModel> result = clubModelFromJson(response.data['response']);
+          return Success(result);
+        } else {
+          return Error(Exception("Não existem clubes cadastrados"));
+        }
       } else {
         debugPrint("Erro no allClubs");
         debugPrint(response.data);
