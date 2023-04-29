@@ -44,12 +44,6 @@ class ClubRepository implements IClubRepository {
         leaveAge: 6,
       ),
       ClubModel(
-        id: 1,
-        name: "Ursinho",
-        entryAge: 4,
-        leaveAge: 6,
-      ),
-      ClubModel(
         id: 2,
         name: "Faísca",
         entryAge: 6,

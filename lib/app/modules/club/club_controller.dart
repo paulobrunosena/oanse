@@ -19,7 +19,8 @@ abstract class ClubControllerBase with Store {
 
   Future<void> register() async {
     EasyLoading.show(status: "Realizando cadastro, aguarde...");
-    var result = await _clubService.allClubs();
+    //var result = await _clubService.allClubs();
+    var result = await _clubService.allClubsMock();
 
     result.when((success) {
       EasyLoading.dismiss();
@@ -33,7 +34,8 @@ abstract class ClubControllerBase with Store {
   Future<void> allClubs() async {
     EasyLoading.show(
         status: "Buscando todos os clubes cadastrados, aguarde...");
-    var result = await _clubService.allClubs();
+    //var result = await _clubService.allClubs();
+    var result = await _clubService.allClubsMock();
     clubs.clear();
     result.when((success) {
       clubs.addAll(success);
