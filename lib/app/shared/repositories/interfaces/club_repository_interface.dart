@@ -5,4 +5,5 @@ import '../../model/club/club_model.dart';
 
 abstract class IClubRepository implements Disposable {
   Future<Result<List<ClubModel>, Exception>> allClubs();
+  Future<Result<List<ClubModel>, Exception>> allClubsMock();
 }

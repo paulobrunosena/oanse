@@ -35,5 +35,58 @@ class ClubRepository implements IClubRepository {
   }
 
   @override
+  Future<Result<List<ClubModel>, Exception>> allClubsMock() async {
+    List<ClubModel> resultMock = [
+      ClubModel(
+        id: 1,
+        name: "Ursinho",
+        entryAge: 4,
+        leaveAge: 6,
+      ),
+      ClubModel(
+        id: 1,
+        name: "Ursinho",
+        entryAge: 4,
+        leaveAge: 6,
+      ),
+      ClubModel(
+        id: 2,
+        name: "Faísca",
+        entryAge: 6,
+        leaveAge: 9,
+      ),
+      ClubModel(
+        id: 3,
+        name: "Flama",
+        entryAge: 9,
+        leaveAge: 11,
+      ),
+      ClubModel(
+        id: 4,
+        name: "Tocha",
+        entryAge: 11,
+        leaveAge: 13,
+      ),
+      ClubModel(
+        id: 5,
+        name: "JV",
+        entryAge: 13,
+        leaveAge: 15,
+      ),
+      ClubModel(
+        id: 6,
+        name: "VQ7",
+        entryAge: 15,
+        leaveAge: 19,
+      ),
+    ];
+    if (resultMock.isNotEmpty) {
+      return Success(resultMock);
+    } else {
+      return Error(Exception("Não existem clubes cadastrados"));
+    }
+  }
+
+  @override
   void dispose() {}
 }
