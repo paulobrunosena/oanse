@@ -3,6 +3,7 @@ import 'package:flutter_modular/flutter_modular.dart';
 
 import 'modules/club/club_module.dart';
 import 'modules/home/home_module.dart';
+import 'modules/home_leadership/home_leadership_module.dart';
 import 'modules/login/login_module.dart';
 import 'modules/oansist/oansist_module.dart';
 import 'modules/splash/splash_module.dart';
@@ -12,14 +13,17 @@ import 'shared/repositories/auth_repository.dart';
 import 'shared/repositories/club_repository.dart';
 import 'shared/repositories/interfaces/auth_repository_interface.dart';
 import 'shared/repositories/interfaces/club_repository_interface.dart';
+import 'shared/repositories/interfaces/leadership_repository_interface.dart';
 import 'shared/repositories/interfaces/meeting_repository_interface.dart';
 import 'shared/repositories/interfaces/oansist_repository_interface.dart';
 import 'shared/repositories/interfaces/user_repository_interface.dart';
+import 'shared/repositories/leadership_repository.dart';
 import 'shared/repositories/meeting_repository.dart';
 import 'shared/repositories/oansist_repository.dart';
 import 'shared/repositories/user_repository.dart';
 import 'shared/services/auth_service.dart';
 import 'shared/services/club_service.dart';
+import 'shared/services/leadership_service.dart';
 import 'shared/services/meeting_service.dart';
 import 'shared/services/oansist_service.dart';
 import 'shared/services/user_service.dart';
@@ -37,6 +41,8 @@ class AppModule extends Module {
     Bind.lazySingleton((i) => OansistRepository(i<Dio>())),
     Bind.lazySingleton((i) => MeetingService(i<IMeetingRepository>())),
     Bind.lazySingleton((i) => MeetingRepository(i<Dio>())),
+    Bind.lazySingleton((i) => LeadershipService(i<ILeadershipRepository>())),
+    Bind.lazySingleton((i) => LeadershipRepository(i<Dio>())),
     Bind((i) => Dio(i<BaseOptions>())),
     Bind(
       (i) => BaseOptions(
@@ -55,6 +61,7 @@ class AppModule extends Module {
     ModuleRoute(Modular.initialRoute, module: SplashModule()),
     ModuleRoute(routeLogin, module: LoginModule()),
     ModuleRoute(routeHome, module: HomeModule()),
+    ModuleRoute(routeHomeLeadership, module: HomeLeadershipModule()),
     ModuleRoute(routeUser, module: UserModule()),
     ModuleRoute(routeClub, module: ClubModule()),
     ModuleRoute(routeOansist, module: OansistModule()),

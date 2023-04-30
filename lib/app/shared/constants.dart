@@ -2,6 +2,7 @@ const baseUrl = "http://192.168.0.3:5000/";
 
 const routeLogin = '/login';
 const routeHome = '/home';
+const routeHomeLeadership = '/home_leadership';
 const routeUser = '/user';
 const routeClub = '/club';
 const routeClubDetails = '/club_details';
