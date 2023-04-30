@@ -112,6 +112,7 @@ class HomeLeadershipPageState extends State<HomeLeadershipPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               ListTile(
+                dense: true,
                 leading: Container(
                   height: 45,
                   width: 45,
@@ -144,7 +145,8 @@ class HomeLeadershipPageState extends State<HomeLeadershipPage> {
           CardMenuWidget(
             icone: FontAwesomeIcons.calendarWeek,
             label: "PONTUAÇÃO SEMANAL",
-            route: "$routeClub/",
+            route: "$routeHomeLeadership$routeLeadershipWeeklyScore",
+            arguments: null,
           ),
           CardMenuWidget(
             icone: FontAwesomeIcons.book,
