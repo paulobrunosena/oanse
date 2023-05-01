@@ -15,7 +15,7 @@ class OansistModel {
     name = json['name'];
     birthDate = json['birth_date'];
     gender = json['gender'];
-    clubId = json['club_id'];
+    clubId = json['club'];
   }
 
   Map<String, dynamic> toJson() {

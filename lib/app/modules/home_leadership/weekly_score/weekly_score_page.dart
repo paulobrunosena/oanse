@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 
-import '../../../shared/model/club/club_model.dart';
+import '../../../shared/model/leadership/leadership_model.dart';
 import 'weekly_score_controller.dart';
 
 class WeeklyScorePage extends StatefulWidget {
   final String title;
-  final ClubModel club;
+  final LeadershipModel leadership;
   const WeeklyScorePage(
-      {super.key, required this.club, this.title = "Pontuação Semanal"});
+      {super.key, required this.leadership, this.title = "Pontuação Semanal"});
 
   @override
   State<WeeklyScorePage> createState() => _WeeklyScorePageState();
@@ -17,6 +18,8 @@ class WeeklyScorePage extends StatefulWidget {
 class _WeeklyScorePageState extends State<WeeklyScorePage> {
   final controller = Modular.get<WeeklyScoreController>();
   late TextTheme textTheme = Theme.of(context).textTheme;
+  late TextStyle? labelStyle;
+  late TextStyle? textStyle;
   bool _switchUniforme = true;
   int _itemCount = 0;
   static const menuItems = <String>[
@@ -37,16 +40,25 @@ class _WeeklyScorePageState extends State<WeeklyScorePage> {
         ),
       )
       .toList();
+
+  @override
+  void initState() {
+    super.initState();
+    controller.initWidgets(widget.leadership);
+  }
+
   @override
   Widget build(BuildContext context) {
     textTheme = Theme.of(context).textTheme;
+    labelStyle = textTheme.bodySmall?.copyWith(fontSize: 14);
+    textStyle = textTheme.titleSmall?.copyWith(fontSize: 16);
     return Scaffold(
       appBar: AppBar(
         title: Column(
           children: [
             Text(widget.title),
             Text(
-              widget.club.name,
+              widget.leadership.name,
               style: const TextStyle(fontSize: 16, color: Colors.white60),
             )
           ],
@@ -61,49 +73,45 @@ class _WeeklyScorePageState extends State<WeeklyScorePage> {
       ),
       body: Column(
         children: [
-          filtro,
+          filter,
           scores,
         ],
       ),
       backgroundColor: Colors.grey[100],
-
-      /*Observer(
-        builder: (_) {
-          if (controller.meetings.isEmpty) {
-            return const Center(
-              child: Text("Não existem reuniões cadastradas"),
-            );
-          }
-
-          return ListView.separated(
-              separatorBuilder: (context, index) => const Divider(),
-              itemCount: controller.meetings.length,
-              itemBuilder: (context, int index) {
-                return ListTile(
-                  title: Text(controller.meetings[index].dataFormatada),
-                );
-              });
-        },
-      ),*/
     );
   }
 
-  Widget get filtro => Padding(
+  Widget get loading => Container(
+        alignment: Alignment.center,
+        width: 20,
+        height: 20,
+        child: const CircularProgressIndicator(
+          strokeWidth: 2,
+        ),
+      );
+
+  Widget get filter => Padding(
         padding: const EdgeInsets.all(5.0),
         child: Card(
           color: Colors.white,
           clipBehavior: Clip.antiAlias,
           child: Padding(
-            padding: const EdgeInsets.all(10.0),
+            padding: const EdgeInsets.all(0.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                _tiles(label: "Data da reunião", text: "29 de abril de 2023"),
-                const Divider(),
-                _tiles(label: "Líder", text: "Célia Belém"),
-                const Divider(),
-                _tiles(label: "Oansista", text: "Asafe Margarido"),
-                const Divider(),
+                meeting,
+                const Divider(
+                  indent: 10,
+                  endIndent: 10,
+                  height: 0,
+                ),
+                oansist,
+                const Divider(
+                  indent: 10,
+                  endIndent: 10,
+                  height: 0,
+                ),
                 _tilesPontuacaoTotal(
                     label: "Pontuação total", text: "70.000 pontos"),
               ],
@@ -112,37 +120,51 @@ class _WeeklyScorePageState extends State<WeeklyScorePage> {
         ),
       );
 
-  Widget _tiles({required String label, required String text}) {
-    return Row(
-      mainAxisSize: MainAxisSize.max,
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              label,
-              style: textTheme.bodySmall?.copyWith(fontSize: 14),
-            ),
-            const SizedBox(
-              height: 5,
-            ),
-            Text(
-              text,
-              style: textTheme.titleSmall?.copyWith(fontSize: 16),
-            ),
-          ],
-        ),
-        IconButton(
-            onPressed: () {},
-            icon: const Icon(
-              Icons.edit,
-              color: Colors.grey,
-            ))
-      ],
-    );
-  }
+  Widget get meeting => Observer(builder: (_) {
+        return ListTile(
+          dense: true,
+          title: Text(
+            "Data da reunião",
+            style: labelStyle,
+          ),
+          subtitle: Text(
+            controller.selectMeeting != null
+                ? controller.selectMeeting!.dataFormatada
+                : "Selecione uma data",
+            style: textStyle,
+          ),
+          trailing: controller.loadingWidgets
+              ? loading
+              : const Icon(
+                  Icons.edit,
+                  color: Colors.grey,
+                ),
+          onTap: controller.showMeetings,
+        );
+      });
+
+  Widget get oansist => Observer(builder: (_) {
+        return ListTile(
+          dense: true,
+          title: Text(
+            "Oansista",
+            style: labelStyle,
+          ),
+          subtitle: Text(
+            controller.selectOansist != null
+                ? controller.selectOansist!.name ?? ""
+                : "Selecione um oansista",
+            style: textStyle,
+          ),
+          trailing: controller.loadingWidgets
+              ? loading
+              : const Icon(
+                  Icons.edit,
+                  color: Colors.grey,
+                ),
+          onTap: controller.showOansists,
+        );
+      });
 
   Widget _tilesPontuacaoTotal({required String label, required String text}) {
     return Row(

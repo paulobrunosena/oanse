@@ -141,19 +141,19 @@ class HomeLeadershipPageState extends State<HomeLeadershipPage> {
       alignment: Alignment.center,
       child: Wrap(
         direction: Axis.horizontal,
-        children: const <Widget>[
+        children: <Widget>[
           CardMenuWidget(
             icone: FontAwesomeIcons.calendarWeek,
             label: "PONTUAÇÃO SEMANAL",
             route: "$routeHomeLeadership$routeLeadershipWeeklyScore",
-            arguments: null,
+            arguments: widget.leadership,
           ),
-          CardMenuWidget(
+          const CardMenuWidget(
             icone: FontAwesomeIcons.book,
             label: "PONTUAÇÃO INDIVIDUAL",
             route: "$routeUser/",
           ),
-          CardMenuWidget(
+          const CardMenuWidget(
             icone: FontAwesomeIcons.userGroup,
             label: "OANSISTAS",
             route: "$routeUser/",
