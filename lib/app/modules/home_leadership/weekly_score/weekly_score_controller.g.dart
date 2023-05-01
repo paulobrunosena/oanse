@@ -57,6 +57,22 @@ mixin _$WeeklyScoreController on WeeklyScoreControllerBase, Store {
     });
   }
 
+  late final _$totalScoreAtom =
+      Atom(name: 'WeeklyScoreControllerBase.totalScore', context: context);
+
+  @override
+  int get totalScore {
+    _$totalScoreAtom.reportRead();
+    return super.totalScore;
+  }
+
+  @override
+  set totalScore(int value) {
+    _$totalScoreAtom.reportWrite(value, super.totalScore, () {
+      super.totalScore = value;
+    });
+  }
+
   late final _$WeeklyScoreControllerBaseActionController =
       ActionController(name: 'WeeklyScoreControllerBase', context: context);
 
@@ -94,11 +110,23 @@ mixin _$WeeklyScoreController on WeeklyScoreControllerBase, Store {
   }
 
   @override
+  void setTotalScore(int newValue) {
+    final _$actionInfo = _$WeeklyScoreControllerBaseActionController
+        .startAction(name: 'WeeklyScoreControllerBase.setTotalScore');
+    try {
+      return super.setTotalScore(newValue);
+    } finally {
+      _$WeeklyScoreControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   String toString() {
     return '''
 selectMeeting: ${selectMeeting},
 selectOansist: ${selectOansist},
-loadingWidgets: ${loadingWidgets}
+loadingWidgets: ${loadingWidgets},
+totalScore: ${totalScore}
     ''';
   }
 }

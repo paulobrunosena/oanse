@@ -112,8 +112,11 @@ class _WeeklyScorePageState extends State<WeeklyScorePage> {
                   endIndent: 10,
                   height: 0,
                 ),
-                _tilesPontuacaoTotal(
-                    label: "Pontuação total", text: "70.000 pontos"),
+                Observer(builder: (_) {
+                  return _tilesPontuacaoTotal(
+                      label: "Pontuação total",
+                      text: "${controller.totalScore} pontos");
+                }),
               ],
             ),
           ),
@@ -193,6 +196,9 @@ class _WeeklyScorePageState extends State<WeeklyScorePage> {
               style: textTheme.titleSmall?.copyWith(fontSize: 16),
             ),
           ],
+        ),
+        const SizedBox(
+          width: 10,
         ),
       ],
     );

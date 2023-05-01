@@ -46,6 +46,14 @@ abstract class WeeklyScoreControllerBase with Store {
     loadingWidgets = newValue;
   }
 
+  @observable
+  int totalScore = 0;
+
+  @action
+  void setTotalScore(int newValue) {
+    totalScore = newValue;
+  }
+
   initWidgets(LeadershipModel leadershipModel) {
     leadership = leadershipModel;
     setLoadingWidgets(true);
