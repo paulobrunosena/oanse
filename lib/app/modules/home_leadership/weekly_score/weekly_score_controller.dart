@@ -81,46 +81,74 @@ abstract class WeeklyScoreControllerBase with Store {
 
   showMeetings() {
     Asuka.showModalBottomSheet(builder: (BuildContext context) {
-      return ListView.separated(
-        itemCount: meetings.length,
-        itemBuilder: (_, index) {
-          MeetingModel meeting = meetings[index];
+      return Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const SizedBox(
+            height: 10,
+          ),
+          const Text(
+            "Selecione uma data",
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0),
+          ),
+          ListView.separated(
+            shrinkWrap: true,
+            itemCount: meetings.length,
+            itemBuilder: (_, index) {
+              MeetingModel meeting = meetings[index];
 
-          return ListTile(
-            title: Text(meeting.dataFormatada),
-            onTap: () {
-              Navigator.pop(context);
-              setSelectMeeting(meeting);
+              return ListTile(
+                title: Text(meeting.dataFormatada),
+                onTap: () {
+                  Navigator.pop(context);
+                  setSelectMeeting(meeting);
+                },
+              );
             },
-          );
-        },
-        separatorBuilder: (_, __) {
-          return const Divider();
-        },
+            separatorBuilder: (_, __) {
+              return const Divider();
+            },
+          )
+        ],
       );
     });
   }
 
   showOansists() {
-    Asuka.showModalBottomSheet(builder: (BuildContext context) {
-      return ListView.separated(
-        itemCount: oansists.length,
-        itemBuilder: (_, index) {
-          OansistModel oansist = oansists[index];
+    Asuka.showModalBottomSheet(
+      builder: (BuildContext context) {
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SizedBox(
+              height: 10,
+            ),
+            const Text(
+              "Selecione um oansista",
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0),
+            ),
+            ListView.separated(
+              shrinkWrap: true,
+              itemCount: oansists.length,
+              itemBuilder: (_, index) {
+                OansistModel oansist = oansists[index];
 
-          return ListTile(
-            title: Text(oansist.name ?? ""),
-            onTap: () {
-              Navigator.pop(context);
-              setSelectOansist(oansist);
-            },
-          );
-        },
-        separatorBuilder: (_, __) {
-          return const Divider();
-        },
-      );
-    });
+                return ListTile(
+                  title: Text(oansist.name ?? ""),
+                  onTap: () {
+                    Navigator.pop(context);
+                    setSelectOansist(oansist);
+                  },
+                );
+              },
+              separatorBuilder: (_, __) {
+                return const Divider();
+              },
+            )
+          ],
+        );
+      },
+    );
   }
 
   Future<void> save() async {}
