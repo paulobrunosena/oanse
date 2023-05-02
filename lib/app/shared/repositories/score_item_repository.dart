@@ -20,6 +20,7 @@ class ScoreItemRepository implements IScoreItemRepository {
         if (status != null && status) {
           List<ScoreItemModel> result =
               scoreItemModelFromJson(response.data['response']);
+          result.sort((a, b) => a.id!.compareTo(b.id!));
           return Success(result);
         } else {
           return Error(Exception("Não existem score item cadastrados"));
