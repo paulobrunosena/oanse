@@ -16,16 +16,19 @@ import 'shared/repositories/interfaces/club_repository_interface.dart';
 import 'shared/repositories/interfaces/leadership_repository_interface.dart';
 import 'shared/repositories/interfaces/meeting_repository_interface.dart';
 import 'shared/repositories/interfaces/oansist_repository_interface.dart';
+import 'shared/repositories/interfaces/score_item_repository_interface.dart';
 import 'shared/repositories/interfaces/user_repository_interface.dart';
 import 'shared/repositories/leadership_repository.dart';
 import 'shared/repositories/meeting_repository.dart';
 import 'shared/repositories/oansist_repository.dart';
+import 'shared/repositories/score_item_repository.dart';
 import 'shared/repositories/user_repository.dart';
 import 'shared/services/auth_service.dart';
 import 'shared/services/club_service.dart';
 import 'shared/services/leadership_service.dart';
 import 'shared/services/meeting_service.dart';
 import 'shared/services/oansist_service.dart';
+import 'shared/services/score_item_service.dart';
 import 'shared/services/user_service.dart';
 
 class AppModule extends Module {
@@ -43,6 +46,8 @@ class AppModule extends Module {
     Bind.lazySingleton((i) => MeetingRepository(i<Dio>())),
     Bind.lazySingleton((i) => LeadershipService(i<ILeadershipRepository>())),
     Bind.lazySingleton((i) => LeadershipRepository(i<Dio>())),
+    Bind.lazySingleton((i) => ScoreItemService(i<IScoreItemRepository>())),
+    Bind.lazySingleton((i) => ScoreItemRepository(i<Dio>())),
     Bind((i) => Dio(i<BaseOptions>())),
     Bind(
       (i) => BaseOptions(

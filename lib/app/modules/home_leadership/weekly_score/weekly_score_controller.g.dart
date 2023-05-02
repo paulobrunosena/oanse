@@ -110,11 +110,22 @@ mixin _$WeeklyScoreController on WeeklyScoreControllerBase, Store {
   }
 
   @override
-  void setTotalScore(int newValue) {
+  void incrementTotalScore(int newValue) {
     final _$actionInfo = _$WeeklyScoreControllerBaseActionController
-        .startAction(name: 'WeeklyScoreControllerBase.setTotalScore');
+        .startAction(name: 'WeeklyScoreControllerBase.incrementTotalScore');
     try {
-      return super.setTotalScore(newValue);
+      return super.incrementTotalScore(newValue);
+    } finally {
+      _$WeeklyScoreControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void decrementTotalScore(int newValue) {
+    final _$actionInfo = _$WeeklyScoreControllerBaseActionController
+        .startAction(name: 'WeeklyScoreControllerBase.decrementTotalScore');
+    try {
+      return super.decrementTotalScore(newValue);
     } finally {
       _$WeeklyScoreControllerBaseActionController.endAction(_$actionInfo);
     }

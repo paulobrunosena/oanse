@@ -1,5 +1,5 @@
-//const baseUrl = "http://192.168.0.3:5000/"; //ip de casa
-const baseUrl = "http://192.168.0.8:5000/"; //ip casa dona eke
+const baseUrl = "http://192.168.0.3:5000/"; //ip de casa
+//const baseUrl = "http://192.168.0.8:5000/"; //ip casa dona eke
 const routeLogin = '/login';
 const routeHome = '/home';
 const routeHomeLeadership = '/home_leadership';

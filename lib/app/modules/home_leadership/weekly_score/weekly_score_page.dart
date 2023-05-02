@@ -3,6 +3,7 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 
 import '../../../shared/model/leadership/leadership_model.dart';
+import '../../../shared/model/score_item/score_item_model.dart';
 import 'weekly_score_controller.dart';
 
 class WeeklyScorePage extends StatefulWidget {
@@ -20,7 +21,7 @@ class _WeeklyScorePageState extends State<WeeklyScorePage> {
   late TextTheme textTheme = Theme.of(context).textTheme;
   late TextStyle? labelStyle;
   late TextStyle? textStyle;
-  bool _switchUniforme = true;
+
   int _itemCount = 0;
   static const menuItems = <String>[
     'Não participou',
@@ -204,138 +205,47 @@ class _WeeklyScorePageState extends State<WeeklyScorePage> {
     );
   }
 
-  Widget get scores => Expanded(
-          child: ListView(
-        padding: const EdgeInsets.all(5.0),
-        children: [
-          Card(
-            color: Colors.white,
-            clipBehavior: Clip.antiAlias,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                ListTile(
-                  title: const Text("Uniforme"),
-                  subtitle: _switchUniforme
-                      ? const Text("5.000 pontos")
-                      : const Text("Não marcou ponto"),
-                  trailing: Switch(
-                    onChanged: (bool value) {
-                      setState(() => _switchUniforme = value);
-                    },
-                    value: _switchUniforme,
-                  ),
-                ),
-                const Divider(height: 0),
-                ListTile(
-                  title: const Text("Manual"),
-                  subtitle: _switchUniforme
-                      ? const Text("20.000 pontos")
-                      : const Text("Não marcou ponto"),
-                  trailing: Switch(
-                    onChanged: (bool value) {
-                      setState(() => _switchUniforme = value);
-                    },
-                    value: _switchUniforme,
-                  ),
-                ),
-                const Divider(height: 0),
-                ListTile(
-                  title: const Text("Conduta + contagem até 5"),
-                  subtitle: _switchUniforme
-                      ? const Text("10.000 pontos")
-                      : const Text("Não marcou ponto"),
-                  trailing: Switch(
-                    onChanged: (bool value) {
-                      setState(() => _switchUniforme = value);
-                    },
-                    value: _switchUniforme,
-                  ),
-                ),
-                const Divider(height: 0),
-                ListTile(
-                  title: const Text("Bíblia"),
-                  subtitle: _switchUniforme
-                      ? const Text("5.000 pontos")
-                      : const Text("Não marcou ponto"),
-                  trailing: Switch(
-                    onChanged: (bool value) {
-                      setState(() => _switchUniforme = value);
-                    },
-                    value: _switchUniforme,
-                  ),
-                ),
-                const Divider(height: 0),
-                ListTile(
-                  title: const Text("Leitura bíblica"),
-                  subtitle: _switchUniforme
-                      ? const Text("20.000 pontos")
-                      : const Text("Não marcou ponto"),
-                  trailing: Switch(
-                    onChanged: (bool value) {
-                      setState(() => _switchUniforme = value);
-                    },
-                    value: _switchUniforme,
-                  ),
-                ),
-                const Divider(height: 0),
-                ListTile(
-                  title: const Text("EBD"),
-                  subtitle: _switchUniforme
-                      ? const Text("5.000 pontos")
-                      : const Text("Não marcou ponto"),
-                  trailing: Switch(
-                    onChanged: (bool value) {
-                      setState(() => _switchUniforme = value);
-                    },
-                    value: _switchUniforme,
-                  ),
-                ),
-                const Divider(height: 0),
-                ListTile(
-                  title: const Text("Visitante"),
-                  subtitle: _itemCount != 0
-                      ? const Text("10.000 pontos")
-                      : const Text("Não marcou ponto"),
-                  trailing: amount,
-                ),
-                const Divider(height: 0),
-                ListTile(
-                  title: const Text("Seção sem ajuda"),
-                  subtitle: _itemCount != 0
-                      ? const Text("20.000 pontos")
-                      : const Text("Não marcou ponto"),
-                  trailing: amount,
-                ),
-                const Divider(height: 0),
-                ListTile(
-                  title: const Text("Seção com ajuda"),
-                  subtitle: _itemCount != 0
-                      ? const Text("10.000 pontos")
-                      : const Text("Não marcou ponto"),
-                  trailing: amount,
-                ),
-                const Divider(height: 0),
-                ListTile(
-                  title: const Text("Atividade extra"),
-                  subtitle: _itemCount != 0
-                      ? const Text("15.000 pontos")
-                      : const Text("Não marcou ponto"),
-                  trailing: amount,
-                ),
-                const Divider(height: 0),
-                ListTile(
-                  title: const Text("Colocação no jogos"),
-                  subtitle: _btn1SelectedVal != "Não participou"
-                      ? const Text("15.000 pontos")
-                      : const Text("Não marcou ponto"),
-                  trailing: positionGames,
-                ),
-              ],
-            ),
-          ),
-        ],
-      ));
+  Widget get scores => Observer(builder: (_) {
+        return Expanded(
+            child: ListView.separated(
+          shrinkWrap: true,
+          itemCount: controller.scoreItems.length,
+          itemBuilder: (_, index) {
+            ScoreItemModel scoreItem = controller.scoreItems[index];
+
+            return Observer(builder: (_) {
+              return ListTile(
+                title: Text(scoreItem.name!),
+                subtitle: controller.scoresStore[index].quantity > 0
+                    ? Text("${scoreItem.points!} pontos")
+                    : const Text("Não marcou ponto"),
+                trailing: (scoreItem.name!.contains("Visitante") ||
+                        scoreItem.name!.contains("Seção") ||
+                        scoreItem.name!.contains("Atividade"))
+                    ? amount
+                    : switchScore(index),
+              );
+            });
+          },
+          separatorBuilder: (_, __) {
+            return const Divider();
+          },
+        ));
+      });
+
+  Widget switchScore(int index) => Switch(
+        onChanged: (bool value) {
+          controller.scoresStore[index].setQuantity(value ? 1 : 0);
+          if (value) {
+            controller
+                .incrementTotalScore(controller.scoreItems[index].points!);
+          } else {
+            controller
+                .decrementTotalScore(controller.scoreItems[index].points!);
+          }
+        },
+        value: controller.scoresStore[index].quantity > 0,
+      );
 
   Widget get amount => Row(
         mainAxisSize: MainAxisSize.min,

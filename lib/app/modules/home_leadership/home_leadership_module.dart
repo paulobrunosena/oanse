@@ -4,6 +4,7 @@ import '../../shared/constants.dart';
 import '../../shared/services/interfaces/auth_service_interface.dart';
 import '../../shared/services/interfaces/meeting_service_interface.dart';
 import '../../shared/services/interfaces/oansist_service_interface.dart';
+import '../../shared/services/interfaces/score_item_service_interface.dart';
 import '../../shared/services/interfaces/user_service_interface.dart';
 import 'home_leadership_controller.dart';
 import 'home_leadership_page.dart';
@@ -20,6 +21,7 @@ class HomeLeadershipModule extends Module {
     Bind.lazySingleton((i) => WeeklyScoreController(
           i<IMeetingService>(),
           i<IOansistService>(),
+          i<IScoreItemService>(),
         )),
   ];
 

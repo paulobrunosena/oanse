@@ -1,12 +1,16 @@
 import 'package:asuka/asuka.dart';
 import 'package:flutter/material.dart';
 import 'package:mobx/mobx.dart';
+import 'package:oanse/app/modules/home_leadership/weekly_score/store/score_model_store.dart';
 
 import '../../../shared/model/leadership/leadership_model.dart';
 import '../../../shared/model/meeting/meeting_model.dart';
 import '../../../shared/model/oansist/oansist_model.dart';
+import '../../../shared/model/score/score_model.dart';
+import '../../../shared/model/score_item/score_item_model.dart';
 import '../../../shared/services/interfaces/meeting_service_interface.dart';
 import '../../../shared/services/interfaces/oansist_service_interface.dart';
+import '../../../shared/services/interfaces/score_item_service_interface.dart';
 
 part 'weekly_score_controller.g.dart';
 
@@ -14,12 +18,20 @@ class WeeklyScoreController = WeeklyScoreControllerBase
     with _$WeeklyScoreController;
 
 abstract class WeeklyScoreControllerBase with Store {
-  WeeklyScoreControllerBase(this._serviceMeeting, this._serviceOansist);
+  WeeklyScoreControllerBase(
+    this._serviceMeeting,
+    this._serviceOansist,
+    this._serviceScoreItem,
+  );
 
   final IMeetingService _serviceMeeting;
   final IOansistService _serviceOansist;
+  final IScoreItemService _serviceScoreItem;
   ObservableList<MeetingModel> meetings = ObservableList<MeetingModel>();
   ObservableList<OansistModel> oansists = ObservableList<OansistModel>();
+  ObservableList<ScoreItemModel> scoreItems = ObservableList<ScoreItemModel>();
+  ObservableList<ScoreModelStore> scoresStore =
+      ObservableList<ScoreModelStore>();
   late LeadershipModel leadership;
 
   @observable
@@ -50,8 +62,13 @@ abstract class WeeklyScoreControllerBase with Store {
   int totalScore = 0;
 
   @action
-  void setTotalScore(int newValue) {
-    totalScore = newValue;
+  void incrementTotalScore(int newValue) {
+    totalScore = totalScore + newValue;
+  }
+
+  @action
+  void decrementTotalScore(int newValue) {
+    totalScore = totalScore - newValue;
   }
 
   initWidgets(LeadershipModel leadershipModel) {
@@ -60,6 +77,7 @@ abstract class WeeklyScoreControllerBase with Store {
     Future.wait([
       loadMeetings(),
       loadOansists(),
+      loadScoreItems(),
     ]).then((value) async {
       setLoadingWidgets(false);
     });
@@ -82,6 +100,27 @@ abstract class WeeklyScoreControllerBase with Store {
       oansists.addAll(success
           .where((element) => element.clubId == leadership.club)
           .toList());
+    }, (error) {
+      AsukaSnackbar.alert(error.toString()).show();
+    });
+  }
+
+  Future<void> loadScoreItems() async {
+    var result = await _serviceScoreItem.allScoreItems();
+    oansists.clear();
+    result.when((success) {
+      scoreItems.addAll(success);
+      for (ScoreItemModel scoreItem in scoreItems) {
+        var scoreModel = ScoreModel(
+          quantity: "0",
+          meetingId: selectMeeting?.id,
+          leadershipId: leadership.id,
+          oansistId: selectOansist?.id,
+          scoreItemId: scoreItem.id,
+        );
+        ScoreModelStore store = ScoreModelStore(scoreModel);
+        scoresStore.add(store);
+      }
     }, (error) {
       AsukaSnackbar.alert(error.toString()).show();
     });
