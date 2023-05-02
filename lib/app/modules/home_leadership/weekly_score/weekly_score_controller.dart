@@ -102,12 +102,10 @@ abstract class WeeklyScoreControllerBase with Store {
   }
 
   Future<void> loadOansists() async {
-    var result = await _serviceOansist.allOansist();
+    var result = await _serviceOansist.clubOansist(leadership);
     oansists.clear();
     result.when((success) {
-      oansists.addAll(success
-          .where((element) => element.clubId == leadership.club)
-          .toList());
+      oansists.addAll(success);
     }, (error) {
       AsukaSnackbar.alert(error.toString()).show();
     });

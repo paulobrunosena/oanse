@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:multiple_result/multiple_result.dart';
+import 'package:oanse/app/shared/model/leadership/leadership_model.dart';
 
 import 'package:oanse/app/shared/model/oansist/oansist_model.dart';
 
@@ -55,6 +56,37 @@ class OansistRepository implements IOansistRepository {
       } else {
         debugPrint("Erro no allUsers");
         debugPrint(response.data.toString());
+        return Error(Exception("Erro no allUsers"));
+      }
+    } on DioError catch (error) {
+      if (error.response != null) {
+        var responseException =
+            ExceptionResponse.fromJson(error.response!.data);
+        return Error(Exception(responseException.message));
+      } else {
+        return Error(Exception(error.message));
+      }
+    }
+  }
+
+  @override
+  Future<Result<List<OansistModel>, Exception>> clubOansist(
+      LeadershipModel data) async {
+    try {
+      var response = await client.get('oansist/');
+
+      if (response.statusCode == 200) {
+        bool? status = response.data['status'];
+        if (status != null && status) {
+          List<OansistModel> result =
+              oanseModelFromJson(response.data['response']);
+
+          return Success(
+              result.where((element) => element.clubId == data.club).toList());
+        } else {
+          return Error(Exception("Não existem oansistas cadastrados"));
+        }
+      } else {
         return Error(Exception("Erro no allUsers"));
       }
     } on DioError catch (error) {
