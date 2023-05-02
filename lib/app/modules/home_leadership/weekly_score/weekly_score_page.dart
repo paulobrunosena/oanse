@@ -4,6 +4,7 @@ import 'package:flutter_modular/flutter_modular.dart';
 
 import '../../../shared/model/leadership/leadership_model.dart';
 import '../../../shared/model/score_item/score_item_model.dart';
+import 'store/score_model_store.dart';
 import 'weekly_score_controller.dart';
 
 class WeeklyScorePage extends StatefulWidget {
@@ -22,7 +23,6 @@ class _WeeklyScorePageState extends State<WeeklyScorePage> {
   late TextStyle? labelStyle;
   late TextStyle? textStyle;
 
-  int _itemCount = 0;
   static const menuItems = <String>[
     'Não participou',
     '1º lugar',
@@ -212,17 +212,18 @@ class _WeeklyScorePageState extends State<WeeklyScorePage> {
           itemCount: controller.scoreItems.length,
           itemBuilder: (_, index) {
             ScoreItemModel scoreItem = controller.scoreItems[index];
+            ScoreModelStore scoreStore = controller.scoresStore[index];
 
             return Observer(builder: (_) {
               return ListTile(
                 title: Text(scoreItem.name!),
-                subtitle: controller.scoresStore[index].quantity > 0
+                subtitle: scoreStore.quantity > 0
                     ? Text("${scoreItem.points!} pontos")
                     : const Text("Não marcou ponto"),
                 trailing: (scoreItem.name!.contains("Visitante") ||
                         scoreItem.name!.contains("Seção") ||
                         scoreItem.name!.contains("Atividade"))
-                    ? amount
+                    ? amount(index)
                     : switchScore(index),
               );
             });
@@ -233,35 +234,48 @@ class _WeeklyScorePageState extends State<WeeklyScorePage> {
         ));
       });
 
-  Widget switchScore(int index) => Switch(
-        onChanged: (bool value) {
-          controller.scoresStore[index].setQuantity(value ? 1 : 0);
-          if (value) {
-            controller
-                .incrementTotalScore(controller.scoreItems[index].points!);
-          } else {
-            controller
-                .decrementTotalScore(controller.scoreItems[index].points!);
-          }
-        },
-        value: controller.scoresStore[index].quantity > 0,
-      );
+  Widget switchScore(int index) {
+    ScoreItemModel scoreItem = controller.scoreItems[index];
+    ScoreModelStore scoreStore = controller.scoresStore[index];
+    return Switch(
+      onChanged: (bool value) {
+        scoreStore.setQuantity(value ? 1 : 0);
+        if (value) {
+          controller.incrementTotalScore(scoreItem.points!);
+        } else {
+          controller.decrementTotalScore(scoreItem.points!);
+        }
+      },
+      value: scoreStore.quantity > 0,
+    );
+  }
 
-  Widget get amount => Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          _itemCount != 0
-              ? IconButton(
-                  icon: const Icon(Icons.remove),
-                  onPressed: () => setState(() => _itemCount--),
-                )
-              : Container(),
-          Text(_itemCount.toString()),
-          IconButton(
-              icon: const Icon(Icons.add),
-              onPressed: () => setState(() => _itemCount++))
-        ],
-      );
+  Widget amount(int index) {
+    ScoreItemModel scoreItem = controller.scoreItems[index];
+    ScoreModelStore scoreStore = controller.scoresStore[index];
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        scoreStore.quantity != 0
+            ? IconButton(
+                icon: const Icon(Icons.remove),
+                onPressed: () {
+                  scoreStore.setQuantity(scoreStore.quantity - 1);
+                  controller.decrementTotalScore(scoreItem.points!);
+                },
+              )
+            : Container(),
+        Text(scoreStore.quantity.toString()),
+        IconButton(
+          icon: const Icon(Icons.add),
+          onPressed: () {
+            scoreStore.setQuantity(scoreStore.quantity + 1);
+            controller.incrementTotalScore((scoreItem.points!));
+          },
+        )
+      ],
+    );
+  }
 
   Widget get positionGames => DropdownButton<String>(
         // Must be one of items.value.

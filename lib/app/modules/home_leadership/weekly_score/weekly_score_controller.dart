@@ -107,7 +107,7 @@ abstract class WeeklyScoreControllerBase with Store {
 
   Future<void> loadScoreItems() async {
     var result = await _serviceScoreItem.allScoreItems();
-    oansists.clear();
+    scoresStore.clear();
     result.when((success) {
       scoreItems.addAll(success);
       for (ScoreItemModel scoreItem in scoreItems) {
