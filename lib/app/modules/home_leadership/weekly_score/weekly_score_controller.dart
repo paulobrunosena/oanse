@@ -110,6 +110,7 @@ abstract class WeeklyScoreControllerBase with Store {
     var result = await _serviceScoreItem.allScoreItems();
     scoresStore.clear();
     result.when((success) {
+      success.sort((a, b) => a.id!.compareTo(b.id!));
       scoreItems.addAll(success);
       for (ScoreItemModel scoreItem in scoreItems) {
         var scoreModel = ScoreModel(
