@@ -76,7 +76,7 @@ class _WeeklyScorePageState extends State<WeeklyScorePage> {
       body: Column(
         children: [
           filter,
-          scores,
+          scoreItems,
         ],
       ),
       backgroundColor: Colors.grey[100],
@@ -206,7 +206,7 @@ class _WeeklyScorePageState extends State<WeeklyScorePage> {
         },
       );
 
-  Widget get scores => Observer(builder: (_) {
+  Widget get scoreItems => Observer(builder: (_) {
         return Expanded(
             child: ListView.separated(
           shrinkWrap: true,
@@ -223,11 +223,7 @@ class _WeeklyScorePageState extends State<WeeklyScorePage> {
                 subtitle: scoreStore.quantity > 0
                     ? Text("$points pontos")
                     : const Text("Não marcou ponto"),
-                trailing: (scoreItem.name!.contains("Visitante") ||
-                        scoreItem.name!.contains("Seção") ||
-                        scoreItem.name!.contains("Atividade"))
-                    ? amount(index)
-                    : switchScore(index),
+                trailing: action(index),
               );
             });
           },
@@ -236,6 +232,16 @@ class _WeeklyScorePageState extends State<WeeklyScorePage> {
           },
         ));
       });
+
+  Widget action(int index) {
+    ScoreItemModel scoreItem = controller.scoreItems[index];
+
+    return (scoreItem.name!.contains("Visitante") ||
+            scoreItem.name!.contains("Seção") ||
+            scoreItem.name!.contains("Atividade"))
+        ? amount(index)
+        : switchScore(index);
+  }
 
   Widget switchScore(int index) {
     ScoreItemModel scoreItem = controller.scoreItems[index];
@@ -281,7 +287,6 @@ class _WeeklyScorePageState extends State<WeeklyScorePage> {
   }
 
   Widget get positionGames => DropdownButton<String>(
-        // Must be one of items.value.
         value: _btn1SelectedVal,
         onChanged: (String? newValue) {
           if (newValue != null) {
