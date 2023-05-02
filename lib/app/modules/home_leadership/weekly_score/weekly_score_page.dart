@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:intl/intl.dart';
 
 import '../../../shared/model/leadership/leadership_model.dart';
 import '../../../shared/model/score_item/score_item_model.dart';
@@ -113,11 +114,7 @@ class _WeeklyScorePageState extends State<WeeklyScorePage> {
                   endIndent: 10,
                   height: 0,
                 ),
-                Observer(builder: (_) {
-                  return _tilesPontuacaoTotal(
-                      label: "Pontuação total",
-                      text: "${controller.totalScore} pontos");
-                }),
+                pontuacaoTotal,
               ],
             ),
           ),
@@ -170,40 +167,44 @@ class _WeeklyScorePageState extends State<WeeklyScorePage> {
         );
       });
 
-  Widget _tilesPontuacaoTotal({required String label, required String text}) {
-    return Row(
-      mainAxisSize: MainAxisSize.max,
-      mainAxisAlignment: MainAxisAlignment.end,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        IconButton(
-            onPressed: () {},
-            icon: const Icon(
-              Icons.sports_score_rounded,
-              color: Colors.grey,
-            )),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            Text(
-              label,
-              style: textTheme.bodySmall?.copyWith(fontSize: 14),
-            ),
-            const SizedBox(
-              height: 5,
-            ),
-            Text(
-              text,
-              style: textTheme.titleSmall?.copyWith(fontSize: 16),
-            ),
-          ],
-        ),
-        const SizedBox(
-          width: 10,
-        ),
-      ],
-    );
-  }
+  Widget get pontuacaoTotal => Observer(
+        builder: (_) {
+          var formatter = NumberFormat('###,###,###');
+          String totalScore = formatter.format(controller.totalScore);
+          return Row(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              IconButton(
+                  onPressed: () {},
+                  icon: const Icon(
+                    Icons.sports_score_rounded,
+                    color: Colors.grey,
+                  )),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    "Pontuação total",
+                    style: textTheme.bodySmall?.copyWith(fontSize: 14),
+                  ),
+                  const SizedBox(
+                    height: 5,
+                  ),
+                  Text(
+                    "$totalScore pontos",
+                    style: textTheme.titleSmall?.copyWith(fontSize: 16),
+                  ),
+                ],
+              ),
+              const SizedBox(
+                width: 10,
+              ),
+            ],
+          );
+        },
+      );
 
   Widget get scores => Observer(builder: (_) {
         return Expanded(
@@ -215,10 +216,12 @@ class _WeeklyScorePageState extends State<WeeklyScorePage> {
             ScoreModelStore scoreStore = controller.scoresStore[index];
 
             return Observer(builder: (_) {
+              var formatter = NumberFormat('###,###,###');
+              String points = formatter.format(scoreItem.points!);
               return ListTile(
                 title: Text(scoreItem.name!),
                 subtitle: scoreStore.quantity > 0
-                    ? Text("${scoreItem.points!} pontos")
+                    ? Text("$points pontos")
                     : const Text("Não marcou ponto"),
                 trailing: (scoreItem.name!.contains("Visitante") ||
                         scoreItem.name!.contains("Seção") ||
