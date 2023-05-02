@@ -95,7 +95,6 @@ abstract class WeeklyScoreControllerBase with Store {
     var result = await _serviceMeeting.allMeeting();
     meetings.clear();
     result.when((success) {
-      success.sort((a, b) => b.date.compareTo(a.date));
       meetings.addAll(success);
     }, (error) {
       AsukaSnackbar.alert(error.toString()).show();

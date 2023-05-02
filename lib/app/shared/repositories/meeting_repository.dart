@@ -47,6 +47,7 @@ class MeetingRepository implements IMeetingRepository {
         if (status != null && status) {
           List<MeetingModel> result =
               meetingModelFromJson(response.data['response']);
+          result.sort((a, b) => b.date.compareTo(a.date));
           return Success(result);
         } else {
           return Error(Exception("Não existem datas cadastradas"));
