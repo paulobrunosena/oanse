@@ -1,5 +1,6 @@
 import 'package:asuka/asuka.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:mobx/mobx.dart';
 import 'package:oanse/app/modules/home_leadership/weekly_score/store/score_model_store.dart';
 
@@ -34,6 +35,8 @@ abstract class WeeklyScoreControllerBase with Store {
       ObservableList<ScoreModelStore>();
   late LeadershipModel leadership;
 
+  NumberFormat formatter = NumberFormat('###,###,###');
+
   @observable
   MeetingModel? selectMeeting;
 
@@ -59,23 +62,25 @@ abstract class WeeklyScoreControllerBase with Store {
   }
 
   @observable
-  int totalScore = 0;
+  int _totalScore = 0;
+
+  get totalScore => formatter.format(_totalScore);
 
   @action
   void incrementTotalScore(int newValue) {
-    totalScore = totalScore + newValue;
+    _totalScore = _totalScore + newValue;
   }
 
   @action
   void decrementTotalScore(int newValue) {
-    totalScore = totalScore - newValue;
+    _totalScore = _totalScore - newValue;
   }
 
   initWidgets(LeadershipModel leadershipModel) {
     leadership = leadershipModel;
     selectMeeting = null;
     selectOansist = null;
-    totalScore = 0;
+    _totalScore = 0;
     setLoadingWidgets(true);
     Future.wait([
       loadMeetings(),

@@ -57,19 +57,19 @@ mixin _$WeeklyScoreController on WeeklyScoreControllerBase, Store {
     });
   }
 
-  late final _$totalScoreAtom =
-      Atom(name: 'WeeklyScoreControllerBase.totalScore', context: context);
+  late final _$_totalScoreAtom =
+      Atom(name: 'WeeklyScoreControllerBase._totalScore', context: context);
 
   @override
-  int get totalScore {
-    _$totalScoreAtom.reportRead();
-    return super.totalScore;
+  int get _totalScore {
+    _$_totalScoreAtom.reportRead();
+    return super._totalScore;
   }
 
   @override
-  set totalScore(int value) {
-    _$totalScoreAtom.reportWrite(value, super.totalScore, () {
-      super.totalScore = value;
+  set _totalScore(int value) {
+    _$_totalScoreAtom.reportWrite(value, super._totalScore, () {
+      super._totalScore = value;
     });
   }
 
@@ -136,8 +136,7 @@ mixin _$WeeklyScoreController on WeeklyScoreControllerBase, Store {
     return '''
 selectMeeting: ${selectMeeting},
 selectOansist: ${selectOansist},
-loadingWidgets: ${loadingWidgets},
-totalScore: ${totalScore}
+loadingWidgets: ${loadingWidgets}
     ''';
   }
 }

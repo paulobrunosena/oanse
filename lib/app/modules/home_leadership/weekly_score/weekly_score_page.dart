@@ -27,7 +27,6 @@ class _WeeklyScorePageState extends State<WeeklyScorePage> {
 
   @override
   void initState() {
-    debugPrint("chamou initstate");
     super.initState();
     controller.initWidgets(widget.leadership);
   }
@@ -66,15 +65,6 @@ class _WeeklyScorePageState extends State<WeeklyScorePage> {
     );
   }
 
-  Widget get loading => Container(
-        alignment: Alignment.center,
-        width: 20,
-        height: 20,
-        child: const CircularProgressIndicator(
-          strokeWidth: 2,
-        ),
-      );
-
   Widget get filter => Padding(
         padding: const EdgeInsets.all(5.0),
         child: Card(
@@ -86,17 +76,9 @@ class _WeeklyScorePageState extends State<WeeklyScorePage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 meeting,
-                const Divider(
-                  indent: 10,
-                  endIndent: 10,
-                  height: 0,
-                ),
+                divider,
                 oansist,
-                const Divider(
-                  indent: 10,
-                  endIndent: 10,
-                  height: 0,
-                ),
+                divider,
                 pontuacaoTotal,
               ],
             ),
@@ -152,8 +134,6 @@ class _WeeklyScorePageState extends State<WeeklyScorePage> {
 
   Widget get pontuacaoTotal => Observer(
         builder: (_) {
-          var formatter = NumberFormat('###,###,###');
-          String totalScore = formatter.format(controller.totalScore);
           return Row(
             mainAxisSize: MainAxisSize.max,
             mainAxisAlignment: MainAxisAlignment.end,
@@ -176,7 +156,7 @@ class _WeeklyScorePageState extends State<WeeklyScorePage> {
                     height: 5,
                   ),
                   Text(
-                    "$totalScore pontos",
+                    "${controller.totalScore} pontos",
                     style: textTheme.titleSmall?.copyWith(fontSize: 16),
                   ),
                 ],
@@ -301,4 +281,18 @@ class _WeeklyScorePageState extends State<WeeklyScorePage> {
       ],
     );
   }
+
+  Widget get loading => Container(
+        alignment: Alignment.center,
+        width: 20,
+        height: 20,
+        child: const CircularProgressIndicator(
+          strokeWidth: 2,
+        ),
+      );
+  Widget get divider => const Divider(
+        indent: 10,
+        endIndent: 10,
+        height: 0,
+      );
 }
