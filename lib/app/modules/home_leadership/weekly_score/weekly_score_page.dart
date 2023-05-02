@@ -27,6 +27,7 @@ class _WeeklyScorePageState extends State<WeeklyScorePage> {
 
   @override
   void initState() {
+    debugPrint("chamou initstate");
     super.initState();
     controller.initWidgets(widget.leadership);
   }

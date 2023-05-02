@@ -73,6 +73,9 @@ abstract class WeeklyScoreControllerBase with Store {
 
   initWidgets(LeadershipModel leadershipModel) {
     leadership = leadershipModel;
+    selectMeeting = null;
+    selectOansist = null;
+    totalScore = 0;
     setLoadingWidgets(true);
     Future.wait([
       loadMeetings(),
@@ -108,6 +111,7 @@ abstract class WeeklyScoreControllerBase with Store {
 
   Future<void> loadScoreItems() async {
     var result = await _serviceScoreItem.allScoreItems();
+    scoreItems.clear();
     scoresStore.clear();
     result.when((success) {
       success.sort((a, b) => a.id!.compareTo(b.id!));
