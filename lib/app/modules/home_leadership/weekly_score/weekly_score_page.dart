@@ -23,25 +23,7 @@ class _WeeklyScorePageState extends State<WeeklyScorePage> {
   late TextTheme textTheme = Theme.of(context).textTheme;
   late TextStyle? labelStyle;
   late TextStyle? textStyle;
-
-  static const menuItems = <String>[
-    'Não participou',
-    '1º lugar',
-    '2º lugar',
-    '3º lugar',
-    '4º lugar',
-  ];
-
-  String _btn1SelectedVal = 'Não participou';
-
-  final List<DropdownMenuItem<String>> _dropDownMenuItems = menuItems
-      .map(
-        (String value) => DropdownMenuItem<String>(
-          value: value,
-          child: Text(value),
-        ),
-      )
-      .toList();
+  int? positionGames;
 
   @override
   void initState() {
@@ -208,29 +190,62 @@ class _WeeklyScorePageState extends State<WeeklyScorePage> {
 
   Widget get scoreItems => Observer(builder: (_) {
         return Expanded(
-            child: ListView.separated(
-          shrinkWrap: true,
-          itemCount: controller.scoreItems.length,
-          itemBuilder: (_, index) {
-            ScoreItemModel scoreItem = controller.scoreItems[index];
-            ScoreModelStore scoreStore = controller.scoresStore[index];
+          child: ListView.separated(
+            shrinkWrap: true,
+            itemCount: controller.scoreItems.length,
+            itemBuilder: (_, index) {
+              ScoreItemModel scoreItem = controller.scoreItems[index];
+              ScoreModelStore scoreStore = controller.scoresStore[index];
 
-            return Observer(builder: (_) {
-              var formatter = NumberFormat('###,###,###');
-              String points = formatter.format(scoreItem.points!);
-              return ListTile(
-                title: Text(scoreItem.name!),
-                subtitle: scoreStore.quantity > 0
-                    ? Text("$points pontos")
-                    : const Text("Não marcou ponto"),
-                trailing: action(index),
+              return Observer(builder: (_) {
+                var formatter = NumberFormat('###,###,###');
+                String points = formatter.format(scoreItem.points!);
+
+                if (scoreItem.name!.contains("Esportes")) {
+                  return RadioListTile<int>(
+                    title: Text(scoreItem.name!),
+                    subtitle: scoreStore.quantity > 0
+                        ? Text("$points pontos")
+                        : const Text("Não marcou ponto"),
+                    groupValue: positionGames,
+                    value: index,
+                    onChanged: (value) {
+                      debugPrint('VAL = $value');
+                      if (positionGames == null) {
+                        scoreStore.setQuantity(1);
+                        controller.incrementTotalScore(scoreItem.points!);
+                      } else {
+                        ScoreItemModel scoreItemBefore =
+                            controller.scoreItems[positionGames!];
+                        ScoreModelStore scoreStoreBefore =
+                            controller.scoresStore[positionGames!];
+                        scoreStoreBefore.setQuantity(0);
+                        controller.decrementTotalScore(scoreItemBefore.points!);
+                        scoreStore.setQuantity(1);
+                        controller.incrementTotalScore(scoreItem.points!);
+                      }
+                      positionGames = value;
+                    },
+                    controlAffinity: ListTileControlAffinity.trailing,
+                  );
+                } else {
+                  return ListTile(
+                    title: Text(scoreItem.name!),
+                    subtitle: scoreStore.quantity > 0
+                        ? Text("$points pontos")
+                        : const Text("Não marcou ponto"),
+                    trailing: action(index),
+                  );
+                }
+              });
+            },
+            separatorBuilder: (_, __) {
+              return const Divider(
+                height: 0,
               );
-            });
-          },
-          separatorBuilder: (_, __) {
-            return const Divider();
-          },
-        ));
+            },
+          ),
+        );
       });
 
   Widget action(int index) {
@@ -285,14 +300,4 @@ class _WeeklyScorePageState extends State<WeeklyScorePage> {
       ],
     );
   }
-
-  Widget get positionGames => DropdownButton<String>(
-        value: _btn1SelectedVal,
-        onChanged: (String? newValue) {
-          if (newValue != null) {
-            setState(() => _btn1SelectedVal = newValue);
-          }
-        },
-        items: _dropDownMenuItems,
-      );
 }
