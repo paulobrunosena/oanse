@@ -2,7 +2,6 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:multiple_result/multiple_result.dart';
 import 'package:oanse/app/shared/constants.dart';
 import 'package:oanse/app/shared/model/leadership/leadership_model.dart';
-import 'package:oanse/app/shared/model/login/login_request.dart';
 
 import 'interfaces/auth_hive_repository_interface.dart';
 
@@ -20,11 +19,11 @@ class AuthHiveRepository implements IAuthHiveRepository {
   }
 
   @override
-  Future<Result<LeadershipModel, Exception>> login(LoginRequest data) async {
+  Future<Result<LeadershipModel, Exception>> login(LeadershipModel data) async {
     if (box.isNotEmpty) {
       var leadershipList = box.values
           .where((element) =>
-              element.userName == data.email &&
+              element.userName == data.userName &&
               element.password == data.password)
           .toList();
       if (leadershipList.isNotEmpty) {
