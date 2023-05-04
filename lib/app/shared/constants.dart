@@ -28,3 +28,4 @@ const boxOansist = 'oansist';
 const boxMeeting = 'meeting';
 const boxScore = 'score';
 const boxScoreItem = 'score_item';
+const boxRole = 'role';

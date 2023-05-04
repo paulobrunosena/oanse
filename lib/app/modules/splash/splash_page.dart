@@ -43,7 +43,7 @@ class SplashPageState extends State<SplashPage>
           _controller.reverse();
         });
       } else if (status == AnimationStatus.dismissed) {
-        controller.redirectPageLoginLeadership();
+        await controller.redirectPageLoginLeadership();
       }
     });
     _controller.forward();
