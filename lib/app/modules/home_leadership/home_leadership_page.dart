@@ -82,7 +82,7 @@ class HomeLeadershipPageState extends State<HomeLeadershipPage> {
         actions: [
           TextButton(
             onPressed: () async {
-              await controller.logout();
+              await controller.logoutHive();
             },
             child: const Text(
               "Sair",

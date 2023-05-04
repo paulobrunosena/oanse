@@ -5,6 +5,7 @@ import 'package:flutter_modular/flutter_modular.dart';
 import 'package:mobx/mobx.dart';
 
 import '../../shared/constants.dart';
+import '../../shared/services/interfaces/auth_hive_service_interface.dart';
 import '../../shared/services/interfaces/auth_service_interface.dart';
 import '../../shared/services/interfaces/user_service_interface.dart';
 
@@ -14,8 +15,13 @@ class HomeLeadershipController = HomeLeadershipControllerBase
     with _$HomeLeadershipController;
 
 abstract class HomeLeadershipControllerBase with Store {
-  HomeLeadershipControllerBase(this._authService, this._userService);
+  HomeLeadershipControllerBase(
+    this._authService,
+    this._authHiveService,
+    this._userService,
+  );
   final IAuthService _authService;
+  final IAuthHiveService _authHiveService;
   final IUserService _userService;
 
   Future<void> logout() async {
@@ -35,6 +41,13 @@ abstract class HomeLeadershipControllerBase with Store {
       Modular.to.pushNamedAndRemoveUntil(
           '$routeLogin/', ModalRoute.withName(routeLogin));
     });
+  }
+
+  Future<void> logoutHive() async {
+    EasyLoading.show(status: "Realizando logout, aguarde...");
+    await _authHiveService.removeDataUserLocal();
+    EasyLoading.dismiss();
+    Modular.to.pushReplacementNamed('$routeLoginLeadership/');
   }
 
   Future<void> allUsers() async {

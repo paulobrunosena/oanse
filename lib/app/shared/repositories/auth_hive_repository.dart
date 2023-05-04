@@ -27,7 +27,7 @@ class AuthHiveRepository implements IAuthHiveRepository {
       if (leadershipList.isNotEmpty) {
         return Success(leadershipList.first);
       } else {
-        return Error(Exception("Usuário não encontrado"));
+        return Error(Exception("Usuário ou senha não encontrado"));
       }
     } else {
       return Error(Exception("Nenhum usuário cadastrado"));

@@ -1,6 +1,7 @@
 import 'package:flutter_modular/flutter_modular.dart';
 
 import '../../shared/constants.dart';
+import '../../shared/services/interfaces/auth_hive_service_interface.dart';
 import '../../shared/services/interfaces/auth_service_interface.dart';
 import '../../shared/services/interfaces/meeting_service_interface.dart';
 import '../../shared/services/interfaces/oansist_service_interface.dart';
@@ -16,6 +17,7 @@ class HomeLeadershipModule extends Module {
   final List<Bind> binds = [
     Bind.lazySingleton((i) => HomeLeadershipController(
           i<IAuthService>(),
+          i<IAuthHiveService>(),
           i<IUserService>(),
         )),
     Bind.lazySingleton((i) => WeeklyScoreController(

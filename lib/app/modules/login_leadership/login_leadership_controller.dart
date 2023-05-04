@@ -7,7 +7,6 @@ import 'package:oanse/app/shared/model/leadership/leadership_model.dart';
 import '../../shared/constants.dart';
 import '../../shared/services/interfaces/auth_hive_service_interface.dart';
 import '../../shared/utils/form_controller.dart';
-import '../../shared/utils/network_check.dart';
 
 part 'login_leadership_controller.g.dart';
 
@@ -44,29 +43,31 @@ abstract class LoginLeadershipControllerBase with Store {
   Future<void> login() async {
     EasyLoading.show(status: "Realizando login, aguarde...");
 
-    var isNetwork = await NetworkCheck.check();
+    //var isNetwork = await NetworkCheck.check();
 
     if (formController.validate()) {
-      if (isNetwork) {
-        var data = LeadershipModel(
-          id: 0,
-          name: "",
-          userName: userName,
-          password: senha,
-        );
-        var result = await _authService.login(data);
-        result.when(
-          (success) async {
-            await _salvarDadosUsuarioLocal(success);
-            Modular.to.pushReplacementNamed('$routeHome/');
-          },
-          (error) {
-            AsukaSnackbar.alert(error.toString()).show();
-          },
-        );
-      } else {
+      //if (isNetwork) {
+      var data = LeadershipModel(
+        id: 0,
+        name: "",
+        userName: userName,
+        password: senha,
+      );
+      var result = await _authService.login(data);
+      result.when(
+        (success) async {
+          await _salvarDadosUsuarioLocal(success);
+
+          Modular.to.pushReplacementNamed('$routeHomeLeadership/',
+              arguments: success);
+        },
+        (error) {
+          AsukaSnackbar.alert(error.toString()).show();
+        },
+      );
+      /*} else {
         AsukaSnackbar.alert("Sem conexão de internet").show();
-      }
+      }*/
     }
 
     EasyLoading.dismiss();
