@@ -7,7 +7,6 @@ import 'interfaces/auth_hive_repository_interface.dart';
 
 class AuthHiveRepository implements IAuthHiveRepository {
   late Box<LeadershipModel> box;
-  late Box<LeadershipModel> boxUserSession;
 
   AuthHiveRepository() {
     _initDb();
@@ -15,7 +14,6 @@ class AuthHiveRepository implements IAuthHiveRepository {
 
   _initDb() async {
     box = Hive.box<LeadershipModel>(boxLeadership);
-    boxUserSession = Hive.box<LeadershipModel>(boxSession);
   }
 
   @override
@@ -38,17 +36,17 @@ class AuthHiveRepository implements IAuthHiveRepository {
 
   @override
   LeadershipModel? getDataUserLocal() {
-    return boxUserSession.get(userSession);
+    return box.get(userSession);
   }
 
   @override
   Future<void> removeDataUserLocal() async {
-    await boxUserSession.delete(userSession);
+    await box.delete(userSession);
   }
 
   @override
   Future<void> setDataUserLocal(LeadershipModel data) async {
-    await boxUserSession.put(userSession, data);
+    await box.put(userSession, data);
   }
 
   @override

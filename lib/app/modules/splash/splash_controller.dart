@@ -6,6 +6,7 @@ import 'package:mobx/mobx.dart';
 
 import '../../shared/constants.dart';
 import '../../shared/model/leadership/leadership_model.dart';
+import '../../shared/services/interfaces/auth_hive_service_interface.dart';
 import '../../shared/services/interfaces/auth_service_interface.dart';
 import '../../shared/services/interfaces/leadership_service_interface.dart';
 
@@ -15,10 +16,12 @@ class SplashController = SplashControllerBase with _$SplashController;
 
 abstract class SplashControllerBase with Store {
   final IAuthService _authService;
+  final IAuthHiveService _authHiveService;
   final ILeadershipService _leadershipService;
 
   SplashControllerBase(
     this._authService,
+    this._authHiveService,
     this._leadershipService,
   );
 
@@ -36,6 +39,16 @@ abstract class SplashControllerBase with Store {
       _authService.setToken(result.token);
       debugPrint("Valor do token agora de fato é ${_authService.getToken()}");
       Modular.to.pushReplacementNamed('$routeHome/');
+    }
+  }
+
+  Future<void> redirectPageLoginLeadership() async {
+    var result = _authHiveService.getDataUserLocal();
+    if (result == null) {
+      Modular.to.pushReplacementNamed('$routeLoginLeadership/');
+    } else {
+      Modular.to
+          .pushReplacementNamed('$routeHomeLeadership/', arguments: result);
     }
   }
 

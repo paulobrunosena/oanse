@@ -18,7 +18,6 @@ void main() async {
   Hive.registerAdapter(LeadershipModelAdapter());
   Hive.registerAdapter(ClubModelAdapter());
   //await Hive.openBox(boxLeadership);
-  await Hive.openBox<LeadershipModel>(boxSession);
   await Hive.openBox<LeadershipModel>(boxLeadership);
   await Hive.openBox(boxClub);
   await Hive.openBox(boxMeeting);

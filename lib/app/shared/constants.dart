@@ -19,7 +19,6 @@ const jv = "JV";
 const vq7 = "VQ7";
 
 const userSession = 'user_session';
-const boxSession = 'session';
 const boxLeadership = 'leadership';
 const boxClub = 'club';
 const boxManual = 'manual';
