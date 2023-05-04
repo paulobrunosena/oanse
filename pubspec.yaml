@@ -44,6 +44,8 @@ dependencies:
   shared_preferences: ^2.1.0
   font_awesome_flutter: ^10.4.0
   intl: ^0.18.0
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -55,6 +57,7 @@ dev_dependencies:
     sdk: flutter
   mobx_codegen: ^2.2.0
   build_runner: ^2.3.3
+  hive_generator: ^2.0.0
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is

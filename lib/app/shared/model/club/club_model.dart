@@ -1,11 +1,16 @@
 import 'dart:convert';
 
+import 'package:hive/hive.dart';
+
+part 'club_model.g.dart';
+
 List<ClubModel> clubModelFromJson(List<dynamic> str) =>
     List<ClubModel>.from(str.map((x) => ClubModel.fromJson(x)));
 
 String clubModelToJson(List<ClubModel> data) =>
     json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
+@HiveType(typeId: 0)
 class ClubModel {
   ClubModel({
     required this.leaveAge,
@@ -13,10 +18,13 @@ class ClubModel {
     required this.name,
     required this.entryAge,
   });
-
+  @HiveField(0)
   int id;
+  @HiveField(1)
   String name;
+  @HiveField(2)
   int entryAge;
+  @HiveField(3)
   int leaveAge;
 
   factory ClubModel.fromJson(Map<String, dynamic> json) => ClubModel(

@@ -16,3 +16,14 @@ const flama = "Flama";
 const tocha = "Tocha";
 const jv = "JV";
 const vq7 = "VQ7";
+
+const userSession = 'user_session';
+const boxSession = 'session';
+const boxLeadership = 'leadership';
+const boxClub = 'club';
+const boxManual = 'manual';
+const boxManualDivision = 'manual_division';
+const boxOansist = 'oansist';
+const boxMeeting = 'meeting';
+const boxScore = 'score';
+const boxScoreItem = 'score_item';
