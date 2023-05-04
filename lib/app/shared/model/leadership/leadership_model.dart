@@ -8,7 +8,7 @@ List<LeadershipModel> leadershipModelFromJson(List<dynamic> str) =>
 @HiveType(typeId: 1)
 class LeadershipModel {
   @HiveField(0)
-  late int id;
+  late int? id = DateTime.now().millisecondsSinceEpoch;
   @HiveField(1)
   late String name;
   @HiveField(2)
@@ -21,13 +21,15 @@ class LeadershipModel {
   int? role;
 
   LeadershipModel({
-    required this.id,
+    this.id,
     required this.name,
     required this.userName,
     required this.password,
     this.club,
     this.role,
-  });
+  }) {
+    id = DateTime.now().millisecondsSinceEpoch;
+  }
 
   LeadershipModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];

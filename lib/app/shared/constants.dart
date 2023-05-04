@@ -10,6 +10,7 @@ const routeClub = '/club';
 const routeClubDetails = '/club_details';
 const routeClubWeeklyScore = '/club_weekly_score';
 const routeOansist = '/oansist';
+const routeLeadership = '/leadership';
 
 const ursinho = "Ursinho";
 const faisca = "Faísca";

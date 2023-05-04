@@ -4,6 +4,7 @@ import 'package:flutter_modular/flutter_modular.dart';
 import 'modules/club/club_module.dart';
 import 'modules/home/home_module.dart';
 import 'modules/home_leadership/home_leadership_module.dart';
+import 'modules/leadership/leadership_module.dart';
 import 'modules/login/login_module.dart';
 import 'modules/login_leadership/login_leadership_module.dart';
 import 'modules/oansist/oansist_module.dart';
@@ -77,5 +78,6 @@ class AppModule extends Module {
     ModuleRoute(routeUser, module: UserModule()),
     ModuleRoute(routeClub, module: ClubModule()),
     ModuleRoute(routeOansist, module: OansistModule()),
+    ModuleRoute(routeLeadership, module: LeadershipModule()),
   ];
 }

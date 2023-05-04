@@ -17,7 +17,7 @@ class LeadershipModelAdapter extends TypeAdapter<LeadershipModel> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return LeadershipModel(
-      id: fields[0] as int,
+      id: fields[0] as int?,
       name: fields[1] as String,
       userName: fields[2] as String,
       password: fields[3] as String,
