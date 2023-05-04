@@ -1,12 +1,20 @@
+import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
+
+part 'score_item_model.g.dart';
 
 List<ScoreItemModel> scoreItemModelFromJson(List<dynamic> str) =>
     List<ScoreItemModel>.from(str.map((x) => ScoreItemModel.fromJson(x)));
 
+@HiveType(typeId: 3)
 class ScoreItemModel {
+  @HiveField(0)
   int? id;
+  @HiveField(1)
   String? name;
+  @HiveField(2)
   String? description;
+  @HiveField(3)
   int? points;
 
   ScoreItemModel({this.id, this.name, this.description, this.points});
