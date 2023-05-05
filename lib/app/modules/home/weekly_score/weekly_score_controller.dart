@@ -102,7 +102,7 @@ abstract class WeeklyScoreControllerBase with Store {
   }
 
   Future<void> loadOansists() async {
-    var result = await _serviceOansist.clubOansist(leadership);
+    var result = await _serviceOansist.clubOansist(leadership.club ?? -1);
     oansists.clear();
     result.when((success) {
       oansists.addAll(success);

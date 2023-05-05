@@ -40,8 +40,7 @@ class OansistPageState extends State<OansistPage> {
               itemBuilder: (context, int index) {
                 return ListTile(
                   title: Text(controller.oansists[index].name ?? "Nome"),
-                  subtitle: Text(controller.oansists[index].birthDate ??
-                      "Data de nascimento"),
+                  subtitle: Text(controller.oansists[index].birthDateFormatter),
                 );
               });
         },

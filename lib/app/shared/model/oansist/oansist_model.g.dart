@@ -19,7 +19,7 @@ class OansistModelAdapter extends TypeAdapter<OansistModel> {
     return OansistModel(
       id: fields[0] as int?,
       name: fields[1] as String?,
-      birthDate: fields[2] as String?,
+      birthDate: fields[2] as DateTime?,
       gender: fields[3] as String?,
       clubId: fields[4] as int?,
     );

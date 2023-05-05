@@ -22,7 +22,7 @@ import 'shared/repositories/interfaces/score_item_repository_interface.dart';
 import 'shared/repositories/interfaces/user_repository_interface.dart';
 import 'shared/repositories/leadership_repository.dart';
 import 'shared/repositories/meeting_hive_repository.dart';
-import 'shared/repositories/oansist_repository.dart';
+import 'shared/repositories/oansist_hive_repository.dart';
 import 'shared/repositories/score_item_repository.dart';
 import 'shared/repositories/user_repository.dart';
 import 'shared/services/auth_hive_service.dart';
@@ -46,10 +46,11 @@ class AppModule extends Module {
     Bind.lazySingleton((i) => ClubService(i<IClubRepository>())),
     Bind.lazySingleton((i) => ClubRepository(i<Dio>())),
     Bind.lazySingleton((i) => OansistService(i<IOansistRepository>())),
-    Bind.lazySingleton((i) => OansistRepository(i<Dio>())),
+    Bind.lazySingleton((i) => OansistHiveRepository()),
+    //Bind.lazySingleton((i) => OansistRepository(i<Dio>())),
     Bind.lazySingleton((i) => MeetingService(i<IMeetingRepository>())),
-    //Bind.lazySingleton((i) => MeetingRepository(i<Dio>())),
     Bind.lazySingleton((i) => MeetingHiveRepository()),
+    //Bind.lazySingleton((i) => MeetingRepository(i<Dio>())),
     Bind.lazySingleton((i) => LeadershipService(i<ILeadershipRepository>())),
     Bind.lazySingleton((i) => LeadershipRepository(i<Dio>())),
     Bind.lazySingleton((i) => ScoreItemService(i<IScoreItemRepository>())),

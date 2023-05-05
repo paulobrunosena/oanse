@@ -3,24 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:multiple_result/multiple_result.dart';
 import 'package:oanse/app/shared/constants.dart';
-import 'package:oanse/app/shared/model/leadership/leadership_model.dart';
-
 import 'package:oanse/app/shared/model/oansist/oansist_model.dart';
 
 import '../model/exception/exception_response.dart';
 import 'interfaces/oansist_repository_interface.dart';
 
 class OansistRepository implements IOansistRepository {
-  OansistRepository(this.client) {
-    _initDb();
-  }
-
-  _initDb() async {
-    box = Hive.box<OansistModel>(boxOansist);
-  }
+  OansistRepository(this.client);
 
   final Dio client;
-  late Box<OansistModel> box;
 
   @override
   void dispose() {}
@@ -80,8 +71,7 @@ class OansistRepository implements IOansistRepository {
   }
 
   @override
-  Future<Result<List<OansistModel>, Exception>> clubOansist(
-      LeadershipModel data) async {
+  Future<Result<List<OansistModel>, Exception>> clubOansist(int idCLub) async {
     try {
       var response = await client.get('oansist/');
 
@@ -92,7 +82,7 @@ class OansistRepository implements IOansistRepository {
               oanseModelFromJson(response.data['response']);
 
           return Success(
-              result.where((element) => element.clubId == data.club).toList());
+              result.where((element) => element.clubId == idCLub).toList());
         } else {
           return Error(Exception("Não existem oansistas cadastrados"));
         }
@@ -108,53 +98,5 @@ class OansistRepository implements IOansistRepository {
         return Error(Exception(error.message));
       }
     }
-  }
-
-  @override
-  Future<Result<int, Exception>> addOansistHive(OansistModel data) async {
-    if (sameName(data.name ?? "")) {
-      return Error(Exception("Já existe oansista com o mesmo nome"));
-    }
-
-    return Success(await box.add(data));
-  }
-
-  @override
-  Result<List<OansistModel>, Exception> allOansistHive() {
-    List<OansistModel> list = box.values.toList();
-    if (list.isNotEmpty) {
-      return Success(list);
-    } else {
-      return Error(Exception("Não existem oansistas cadastrados"));
-    }
-  }
-
-  @override
-  Result<List<OansistModel>, Exception> clubOansistHive(int idClub) {
-    List<OansistModel> list = box.values.toList();
-    if (list.isNotEmpty) {
-      return Success(
-        list
-            .where(
-              (element) => element.clubId == idClub,
-            )
-            .toList(),
-      );
-    } else {
-      return Error(Exception("Não existem oansistas cadastrados para o clube"));
-    }
-  }
-
-  bool sameName(String name) {
-    List<OansistModel> list = box.values.toList();
-    if (list.isNotEmpty) {
-      var sameName =
-          list.where((element) => element.name?.compareTo(name) == 0);
-      if (sameName.isNotEmpty) {
-        return true;
-      }
-    }
-
-    return false;
   }
 }

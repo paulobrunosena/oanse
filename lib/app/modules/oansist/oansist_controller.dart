@@ -20,7 +20,10 @@ abstract class OansistControllerBase with Store {
   Future<void> add() async {
     EasyLoading.show(status: "Realizando cadastro, aguarde...");
     OansistModel data = OansistModel(
-        name: "Ana Paula", birthDate: "2017-01-10", gender: "F", clubId: 2);
+        name: "Ana Paula",
+        birthDate: DateTime.parse("2017-01-10"),
+        gender: "F",
+        clubId: 2);
     var result = await _oansistService.addOansist(data);
 
     result.when((success) {
