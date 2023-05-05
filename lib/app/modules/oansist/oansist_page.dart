@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 
+import '../../shared/constants.dart';
 import '../../shared/model/leadership/leadership_model.dart';
 import 'oansist_controller.dart';
 
@@ -48,7 +49,9 @@ class OansistPageState extends State<OansistPage> {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () {
+          Modular.to.pushNamed('$routeOansist/add');
+        },
         child: const Icon(Icons.plus_one),
       ),
     );

@@ -151,10 +151,11 @@ class HomePageState extends State<HomePage> {
             label: "PONTUAÇÃO INDIVIDUAL",
             route: "$routeUser/",
           ),
-          const CardMenuWidget(
+          CardMenuWidget(
             icone: FontAwesomeIcons.userGroup,
             label: "OANSISTAS",
             route: "$routeOansist/",
+            arguments: widget.leadership,
           ),
         ],
       ));
