@@ -19,6 +19,7 @@ class AuthHiveRepository implements IAuthHiveRepository {
   @override
   Future<Result<LeadershipModel, Exception>> login(
       String userName, String password) async {
+    await Future.delayed(const Duration(seconds: 2));
     if (box.isNotEmpty) {
       var leadershipList = box.values
           .where((element) =>

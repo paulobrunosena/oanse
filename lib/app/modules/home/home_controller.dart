@@ -44,6 +44,7 @@ abstract class HomeControllerBase with Store {
 
   Future<void> logoutHive() async {
     EasyLoading.show(status: "Realizando logout, aguarde...");
+    await Future.delayed(const Duration(seconds: 2));
     await _authHiveService.removeDataUserLocal();
     EasyLoading.dismiss();
     Modular.to.pushReplacementNamed('$routeLogin/');
