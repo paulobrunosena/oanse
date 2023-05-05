@@ -14,10 +14,5 @@ class ScoreItemService implements IScoreItemService {
   }
 
   @override
-  Result<List<ScoreItemModel>, Exception> allScoreItemsHive() {
-    return _repository.allScoreItemsHive();
-  }
-
-  @override
   void dispose() {}
 }

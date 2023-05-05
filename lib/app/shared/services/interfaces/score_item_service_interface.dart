@@ -5,5 +5,4 @@ import '../../model/score_item/score_item_model.dart';
 
 abstract class IScoreItemService implements Disposable {
   Future<Result<List<ScoreItemModel>, Exception>> allScoreItems();
-  Result<List<ScoreItemModel>, Exception> allScoreItemsHive();
 }

@@ -85,7 +85,7 @@ abstract class WeeklyScoreControllerBase with Store {
     Future.wait([
       loadMeetings(),
       loadOansists(),
-      loadScoreItemsHive(), //loadScoreItems(),
+      loadScoreItems(),
     ]).then((value) async {
       setLoadingWidgets(false);
     });
@@ -113,28 +113,6 @@ abstract class WeeklyScoreControllerBase with Store {
 
   Future<void> loadScoreItems() async {
     var result = await _serviceScoreItem.allScoreItems();
-    scoreItems.clear();
-    scoresStore.clear();
-    result.when((success) {
-      scoreItems.addAll(success);
-      for (ScoreItemModel scoreItem in scoreItems) {
-        var scoreModel = ScoreModel(
-          quantity: "0",
-          meetingId: selectMeeting?.id,
-          leadershipId: leadership.id,
-          oansistId: selectOansist?.id,
-          scoreItemId: scoreItem.id,
-        );
-        ScoreModelStore store = ScoreModelStore(scoreModel);
-        scoresStore.add(store);
-      }
-    }, (error) {
-      AsukaSnackbar.alert(error.toString()).show();
-    });
-  }
-
-  Future<void> loadScoreItemsHive() async {
-    var result = _serviceScoreItem.allScoreItemsHive();
     scoreItems.clear();
     scoresStore.clear();
     result.when((success) {

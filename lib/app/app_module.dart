@@ -23,7 +23,7 @@ import 'shared/repositories/interfaces/user_repository_interface.dart';
 import 'shared/repositories/leadership_repository.dart';
 import 'shared/repositories/meeting_hive_repository.dart';
 import 'shared/repositories/oansist_hive_repository.dart';
-import 'shared/repositories/score_item_repository.dart';
+import 'shared/repositories/score_item_hive_repository.dart';
 import 'shared/repositories/user_repository.dart';
 import 'shared/services/auth_hive_service.dart';
 import 'shared/services/auth_service.dart';
@@ -54,7 +54,8 @@ class AppModule extends Module {
     Bind.lazySingleton((i) => LeadershipService(i<ILeadershipRepository>())),
     Bind.lazySingleton((i) => LeadershipRepository(i<Dio>())),
     Bind.lazySingleton((i) => ScoreItemService(i<IScoreItemRepository>())),
-    Bind.lazySingleton((i) => ScoreItemRepository(i<Dio>())),
+    Bind.lazySingleton((i) => ScoreItemHiveRepository()),
+    //Bind.lazySingleton((i) => ScoreItemRepository(i<Dio>())),
     Bind((i) => Dio(i<BaseOptions>())),
     Bind(
       (i) => BaseOptions(
