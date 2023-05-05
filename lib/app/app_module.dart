@@ -21,7 +21,7 @@ import 'shared/repositories/interfaces/oansist_repository_interface.dart';
 import 'shared/repositories/interfaces/score_item_repository_interface.dart';
 import 'shared/repositories/interfaces/user_repository_interface.dart';
 import 'shared/repositories/leadership_repository.dart';
-import 'shared/repositories/meeting_repository.dart';
+import 'shared/repositories/meeting_hive_repository.dart';
 import 'shared/repositories/oansist_repository.dart';
 import 'shared/repositories/score_item_repository.dart';
 import 'shared/repositories/user_repository.dart';
@@ -48,7 +48,8 @@ class AppModule extends Module {
     Bind.lazySingleton((i) => OansistService(i<IOansistRepository>())),
     Bind.lazySingleton((i) => OansistRepository(i<Dio>())),
     Bind.lazySingleton((i) => MeetingService(i<IMeetingRepository>())),
-    Bind.lazySingleton((i) => MeetingRepository(i<Dio>())),
+    //Bind.lazySingleton((i) => MeetingRepository(i<Dio>())),
+    Bind.lazySingleton((i) => MeetingHiveRepository()),
     Bind.lazySingleton((i) => LeadershipService(i<ILeadershipRepository>())),
     Bind.lazySingleton((i) => LeadershipRepository(i<Dio>())),
     Bind.lazySingleton((i) => ScoreItemService(i<IScoreItemRepository>())),

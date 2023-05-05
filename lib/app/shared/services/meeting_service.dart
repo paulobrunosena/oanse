@@ -19,10 +19,5 @@ class MeetingService implements IMeetingService {
   }
 
   @override
-  Future<Result<List<MeetingModel>, Exception>> allMeetingHive() async {
-    return await _repository.allMeetingHive();
-  }
-
-  @override
   void dispose() {}
 }
