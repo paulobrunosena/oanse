@@ -10,8 +10,9 @@ class AuthHiveService implements IAuthHiveService {
   AuthHiveService(this._repository);
 
   @override
-  Future<Result<LeadershipModel, Exception>> login(LeadershipModel data) async {
-    return await _repository.login(data);
+  Future<Result<LeadershipModel, Exception>> login(
+      String userName, String password) async {
+    return await _repository.login(userName, password);
   }
 
   @override

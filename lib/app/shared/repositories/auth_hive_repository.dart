@@ -17,12 +17,12 @@ class AuthHiveRepository implements IAuthHiveRepository {
   }
 
   @override
-  Future<Result<LeadershipModel, Exception>> login(LeadershipModel data) async {
+  Future<Result<LeadershipModel, Exception>> login(
+      String userName, String password) async {
     if (box.isNotEmpty) {
       var leadershipList = box.values
           .where((element) =>
-              element.userName == data.userName &&
-              element.password == data.password)
+              element.userName == userName && element.password == password)
           .toList();
       if (leadershipList.isNotEmpty) {
         return Success(leadershipList.first);

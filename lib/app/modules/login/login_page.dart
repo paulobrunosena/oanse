@@ -145,7 +145,7 @@ class LoginPageState extends State<LoginPage> {
             prefix: const Icon(Icons.lock),
             obscure: !controller.senhaVisible,
             onSaved: (value) => _data.password = value ?? "",
-            onChanged: controller.setSenha,
+            onChanged: controller.setPassword,
             suffix: CustomIconButton(
               radius: 32,
               iconData: controller.senhaVisible

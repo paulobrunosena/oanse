@@ -2,7 +2,6 @@ import 'package:asuka/asuka.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:mobx/mobx.dart';
-import 'package:oanse/app/shared/model/leadership/leadership_model.dart';
 
 import '../../shared/constants.dart';
 import '../../shared/services/interfaces/auth_hive_service_interface.dart';
@@ -26,12 +25,12 @@ abstract class LoginControllerBase with Store {
   String get userName => _userName;
 
   @observable
-  String _senha = "";
+  String _password = "";
 
   @action
-  void setSenha(String value) => _senha = value;
+  void setPassword(String value) => _password = value;
 
-  String get senha => _senha;
+  String get password => _password;
 
   @observable
   bool senhaVisible = false;
@@ -42,16 +41,10 @@ abstract class LoginControllerBase with Store {
   Future<void> login() async {
     EasyLoading.show(status: "Realizando login, aguarde...");
     if (formController.validate()) {
-      var data = LeadershipModel(
-        id: 0,
-        name: "",
-        userName: userName,
-        password: senha,
-      );
-      var result = await _authService.login(data);
+      var result = await _authService.login(userName, password);
       result.when(
         (success) async {
-          await _authService.setDataUserLocal(data);
+          await _authService.setDataUserLocal(success);
           Modular.to.pushReplacementNamed('$routeHome/', arguments: success);
         },
         (error) {

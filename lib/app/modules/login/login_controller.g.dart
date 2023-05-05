@@ -25,19 +25,19 @@ mixin _$LoginController on LoginControllerBase, Store {
     });
   }
 
-  late final _$_senhaAtom =
-      Atom(name: 'LoginControllerBase._senha', context: context);
+  late final _$_passwordAtom =
+      Atom(name: 'LoginControllerBase._password', context: context);
 
   @override
-  String get _senha {
-    _$_senhaAtom.reportRead();
-    return super._senha;
+  String get _password {
+    _$_passwordAtom.reportRead();
+    return super._password;
   }
 
   @override
-  set _senha(String value) {
-    _$_senhaAtom.reportWrite(value, super._senha, () {
-      super._senha = value;
+  set _password(String value) {
+    _$_passwordAtom.reportWrite(value, super._password, () {
+      super._password = value;
     });
   }
 
@@ -72,11 +72,11 @@ mixin _$LoginController on LoginControllerBase, Store {
   }
 
   @override
-  void setSenha(String value) {
+  void setPassword(String value) {
     final _$actionInfo = _$LoginControllerBaseActionController.startAction(
-        name: 'LoginControllerBase.setSenha');
+        name: 'LoginControllerBase.setPassword');
     try {
-      return super.setSenha(value);
+      return super.setPassword(value);
     } finally {
       _$LoginControllerBaseActionController.endAction(_$actionInfo);
     }
