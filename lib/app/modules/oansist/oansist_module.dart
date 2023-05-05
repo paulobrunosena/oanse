@@ -3,6 +3,8 @@ import 'package:flutter_modular/flutter_modular.dart';
 import '../../shared/services/interfaces/oansist_service_interface.dart';
 import 'oansist_controller.dart';
 import 'oansist_page.dart';
+import 'pages/oansist_add/oansist_add_controller.dart';
+import 'pages/oansist_add/oansist_add_page.dart';
 
 class OansistModule extends Module {
   @override
@@ -12,20 +14,23 @@ class OansistModule extends Module {
         i<IOansistService>(),
       ),
     ),
-    /*Bind.lazySingleton(
-      (i) => UserAddController(
-        i<IUserService>(),
+    Bind.lazySingleton(
+      (i) => OansistAddController(
+        i<IOansistService>(),
       ),
-    ),*/
+    ),
   ];
 
   @override
   final List<ModularRoute> routes = [
-    ChildRoute(Modular.initialRoute, child: (_, args) => const OansistPage()),
-    /*ChildRoute(
+    ChildRoute(Modular.initialRoute,
+        child: (_, args) => OansistPage(
+              leadership: args.data,
+            )),
+    ChildRoute(
       "/add",
-      child: (_, args) => const UserAddPage(),
+      child: (_, args) => const OansistAddPage(),
       transition: TransitionType.downToUp,
-    )*/
+    )
   ];
 }

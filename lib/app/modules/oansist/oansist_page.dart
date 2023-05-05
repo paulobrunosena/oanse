@@ -2,14 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 
+import '../../shared/model/leadership/leadership_model.dart';
 import 'oansist_controller.dart';
 
 class OansistPage extends StatefulWidget {
   final String title;
-
+  final LeadershipModel leadership;
   const OansistPage({
     Key? key,
     this.title = "Oansistas",
+    required this.leadership,
   }) : super(key: key);
 
   @override
@@ -44,6 +46,10 @@ class OansistPageState extends State<OansistPage> {
                 );
               });
         },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {},
+        child: const Icon(Icons.plus_one),
       ),
     );
   }

@@ -10,12 +10,12 @@ import 'home_controller.dart';
 
 class HomePage extends StatefulWidget {
   final String title;
-  final LeadershipModel? leadership;
+  final LeadershipModel leadership;
 
   const HomePage({
     Key? key,
     this.title = "Oanse App",
-    this.leadership,
+    required this.leadership,
   }) : super(key: key);
 
   @override
@@ -91,14 +91,12 @@ class HomePageState extends State<HomePage> {
           )
         ],
       ),
-      body: widget.leadership != null
-          ? ListView(
-              children: <Widget>[
-                infoUser,
-                menu,
-              ],
-            )
-          : const Center(child: Text('Nenhum líder selecionado')),
+      body: ListView(
+        children: <Widget>[
+          infoUser,
+          menu,
+        ],
+      ),
       backgroundColor: Colors.grey[100],
     );
   }
@@ -128,7 +126,7 @@ class HomePageState extends State<HomePage> {
                   "Líder",
                   style: textTheme.bodySmall?.copyWith(fontSize: 14),
                 ),
-                subtitle: Text(widget.leadership!.name,
+                subtitle: Text(widget.leadership.name,
                     style: textTheme.titleSmall?.copyWith(fontSize: 16)),
               ),
             ],
@@ -156,7 +154,7 @@ class HomePageState extends State<HomePage> {
           const CardMenuWidget(
             icone: FontAwesomeIcons.userGroup,
             label: "OANSISTAS",
-            route: "$routeUser/",
+            route: "$routeOansist/",
           ),
         ],
       ));
