@@ -1,11 +1,20 @@
+import 'package:hive/hive.dart';
+part 'oansist_model.g.dart';
+
 List<OansistModel> oanseModelFromJson(List<dynamic> str) =>
     List<OansistModel>.from(str.map((x) => OansistModel.fromJson(x)));
 
+@HiveType(typeId: 5)
 class OansistModel {
+  @HiveField(0)
   int? id;
+  @HiveField(1)
   String? name;
+  @HiveField(2)
   String? birthDate;
+  @HiveField(3)
   String? gender;
+  @HiveField(4)
   int? clubId;
 
   OansistModel({this.id, this.name, this.birthDate, this.gender, this.clubId});

@@ -27,4 +27,19 @@ class OansistService implements IOansistService {
 
   @override
   void dispose() {}
+
+  @override
+  Future<Result<int, Exception>> addOansistHive(OansistModel data) async {
+    return await _repository.addOansistHive(data);
+  }
+
+  @override
+  Result<List<OansistModel>, Exception> allOansistHive() {
+    return _repository.allOansistHive();
+  }
+
+  @override
+  Result<List<OansistModel>, Exception> clubOansistHive(int idClub) {
+    return _repository.clubOansistHive(idClub);
+  }
 }

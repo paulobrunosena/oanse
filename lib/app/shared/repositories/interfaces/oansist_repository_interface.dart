@@ -9,4 +9,8 @@ abstract class IOansistRepository implements Disposable {
   Future<Result<List<OansistModel>, Exception>> allOansist();
   Future<Result<List<OansistModel>, Exception>> clubOansist(
       LeadershipModel data);
+
+  Future<Result<int, Exception>> addOansistHive(OansistModel data);
+  Result<List<OansistModel>, Exception> allOansistHive();
+  Result<List<OansistModel>, Exception> clubOansistHive(int idClub);
 }
