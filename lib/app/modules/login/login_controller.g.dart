@@ -9,19 +9,19 @@ part of 'login_controller.dart';
 // ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic, no_leading_underscores_for_local_identifiers
 
 mixin _$LoginController on LoginControllerBase, Store {
-  late final _$_emailAtom =
-      Atom(name: 'LoginControllerBase._email', context: context);
+  late final _$_userNameAtom =
+      Atom(name: 'LoginControllerBase._userName', context: context);
 
   @override
-  String get _email {
-    _$_emailAtom.reportRead();
-    return super._email;
+  String get _userName {
+    _$_userNameAtom.reportRead();
+    return super._userName;
   }
 
   @override
-  set _email(String value) {
-    _$_emailAtom.reportWrite(value, super._email, () {
-      super._email = value;
+  set _userName(String value) {
+    _$_userNameAtom.reportWrite(value, super._userName, () {
+      super._userName = value;
     });
   }
 
@@ -61,11 +61,11 @@ mixin _$LoginController on LoginControllerBase, Store {
       ActionController(name: 'LoginControllerBase', context: context);
 
   @override
-  dynamic setEmail(String value) {
+  dynamic setUserName(String value) {
     final _$actionInfo = _$LoginControllerBaseActionController.startAction(
-        name: 'LoginControllerBase.setEmail');
+        name: 'LoginControllerBase.setUserName');
     try {
-      return super.setEmail(value);
+      return super.setUserName(value);
     } finally {
       _$LoginControllerBaseActionController.endAction(_$actionInfo);
     }

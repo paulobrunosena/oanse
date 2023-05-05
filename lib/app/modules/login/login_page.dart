@@ -4,7 +4,7 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 
 import '../../shared/constants.dart';
-import '../../shared/model/login/login_model.dart';
+import '../../shared/model/leadership/leadership_model.dart';
 import '../../shared/widgets/custom_icon_button.dart';
 import '../../shared/widgets/custom_text_field.dart';
 import 'login_controller.dart';
@@ -20,7 +20,8 @@ class LoginPage extends StatefulWidget {
 class LoginPageState extends State<LoginPage> {
   final controller = Modular.get<LoginController>();
   final _key = GlobalKey<ScaffoldMessengerState>();
-  final LoginModel _data = LoginModel();
+  final LeadershipModel _data =
+      LeadershipModel(id: 0, name: "", userName: "", password: "");
   late Image logo;
   late DecorationImage decorationImage;
 
@@ -111,7 +112,7 @@ class LoginPageState extends State<LoginPage> {
           key: controller.formController.key,
           child: Column(
             children: <Widget>[
-              email,
+              userName,
               const SizedBox(
                 height: 20,
               ),
@@ -128,12 +129,12 @@ class LoginPageState extends State<LoginPage> {
           ),
         ),
       );
-  Widget get email => CustomTextField(
-        hint: 'E-mail',
+  Widget get userName => CustomTextField(
+        hint: 'Username',
         prefix: const Icon(Icons.email),
         textInputType: TextInputType.emailAddress,
-        onSaved: _data.setEmail,
-        onChanged: controller.setEmail,
+        onSaved: (value) => _data.userName = value ?? "",
+        onChanged: controller.setUserName,
         textInputAction: TextInputAction.next,
       );
 
@@ -143,7 +144,7 @@ class LoginPageState extends State<LoginPage> {
             hint: 'Senha',
             prefix: const Icon(Icons.lock),
             obscure: !controller.senhaVisible,
-            onSaved: _data.setSenha,
+            onSaved: (value) => _data.password = value ?? "",
             onChanged: controller.setSenha,
             suffix: CustomIconButton(
               radius: 32,

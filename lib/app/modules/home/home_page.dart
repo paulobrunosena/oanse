@@ -6,24 +6,24 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../shared/constants.dart';
 import '../../shared/model/leadership/leadership_model.dart';
 import '../../shared/widgets/card_menu.dart';
-import 'home_leadership_controller.dart';
+import 'home_controller.dart';
 
-class HomeLeadershipPage extends StatefulWidget {
+class HomePage extends StatefulWidget {
   final String title;
   final LeadershipModel? leadership;
 
-  const HomeLeadershipPage({
+  const HomePage({
     Key? key,
     this.title = "Oanse App",
     this.leadership,
   }) : super(key: key);
 
   @override
-  HomeLeadershipPageState createState() => HomeLeadershipPageState();
+  HomePageState createState() => HomePageState();
 }
 
-class HomeLeadershipPageState extends State<HomeLeadershipPage> {
-  final controller = Modular.get<HomeLeadershipController>();
+class HomePageState extends State<HomePage> {
+  final controller = Modular.get<HomeController>();
   late Image logoUrsinho;
   late Image logoFaisca;
   late Image logoFlama;
@@ -145,7 +145,7 @@ class HomeLeadershipPageState extends State<HomeLeadershipPage> {
           CardMenuWidget(
             icone: FontAwesomeIcons.calendarWeek,
             label: "PONTUAÇÃO SEMANAL",
-            route: "$routeHomeLeadership$routeLeadershipWeeklyScore",
+            route: "$routeHome$routeWeeklyScore",
             arguments: widget.leadership,
           ),
           const CardMenuWidget(

@@ -50,10 +50,9 @@ abstract class SplashControllerBase with Store {
     await initHive();
     var result = _authHiveService.getDataUserLocal();
     if (result == null) {
-      Modular.to.pushReplacementNamed('$routeLoginLeadership/');
+      Modular.to.pushReplacementNamed('$routeLogin/');
     } else {
-      Modular.to
-          .pushReplacementNamed('$routeHomeLeadership/', arguments: result);
+      Modular.to.pushReplacementNamed('$routeHome/', arguments: result);
     }
   }
 
@@ -70,8 +69,8 @@ abstract class SplashControllerBase with Store {
           }
         }
         EasyLoading.dismiss();
-        Modular.to.pushReplacementNamed('$routeHomeLeadership/',
-            arguments: leadershipSelect);
+        Modular.to
+            .pushReplacementNamed('$routeHome/', arguments: leadershipSelect);
       },
       (error) {
         EasyLoading.dismiss();

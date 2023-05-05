@@ -9,13 +9,12 @@ import '../../shared/services/interfaces/auth_hive_service_interface.dart';
 import '../../shared/services/interfaces/auth_service_interface.dart';
 import '../../shared/services/interfaces/user_service_interface.dart';
 
-part 'home_leadership_controller.g.dart';
+part 'home_controller.g.dart';
 
-class HomeLeadershipController = HomeLeadershipControllerBase
-    with _$HomeLeadershipController;
+class HomeController = HomeControllerBase with _$HomeController;
 
-abstract class HomeLeadershipControllerBase with Store {
-  HomeLeadershipControllerBase(
+abstract class HomeControllerBase with Store {
+  HomeControllerBase(
     this._authService,
     this._authHiveService,
     this._userService,
@@ -47,7 +46,7 @@ abstract class HomeLeadershipControllerBase with Store {
     EasyLoading.show(status: "Realizando logout, aguarde...");
     await _authHiveService.removeDataUserLocal();
     EasyLoading.dismiss();
-    Modular.to.pushReplacementNamed('$routeLoginLeadership/');
+    Modular.to.pushReplacementNamed('$routeLogin/');
   }
 
   Future<void> allUsers() async {

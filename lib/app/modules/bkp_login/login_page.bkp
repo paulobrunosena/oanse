@@ -4,10 +4,10 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 
 import '../../shared/constants.dart';
-import '../../shared/model/leadership/leadership_model.dart';
+import '../../shared/model/login/login_model.dart';
 import '../../shared/widgets/custom_icon_button.dart';
 import '../../shared/widgets/custom_text_field.dart';
-import 'login_leadership_controller.dart';
+import 'login_controller.bkp';
 
 class LoginPage extends StatefulWidget {
   final String title;
@@ -18,10 +18,9 @@ class LoginPage extends StatefulWidget {
 }
 
 class LoginPageState extends State<LoginPage> {
-  final controller = Modular.get<LoginLeadershipController>();
+  final controller = Modular.get<LoginController>();
   final _key = GlobalKey<ScaffoldMessengerState>();
-  final LeadershipModel _data =
-      LeadershipModel(id: 0, name: "", userName: "", password: "");
+  final LoginModel _data = LoginModel();
   late Image logo;
   late DecorationImage decorationImage;
 
@@ -112,7 +111,7 @@ class LoginPageState extends State<LoginPage> {
           key: controller.formController.key,
           child: Column(
             children: <Widget>[
-              userName,
+              email,
               const SizedBox(
                 height: 20,
               ),
@@ -129,12 +128,12 @@ class LoginPageState extends State<LoginPage> {
           ),
         ),
       );
-  Widget get userName => CustomTextField(
-        hint: 'Username',
+  Widget get email => CustomTextField(
+        hint: 'E-mail',
         prefix: const Icon(Icons.email),
         textInputType: TextInputType.emailAddress,
-        onSaved: (value) => _data.userName = value ?? "",
-        onChanged: controller.setUserName,
+        onSaved: _data.setEmail,
+        onChanged: controller.setEmail,
         textInputAction: TextInputAction.next,
       );
 
@@ -144,7 +143,7 @@ class LoginPageState extends State<LoginPage> {
             hint: 'Senha',
             prefix: const Icon(Icons.lock),
             obscure: !controller.senhaVisible,
-            onSaved: (value) => _data.password = value ?? "",
+            onSaved: _data.setSenha,
             onChanged: controller.setSenha,
             suffix: CustomIconButton(
               radius: 32,

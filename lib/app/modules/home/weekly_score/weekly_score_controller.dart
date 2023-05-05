@@ -2,7 +2,6 @@ import 'package:asuka/asuka.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:mobx/mobx.dart';
-import 'package:oanse/app/modules/home_leadership/weekly_score/store/score_model_store.dart';
 
 import '../../../shared/model/leadership/leadership_model.dart';
 import '../../../shared/model/meeting/meeting_model.dart';
@@ -12,6 +11,7 @@ import '../../../shared/model/score_item/score_item_model.dart';
 import '../../../shared/services/interfaces/meeting_service_interface.dart';
 import '../../../shared/services/interfaces/oansist_service_interface.dart';
 import '../../../shared/services/interfaces/score_item_service_interface.dart';
+import 'store/score_model_store.dart';
 
 part 'weekly_score_controller.g.dart';
 
