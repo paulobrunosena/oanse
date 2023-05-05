@@ -6,4 +6,5 @@ import '../../model/meeting/meeting_model.dart';
 abstract class IMeetingRepository implements Disposable {
   Future<Result<bool, Exception>> addMeeting(MeetingModel data);
   Future<Result<List<MeetingModel>, Exception>> allMeeting();
+  Future<Result<List<MeetingModel>, Exception>> allMeetingHive();
 }

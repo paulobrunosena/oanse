@@ -1,5 +1,6 @@
 import 'package:mobx/mobx.dart';
-import 'package:oanse/app/shared/model/score/score_model.dart';
+
+import '../../../../shared/model/score/score_model.dart';
 
 part 'score_model_store.g.dart';
 
