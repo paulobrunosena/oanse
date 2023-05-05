@@ -31,37 +31,7 @@ class OansistHiveRepository implements IOansistRepository {
     if (list.isNotEmpty) {
       return Success(list);
     } else {
-      List<OansistModel> listOansist = [
-        OansistModel(
-          id: 1,
-          name: "Maria Clara Shirayanagui",
-          birthDate: DateTime.parse("2017-07-15 00:00:00"),
-          gender: "F",
-          clubId: 1,
-        ),
-        OansistModel(
-          id: 2,
-          name: "Asafe Margarido",
-          birthDate: DateTime.parse("2017-10-18 00:00:00"),
-          gender: "M",
-          clubId: 1,
-        ),
-        OansistModel(
-          id: 5,
-          name: "Fabrício César de Lima Gomes",
-          birthDate: DateTime.parse("2013-01-15 00:00:00"),
-          gender: "M",
-          clubId: 3,
-        ),
-        OansistModel(
-          id: 7,
-          name: "Marcos dos Reis Campêlo",
-          birthDate: DateTime.parse("2012-06-13 00:00:00"),
-          gender: "M",
-          clubId: 3,
-        ),
-      ];
-      await box.addAll(listOansist);
+      await initListOansist();
       return Success(box.values.toList());
     }
   }
@@ -69,14 +39,19 @@ class OansistHiveRepository implements IOansistRepository {
   @override
   Future<Result<List<OansistModel>, Exception>> clubOansist(int idClub) async {
     List<OansistModel> list = box.values.toList();
-    if (list.isNotEmpty) {
-      return Success(
-        list
-            .where(
-              (element) => element.clubId == idClub,
-            )
-            .toList(),
-      );
+    if (list.isEmpty) {
+      await initListOansist();
+      list = box.values.toList();
+    }
+
+    var result = list
+        .where(
+          (element) => element.clubId == idClub,
+        )
+        .toList();
+
+    if (result.isNotEmpty) {
+      return Success(result);
     } else {
       return Error(Exception("Não existem oansistas cadastrados para o clube"));
     }
@@ -93,6 +68,40 @@ class OansistHiveRepository implements IOansistRepository {
     }
 
     return false;
+  }
+
+  Future<void> initListOansist() async {
+    List<OansistModel> listOansist = [
+      OansistModel(
+        id: 1,
+        name: "Maria Clara Shirayanagui",
+        birthDate: DateTime.parse("2017-07-15 00:00:00"),
+        gender: "F",
+        clubId: 1,
+      ),
+      OansistModel(
+        id: 2,
+        name: "Asafe Margarido",
+        birthDate: DateTime.parse("2017-10-18 00:00:00"),
+        gender: "M",
+        clubId: 1,
+      ),
+      OansistModel(
+        id: 5,
+        name: "Fabrício César de Lima Gomes",
+        birthDate: DateTime.parse("2013-01-15 00:00:00"),
+        gender: "M",
+        clubId: 3,
+      ),
+      OansistModel(
+        id: 7,
+        name: "Marcos dos Reis Campêlo",
+        birthDate: DateTime.parse("2012-06-13 00:00:00"),
+        gender: "M",
+        clubId: 3,
+      ),
+    ];
+    await box.addAll(listOansist);
   }
 
   @override
