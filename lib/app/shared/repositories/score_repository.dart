@@ -10,7 +10,7 @@ class ScoreRepository implements IScoreRepository {
     _initDb();
   }
   _initDb() async {
-    box = Hive.box<ScoreModel>(boxScoreItem);
+    box = Hive.box<ScoreModel>(boxScore);
   }
 
   late Box<ScoreModel> box;
