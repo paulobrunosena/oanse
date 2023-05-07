@@ -1,9 +1,20 @@
+import 'package:hive/hive.dart';
+
+part 'score_model.g.dart';
+
+@HiveType(typeId: 6)
 class ScoreModel {
+  @HiveField(0)
   int? id;
+  @HiveField(1)
   String? quantity;
+  @HiveField(2)
   int? meetingId;
+  @HiveField(3)
   int? scoreItemId;
+  @HiveField(4)
   int? leadershipId;
+  @HiveField(5)
   int? oansistId;
 
   ScoreModel(
