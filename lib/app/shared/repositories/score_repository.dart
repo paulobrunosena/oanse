@@ -5,8 +5,8 @@ import '../constants.dart';
 import '../model/score/score_model.dart';
 import 'interfaces/score_repository_interface.dart';
 
-class ScoreItemHiveRepository implements IScoreRepository {
-  ScoreItemHiveRepository() {
+class ScoreRepository implements IScoreRepository {
+  ScoreRepository() {
     _initDb();
   }
   _initDb() async {
