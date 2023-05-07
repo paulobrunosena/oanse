@@ -170,59 +170,62 @@ class _WeeklyScorePageState extends State<WeeklyScorePage> {
       );
 
   Widget get scoreItems => Observer(builder: (_) {
-        return Expanded(
-          child: ListView.separated(
-            shrinkWrap: true,
-            itemCount: controller.scoreItems.length,
-            itemBuilder: (_, index) {
-              ScoreItemModel scoreItem = controller.scoreItems[index];
-              ScoreModelStore scoreStore = controller.scoresStore[index];
+        return controller.showScoreItems
+            ? Expanded(
+                child: ListView.separated(
+                  shrinkWrap: true,
+                  itemCount: controller.scoreItems.length,
+                  itemBuilder: (_, index) {
+                    ScoreItemModel scoreItem = controller.scoreItems[index];
+                    ScoreModelStore scoreStore = controller.scoresStore[index];
 
-              return Observer(builder: (_) {
-                if (scoreItem.isSport) {
-                  return RadioListTile<int>(
-                    title: Text(scoreItem.name!),
-                    subtitle: scoreStore.quantity > 0
-                        ? Text("${scoreItem.pointsFormatter} pontos")
-                        : const Text("Não marcou ponto"),
-                    groupValue: positionGames,
-                    value: index,
-                    onChanged: (value) {
-                      if (positionGames == null) {
-                        scoreStore.setQuantity(1);
-                        controller.incrementTotalScore(scoreItem.points!);
+                    return Observer(builder: (_) {
+                      if (scoreItem.isSport) {
+                        return RadioListTile<int>(
+                          title: Text(scoreItem.name!),
+                          subtitle: scoreStore.quantity > 0
+                              ? Text("${scoreItem.pointsFormatter} pontos")
+                              : const Text("Não marcou ponto"),
+                          groupValue: positionGames,
+                          value: index,
+                          onChanged: (value) {
+                            if (positionGames == null) {
+                              scoreStore.setQuantity(1);
+                              controller.incrementTotalScore(scoreItem.points!);
+                            } else {
+                              var scoreItemBefore =
+                                  controller.scoreItems[positionGames!];
+                              var scoreStoreBefore =
+                                  controller.scoresStore[positionGames!];
+                              scoreStoreBefore.setQuantity(0);
+                              controller
+                                  .decrementTotalScore(scoreItemBefore.points!);
+                              scoreStore.setQuantity(1);
+                              controller.incrementTotalScore(scoreItem.points!);
+                            }
+                            positionGames = value;
+                          },
+                          controlAffinity: ListTileControlAffinity.trailing,
+                        );
                       } else {
-                        var scoreItemBefore =
-                            controller.scoreItems[positionGames!];
-                        var scoreStoreBefore =
-                            controller.scoresStore[positionGames!];
-                        scoreStoreBefore.setQuantity(0);
-                        controller.decrementTotalScore(scoreItemBefore.points!);
-                        scoreStore.setQuantity(1);
-                        controller.incrementTotalScore(scoreItem.points!);
+                        return ListTile(
+                          title: Text(scoreItem.name!),
+                          subtitle: scoreStore.quantity > 0
+                              ? Text("${scoreItem.pointsFormatter} pontos")
+                              : const Text("Não marcou ponto"),
+                          trailing: action(index),
+                        );
                       }
-                      positionGames = value;
-                    },
-                    controlAffinity: ListTileControlAffinity.trailing,
-                  );
-                } else {
-                  return ListTile(
-                    title: Text(scoreItem.name!),
-                    subtitle: scoreStore.quantity > 0
-                        ? Text("${scoreItem.pointsFormatter} pontos")
-                        : const Text("Não marcou ponto"),
-                    trailing: action(index),
-                  );
-                }
-              });
-            },
-            separatorBuilder: (_, __) {
-              return const Divider(
-                height: 0,
-              );
-            },
-          ),
-        );
+                    });
+                  },
+                  separatorBuilder: (_, __) {
+                    return const Divider(
+                      height: 0,
+                    );
+                  },
+                ),
+              )
+            : Container();
       });
 
   Widget action(int index) {

@@ -48,6 +48,9 @@ abstract class WeeklyScoreControllerBase with Store {
   @observable
   OansistModel? selectOansist;
 
+  @computed
+  bool get showScoreItems => selectMeeting != null && selectOansist != null;
+
   @action
   void setSelectOansist(OansistModel? newValue) {
     selectOansist = newValue;

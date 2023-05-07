@@ -9,6 +9,14 @@ part of 'weekly_score_controller.dart';
 // ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic, no_leading_underscores_for_local_identifiers
 
 mixin _$WeeklyScoreController on WeeklyScoreControllerBase, Store {
+  Computed<bool>? _$showScoreItemsComputed;
+
+  @override
+  bool get showScoreItems =>
+      (_$showScoreItemsComputed ??= Computed<bool>(() => super.showScoreItems,
+              name: 'WeeklyScoreControllerBase.showScoreItems'))
+          .value;
+
   late final _$selectMeetingAtom =
       Atom(name: 'WeeklyScoreControllerBase.selectMeeting', context: context);
 
@@ -136,7 +144,8 @@ mixin _$WeeklyScoreController on WeeklyScoreControllerBase, Store {
     return '''
 selectMeeting: ${selectMeeting},
 selectOansist: ${selectOansist},
-loadingWidgets: ${loadingWidgets}
+loadingWidgets: ${loadingWidgets},
+showScoreItems: ${showScoreItems}
     ''';
   }
 }
