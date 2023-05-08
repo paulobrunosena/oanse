@@ -32,6 +32,7 @@ void main() async {
   await Hive.openBox<ScoreItemModel>(boxScoreItem);
   await Hive.openBox<OansistModel>(boxOansist);
   await Hive.openBox<MeetingModel>(boxMeeting);
+  await Hive.openBox(boxIdGenerator);
   //await Hive.openBox(boxMeeting);
   //await Hive.openBox(boxScore);
 

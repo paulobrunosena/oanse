@@ -27,3 +27,4 @@ const boxMeeting = 'meeting';
 const boxScore = 'score';
 const boxScoreItem = 'score_item';
 const boxRole = 'role';
+const boxIdGenerator = 'id_generator';
