@@ -215,6 +215,20 @@ class _WeeklyScorePageState extends State<WeeklyScorePage> {
                               ? Text("${scoreItem.pointsFormatter} pontos")
                               : const Text("Não marcou ponto"),
                           trailing: action(index),
+                          onTap: (action(index) is Switch)
+                              ? () {
+                                  Switch switchScoreAux = switchScore(index);
+                                  score.setQuantity(
+                                      !switchScoreAux.value ? 1 : 0);
+                                  if (!switchScoreAux.value) {
+                                    controller
+                                        .incrementTotalScore(scoreItem.points!);
+                                  } else {
+                                    controller
+                                        .decrementTotalScore(scoreItem.points!);
+                                  }
+                                }
+                              : null,
                         );
                       }
                     });
@@ -235,7 +249,7 @@ class _WeeklyScorePageState extends State<WeeklyScorePage> {
     return (scoreItem.isSwitchScore) ? switchScore(index) : amount(index);
   }
 
-  Widget switchScore(int index) {
+  Switch switchScore(int index) {
     ScoreItemModel scoreItem = controller.scoreItems[index];
     ScoreModel score = controller.scores[index];
     return Switch(
