@@ -1,13 +1,17 @@
 import 'package:hive/hive.dart';
+import 'package:mobx/mobx.dart';
 
 part 'score_model.g.dart';
 
 @HiveType(typeId: 6)
-class ScoreModel {
+class ScoreModel = ScoreModelBase with _$ScoreModel;
+
+abstract class ScoreModelBase with Store {
   @HiveField(0)
   int? id;
   @HiveField(1)
-  String? quantity;
+  @observable
+  int quantity = 0;
   @HiveField(2)
   int? meetingId;
   @HiveField(3)
@@ -17,15 +21,15 @@ class ScoreModel {
   @HiveField(5)
   int? oansistId;
 
-  ScoreModel(
+  ScoreModelBase(
       {this.id,
-      this.quantity,
+      this.quantity = 0,
       this.meetingId,
       this.scoreItemId,
       this.leadershipId,
       this.oansistId});
 
-  ScoreModel.fromJson(Map<String, dynamic> json) {
+  ScoreModelBase.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     quantity = json['quantity'];
     meetingId = json['meeting_id'];
@@ -45,9 +49,8 @@ class ScoreModel {
     return data;
   }
 
-  int get quantityForInt => int.parse(quantity ?? "0");
-
+  @action
   void setQuantity(int newValue) {
-    quantity = newValue.toString();
+    quantity = newValue;
   }
 }

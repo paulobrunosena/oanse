@@ -2,6 +2,7 @@ import 'package:asuka/asuka.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:mobx/mobx.dart';
+import 'package:oanse/app/shared/utils/sequence.dart';
 
 import '../../../shared/model/leadership/leadership_model.dart';
 import '../../../shared/model/meeting/meeting_model.dart';
@@ -11,7 +12,6 @@ import '../../../shared/model/score_item/score_item_model.dart';
 import '../../../shared/services/interfaces/meeting_service_interface.dart';
 import '../../../shared/services/interfaces/oansist_service_interface.dart';
 import '../../../shared/services/interfaces/score_item_service_interface.dart';
-import 'store/score_model_store.dart';
 
 part 'weekly_score_controller.g.dart';
 
@@ -31,8 +31,7 @@ abstract class WeeklyScoreControllerBase with Store {
   ObservableList<MeetingModel> meetings = ObservableList<MeetingModel>();
   ObservableList<OansistModel> oansists = ObservableList<OansistModel>();
   ObservableList<ScoreItemModel> scoreItems = ObservableList<ScoreItemModel>();
-  ObservableList<ScoreModelStore> scoresStore =
-      ObservableList<ScoreModelStore>();
+  ObservableList<ScoreModel> scores = ObservableList<ScoreModel>();
   late LeadershipModel leadership;
 
   NumberFormat formatter = NumberFormat('###,###,###');
@@ -117,19 +116,19 @@ abstract class WeeklyScoreControllerBase with Store {
   Future<void> loadScoreItems() async {
     var result = await _serviceScoreItem.allScoreItems();
     scoreItems.clear();
-    scoresStore.clear();
-    result.when((success) {
+    scores.clear();
+    result.when((success) async {
       scoreItems.addAll(success);
       for (ScoreItemModel scoreItem in scoreItems) {
-        var scoreModel = ScoreModel(
-          quantity: "0",
+        ScoreModel store = ScoreModel(
+          id: await Sequence.idGenerator(),
+          quantity: 0,
           meetingId: selectMeeting?.id,
           leadershipId: leadership.id,
           oansistId: selectOansist?.id,
           scoreItemId: scoreItem.id,
         );
-        ScoreModelStore store = ScoreModelStore(scoreModel);
-        scoresStore.add(store);
+        scores.add(store);
       }
     }, (error) {
       AsukaSnackbar.alert(error.toString()).show();

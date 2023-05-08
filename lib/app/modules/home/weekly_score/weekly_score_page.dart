@@ -3,8 +3,9 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 
 import '../../../shared/model/leadership/leadership_model.dart';
+import '../../../shared/model/score/score_model.dart';
 import '../../../shared/model/score_item/score_item_model.dart';
-import 'store/score_model_store.dart';
+
 import 'weekly_score_controller.dart';
 
 class WeeklyScorePage extends StatefulWidget {
@@ -177,30 +178,30 @@ class _WeeklyScorePageState extends State<WeeklyScorePage> {
                   itemCount: controller.scoreItems.length,
                   itemBuilder: (_, index) {
                     ScoreItemModel scoreItem = controller.scoreItems[index];
-                    ScoreModelStore scoreStore = controller.scoresStore[index];
+                    ScoreModel score = controller.scores[index];
 
                     return Observer(builder: (_) {
                       if (scoreItem.isSport) {
                         return RadioListTile<int>(
                           title: Text(scoreItem.name!),
-                          subtitle: scoreStore.quantity > 0
+                          subtitle: score.quantity > 0
                               ? Text("${scoreItem.pointsFormatter} pontos")
                               : const Text("Não marcou ponto"),
                           groupValue: positionGames,
                           value: index,
                           onChanged: (value) {
                             if (positionGames == null) {
-                              scoreStore.setQuantity(1);
+                              score.setQuantity(1);
                               controller.incrementTotalScore(scoreItem.points!);
                             } else {
                               var scoreItemBefore =
                                   controller.scoreItems[positionGames!];
                               var scoreStoreBefore =
-                                  controller.scoresStore[positionGames!];
+                                  controller.scores[positionGames!];
                               scoreStoreBefore.setQuantity(0);
                               controller
                                   .decrementTotalScore(scoreItemBefore.points!);
-                              scoreStore.setQuantity(1);
+                              score.setQuantity(1);
                               controller.incrementTotalScore(scoreItem.points!);
                             }
                             positionGames = value;
@@ -210,7 +211,7 @@ class _WeeklyScorePageState extends State<WeeklyScorePage> {
                       } else {
                         return ListTile(
                           title: Text(scoreItem.name!),
-                          subtitle: scoreStore.quantity > 0
+                          subtitle: score.quantity > 0
                               ? Text("${scoreItem.pointsFormatter} pontos")
                               : const Text("Não marcou ponto"),
                           trailing: action(index),
@@ -236,23 +237,23 @@ class _WeeklyScorePageState extends State<WeeklyScorePage> {
 
   Widget switchScore(int index) {
     ScoreItemModel scoreItem = controller.scoreItems[index];
-    ScoreModelStore scoreStore = controller.scoresStore[index];
+    ScoreModel score = controller.scores[index];
     return Switch(
       onChanged: (bool value) {
-        scoreStore.setQuantity(value ? 1 : 0);
+        score.setQuantity(value ? 1 : 0);
         if (value) {
           controller.incrementTotalScore(scoreItem.points!);
         } else {
           controller.decrementTotalScore(scoreItem.points!);
         }
       },
-      value: scoreStore.quantity > 0,
+      value: score.quantity > 0,
     );
   }
 
   Widget amount(int index) {
     ScoreItemModel scoreItem = controller.scoreItems[index];
-    ScoreModelStore scoreStore = controller.scoresStore[index];
+    ScoreModel scoreStore = controller.scores[index];
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [

@@ -18,7 +18,7 @@ class ScoreModelAdapter extends TypeAdapter<ScoreModel> {
     };
     return ScoreModel(
       id: fields[0] as int?,
-      quantity: fields[1] as String?,
+      quantity: fields[1] as int,
       meetingId: fields[2] as int?,
       scoreItemId: fields[3] as int?,
       leadershipId: fields[4] as int?,
@@ -53,4 +53,49 @@ class ScoreModelAdapter extends TypeAdapter<ScoreModel> {
       other is ScoreModelAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
+}
+
+// **************************************************************************
+// StoreGenerator
+// **************************************************************************
+
+// ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic, no_leading_underscores_for_local_identifiers
+
+mixin _$ScoreModel on ScoreModelBase, Store {
+  late final _$quantityAtom =
+      Atom(name: 'ScoreModelBase.quantity', context: context);
+
+  @override
+  int get quantity {
+    _$quantityAtom.reportRead();
+    return super.quantity;
+  }
+
+  @override
+  set quantity(int value) {
+    _$quantityAtom.reportWrite(value, super.quantity, () {
+      super.quantity = value;
+    });
+  }
+
+  late final _$ScoreModelBaseActionController =
+      ActionController(name: 'ScoreModelBase', context: context);
+
+  @override
+  void setQuantity(int newValue) {
+    final _$actionInfo = _$ScoreModelBaseActionController.startAction(
+        name: 'ScoreModelBase.setQuantity');
+    try {
+      return super.setQuantity(newValue);
+    } finally {
+      _$ScoreModelBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  String toString() {
+    return '''
+quantity: ${quantity}
+    ''';
+  }
 }
