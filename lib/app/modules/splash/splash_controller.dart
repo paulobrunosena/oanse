@@ -12,6 +12,7 @@ import '../../shared/model/role/role_model.dart';
 import '../../shared/services/interfaces/auth_hive_service_interface.dart';
 import '../../shared/services/interfaces/auth_service_interface.dart';
 import '../../shared/services/interfaces/leadership_service_interface.dart';
+import '../../shared/utils/sequence.dart';
 
 part 'splash_controller.g.dart';
 
@@ -85,17 +86,18 @@ abstract class SplashControllerBase with Store {
     Box<RoleModel> roleBox = Hive.box<RoleModel>(boxRole);
 
     if (leadershipBox.isEmpty) {
-      await leadershipBox.add(
+      int idLeadership = await Sequence.idGenerator();
+      await leadershipBox.put(
+        idLeadership,
         LeadershipModel(
+            id: idLeadership,
             name: "Paulo Ricardo Martins",
             password: "oanse2023",
             userName: "paulomartins",
-            id: 2,
             club: 3,
             role: 2),
       );
     }
-
     if (clubBox.isEmpty) {
       List<ClubModel> listClub = [
         ClubModel(
