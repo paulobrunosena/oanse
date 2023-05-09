@@ -1,5 +1,6 @@
 import 'package:asuka/asuka.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:intl/intl.dart';
 import 'package:mobx/mobx.dart';
 import 'package:oanse/app/shared/utils/sequence.dart';
@@ -12,6 +13,7 @@ import '../../../shared/model/score_item/score_item_model.dart';
 import '../../../shared/services/interfaces/meeting_service_interface.dart';
 import '../../../shared/services/interfaces/oansist_service_interface.dart';
 import '../../../shared/services/interfaces/score_item_service_interface.dart';
+import '../../../shared/services/interfaces/score_service_interface.dart';
 
 part 'weekly_score_controller.g.dart';
 
@@ -23,11 +25,13 @@ abstract class WeeklyScoreControllerBase with Store {
     this._serviceMeeting,
     this._serviceOansist,
     this._serviceScoreItem,
+    this._serviceScore,
   );
 
   final IMeetingService _serviceMeeting;
   final IOansistService _serviceOansist;
   final IScoreItemService _serviceScoreItem;
+  final IScoreService _serviceScore;
   ObservableList<MeetingModel> meetings = ObservableList<MeetingModel>();
   ObservableList<OansistModel> oansists = ObservableList<OansistModel>();
   ObservableList<ScoreItemModel> scoreItems = ObservableList<ScoreItemModel>();
@@ -35,6 +39,9 @@ abstract class WeeklyScoreControllerBase with Store {
   late LeadershipModel leadership;
 
   NumberFormat formatter = NumberFormat('###,###,###');
+
+  @observable
+  bool? isLoaded;
 
   @observable
   MeetingModel? selectMeeting;
@@ -78,11 +85,22 @@ abstract class WeeklyScoreControllerBase with Store {
     _totalScore = _totalScore - newValue;
   }
 
+  @action
+  void resetTotalScore() {
+    _totalScore = 0;
+  }
+
+  @action
+  void setIsLoaded(bool? newValue) {
+    isLoaded = newValue;
+  }
+
   initWidgets(LeadershipModel leadershipModel) {
     leadership = leadershipModel;
     selectMeeting = null;
     selectOansist = null;
     _totalScore = 0;
+    setIsLoaded(null);
     setLoadingWidgets(true);
     Future.wait([
       loadMeetings(),
@@ -114,22 +132,10 @@ abstract class WeeklyScoreControllerBase with Store {
   }
 
   Future<void> loadScoreItems() async {
-    var result = await _serviceScoreItem.allScoreItems();
+    var result = await _serviceScoreItem.list();
     scoreItems.clear();
-    scores.clear();
     result.when((success) async {
       scoreItems.addAll(success);
-      for (ScoreItemModel scoreItem in scoreItems) {
-        ScoreModel store = ScoreModel(
-          id: await Sequence.idGenerator(),
-          quantity: 0,
-          meetingId: selectMeeting?.id,
-          leadershipId: leadership.id,
-          oansistId: selectOansist?.id,
-          scoreItemId: scoreItem.id,
-        );
-        scores.add(store);
-      }
     }, (error) {
       AsukaSnackbar.alert(error.toString()).show();
     });
@@ -158,6 +164,7 @@ abstract class WeeklyScoreControllerBase with Store {
                 onTap: () {
                   Navigator.pop(context);
                   setSelectMeeting(meeting);
+                  loadDataWeeklyScore();
                 },
               );
             },
@@ -194,6 +201,7 @@ abstract class WeeklyScoreControllerBase with Store {
                   onTap: () {
                     Navigator.pop(context);
                     setSelectOansist(oansist);
+                    loadDataWeeklyScore();
                   },
                 );
               },
@@ -207,5 +215,65 @@ abstract class WeeklyScoreControllerBase with Store {
     );
   }
 
-  Future<void> save() async {}
+  Future<void> loadDataWeeklyScore() async {
+    if (selectMeeting != null && selectOansist != null) {
+      var result =
+          await _serviceScore.list(selectMeeting!.id, selectOansist!.id!);
+
+      result.when((listScoreModel) async {
+        if (listScoreModel.isEmpty) {
+          await initScore();
+          resetTotalScore();
+          setIsLoaded(false);
+        } else {
+          scores.clear();
+          scores.addAll(listScoreModel);
+          loadTotalScore();
+          setIsLoaded(_totalScore > 0);
+        }
+      }, (error) {
+        AsukaSnackbar.alert(error.toString()).show();
+      });
+    }
+  }
+
+  Future<void> initScore() async {
+    scores.clear();
+    for (ScoreItemModel scoreItem in scoreItems) {
+      int idScore = await Sequence.idGenerator();
+      ScoreModel scoreModel = ScoreModel(
+        id: idScore,
+        quantity: 0,
+        meetingId: selectMeeting?.id,
+        leadershipId: leadership.id,
+        oansistId: selectOansist?.id,
+        scoreItemId: scoreItem.id,
+      );
+      await _serviceScore.put(idScore, scoreModel);
+      scores.add(scoreModel);
+    }
+  }
+
+  loadTotalScore() {
+    resetTotalScore();
+    for (ScoreModel item in scores) {
+      ScoreItemModel scoreItem = getScoreItem(item.scoreItemId!);
+      int total = item.quantity * scoreItem.points!;
+      incrementTotalScore(total);
+    }
+  }
+
+  ScoreItemModel getScoreItem(int key) {
+    return _serviceScoreItem.get(key)!;
+  }
+
+  Future<void> save() async {
+    EasyLoading.show(status: "Salvando dados, aguarde...");
+    for (ScoreModel score in scores) {
+      int idScore = score.id!;
+      await _serviceScore.put(idScore, score);
+    }
+    setIsLoaded(_totalScore > 0);
+    EasyLoading.dismiss();
+  }
 }

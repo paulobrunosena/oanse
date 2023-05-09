@@ -17,6 +17,22 @@ mixin _$WeeklyScoreController on WeeklyScoreControllerBase, Store {
               name: 'WeeklyScoreControllerBase.showScoreItems'))
           .value;
 
+  late final _$isLoadedAtom =
+      Atom(name: 'WeeklyScoreControllerBase.isLoaded', context: context);
+
+  @override
+  bool? get isLoaded {
+    _$isLoadedAtom.reportRead();
+    return super.isLoaded;
+  }
+
+  @override
+  set isLoaded(bool? value) {
+    _$isLoadedAtom.reportWrite(value, super.isLoaded, () {
+      super.isLoaded = value;
+    });
+  }
+
   late final _$selectMeetingAtom =
       Atom(name: 'WeeklyScoreControllerBase.selectMeeting', context: context);
 
@@ -140,8 +156,31 @@ mixin _$WeeklyScoreController on WeeklyScoreControllerBase, Store {
   }
 
   @override
+  void resetTotalScore() {
+    final _$actionInfo = _$WeeklyScoreControllerBaseActionController
+        .startAction(name: 'WeeklyScoreControllerBase.resetTotalScore');
+    try {
+      return super.resetTotalScore();
+    } finally {
+      _$WeeklyScoreControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void setIsLoaded(bool? newValue) {
+    final _$actionInfo = _$WeeklyScoreControllerBaseActionController
+        .startAction(name: 'WeeklyScoreControllerBase.setIsLoaded');
+    try {
+      return super.setIsLoaded(newValue);
+    } finally {
+      _$WeeklyScoreControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   String toString() {
     return '''
+isLoaded: ${isLoaded},
 selectMeeting: ${selectMeeting},
 selectOansist: ${selectOansist},
 loadingWidgets: ${loadingWidgets},

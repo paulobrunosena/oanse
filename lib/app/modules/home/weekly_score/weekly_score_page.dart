@@ -134,38 +134,65 @@ class _WeeklyScorePageState extends State<WeeklyScorePage> {
 
   Widget get totalScore => Observer(
         builder: (_) {
-          return Padding(
-            padding: const EdgeInsets.only(top: 10, bottom: 10, right: 10),
-            child: Row(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.end,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const Icon(
-                  Icons.sports_score_rounded,
-                  color: Colors.grey,
-                ),
-                const SizedBox(
-                  width: 10,
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
+          return Row(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Visibility(
+                  visible: controller.isLoaded != null,
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 10),
+                    child: (controller.isLoaded != null && controller.isLoaded!)
+                        ? const Chip(
+                            label: Text(
+                              "Preenchido",
+                              style: TextStyle(color: Colors.white),
+                            ),
+                            backgroundColor: Colors.green,
+                          )
+                        : const Chip(
+                            label: Text(
+                              "Não Preenchido",
+                              style: TextStyle(color: Colors.white),
+                            ),
+                            backgroundColor: Colors.red,
+                          ),
+                  )),
+              Padding(
+                padding: const EdgeInsets.only(top: 10, bottom: 10, right: 10),
+                child: Row(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Text(
-                      "Pontuação total",
-                      style: textTheme.bodySmall?.copyWith(fontSize: 14),
+                    const Icon(
+                      Icons.sports_score_rounded,
+                      color: Colors.grey,
                     ),
                     const SizedBox(
-                      height: 5,
+                      width: 10,
                     ),
-                    Text(
-                      "${controller.totalScore} pontos",
-                      style: textTheme.titleSmall?.copyWith(fontSize: 16),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Text(
+                          "Pontuação total",
+                          style: textTheme.bodySmall?.copyWith(fontSize: 14),
+                        ),
+                        const SizedBox(
+                          height: 5,
+                        ),
+                        Text(
+                          "${controller.totalScore} pontos",
+                          style: textTheme.titleSmall?.copyWith(fontSize: 16),
+                        ),
+                      ],
                     ),
                   ],
                 ),
-              ],
-            ),
+              )
+            ],
           );
         },
       );
@@ -175,21 +202,27 @@ class _WeeklyScorePageState extends State<WeeklyScorePage> {
             ? Expanded(
                 child: ListView.separated(
                   shrinkWrap: true,
-                  itemCount: controller.scoreItems.length,
+                  itemCount: controller.scores.length,
                   itemBuilder: (_, index) {
-                    ScoreItemModel scoreItem = controller.scoreItems[index];
                     ScoreModel score = controller.scores[index];
+                    ScoreItemModel scoreItem =
+                        controller.getScoreItem(score.scoreItemId!);
 
                     return Observer(builder: (_) {
                       if (scoreItem.isSport) {
+                        if (score.quantity > 0) {
+                          positionGames = index;
+                        }
                         return RadioListTile<int>(
                           title: Text(scoreItem.name!),
                           subtitle: score.quantity > 0
                               ? Text("${scoreItem.pointsFormatter} pontos")
                               : const Text("Não marcou ponto"),
                           groupValue: positionGames,
+                          selected: score.quantity > 0,
                           value: index,
                           onChanged: (value) {
+                            debugPrint(value?.toString());
                             if (positionGames == null) {
                               score.setQuantity(1);
                               controller.incrementTotalScore(scoreItem.points!);

@@ -12,7 +12,7 @@ class ScoreItemRepository implements IScoreItemRepository {
   final Dio client;
 
   @override
-  Future<Result<List<ScoreItemModel>, Exception>> allScoreItems() async {
+  Future<Result<List<ScoreItemModel>, Exception>> list() async {
     try {
       var response = await client.get('score_item/');
 
@@ -43,5 +43,25 @@ class ScoreItemRepository implements IScoreItemRepository {
   }
 
   @override
+  ScoreItemModel? get(int key) {
+    return null;
+  }
+
+  @override
   void dispose() {}
+
+  @override
+  Future<Result<int, Exception>> add(ScoreItemModel data) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> delete(int key) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> put(int key, ScoreItemModel data) {
+    throw UnimplementedError();
+  }
 }

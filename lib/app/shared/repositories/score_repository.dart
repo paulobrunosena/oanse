@@ -22,27 +22,29 @@ class ScoreRepository implements IScoreRepository {
 
   @override
   Future<void> delete(int key) async {
-    await box.deleteAt(key);
+    await box.delete(key);
   }
 
   @override
   ScoreModel? get(int key) {
-    return box.getAt(key);
+    return box.get(key);
   }
 
   @override
   Future<Result<List<ScoreModel>, Exception>> list(
       int idMeeting, int idOansist) async {
     List<ScoreModel> list = box.values.toList();
-    return Success(list
+    var result = list
         .where((element) =>
             element.meetingId == idMeeting && element.oansistId == idOansist)
-        .toList());
+        .toList();
+    result.sort((a, b) => a.id!.compareTo(b.id!));
+    return Success(result);
   }
 
   @override
   Future<void> put(int key, ScoreModel data) async {
-    await box.putAt(key, data);
+    await box.put(key, data);
   }
 
   @override

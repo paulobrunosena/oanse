@@ -6,6 +6,7 @@ import '../../shared/services/interfaces/auth_service_interface.dart';
 import '../../shared/services/interfaces/meeting_service_interface.dart';
 import '../../shared/services/interfaces/oansist_service_interface.dart';
 import '../../shared/services/interfaces/score_item_service_interface.dart';
+import '../../shared/services/interfaces/score_service_interface.dart';
 import '../../shared/services/interfaces/user_service_interface.dart';
 import 'home_controller.dart';
 import 'home_page.dart';
@@ -24,6 +25,7 @@ class HomeModule extends Module {
           i<IMeetingService>(),
           i<IOansistService>(),
           i<IScoreItemService>(),
+          i<IScoreService>(),
         )),
   ];
 

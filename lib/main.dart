@@ -14,6 +14,7 @@ import 'app/shared/model/leadership/leadership_model.dart';
 import 'app/shared/model/meeting/meeting_model.dart';
 import 'app/shared/model/oansist/oansist_model.dart';
 import 'app/shared/model/role/role_model.dart';
+import 'app/shared/model/score/score_model.dart';
 import 'app/shared/model/score_item/score_item_model.dart';
 
 void main() async {
@@ -25,6 +26,7 @@ void main() async {
   Hive.registerAdapter(ScoreItemModelAdapter());
   Hive.registerAdapter(OansistModelAdapter());
   Hive.registerAdapter(MeetingModelAdapter());
+  Hive.registerAdapter(ScoreModelAdapter());
 
   await Hive.openBox<LeadershipModel>(boxLeadership);
   await Hive.openBox<ClubModel>(boxClub);
@@ -32,9 +34,8 @@ void main() async {
   await Hive.openBox<ScoreItemModel>(boxScoreItem);
   await Hive.openBox<OansistModel>(boxOansist);
   await Hive.openBox<MeetingModel>(boxMeeting);
+  await Hive.openBox<ScoreModel>(boxScore);
   await Hive.openBox(boxIdGenerator);
-  //await Hive.openBox(boxMeeting);
-  //await Hive.openBox(boxScore);
 
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]).then((_) {

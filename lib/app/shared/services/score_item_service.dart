@@ -9,8 +9,28 @@ class ScoreItemService implements IScoreItemService {
   final IScoreItemRepository _repository;
 
   @override
-  Future<Result<List<ScoreItemModel>, Exception>> allScoreItems() async {
-    return await _repository.allScoreItems();
+  Future<Result<List<ScoreItemModel>, Exception>> list() async {
+    return await _repository.list();
+  }
+
+  @override
+  Future<Result<int, Exception>> add(ScoreItemModel data) async {
+    return await _repository.add(data);
+  }
+
+  @override
+  Future<void> delete(int key) async {
+    return await _repository.delete(key);
+  }
+
+  @override
+  ScoreItemModel? get(int key) {
+    return _repository.get(key);
+  }
+
+  @override
+  Future<void> put(int key, ScoreItemModel data) async {
+    return await _repository.put(key, data);
   }
 
   @override
