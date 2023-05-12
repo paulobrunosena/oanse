@@ -9,4 +9,5 @@ abstract class IScoreItemService implements Disposable {
   Future<Result<int, Exception>> add(ScoreItemModel data);
   Future<void> put(int key, ScoreItemModel data);
   Future<void> delete(int key);
+  Future<Result<List<ScoreItemModel>, Exception>> listScoreItemSports();
 }

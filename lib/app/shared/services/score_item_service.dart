@@ -34,5 +34,10 @@ class ScoreItemService implements IScoreItemService {
   }
 
   @override
+  Future<Result<List<ScoreItemModel>, Exception>> listScoreItemSports() async {
+    return await _repository.listScoreItemSports();
+  }
+
+  @override
   void dispose() {}
 }

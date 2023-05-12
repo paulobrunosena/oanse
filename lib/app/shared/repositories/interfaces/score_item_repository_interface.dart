@@ -5,6 +5,7 @@ import '../../model/score_item/score_item_model.dart';
 
 abstract class IScoreItemRepository implements Disposable {
   Future<Result<List<ScoreItemModel>, Exception>> list();
+  Future<Result<List<ScoreItemModel>, Exception>> listScoreItemSports();
   ScoreItemModel? get(int key);
   Future<Result<int, Exception>> add(ScoreItemModel data);
   Future<void> put(int key, ScoreItemModel data);

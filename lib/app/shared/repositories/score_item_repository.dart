@@ -64,4 +64,9 @@ class ScoreItemRepository implements IScoreItemRepository {
   Future<void> put(int key, ScoreItemModel data) {
     throw UnimplementedError();
   }
+
+  @override
+  Future<Result<List<ScoreItemModel>, Exception>> listScoreItemSports() async {
+    throw UnimplementedError();
+  }
 }
