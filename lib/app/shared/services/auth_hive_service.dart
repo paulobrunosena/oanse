@@ -11,13 +11,15 @@ class AuthHiveService implements IAuthHiveService {
 
   @override
   Future<Result<LeadershipModel, Exception>> login(
-      String userName, String password) async {
-    return await _repository.login(userName, password);
+    String userName,
+    String password,
+  ) async {
+    return _repository.login(userName, password);
   }
 
   @override
   Future<void> setDataUserLocal(LeadershipModel data) async {
-    return await _repository.setDataUserLocal(data);
+    _repository.setDataUserLocal(data);
   }
 
   @override
@@ -27,7 +29,7 @@ class AuthHiveService implements IAuthHiveService {
 
   @override
   Future<void> removeDataUserLocal() async {
-    return await _repository.removeDataUserLocal();
+    _repository.removeDataUserLocal();
   }
 
   @override

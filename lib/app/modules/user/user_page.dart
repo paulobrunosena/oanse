@@ -9,7 +9,7 @@ class UserPage extends StatefulWidget {
 
   const UserPage({
     Key? key,
-    this.title = "Usuários",
+    this.title = 'Usuários',
   }) : super(key: key);
 
   @override
@@ -30,7 +30,7 @@ class UserPageState extends State<UserPage> {
         builder: (_) {
           if (controller.users.isEmpty) {
             return const Center(
-              child: Text("Não existe usuário cadastrado"),
+              child: Text('Não existe usuário cadastrado'),
             );
           }
 
@@ -39,10 +39,10 @@ class UserPageState extends State<UserPage> {
               itemCount: controller.users.length,
               itemBuilder: (context, int index) {
                 return ListTile(
-                  title: Text(controller.users[index].username ?? "Username"),
-                  subtitle: Text(controller.users[index].email ?? "E-mail"),
+                  title: Text(controller.users[index].username ?? 'Username'),
+                  subtitle: Text(controller.users[index].email ?? 'E-mail'),
                 );
-              });
+              },);
         },
       ),
     );

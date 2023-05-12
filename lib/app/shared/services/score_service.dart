@@ -10,14 +10,18 @@ class ScoreService implements IScoreService {
 
   @override
   Future<Result<List<ScoreModel>, Exception>> list(
-      int idMeeting, int idOansist) async {
-    return await _repository.list(idMeeting, idOansist);
+    int idMeeting,
+    int idOansist,
+  ) async {
+    return _repository.list(idMeeting, idOansist);
   }
 
   @override
   Future<Result<List<ScoreModel>, Exception>> listScoreSports(
-      int idMeeting, int idOansist) async {
-    return await _repository.listScoreSports(idMeeting, idOansist);
+    int idMeeting,
+    int idOansist,
+  ) async {
+    return _repository.listScoreSports(idMeeting, idOansist);
   }
 
   @override
@@ -25,12 +29,12 @@ class ScoreService implements IScoreService {
 
   @override
   Future<Result<int, Exception>> add(ScoreModel data) async {
-    return await _repository.add(data);
+    return _repository.add(data);
   }
 
   @override
   Future<void> delete(int key) async {
-    return await _repository.delete(key);
+    return _repository.delete(key);
   }
 
   @override
@@ -40,6 +44,6 @@ class ScoreService implements IScoreService {
 
   @override
   Future<void> put(int key, ScoreModel data) async {
-    return await _repository.put(key, data);
+    return _repository.put(key, data);
   }
 }

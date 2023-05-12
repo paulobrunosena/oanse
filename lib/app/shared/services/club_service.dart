@@ -10,12 +10,12 @@ class ClubService implements IClubService {
 
   @override
   Future<Result<List<ClubModel>, Exception>> allClubs() async {
-    return await _repository.allClubs();
+    return _repository.allClubs();
   }
 
   @override
   Future<Result<List<ClubModel>, Exception>> allClubsMock() async {
-    return await _repository.allClubsMock();
+    return _repository.allClubsMock();
   }
 
   @override

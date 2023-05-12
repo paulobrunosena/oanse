@@ -13,7 +13,7 @@ class LeadershipRepository implements ILeadershipRepository {
     _initDb();
   }
 
-  _initDb() async {
+  void _initDb() async {
     box = Hive.box<LeadershipModel>(boxLeadership);
   }
 
@@ -23,25 +23,25 @@ class LeadershipRepository implements ILeadershipRepository {
   @override
   Future<Result<List<LeadershipModel>, Exception>> allLeaderships() async {
     try {
-      var response = await client.get('leadership/');
+      final response = await client.get('leadership/');
 
       if (response.statusCode == 200) {
-        bool? status = response.data['status'];
+        final bool? status = response.data['status'];
         if (status != null && status) {
-          List<LeadershipModel> result =
+          final List<LeadershipModel> result =
               leadershipModelFromJson(response.data['response']);
           return Success(result);
         } else {
-          return Error(Exception("Não existem leadership cadastrados"));
+          return Error(Exception('Não existem leadership cadastrados'));
         }
       } else {
-        debugPrint("Erro no all leaderships");
+        debugPrint('Erro no all leaderships');
         debugPrint(response.data.toString());
-        return Error(Exception("Erro no all leaderships"));
+        return Error(Exception('Erro no all leaderships'));
       }
     } on DioError catch (error) {
       if (error.response != null) {
-        var responseException =
+        final responseException =
             ExceptionResponse.fromJson(error.response!.data);
         return Error(Exception(responseException.message));
       } else {
@@ -53,16 +53,16 @@ class LeadershipRepository implements ILeadershipRepository {
   @override
   Future<Result<int, Exception>> add(LeadershipModel data) async {
     if (sameUserName(data.name)) {
-      return Error(Exception("Já existe líder com o mesmo username"));
+      return Error(Exception('Já existe líder com o mesmo username'));
     }
 
     return Success(await box.add(data));
   }
 
   bool sameUserName(String userName) {
-    List<LeadershipModel> list = box.values.toList();
+    final List<LeadershipModel> list = box.values.toList();
     if (list.isNotEmpty) {
-      var sameName =
+      final sameName =
           list.where((element) => element.userName.compareTo(userName) == 0);
       if (sameName.isNotEmpty) {
         return true;
@@ -89,11 +89,11 @@ class LeadershipRepository implements ILeadershipRepository {
 
   @override
   Result<List<LeadershipModel>, Exception> list() {
-    List<LeadershipModel> list = box.values.toList();
+    final List<LeadershipModel> list = box.values.toList();
     if (list.isNotEmpty) {
       return Success(list);
     } else {
-      return Error(Exception("Não existem líderes cadastrados"));
+      return Error(Exception('Não existem líderes cadastrados'));
     }
   }
 

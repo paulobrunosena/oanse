@@ -33,9 +33,9 @@ class LeadershipModel {
 
   LeadershipModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    name = json['name'] ?? "";
-    userName = json['user_name'] ?? "";
-    password = json['password'] ?? "";
+    name = json['name'] ?? '';
+    userName = json['user_name'] ?? '';
+    password = json['password'] ?? '';
     club = json['club'];
     role = json['role'];
   }

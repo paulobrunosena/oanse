@@ -14,27 +14,27 @@ class AuthService implements IAuthService {
 
   @override
   Future<Result<LoginResponse, Exception>> login(LoginRequest data) async {
-    return await _repository.login(data);
+    return _repository.login(data);
   }
 
   @override
   Future<Result<LogoutResponse, Exception>> logout() async {
-    return await _repository.logout();
+    return _repository.logout();
   }
 
   @override
   Future<bool> setDataUserLocal(LoginModel data) async {
-    return await _repository.setDataUserLocal(data);
+    return _repository.setDataUserLocal(data);
   }
 
   @override
   Future<LoginModel?> getDataUserLocal() async {
-    return await _repository.getDataUserLocal();
+    return _repository.getDataUserLocal();
   }
 
   @override
   Future<bool> removeDataUserLocal() async {
-    return await _repository.removeDataUserLocal();
+    return _repository.removeDataUserLocal();
   }
 
   @override

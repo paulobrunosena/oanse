@@ -38,7 +38,7 @@ void main() async {
   await Hive.openBox(boxIdGenerator);
 
   SystemChrome.setPreferredOrientations(
-      [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]).then((_) {
+      [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown],).then((_) {
     runApp(ModularApp(module: AppModule(), child: const AppWidget()));
     configLoading();
   });

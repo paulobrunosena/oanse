@@ -1,5 +1,5 @@
 import 'package:flutter_modular/flutter_modular.dart';
-import 'package:oanse/app/shared/services/interfaces/leadership_service_interface.dart';
+import '../../shared/services/interfaces/leadership_service_interface.dart';
 
 import '../../shared/services/interfaces/auth_hive_service_interface.dart';
 import '../../shared/services/interfaces/auth_service_interface.dart';

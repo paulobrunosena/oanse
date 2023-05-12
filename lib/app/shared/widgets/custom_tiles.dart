@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class CustomTiles extends StatefulWidget {
   const CustomTiles(
-      {Key? key, required this.label, required this.text, this.onTap})
+      {Key? key, required this.label, required this.text, this.onTap,})
       : super(key: key);
 
   final String label;
@@ -46,7 +46,7 @@ class _CustomTilesState extends State<CustomTiles> {
                 icon: const Icon(
                   Icons.edit,
                   color: Colors.grey,
-                ))
+                ),)
             : Container()
       ],
     );

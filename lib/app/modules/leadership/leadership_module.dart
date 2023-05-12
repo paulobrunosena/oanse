@@ -23,10 +23,12 @@ class LeadershipModule extends Module {
 
   @override
   final List<ModularRoute> routes = [
-    ChildRoute(Modular.initialRoute,
-        child: (_, args) => const LeadershipPage()),
     ChildRoute(
-      "/add",
+      Modular.initialRoute,
+      child: (_, args) => const LeadershipPage(),
+    ),
+    ChildRoute(
+      '/add',
       child: (_, args) => const LeadershipAddPage(),
       transition: TransitionType.downToUp,
     )

@@ -1,8 +1,8 @@
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:multiple_result/multiple_result.dart';
-import 'package:oanse/app/shared/constants.dart';
-import 'package:oanse/app/shared/model/leadership/leadership_model.dart';
 
+import '../constants.dart';
+import '../model/leadership/leadership_model.dart';
 import 'interfaces/auth_hive_repository_interface.dart';
 
 class AuthHiveRepository implements IAuthHiveRepository {
@@ -12,26 +12,30 @@ class AuthHiveRepository implements IAuthHiveRepository {
     _initDb();
   }
 
-  _initDb() async {
+  void _initDb() async {
     box = Hive.box<LeadershipModel>(boxLeadership);
   }
 
   @override
   Future<Result<LeadershipModel, Exception>> login(
-      String userName, String password) async {
+    String userName,
+    String password,
+  ) async {
     await Future.delayed(const Duration(seconds: 2));
     if (box.isNotEmpty) {
-      var leadershipList = box.values
-          .where((element) =>
-              element.userName == userName && element.password == password)
+      final leadershipList = box.values
+          .where(
+            (element) =>
+                element.userName == userName && element.password == password,
+          )
           .toList();
       if (leadershipList.isNotEmpty) {
         return Success(leadershipList.first);
       } else {
-        return Error(Exception("Usuário ou senha não encontrado"));
+        return Error(Exception('Usuário ou senha não encontrado'));
       }
     } else {
-      return Error(Exception("Nenhum usuário cadastrado"));
+      return Error(Exception('Nenhum usuário cadastrado'));
     }
   }
 

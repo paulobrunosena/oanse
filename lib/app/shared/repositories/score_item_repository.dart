@@ -14,26 +14,26 @@ class ScoreItemRepository implements IScoreItemRepository {
   @override
   Future<Result<List<ScoreItemModel>, Exception>> list() async {
     try {
-      var response = await client.get('score_item/');
+      final response = await client.get('score_item/');
 
       if (response.statusCode == 200) {
-        bool? status = response.data['status'];
+        final bool? status = response.data['status'];
         if (status != null && status) {
-          List<ScoreItemModel> result =
+          final List<ScoreItemModel> result =
               scoreItemModelFromJson(response.data['response']);
           result.sort((a, b) => a.id!.compareTo(b.id!));
           return Success(result);
         } else {
-          return Error(Exception("Não existem score item cadastrados"));
+          return Error(Exception('Não existem score item cadastrados'));
         }
       } else {
-        debugPrint("Erro no all score item");
+        debugPrint('Erro no all score item');
         debugPrint(response.data.toString());
-        return Error(Exception("Erro no all score item"));
+        return Error(Exception('Erro no all score item'));
       }
     } on DioError catch (error) {
       if (error.response != null) {
-        var responseException =
+        final responseException =
             ExceptionResponse.fromJson(error.response!.data);
         return Error(Exception(responseException.message));
       } else {

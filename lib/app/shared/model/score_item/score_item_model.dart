@@ -36,15 +36,15 @@ class ScoreItemModel {
   }
 
   String get pointsFormatter {
-    var formatter = NumberFormat('###,###,###');
+    final formatter = NumberFormat('###,###,###');
     return formatter.format(points!);
   }
 
-  bool get isSwitchScore => !(name!.contains("Visitante") ||
-      name!.contains("Seção") ||
-      name!.contains("Atividade"));
+  bool get isSwitchScore => !(name!.contains('Visitante') ||
+      name!.contains('Seção') ||
+      name!.contains('Atividade'));
 
-  bool get isSport => name!.contains("Esportes");
+  bool get isSport => name!.contains('Esportes');
 
-  String get nameSports => name!.replaceAll("(Esportes)", "");
+  String get nameSports => name!.replaceAll('(Esportes)', '');
 }

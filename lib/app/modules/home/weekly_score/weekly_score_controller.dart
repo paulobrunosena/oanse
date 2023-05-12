@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:intl/intl.dart';
 import 'package:mobx/mobx.dart';
-import 'package:oanse/app/shared/utils/sequence.dart';
 
 import '../../../shared/model/leadership/leadership_model.dart';
 import '../../../shared/model/meeting/meeting_model.dart';
@@ -16,6 +15,7 @@ import '../../../shared/services/interfaces/meeting_service_interface.dart';
 import '../../../shared/services/interfaces/oansist_service_interface.dart';
 import '../../../shared/services/interfaces/score_item_service_interface.dart';
 import '../../../shared/services/interfaces/score_service_interface.dart';
+import '../../../shared/utils/sequence.dart';
 
 part 'weekly_score_controller.g.dart';
 
@@ -96,7 +96,7 @@ abstract class WeeklyScoreControllerBase with Store {
   @observable
   int _totalScore = 0;
 
-  get totalScore => formatter.format(_totalScore);
+  String get totalScore => formatter.format(_totalScore);
 
   @action
   void incrementTotalScore(int newValue) {
@@ -113,7 +113,7 @@ abstract class WeeklyScoreControllerBase with Store {
     _totalScore = 0;
   }
 
-  initWidgets(LeadershipModel leadershipModel) {
+  Future<void> initWidgets(LeadershipModel leadershipModel) async {
     leadership = leadershipModel;
     setSelectMeeting(null);
     setSelectOansist(null);
@@ -131,7 +131,7 @@ abstract class WeeklyScoreControllerBase with Store {
   }
 
   Future<void> loadMeetings() async {
-    var result = await _serviceMeeting.allMeeting();
+    final result = await _serviceMeeting.allMeeting();
     meetings.clear();
     result.when((success) {
       meetings.addAll(success);
@@ -141,7 +141,7 @@ abstract class WeeklyScoreControllerBase with Store {
   }
 
   Future<void> loadOansists() async {
-    var result = await _serviceOansist.clubOansist(leadership.club ?? -1);
+    final result = await _serviceOansist.clubOansist(leadership.club ?? -1);
     oansists.clear();
     result.when((success) {
       oansists.addAll(success);
@@ -151,7 +151,7 @@ abstract class WeeklyScoreControllerBase with Store {
   }
 
   Future<void> loadScoreItems() async {
-    var result = await _serviceScoreItem.list();
+    final result = await _serviceScoreItem.list();
     scoreItems.clear();
     result.when((success) async {
       scoreItems.addAll(success);
@@ -161,12 +161,12 @@ abstract class WeeklyScoreControllerBase with Store {
   }
 
   Future<void> loadScoreItemsSports() async {
-    var result = await _serviceScoreItem.listScoreItemSports();
+    final result = await _serviceScoreItem.listScoreItemSports();
     scoreItemsSports.clear();
     result.when((success) async {
       log(success.toString());
       for (var i = 0; i < success.length; i++) {
-        log(success[i].name ?? "");
+        log(success[i].name ?? '');
       }
       scoreItemsSports.addAll(success);
     }, (error) {
@@ -174,43 +174,7 @@ abstract class WeeklyScoreControllerBase with Store {
     });
   }
 
-  showMeetings() {
-    Asuka.showModalBottomSheet(builder: (BuildContext context) {
-      return Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const SizedBox(
-            height: 10,
-          ),
-          const Text(
-            "Selecione uma data",
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0),
-          ),
-          ListView.separated(
-            shrinkWrap: true,
-            itemCount: meetings.length,
-            itemBuilder: (_, index) {
-              MeetingModel meeting = meetings[index];
-
-              return ListTile(
-                title: Text(meeting.dataFormatada),
-                onTap: () {
-                  Navigator.pop(context);
-                  setSelectMeeting(meeting);
-                  loadDataWeeklyScore();
-                },
-              );
-            },
-            separatorBuilder: (_, __) {
-              return const Divider();
-            },
-          )
-        ],
-      );
-    });
-  }
-
-  showOansists() {
+  Future<void> showMeetings() async {
     Asuka.showModalBottomSheet(
       builder: (BuildContext context) {
         return Column(
@@ -220,17 +184,55 @@ abstract class WeeklyScoreControllerBase with Store {
               height: 10,
             ),
             const Text(
-              "Selecione um oansista",
+              'Selecione uma data',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0),
+            ),
+            ListView.separated(
+              shrinkWrap: true,
+              itemCount: meetings.length,
+              itemBuilder: (_, index) {
+                final MeetingModel meeting = meetings[index];
+
+                return ListTile(
+                  title: Text(meeting.dataFormatada),
+                  onTap: () {
+                    Navigator.pop(context);
+                    setSelectMeeting(meeting);
+                    loadDataWeeklyScore();
+                  },
+                );
+              },
+              separatorBuilder: (_, __) {
+                return const Divider();
+              },
+            )
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> showOansists() async {
+    Asuka.showModalBottomSheet(
+      builder: (BuildContext context) {
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SizedBox(
+              height: 10,
+            ),
+            const Text(
+              'Selecione um oansista',
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0),
             ),
             ListView.separated(
               shrinkWrap: true,
               itemCount: oansists.length,
               itemBuilder: (_, index) {
-                OansistModel oansist = oansists[index];
+                final OansistModel oansist = oansists[index];
 
                 return ListTile(
-                  title: Text(oansist.name ?? ""),
+                  title: Text(oansist.name ?? ''),
                   onTap: () {
                     Navigator.pop(context);
                     setSelectOansist(oansist);
@@ -256,7 +258,7 @@ abstract class WeeklyScoreControllerBase with Store {
   }
 
   Future<void> loadScore() async {
-    var result =
+    final result =
         await _serviceScore.list(selectMeeting!.id, selectOansist!.id!);
 
     result.when((listScoreModel) async {
@@ -276,8 +278,10 @@ abstract class WeeklyScoreControllerBase with Store {
   }
 
   Future<void> loadScoreSport() async {
-    var result = await _serviceScore.listScoreSports(
-        selectMeeting!.id, selectOansist!.id!);
+    final result = await _serviceScore.listScoreSports(
+      selectMeeting!.id,
+      selectOansist!.id!,
+    );
 
     result.when((listScoreModel) async {
       if (listScoreModel.isEmpty) {
@@ -298,8 +302,8 @@ abstract class WeeklyScoreControllerBase with Store {
   Future<void> initScore() async {
     scores.clear();
     for (ScoreItemModel scoreItem in scoreItems) {
-      int idScore = await Sequence.idGenerator();
-      ScoreModel scoreModel = ScoreModel(
+      final int idScore = await Sequence.idGenerator();
+      final ScoreModel scoreModel = ScoreModel(
         id: idScore,
         quantity: 0,
         meetingId: selectMeeting?.id,
@@ -315,8 +319,8 @@ abstract class WeeklyScoreControllerBase with Store {
   Future<void> initScoreSport() async {
     scoresSports.clear();
     for (ScoreItemModel scoreItem in scoreItemsSports) {
-      int idScore = await Sequence.idGenerator();
-      ScoreModel scoreModel = ScoreModel(
+      final int idScore = await Sequence.idGenerator();
+      final ScoreModel scoreModel = ScoreModel(
         id: idScore,
         quantity: 0,
         meetingId: selectMeeting?.id,
@@ -329,11 +333,11 @@ abstract class WeeklyScoreControllerBase with Store {
     }
   }
 
-  loadTotalScore() {
+  void loadTotalScore() {
     resetTotalScore();
     for (ScoreModel item in scores) {
-      ScoreItemModel scoreItem = getScoreItem(item.scoreItemId!);
-      int total = item.quantity * scoreItem.points!;
+      final ScoreItemModel scoreItem = getScoreItem(item.scoreItemId!);
+      final int total = item.quantity * scoreItem.points!;
       incrementTotalScore(total);
       if (scoreItem.isSport) {
         item.quantity > 0;
@@ -362,7 +366,8 @@ abstract class WeeklyScoreControllerBase with Store {
     if (_scoreItemSportSelected != null) {
       return scoresSports
           .where(
-              (element) => element.scoreItemId == _scoreItemSportSelected!.id)
+            (element) => element.scoreItemId == _scoreItemSportSelected!.id,
+          )
           .first;
     }
 
@@ -374,14 +379,14 @@ abstract class WeeklyScoreControllerBase with Store {
   }
 
   Future<void> save() async {
-    EasyLoading.show(status: "Salvando dados, aguarde...");
+    EasyLoading.show(status: 'Salvando dados, aguarde...');
     for (ScoreModel score in scores) {
-      int idScore = score.id!;
+      final int idScore = score.id!;
       await _serviceScore.put(idScore, score);
     }
 
     for (ScoreModel score in scoresSports) {
-      int idScore = score.id!;
+      final int idScore = score.id!;
       await _serviceScore.put(idScore, score);
     }
     setIsLoaded(_totalScore > 0);

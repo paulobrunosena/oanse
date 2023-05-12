@@ -10,8 +10,11 @@ import 'weekly_score_controller.dart';
 class WeeklyScorePage extends StatefulWidget {
   final String title;
   final LeadershipModel leadership;
-  const WeeklyScorePage(
-      {super.key, required this.leadership, this.title = "Pontuação Semanal"});
+  const WeeklyScorePage({
+    super.key,
+    required this.leadership,
+    this.title = 'Pontuação Semanal',
+  });
 
   @override
   State<WeeklyScorePage> createState() => _WeeklyScorePageState();
@@ -84,51 +87,55 @@ class _WeeklyScorePageState extends State<WeeklyScorePage> {
         ),
       );
 
-  Widget get meeting => Observer(builder: (_) {
-        return ListTile(
-          dense: true,
-          title: Text(
-            "Data da reunião",
-            style: labelStyle,
-          ),
-          subtitle: Text(
-            controller.selectMeeting != null
-                ? controller.selectMeeting!.dataFormatada
-                : "Selecione uma data",
-            style: textStyle,
-          ),
-          trailing: controller.loadingWidgets
-              ? loading
-              : const Icon(
-                  Icons.edit,
-                  color: Colors.grey,
-                ),
-          onTap: controller.showMeetings,
-        );
-      });
+  Widget get meeting => Observer(
+        builder: (_) {
+          return ListTile(
+            dense: true,
+            title: Text(
+              'Data da reunião',
+              style: labelStyle,
+            ),
+            subtitle: Text(
+              controller.selectMeeting != null
+                  ? controller.selectMeeting!.dataFormatada
+                  : 'Selecione uma data',
+              style: textStyle,
+            ),
+            trailing: controller.loadingWidgets
+                ? loading
+                : const Icon(
+                    Icons.edit,
+                    color: Colors.grey,
+                  ),
+            onTap: controller.showMeetings,
+          );
+        },
+      );
 
-  Widget get oansist => Observer(builder: (_) {
-        return ListTile(
-          dense: true,
-          title: Text(
-            "Oansista",
-            style: labelStyle,
-          ),
-          subtitle: Text(
-            controller.selectOansist != null
-                ? controller.selectOansist!.name ?? ""
-                : "Selecione um oansista",
-            style: textStyle,
-          ),
-          trailing: controller.loadingWidgets
-              ? loading
-              : const Icon(
-                  Icons.edit,
-                  color: Colors.grey,
-                ),
-          onTap: controller.showOansists,
-        );
-      });
+  Widget get oansist => Observer(
+        builder: (_) {
+          return ListTile(
+            dense: true,
+            title: Text(
+              'Oansista',
+              style: labelStyle,
+            ),
+            subtitle: Text(
+              controller.selectOansist != null
+                  ? controller.selectOansist!.name ?? ''
+                  : 'Selecione um oansista',
+              style: textStyle,
+            ),
+            trailing: controller.loadingWidgets
+                ? loading
+                : const Icon(
+                    Icons.edit,
+                    color: Colors.grey,
+                  ),
+            onTap: controller.showOansists,
+          );
+        },
+      );
 
   Widget get totalScore => Observer(
         builder: (_) {
@@ -138,25 +145,26 @@ class _WeeklyScorePageState extends State<WeeklyScorePage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Visibility(
-                  visible: controller.isLoaded != null,
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 10),
-                    child: (controller.isLoaded != null && controller.isLoaded!)
-                        ? const Chip(
-                            label: Text(
-                              "Preenchido",
-                              style: TextStyle(color: Colors.white),
-                            ),
-                            backgroundColor: Colors.green,
-                          )
-                        : const Chip(
-                            label: Text(
-                              "Não Preenchido",
-                              style: TextStyle(color: Colors.white),
-                            ),
-                            backgroundColor: Colors.red,
+                visible: controller.isLoaded != null,
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 10),
+                  child: (controller.isLoaded != null && controller.isLoaded!)
+                      ? const Chip(
+                          label: Text(
+                            'Preenchido',
+                            style: TextStyle(color: Colors.white),
                           ),
-                  )),
+                          backgroundColor: Colors.green,
+                        )
+                      : const Chip(
+                          label: Text(
+                            'Não Preenchido',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          backgroundColor: Colors.red,
+                        ),
+                ),
+              ),
               Padding(
                 padding: const EdgeInsets.only(top: 10, bottom: 10, right: 10),
                 child: Row(
@@ -175,14 +183,14 @@ class _WeeklyScorePageState extends State<WeeklyScorePage> {
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         Text(
-                          "Pontuação total",
+                          'Pontuação total',
                           style: textTheme.bodySmall?.copyWith(fontSize: 14),
                         ),
                         const SizedBox(
                           height: 5,
                         ),
                         Text(
-                          "${controller.totalScore} pontos",
+                          '${controller.totalScore} pontos',
                           style: textTheme.titleSmall?.copyWith(fontSize: 16),
                         ),
                       ],
@@ -195,67 +203,78 @@ class _WeeklyScorePageState extends State<WeeklyScorePage> {
         },
       );
 
-  Widget get scoreItems => Observer(builder: (_) {
-        return controller.showScoreItems
-            ? Expanded(
-                child: ListView(
-                primary: true,
-                children: [
-                  ListView.separated(
-                    physics: const ClampingScrollPhysics(),
-                    shrinkWrap: true,
-                    itemCount: controller.scores.length,
-                    itemBuilder: (_, index) {
-                      ScoreModel score = controller.scores[index];
-                      ScoreItemModel scoreItem =
-                          controller.getScoreItem(score.scoreItemId!);
+  Widget get scoreItems => Observer(
+        builder: (_) {
+          return controller.showScoreItems
+              ? Expanded(
+                  child: ListView(
+                    primary: true,
+                    children: [
+                      ListView.separated(
+                        physics: const ClampingScrollPhysics(),
+                        shrinkWrap: true,
+                        itemCount: controller.scores.length,
+                        itemBuilder: (_, index) {
+                          final ScoreModel score = controller.scores[index];
+                          final ScoreItemModel scoreItem =
+                              controller.getScoreItem(score.scoreItemId!);
 
-                      return Observer(builder: (_) {
-                        return ListTile(
-                          title: Text(scoreItem.name!),
-                          subtitle: score.quantity > 0
-                              ? Text("${scoreItem.pointsFormatter} pontos")
-                              : const Text("Não marcou ponto"),
-                          trailing: action(index),
-                          onTap: (action(index) is Switch)
-                              ? () {
-                                  Switch switchScoreAux = switchScore(index);
-                                  score.setQuantity(
-                                      !switchScoreAux.value ? 1 : 0);
-                                  if (!switchScoreAux.value) {
-                                    controller
-                                        .incrementTotalScore(scoreItem.points!);
-                                  } else {
-                                    controller
-                                        .decrementTotalScore(scoreItem.points!);
-                                  }
-                                }
-                              : null,
-                        );
-                      });
-                    },
-                    separatorBuilder: (_, __) {
-                      return const Divider(
-                        height: 0,
-                      );
-                    },
+                          return Observer(
+                            builder: (_) {
+                              return ListTile(
+                                title: Text(scoreItem.name!),
+                                subtitle: score.quantity > 0
+                                    ? Text(
+                                        '${scoreItem.pointsFormatter} pontos',
+                                      )
+                                    : const Text('Não marcou ponto'),
+                                trailing: action(index),
+                                onTap: (action(index) is Switch)
+                                    ? () {
+                                        final Switch switchScoreAux =
+                                            switchScore(index);
+                                        score.setQuantity(
+                                          !switchScoreAux.value ? 1 : 0,
+                                        );
+                                        if (!switchScoreAux.value) {
+                                          controller.incrementTotalScore(
+                                            scoreItem.points!,
+                                          );
+                                        } else {
+                                          controller.decrementTotalScore(
+                                            scoreItem.points!,
+                                          );
+                                        }
+                                      }
+                                    : null,
+                              );
+                            },
+                          );
+                        },
+                        separatorBuilder: (_, __) {
+                          return const Divider(
+                            height: 0,
+                          );
+                        },
+                      ),
+                      const Divider(),
+                      scoreItemsSports,
+                    ],
                   ),
-                  const Divider(),
-                  scoreItemsSports,
-                ],
-              ))
-            : Container();
-      });
+                )
+              : Container();
+        },
+      );
 
   Widget action(int index) {
-    ScoreItemModel scoreItem = controller.scoreItems[index];
+    final ScoreItemModel scoreItem = controller.scoreItems[index];
 
     return (scoreItem.isSwitchScore) ? switchScore(index) : amount(index);
   }
 
   Switch switchScore(int index) {
-    ScoreItemModel scoreItem = controller.scoreItems[index];
-    ScoreModel score = controller.scores[index];
+    final ScoreItemModel scoreItem = controller.scoreItems[index];
+    final ScoreModel score = controller.scores[index];
     return Switch(
       onChanged: (bool value) {
         score.setQuantity(value ? 1 : 0);
@@ -270,8 +289,8 @@ class _WeeklyScorePageState extends State<WeeklyScorePage> {
   }
 
   Widget amount(int index) {
-    ScoreItemModel scoreItem = controller.scoreItems[index];
-    ScoreModel scoreStore = controller.scores[index];
+    final ScoreItemModel scoreItem = controller.scoreItems[index];
+    final ScoreModel scoreStore = controller.scores[index];
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -310,23 +329,26 @@ class _WeeklyScorePageState extends State<WeeklyScorePage> {
         height: 0,
       );
 
-  Widget get scoreItemsSports => Observer(builder: (_) {
-        return ListTile(
-          title: const Text('Esportes'),
-          subtitle: controller.scoreSportSelected != null
-              ? controller.scoreSportSelected!.quantity > 0
-                  ? Text(
-                      "${controller.scoreItemSportSelected?.pointsFormatter} pontos")
-                  : const Text("Não marcou ponto")
-              : const Text("Não marcou ponto"),
-          trailing: DropdownButton<ScoreItemModel>(
-            // Must be one of items.value.
-            value: controller.scoreItemSportSelected,
-            onChanged: (ScoreItemModel? newValue) {
-              controller.setScoreItemSportSelected(newValue);
-            },
-            items: controller.scoreItemsSports
-                .map((item) => DropdownMenuItem<ScoreItemModel>(
+  Widget get scoreItemsSports => Observer(
+        builder: (_) {
+          return ListTile(
+            title: const Text('Esportes'),
+            subtitle: controller.scoreSportSelected != null
+                ? controller.scoreSportSelected!.quantity > 0
+                    ? Text(
+                        '${controller.scoreItemSportSelected?.pointsFormatter} pontos',
+                      )
+                    : const Text('Não marcou ponto')
+                : const Text('Não marcou ponto'),
+            trailing: DropdownButton<ScoreItemModel>(
+              // Must be one of items.value.
+              value: controller.scoreItemSportSelected,
+              onChanged: (ScoreItemModel? newValue) {
+                controller.setScoreItemSportSelected(newValue);
+              },
+              items: controller.scoreItemsSports
+                  .map(
+                    (item) => DropdownMenuItem<ScoreItemModel>(
                       value: item,
                       child: Text(
                         item.nameSports,
@@ -334,9 +356,11 @@ class _WeeklyScorePageState extends State<WeeklyScorePage> {
                           fontSize: 14,
                         ),
                       ),
-                    ))
-                .toList(),
-          ),
-        );
-      });
+                    ),
+                  )
+                  .toList(),
+            ),
+          );
+        },
+      );
 }

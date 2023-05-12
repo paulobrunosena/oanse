@@ -10,17 +10,17 @@ class OansistService implements IOansistService {
 
   @override
   Future<Result<bool, Exception>> addOansist(OansistModel data) async {
-    return await _repository.addOansist(data);
+    return _repository.addOansist(data);
   }
 
   @override
   Future<Result<List<OansistModel>, Exception>> allOansist() async {
-    return await _repository.allOansist();
+    return _repository.allOansist();
   }
 
   @override
   Future<Result<List<OansistModel>, Exception>> clubOansist(int idClub) async {
-    return await _repository.clubOansist(idClub);
+    return _repository.clubOansist(idClub);
   }
 
   @override

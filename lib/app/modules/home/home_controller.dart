@@ -24,26 +24,30 @@ abstract class HomeControllerBase with Store {
   final IUserService _userService;
 
   Future<void> logout() async {
-    EasyLoading.show(status: "Realizando logout, aguarde...");
-    var result = await _authService.logout();
+    EasyLoading.show(status: 'Realizando logout, aguarde...');
+    final result = await _authService.logout();
 
     result.when((success) async {
-      debugPrint("Message logout: ${success.message}");
+      debugPrint('Message logout: ${success.message}');
       EasyLoading.dismiss();
       await _authService.removeDataUserLocal();
       Modular.to.pushNamedAndRemoveUntil(
-          '$routeLogin/', ModalRoute.withName(routeLogin));
+        '$routeLogin/',
+        ModalRoute.withName(routeLogin),
+      );
     }, (error) async {
       EasyLoading.dismiss();
       AsukaSnackbar.alert(error.toString()).show();
       await _authService.removeDataUserLocal();
       Modular.to.pushNamedAndRemoveUntil(
-          '$routeLogin/', ModalRoute.withName(routeLogin));
+        '$routeLogin/',
+        ModalRoute.withName(routeLogin),
+      );
     });
   }
 
   Future<void> logoutHive() async {
-    EasyLoading.show(status: "Realizando logout, aguarde...");
+    EasyLoading.show(status: 'Realizando logout, aguarde...');
     await Future.delayed(const Duration(seconds: 2));
     await _authHiveService.removeDataUserLocal();
     EasyLoading.dismiss();
@@ -51,8 +55,8 @@ abstract class HomeControllerBase with Store {
   }
 
   Future<void> allUsers() async {
-    EasyLoading.show(status: "Buscando todos os usuários, aguarde...");
-    var result = await _userService.allUsers();
+    EasyLoading.show(status: 'Buscando todos os usuários, aguarde...');
+    final result = await _userService.allUsers();
 
     result.when((success) {
       for (var user in success) {
@@ -61,7 +65,8 @@ abstract class HomeControllerBase with Store {
         user.publicId;
         user.publicId;
         debugPrint(
-            "email: ${user.email}, username: ${user.username}, publicId: ${user.publicId}");
+          'email: ${user.email}, username: ${user.username}, publicId: ${user.publicId}',
+        );
       }
       EasyLoading.dismiss();
     }, (error) {

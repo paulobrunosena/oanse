@@ -23,13 +23,13 @@ class MeetingModel {
   DateTime date;
 
   factory MeetingModel.fromJson(Map<String, dynamic> json) => MeetingModel(
-        id: json["id"],
-        date: DateTime.parse(json["date"]),
+        id: json['id'],
+        date: DateTime.parse(json['date']),
       );
 
   Map<String, dynamic> toJson() => {
-        "id": id,
-        "date": date.toIso8601String(),
+        'id': id,
+        'date': date.toIso8601String(),
       };
 
   String get dataFormatada =>

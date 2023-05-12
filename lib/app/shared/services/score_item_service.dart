@@ -10,17 +10,17 @@ class ScoreItemService implements IScoreItemService {
 
   @override
   Future<Result<List<ScoreItemModel>, Exception>> list() async {
-    return await _repository.list();
+    return _repository.list();
   }
 
   @override
   Future<Result<int, Exception>> add(ScoreItemModel data) async {
-    return await _repository.add(data);
+    return _repository.add(data);
   }
 
   @override
   Future<void> delete(int key) async {
-    return await _repository.delete(key);
+    return _repository.delete(key);
   }
 
   @override
@@ -30,12 +30,12 @@ class ScoreItemService implements IScoreItemService {
 
   @override
   Future<void> put(int key, ScoreItemModel data) async {
-    return await _repository.put(key, data);
+    return _repository.put(key, data);
   }
 
   @override
   Future<Result<List<ScoreItemModel>, Exception>> listScoreItemSports() async {
-    return await _repository.listScoreItemSports();
+    return _repository.listScoreItemSports();
   }
 
   @override

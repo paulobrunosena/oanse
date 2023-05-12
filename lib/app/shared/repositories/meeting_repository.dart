@@ -17,19 +17,19 @@ class MeetingRepository implements IMeetingRepository {
   @override
   Future<Result<bool, Exception>> addMeeting(MeetingModel data) async {
     try {
-      var response = await client.post('meeting/', data: data.toJson());
+      final response = await client.post('meeting/', data: data.toJson());
 
       if (response.statusCode == 201) {
         debugPrint(response.data);
         return const Success(true);
       } else {
-        debugPrint("Erro no addMeeting");
+        debugPrint('Erro no addMeeting');
         debugPrint(response.data);
-        return Error(Exception("Erro no addMeeting"));
+        return Error(Exception('Erro no addMeeting'));
       }
     } on DioError catch (error) {
       if (error.response != null) {
-        var responseException =
+        final responseException =
             ExceptionResponse.fromJson(error.response!.data);
         return Error(Exception(responseException.message));
       } else {
@@ -41,26 +41,26 @@ class MeetingRepository implements IMeetingRepository {
   @override
   Future<Result<List<MeetingModel>, Exception>> allMeeting() async {
     try {
-      var response = await client.get('meeting/');
+      final response = await client.get('meeting/');
 
       if (response.statusCode == 200) {
-        bool? status = response.data['status'];
+        final bool? status = response.data['status'];
         if (status != null && status) {
-          List<MeetingModel> result =
+          final List<MeetingModel> result =
               meetingModelFromJson(response.data['response']);
           result.sort((a, b) => b.date.compareTo(a.date));
           return Success(result);
         } else {
-          return Error(Exception("Não existem datas cadastradas"));
+          return Error(Exception('Não existem datas cadastradas'));
         }
       } else {
-        debugPrint("Erro no allUsers");
+        debugPrint('Erro no allUsers');
         debugPrint(response.data.toString());
-        return Error(Exception("Erro no allUsers"));
+        return Error(Exception('Erro no allUsers'));
       }
     } on DioError catch (error) {
       if (error.response != null) {
-        var responseException =
+        final responseException =
             ExceptionResponse.fromJson(error.response!.data);
         return Error(Exception(responseException.message));
       } else {

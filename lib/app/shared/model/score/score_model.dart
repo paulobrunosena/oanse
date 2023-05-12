@@ -27,7 +27,7 @@ abstract class ScoreModelBase with Store {
       this.meetingId,
       this.scoreItemId,
       this.leadershipId,
-      this.oansistId});
+      this.oansistId,});
 
   ScoreModelBase.fromJson(Map<String, dynamic> json) {
     id = json['id'];

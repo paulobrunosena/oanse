@@ -9,7 +9,7 @@ class LeadershipPage extends StatefulWidget {
 
   const LeadershipPage({
     Key? key,
-    this.title = "Usuários",
+    this.title = 'Usuários',
   }) : super(key: key);
 
   @override
@@ -30,19 +30,20 @@ class LeadershipPageState extends State<LeadershipPage> {
         builder: (_) {
           if (controller.users.isEmpty) {
             return const Center(
-              child: Text("Não existe usuário cadastrado"),
+              child: Text('Não existe usuário cadastrado'),
             );
           }
 
           return ListView.separated(
-              separatorBuilder: (context, index) => const Divider(),
-              itemCount: controller.users.length,
-              itemBuilder: (context, int index) {
-                return ListTile(
-                  title: Text(controller.users[index].name),
-                  subtitle: Text(controller.users[index].userName),
-                );
-              });
+            separatorBuilder: (context, index) => const Divider(),
+            itemCount: controller.users.length,
+            itemBuilder: (context, int index) {
+              return ListTile(
+                title: Text(controller.users[index].name),
+                subtitle: Text(controller.users[index].userName),
+              );
+            },
+          );
         },
       ),
     );

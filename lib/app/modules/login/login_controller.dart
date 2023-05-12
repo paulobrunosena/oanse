@@ -17,15 +17,15 @@ abstract class LoginControllerBase with Store {
   final FormController formController = FormController();
 
   @observable
-  String _userName = "";
+  String _userName = '';
 
   @action
-  setUserName(String value) => _userName = value;
+  String setUserName(String value) => _userName = value;
 
   String get userName => _userName;
 
   @observable
-  String _password = "";
+  String _password = '';
 
   @action
   void setPassword(String value) => _password = value;
@@ -39,9 +39,9 @@ abstract class LoginControllerBase with Store {
   void toggleSenhaVisibility() => senhaVisible = !senhaVisible;
 
   Future<void> login() async {
-    EasyLoading.show(status: "Realizando login, aguarde...");
+    EasyLoading.show(status: 'Realizando login, aguarde...');
     if (formController.validate()) {
-      var result = await _authService.login(userName, password);
+      final result = await _authService.login(userName, password);
       result.when(
         (success) async {
           await _authService.setDataUserLocal(success);

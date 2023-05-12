@@ -23,12 +23,14 @@ class OansistModule extends Module {
 
   @override
   final List<ModularRoute> routes = [
-    ChildRoute(Modular.initialRoute,
-        child: (_, args) => OansistPage(
-              leadership: args.data,
-            )),
     ChildRoute(
-      "/add",
+      Modular.initialRoute,
+      child: (_, args) => OansistPage(
+        leadership: args.data,
+      ),
+    ),
+    ChildRoute(
+      '/add',
       child: (_, args) => const OansistAddPage(),
       transition: TransitionType.downToUp,
     )

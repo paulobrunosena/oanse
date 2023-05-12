@@ -2,17 +2,17 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class LocalStorageService {
   static Future<SharedPreferences> setInstance() async {
-    return await SharedPreferences.getInstance();
+    return SharedPreferences.getInstance();
   }
 
   static Future<bool> cointains(String key) async {
-    return await setInstance().then((sharedPreferences) {
+    return setInstance().then((sharedPreferences) {
       return sharedPreferences.containsKey(key);
     });
   }
 
   static Future<dynamic> getValue<T>(String key) async {
-    return await setInstance().then((sharedPreferences) {
+    return setInstance().then((sharedPreferences) {
       switch (T) {
         case double:
           return sharedPreferences.getDouble(key) ?? 0;
@@ -31,7 +31,7 @@ class LocalStorageService {
   }
 
   static Future<bool> setValue<T>(String key, dynamic value) async {
-    return await setInstance().then((sharedPreferences) {
+    return setInstance().then((sharedPreferences) {
       switch (T) {
         case double:
           return sharedPreferences.setDouble(key, value);
@@ -50,7 +50,7 @@ class LocalStorageService {
   }
 
   static Future<bool> removeValue(String key) async {
-    return await setInstance().then((sharedPreferences) {
+    return setInstance().then((sharedPreferences) {
       return sharedPreferences.remove(key);
     });
   }

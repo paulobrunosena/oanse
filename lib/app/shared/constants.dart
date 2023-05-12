@@ -1,4 +1,4 @@
-const baseUrl = "http://192.168.0.3:5000/"; //ip de casa
+const baseUrl = 'http://192.168.0.3:5000/'; //ip de casa
 //const baseUrl = "http://192.168.0.8:5000/"; //ip casa dona eke
 const routeLogin = '/login';
 const routeHome = '/home';
@@ -10,12 +10,12 @@ const routeClubWeeklyScore = '/club_weekly_score';
 const routeOansist = '/oansist';
 const routeLeadership = '/leadership';
 
-const ursinho = "Ursinho";
-const faisca = "Faísca";
-const flama = "Flama";
-const tocha = "Tocha";
-const jv = "JV";
-const vq7 = "VQ7";
+const ursinho = 'Ursinho';
+const faisca = 'Faísca';
+const flama = 'Flama';
+const tocha = 'Tocha';
+const jv = 'JV';
+const vq7 = 'VQ7';
 
 const userSession = 'user_session';
 const boxLeadership = 'leadership';

@@ -18,7 +18,7 @@ class LoginModel {
   }
 
   @override
-  String toString() => "username: $email | senha: $senha";
+  String toString() => 'username: $email | senha: $senha';
 
   LoginModel.fromJson(Map<String, dynamic> json) {
     email = json['email'];

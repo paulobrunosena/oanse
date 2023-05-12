@@ -9,7 +9,7 @@ class OansistAddPage extends StatefulWidget {
 
   const OansistAddPage({
     Key? key,
-    this.title = "Cadastrar Oansista",
+    this.title = 'Cadastrar Oansista',
   }) : super(key: key);
 
   @override
@@ -27,7 +27,9 @@ class OansistAddPageState extends State<OansistAddPage> {
         centerTitle: true,
         actions: [bntSave],
         leading: IconButton(
-            icon: const Icon(Icons.close), onPressed: Modular.to.pop),
+          icon: const Icon(Icons.close),
+          onPressed: Modular.to.pop,
+        ),
       ),
       body: form,
     );
@@ -64,59 +66,63 @@ class OansistAddPageState extends State<OansistAddPage> {
       );
 
   Widget get name => TextFormField(
-        validator: Validatorless.required("* Campo obrigatório"),
+        validator: Validatorless.required('* Campo obrigatório'),
         keyboardType: TextInputType.name,
         onSaved: (value) {
           controller.name = value;
         },
         decoration: const InputDecoration(
-            border: OutlineInputBorder(),
-            filled: true,
-            hintText: "Informe om nome do oansista",
-            labelText: "Nome"),
+          border: OutlineInputBorder(),
+          filled: true,
+          hintText: 'Informe om nome do oansista',
+          labelText: 'Nome',
+        ),
       );
 
   Widget get birthDate => TextFormField(
         validator: Validatorless.multiple([
-          Validatorless.required("* Campo obrigatório"),
-          Validatorless.date("* Data inválida"),
+          Validatorless.required('* Campo obrigatório'),
+          Validatorless.date('* Data inválida'),
         ]),
         keyboardType: TextInputType.emailAddress,
         onSaved: (value) {
           controller.birthDate = value;
         },
         decoration: const InputDecoration(
-            border: OutlineInputBorder(),
-            filled: true,
-            hintText: "Informe a data de nascimento",
-            labelText: "Data de nascimento"),
+          border: OutlineInputBorder(),
+          filled: true,
+          hintText: 'Informe a data de nascimento',
+          labelText: 'Data de nascimento',
+        ),
       );
 
   Widget get club => TextFormField(
-        validator: Validatorless.required("* Campo obrigatório"),
+        validator: Validatorless.required('* Campo obrigatório'),
         keyboardType: TextInputType.visiblePassword,
         obscureText: true,
         onSaved: (value) {
-          controller.clubId = int.parse(value ?? "0");
+          controller.clubId = int.parse(value ?? '0');
         },
         decoration: const InputDecoration(
-            border: OutlineInputBorder(),
-            filled: true,
-            hintText: "Informe o clube",
-            labelText: "Clube oanse"),
+          border: OutlineInputBorder(),
+          filled: true,
+          hintText: 'Informe o clube',
+          labelText: 'Clube oanse',
+        ),
       );
 
   Widget get gender => TextFormField(
-        validator: Validatorless.required("* Campo obrigatório"),
+        validator: Validatorless.required('* Campo obrigatório'),
         keyboardType: TextInputType.visiblePassword,
         obscureText: true,
         onSaved: (value) {
           controller.gender = value;
         },
         decoration: const InputDecoration(
-            border: OutlineInputBorder(),
-            filled: true,
-            hintText: "Informe o gênero",
-            labelText: "Gênero"),
+          border: OutlineInputBorder(),
+          filled: true,
+          hintText: 'Informe o gênero',
+          labelText: 'Gênero',
+        ),
       );
 }

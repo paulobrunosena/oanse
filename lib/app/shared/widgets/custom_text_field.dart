@@ -35,11 +35,11 @@ class CustomTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<String? Function(String?)> validadores = [];
-    List<TextInputFormatter>? inputFormatters = [];
-    validadores.add(Validatorless.required("* Campo obrigatório"));
+    final List<String? Function(String?)> validadores = [];
+    final List<TextInputFormatter> inputFormatters = [];
+    validadores.add(Validatorless.required('* Campo obrigatório'));
     if (isCpf) {
-      validadores.add(Validatorless.cpf("* CPF inválido"));
+      validadores.add(Validatorless.cpf('* CPF inválido'));
       inputFormatters.add(FilteringTextInputFormatter.digitsOnly);
       inputFormatters.add(CpfInputFormatter());
     }

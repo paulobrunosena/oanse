@@ -28,16 +28,16 @@ class ClubModel {
   int leaveAge;
 
   factory ClubModel.fromJson(Map<String, dynamic> json) => ClubModel(
-        leaveAge: json["leave_age"],
-        id: json["id"],
-        name: json["name"],
-        entryAge: json["entry_age"],
+        leaveAge: json['leave_age'],
+        id: json['id'],
+        name: json['name'],
+        entryAge: json['entry_age'],
       );
 
   Map<String, dynamic> toJson() => {
-        "leave_age": leaveAge,
-        "id": id,
-        "name": name,
-        "entry_age": entryAge,
+        'leave_age': leaveAge,
+        'id': id,
+        'name': name,
+        'entry_age': entryAge,
       };
 }

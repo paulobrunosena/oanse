@@ -10,7 +10,7 @@ class UserService implements IUserService {
 
   @override
   Future<Result<List<User>, Exception>> allUsers() async {
-    return await _repository.allUsers();
+    return _repository.allUsers();
   }
 
   @override

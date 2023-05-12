@@ -10,7 +10,7 @@ class LeadershipService implements ILeadershipService {
 
   @override
   Future<Result<List<LeadershipModel>, Exception>> allLeaderships() async {
-    return await _repository.allLeaderships();
+    return _repository.allLeaderships();
   }
 
   @override

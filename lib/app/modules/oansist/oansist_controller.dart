@@ -18,13 +18,14 @@ abstract class OansistControllerBase with Store {
   ObservableList<OansistModel> oansists = ObservableList<OansistModel>();
 
   Future<void> add() async {
-    EasyLoading.show(status: "Realizando cadastro, aguarde...");
-    OansistModel data = OansistModel(
-        name: "Ana Paula",
-        birthDate: DateTime.parse("2017-01-10"),
-        gender: "F",
-        clubId: 2);
-    var result = await _oansistService.addOansist(data);
+    EasyLoading.show(status: 'Realizando cadastro, aguarde...');
+    final OansistModel data = OansistModel(
+      name: 'Ana Paula',
+      birthDate: DateTime.parse('2017-01-10'),
+      gender: 'F',
+      clubId: 2,
+    );
+    final result = await _oansistService.addOansist(data);
 
     result.when((success) {
       EasyLoading.dismiss();
@@ -37,8 +38,9 @@ abstract class OansistControllerBase with Store {
 
   Future<void> allOansists() async {
     EasyLoading.show(
-        status: "Buscando todos os oansistas do clube, aguarde...");
-    var result = await _oansistService.allOansist();
+      status: 'Buscando todos os oansistas do clube, aguarde...',
+    );
+    final result = await _oansistService.allOansist();
     oansists.clear();
     result.when((success) {
       oansists.addAll(success);

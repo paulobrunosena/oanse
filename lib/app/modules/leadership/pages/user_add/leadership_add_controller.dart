@@ -24,8 +24,8 @@ abstract class LeadershipAddControllerBase with Store {
 
   Future<void> register() async {
     if (formController.validate()) {
-      EasyLoading.show(status: "Realizando cadastro, aguarde...");
-      var result = await _service.allLeaderships();
+      EasyLoading.show(status: 'Realizando cadastro, aguarde...');
+      final result = await _service.allLeaderships();
 
       result.when((success) {
         EasyLoading.dismiss();

@@ -14,7 +14,7 @@ class HomePage extends StatefulWidget {
 
   const HomePage({
     Key? key,
-    this.title = "Oanse App",
+    this.title = 'Oanse App',
     required this.leadership,
   }) : super(key: key);
 
@@ -35,39 +35,43 @@ class HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
-          overlays: SystemUiOverlay.values);
+      SystemChrome.setEnabledSystemUIMode(
+        SystemUiMode.manual,
+        overlays: SystemUiOverlay.values,
+      );
     });
     init();
   }
 
-  init() {
+  void init() {
     logoUrsinho = Image.asset(
-      "images/ursinho.png",
+      'images/ursinho.png',
       width: 35,
       fit: BoxFit.contain,
     );
 
     logoFaisca = Image.asset(
-      "images/faisca.png",
+      'images/faisca.png',
       width: 35,
       fit: BoxFit.contain,
     );
 
-    logoFlama = Image.asset("images/flama.png",
-        width: 25,
-        height: 25,
-        //fit: BoxFit.contain,
-        fit: BoxFit.fill);
+    logoFlama = Image.asset(
+      'images/flama.png',
+      width: 25,
+      height: 25,
+      //fit: BoxFit.contain,
+      fit: BoxFit.fill,
+    );
 
     logoTocha = Image.asset(
-      "images/tocha.png",
+      'images/tocha.png',
       width: 35,
       fit: BoxFit.contain,
     );
 
     logoJv = Image.asset(
-      "images/jv.png",
+      'images/jv.png',
       width: 35,
       fit: BoxFit.contain,
     );
@@ -85,7 +89,7 @@ class HomePageState extends State<HomePage> {
               await controller.logoutHive();
             },
             child: const Text(
-              "Sair",
+              'Sair',
               style: TextStyle(color: Colors.white),
             ),
           )
@@ -123,11 +127,13 @@ class HomePageState extends State<HomePage> {
                   child: logoFlama,
                 ),
                 title: Text(
-                  "Líder",
+                  'Líder',
                   style: textTheme.bodySmall?.copyWith(fontSize: 14),
                 ),
-                subtitle: Text(widget.leadership.name,
-                    style: textTheme.titleSmall?.copyWith(fontSize: 16)),
+                subtitle: Text(
+                  widget.leadership.name,
+                  style: textTheme.titleSmall?.copyWith(fontSize: 16),
+                ),
               ),
             ],
           ),
@@ -135,28 +141,29 @@ class HomePageState extends State<HomePage> {
       );
 
   Widget get menu => Container(
-      width: MediaQuery.of(context).size.width,
-      alignment: Alignment.center,
-      child: Wrap(
-        direction: Axis.horizontal,
-        children: <Widget>[
-          CardMenuWidget(
-            icone: FontAwesomeIcons.calendarWeek,
-            label: "PONTUAÇÃO SEMANAL",
-            route: "$routeHome$routeWeeklyScore",
-            arguments: widget.leadership,
-          ),
-          const CardMenuWidget(
-            icone: FontAwesomeIcons.book,
-            label: "PONTUAÇÃO INDIVIDUAL",
-            route: "$routeUser/",
-          ),
-          CardMenuWidget(
-            icone: FontAwesomeIcons.userGroup,
-            label: "OANSISTAS",
-            route: "$routeOansist/",
-            arguments: widget.leadership,
-          ),
-        ],
-      ));
+        width: MediaQuery.of(context).size.width,
+        alignment: Alignment.center,
+        child: Wrap(
+          direction: Axis.horizontal,
+          children: <Widget>[
+            CardMenuWidget(
+              icone: FontAwesomeIcons.calendarWeek,
+              label: 'PONTUAÇÃO SEMANAL',
+              route: '$routeHome$routeWeeklyScore',
+              arguments: widget.leadership,
+            ),
+            const CardMenuWidget(
+              icone: FontAwesomeIcons.book,
+              label: 'PONTUAÇÃO INDIVIDUAL',
+              route: '$routeUser/',
+            ),
+            CardMenuWidget(
+              icone: FontAwesomeIcons.userGroup,
+              label: 'OANSISTAS',
+              route: '$routeOansist/',
+              arguments: widget.leadership,
+            ),
+          ],
+        ),
+      );
 }

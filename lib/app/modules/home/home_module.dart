@@ -16,23 +16,29 @@ import 'weekly_score/weekly_score_page.dart';
 class HomeModule extends Module {
   @override
   final List<Bind> binds = [
-    Bind.lazySingleton((i) => HomeController(
-          i<IAuthService>(),
-          i<IAuthHiveService>(),
-          i<IUserService>(),
-        )),
-    Bind.lazySingleton((i) => WeeklyScoreController(
-          i<IMeetingService>(),
-          i<IOansistService>(),
-          i<IScoreItemService>(),
-          i<IScoreService>(),
-        )),
+    Bind.lazySingleton(
+      (i) => HomeController(
+        i<IAuthService>(),
+        i<IAuthHiveService>(),
+        i<IUserService>(),
+      ),
+    ),
+    Bind.lazySingleton(
+      (i) => WeeklyScoreController(
+        i<IMeetingService>(),
+        i<IOansistService>(),
+        i<IScoreItemService>(),
+        i<IScoreService>(),
+      ),
+    ),
   ];
 
   @override
   final List<ModularRoute> routes = [
-    ChildRoute(Modular.initialRoute,
-        child: (_, args) => HomePage(leadership: args.data)),
+    ChildRoute(
+      Modular.initialRoute,
+      child: (_, args) => HomePage(leadership: args.data),
+    ),
     ChildRoute(
       routeWeeklyScore,
       child: (_, args) => WeeklyScorePage(

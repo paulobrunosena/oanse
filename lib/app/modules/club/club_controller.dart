@@ -18,9 +18,9 @@ abstract class ClubControllerBase with Store {
   ObservableList<ClubModel> clubs = ObservableList<ClubModel>();
 
   Future<void> register() async {
-    EasyLoading.show(status: "Realizando cadastro, aguarde...");
+    EasyLoading.show(status: 'Realizando cadastro, aguarde...');
     //var result = await _clubService.allClubs();
-    var result = await _clubService.allClubsMock();
+    final result = await _clubService.allClubsMock();
 
     result.when((success) {
       EasyLoading.dismiss();
@@ -33,9 +33,10 @@ abstract class ClubControllerBase with Store {
 
   Future<void> allClubs() async {
     EasyLoading.show(
-        status: "Buscando todos os clubes cadastrados, aguarde...");
+      status: 'Buscando todos os clubes cadastrados, aguarde...',
+    );
     //var result = await _clubService.allClubs();
-    var result = await _clubService.allClubs();
+    final result = await _clubService.allClubs();
     clubs.clear();
     result.when((success) {
       clubs.addAll(success);

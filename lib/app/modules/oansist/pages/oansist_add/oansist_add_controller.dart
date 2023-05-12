@@ -2,8 +2,8 @@ import 'package:asuka/asuka.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:mobx/mobx.dart';
-import 'package:oanse/app/shared/model/oansist/oansist_model.dart';
 
+import '../../../../shared/model/oansist/oansist_model.dart';
 import '../../../../shared/services/interfaces/oansist_service_interface.dart';
 import '../../../../shared/utils/form_controller.dart';
 
@@ -24,14 +24,15 @@ abstract class OansistAddControllerBase with Store {
 
   Future<void> register() async {
     if (formController.validate()) {
-      EasyLoading.show(status: "Realizando cadastro, aguarde...");
-      OansistModel data = OansistModel(
-          id: -1,
-          name: name,
-          birthDate: DateTime.now(),
-          clubId: 3,
-          gender: "M");
-      var result = await _service.addOansist(data);
+      EasyLoading.show(status: 'Realizando cadastro, aguarde...');
+      final OansistModel data = OansistModel(
+        id: -1,
+        name: name,
+        birthDate: DateTime.now(),
+        clubId: 3,
+        gender: 'M',
+      );
+      final result = await _service.addOansist(data);
 
       result.when((success) {
         EasyLoading.dismiss();

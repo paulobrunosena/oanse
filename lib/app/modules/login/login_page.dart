@@ -11,7 +11,7 @@ import 'login_controller.dart';
 
 class LoginPage extends StatefulWidget {
   final String title;
-  const LoginPage({Key? key, this.title = "Login"}) : super(key: key);
+  const LoginPage({Key? key, this.title = 'Login'}) : super(key: key);
 
   @override
   LoginPageState createState() => LoginPageState();
@@ -21,7 +21,7 @@ class LoginPageState extends State<LoginPage> {
   final controller = Modular.get<LoginController>();
   final _key = GlobalKey<ScaffoldMessengerState>();
   final LeadershipModel _data =
-      LeadershipModel(id: 0, name: "", userName: "", password: "");
+      LeadershipModel(id: 0, name: '', userName: '', password: '');
   late Image logo;
   late DecorationImage decorationImage;
 
@@ -31,9 +31,9 @@ class LoginPageState extends State<LoginPage> {
     init();
   }
 
-  init() {
+  void init() {
     logo = Image.asset(
-      "images/awana.png",
+      'images/awana.png',
       width: 200,
       //height: 100,
       fit: BoxFit.contain,
@@ -46,8 +46,10 @@ class LoginPageState extends State<LoginPage> {
     );
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
-          overlays: SystemUiOverlay.values);
+      SystemChrome.setEnabledSystemUIMode(
+        SystemUiMode.manual,
+        overlays: SystemUiOverlay.values,
+      );
     });
   }
 
@@ -57,14 +59,14 @@ class LoginPageState extends State<LoginPage> {
       children: [
         backgroundImage,
         Scaffold(
-            backgroundColor: Colors.transparent,
-            key: _key,
-            body: GestureDetector(
-              onTap: () => hideKeyboard(context),
-              child: CustomScrollView(
-                slivers: [
-                  SliverList(
-                      delegate: SliverChildListDelegate([
+          backgroundColor: Colors.transparent,
+          key: _key,
+          body: GestureDetector(
+            onTap: () => hideKeyboard(context),
+            child: CustomScrollView(
+              slivers: [
+                SliverList(
+                  delegate: SliverChildListDelegate([
                     Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
@@ -78,10 +80,12 @@ class LoginPageState extends State<LoginPage> {
                         camposLogin,
                       ],
                     )
-                  ]))
-                ],
-              ),
-            )),
+                  ]),
+                )
+              ],
+            ),
+          ),
+        ),
       ],
     );
   }
@@ -133,7 +137,7 @@ class LoginPageState extends State<LoginPage> {
         hint: 'Username',
         prefix: const Icon(Icons.email),
         textInputType: TextInputType.emailAddress,
-        onSaved: (value) => _data.userName = value ?? "",
+        onSaved: (value) => _data.userName = value ?? '',
         onChanged: controller.setUserName,
         textInputAction: TextInputAction.next,
       );
@@ -144,7 +148,7 @@ class LoginPageState extends State<LoginPage> {
             hint: 'Senha',
             prefix: const Icon(Icons.lock),
             obscure: !controller.senhaVisible,
-            onSaved: (value) => _data.password = value ?? "",
+            onSaved: (value) => _data.password = value ?? '',
             onChanged: controller.setPassword,
             suffix: CustomIconButton(
               radius: 32,
@@ -188,13 +192,14 @@ class LoginPageState extends State<LoginPage> {
       );
 
   Widget get botaoCadastrese => TextButton(
-      onPressed: () {
-        Modular.to.pushNamed('$routeUser/add');
-      },
-      child: const Text("CADASTRE-SE", style: TextStyle(color: Colors.white)));
+        onPressed: () {
+          Modular.to.pushNamed('$routeUser/add');
+        },
+        child: const Text('CADASTRE-SE', style: TextStyle(color: Colors.white)),
+      );
 
   void hideKeyboard(BuildContext context) {
-    var currentFocus = FocusScope.of(context);
+    final currentFocus = FocusScope.of(context);
     if (!currentFocus.hasPrimaryFocus) {
       currentFocus.unfocus();
     }

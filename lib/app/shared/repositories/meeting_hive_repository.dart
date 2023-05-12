@@ -9,7 +9,7 @@ class MeetingHiveRepository implements IMeetingRepository {
   MeetingHiveRepository() {
     _initDb();
   }
-  _initDb() async {
+  void _initDb() async {
     box = Hive.box<MeetingModel>(boxMeeting);
   }
 
@@ -22,26 +22,26 @@ class MeetingHiveRepository implements IMeetingRepository {
 
   @override
   Future<Result<List<MeetingModel>, Exception>> allMeeting() async {
-    List<MeetingModel> list = box.values.toList();
+    final List<MeetingModel> list = box.values.toList();
     if (list.isNotEmpty) {
       return Success(list);
     } else {
-      List<MeetingModel> listMeeting = [
+      final List<MeetingModel> listMeeting = [
         MeetingModel(
           id: 1,
-          date: DateTime.parse("2023-04-08 00:00:00"),
+          date: DateTime.parse('2023-04-08 00:00:00'),
         ),
         MeetingModel(
           id: 2,
-          date: DateTime.parse("2023-04-15 00:00:00"),
+          date: DateTime.parse('2023-04-15 00:00:00'),
         ),
         MeetingModel(
           id: 3,
-          date: DateTime.parse("2023-04-22 00:00:00"),
+          date: DateTime.parse('2023-04-22 00:00:00'),
         ),
         MeetingModel(
           id: 4,
-          date: DateTime.parse("2023-04-29 00:00:00"),
+          date: DateTime.parse('2023-04-29 00:00:00'),
         ),
       ];
       await box.addAll(listMeeting);

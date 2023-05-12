@@ -7,8 +7,11 @@ import 'weekly_score_controller.dart';
 class WeeklyScorePage extends StatefulWidget {
   final String title;
   final ClubModel club;
-  const WeeklyScorePage(
-      {super.key, required this.club, this.title = "Pontuação Semanal"});
+  const WeeklyScorePage({
+    super.key,
+    required this.club,
+    this.title = 'Pontuação Semanal',
+  });
 
   @override
   State<WeeklyScorePage> createState() => _WeeklyScorePageState();
@@ -98,14 +101,16 @@ class _WeeklyScorePageState extends State<WeeklyScorePage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                _tiles(label: "Data da reunião", text: "29 de abril de 2023"),
+                _tiles(label: 'Data da reunião', text: '29 de abril de 2023'),
                 const Divider(),
-                _tiles(label: "Líder", text: "Célia Belém"),
+                _tiles(label: 'Líder', text: 'Célia Belém'),
                 const Divider(),
-                _tiles(label: "Oansista", text: "Asafe Margarido"),
+                _tiles(label: 'Oansista', text: 'Asafe Margarido'),
                 const Divider(),
                 _tilesPontuacaoTotal(
-                    label: "Pontuação total", text: "70.000 pontos"),
+                  label: 'Pontuação total',
+                  text: '70.000 pontos',
+                ),
               ],
             ),
           ),
@@ -135,11 +140,12 @@ class _WeeklyScorePageState extends State<WeeklyScorePage> {
           ],
         ),
         IconButton(
-            onPressed: () {},
-            icon: const Icon(
-              Icons.edit,
-              color: Colors.grey,
-            ))
+          onPressed: () {},
+          icon: const Icon(
+            Icons.edit,
+            color: Colors.grey,
+          ),
+        )
       ],
     );
   }
@@ -151,11 +157,12 @@ class _WeeklyScorePageState extends State<WeeklyScorePage> {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         IconButton(
-            onPressed: () {},
-            icon: const Icon(
-              Icons.sports_score_rounded,
-              color: Colors.grey,
-            )),
+          onPressed: () {},
+          icon: const Icon(
+            Icons.sports_score_rounded,
+            color: Colors.grey,
+          ),
+        ),
         Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
@@ -177,137 +184,138 @@ class _WeeklyScorePageState extends State<WeeklyScorePage> {
   }
 
   Widget get scores => Expanded(
-          child: ListView(
-        padding: const EdgeInsets.all(5.0),
-        children: [
-          Card(
-            color: Colors.white,
-            clipBehavior: Clip.antiAlias,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                ListTile(
-                  title: const Text("Uniforme"),
-                  subtitle: _switchUniforme
-                      ? const Text("5.000 pontos")
-                      : const Text("Não marcou ponto"),
-                  trailing: Switch(
-                    onChanged: (bool value) {
-                      setState(() => _switchUniforme = value);
-                    },
-                    value: _switchUniforme,
+        child: ListView(
+          padding: const EdgeInsets.all(5.0),
+          children: [
+            Card(
+              color: Colors.white,
+              clipBehavior: Clip.antiAlias,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  ListTile(
+                    title: const Text('Uniforme'),
+                    subtitle: _switchUniforme
+                        ? const Text('5.000 pontos')
+                        : const Text('Não marcou ponto'),
+                    trailing: Switch(
+                      onChanged: (bool value) {
+                        setState(() => _switchUniforme = value);
+                      },
+                      value: _switchUniforme,
+                    ),
                   ),
-                ),
-                const Divider(height: 0),
-                ListTile(
-                  title: const Text("Manual"),
-                  subtitle: _switchUniforme
-                      ? const Text("20.000 pontos")
-                      : const Text("Não marcou ponto"),
-                  trailing: Switch(
-                    onChanged: (bool value) {
-                      setState(() => _switchUniforme = value);
-                    },
-                    value: _switchUniforme,
+                  const Divider(height: 0),
+                  ListTile(
+                    title: const Text('Manual'),
+                    subtitle: _switchUniforme
+                        ? const Text('20.000 pontos')
+                        : const Text('Não marcou ponto'),
+                    trailing: Switch(
+                      onChanged: (bool value) {
+                        setState(() => _switchUniforme = value);
+                      },
+                      value: _switchUniforme,
+                    ),
                   ),
-                ),
-                const Divider(height: 0),
-                ListTile(
-                  title: const Text("Conduta + contagem até 5"),
-                  subtitle: _switchUniforme
-                      ? const Text("10.000 pontos")
-                      : const Text("Não marcou ponto"),
-                  trailing: Switch(
-                    onChanged: (bool value) {
-                      setState(() => _switchUniforme = value);
-                    },
-                    value: _switchUniforme,
+                  const Divider(height: 0),
+                  ListTile(
+                    title: const Text('Conduta + contagem até 5'),
+                    subtitle: _switchUniforme
+                        ? const Text('10.000 pontos')
+                        : const Text('Não marcou ponto'),
+                    trailing: Switch(
+                      onChanged: (bool value) {
+                        setState(() => _switchUniforme = value);
+                      },
+                      value: _switchUniforme,
+                    ),
                   ),
-                ),
-                const Divider(height: 0),
-                ListTile(
-                  title: const Text("Bíblia"),
-                  subtitle: _switchUniforme
-                      ? const Text("5.000 pontos")
-                      : const Text("Não marcou ponto"),
-                  trailing: Switch(
-                    onChanged: (bool value) {
-                      setState(() => _switchUniforme = value);
-                    },
-                    value: _switchUniforme,
+                  const Divider(height: 0),
+                  ListTile(
+                    title: const Text('Bíblia'),
+                    subtitle: _switchUniforme
+                        ? const Text('5.000 pontos')
+                        : const Text('Não marcou ponto'),
+                    trailing: Switch(
+                      onChanged: (bool value) {
+                        setState(() => _switchUniforme = value);
+                      },
+                      value: _switchUniforme,
+                    ),
                   ),
-                ),
-                const Divider(height: 0),
-                ListTile(
-                  title: const Text("Leitura bíblica"),
-                  subtitle: _switchUniforme
-                      ? const Text("20.000 pontos")
-                      : const Text("Não marcou ponto"),
-                  trailing: Switch(
-                    onChanged: (bool value) {
-                      setState(() => _switchUniforme = value);
-                    },
-                    value: _switchUniforme,
+                  const Divider(height: 0),
+                  ListTile(
+                    title: const Text('Leitura bíblica'),
+                    subtitle: _switchUniforme
+                        ? const Text('20.000 pontos')
+                        : const Text('Não marcou ponto'),
+                    trailing: Switch(
+                      onChanged: (bool value) {
+                        setState(() => _switchUniforme = value);
+                      },
+                      value: _switchUniforme,
+                    ),
                   ),
-                ),
-                const Divider(height: 0),
-                ListTile(
-                  title: const Text("EBD"),
-                  subtitle: _switchUniforme
-                      ? const Text("5.000 pontos")
-                      : const Text("Não marcou ponto"),
-                  trailing: Switch(
-                    onChanged: (bool value) {
-                      setState(() => _switchUniforme = value);
-                    },
-                    value: _switchUniforme,
+                  const Divider(height: 0),
+                  ListTile(
+                    title: const Text('EBD'),
+                    subtitle: _switchUniforme
+                        ? const Text('5.000 pontos')
+                        : const Text('Não marcou ponto'),
+                    trailing: Switch(
+                      onChanged: (bool value) {
+                        setState(() => _switchUniforme = value);
+                      },
+                      value: _switchUniforme,
+                    ),
                   ),
-                ),
-                const Divider(height: 0),
-                ListTile(
-                  title: const Text("Visitante"),
-                  subtitle: _itemCount != 0
-                      ? const Text("10.000 pontos")
-                      : const Text("Não marcou ponto"),
-                  trailing: amount,
-                ),
-                const Divider(height: 0),
-                ListTile(
-                  title: const Text("Seção sem ajuda"),
-                  subtitle: _itemCount != 0
-                      ? const Text("20.000 pontos")
-                      : const Text("Não marcou ponto"),
-                  trailing: amount,
-                ),
-                const Divider(height: 0),
-                ListTile(
-                  title: const Text("Seção com ajuda"),
-                  subtitle: _itemCount != 0
-                      ? const Text("10.000 pontos")
-                      : const Text("Não marcou ponto"),
-                  trailing: amount,
-                ),
-                const Divider(height: 0),
-                ListTile(
-                  title: const Text("Atividade extra"),
-                  subtitle: _itemCount != 0
-                      ? const Text("15.000 pontos")
-                      : const Text("Não marcou ponto"),
-                  trailing: amount,
-                ),
-                const Divider(height: 0),
-                ListTile(
-                  title: const Text("Colocação no jogos"),
-                  subtitle: _btn1SelectedVal != "Não participou"
-                      ? const Text("15.000 pontos")
-                      : const Text("Não marcou ponto"),
-                  trailing: positionGames,
-                ),
-              ],
+                  const Divider(height: 0),
+                  ListTile(
+                    title: const Text('Visitante'),
+                    subtitle: _itemCount != 0
+                        ? const Text('10.000 pontos')
+                        : const Text('Não marcou ponto'),
+                    trailing: amount,
+                  ),
+                  const Divider(height: 0),
+                  ListTile(
+                    title: const Text('Seção sem ajuda'),
+                    subtitle: _itemCount != 0
+                        ? const Text('20.000 pontos')
+                        : const Text('Não marcou ponto'),
+                    trailing: amount,
+                  ),
+                  const Divider(height: 0),
+                  ListTile(
+                    title: const Text('Seção com ajuda'),
+                    subtitle: _itemCount != 0
+                        ? const Text('10.000 pontos')
+                        : const Text('Não marcou ponto'),
+                    trailing: amount,
+                  ),
+                  const Divider(height: 0),
+                  ListTile(
+                    title: const Text('Atividade extra'),
+                    subtitle: _itemCount != 0
+                        ? const Text('15.000 pontos')
+                        : const Text('Não marcou ponto'),
+                    trailing: amount,
+                  ),
+                  const Divider(height: 0),
+                  ListTile(
+                    title: const Text('Colocação no jogos'),
+                    subtitle: _btn1SelectedVal != 'Não participou'
+                        ? const Text('15.000 pontos')
+                        : const Text('Não marcou ponto'),
+                    trailing: positionGames,
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
-      ));
+          ],
+        ),
+      );
 
   Widget get amount => Row(
         mainAxisSize: MainAxisSize.min,
@@ -320,8 +328,9 @@ class _WeeklyScorePageState extends State<WeeklyScorePage> {
               : Container(),
           Text(_itemCount.toString()),
           IconButton(
-              icon: const Icon(Icons.add),
-              onPressed: () => setState(() => _itemCount++))
+            icon: const Icon(Icons.add),
+            onPressed: () => setState(() => _itemCount++),
+          )
         ],
       );
 

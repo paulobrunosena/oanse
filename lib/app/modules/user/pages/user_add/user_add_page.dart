@@ -9,7 +9,7 @@ class UserAddPage extends StatefulWidget {
 
   const UserAddPage({
     Key? key,
-    this.title = "Cadastre-se",
+    this.title = 'Cadastre-se',
   }) : super(key: key);
 
   @override
@@ -27,7 +27,7 @@ class UserAddPageState extends State<UserAddPage> {
         centerTitle: true,
         actions: [bntSave],
         leading: IconButton(
-            icon: const Icon(Icons.close), onPressed: Modular.to.pop),
+            icon: const Icon(Icons.close), onPressed: Modular.to.pop,),
       ),
       body: form,
     );
@@ -60,7 +60,7 @@ class UserAddPageState extends State<UserAddPage> {
       );
 
   Widget get userName => TextFormField(
-        validator: Validatorless.required("* Nome de usuário obrigatório"),
+        validator: Validatorless.required('* Nome de usuário obrigatório'),
         keyboardType: TextInputType.name,
         onSaved: (value) {
           controller.userName = value;
@@ -68,14 +68,14 @@ class UserAddPageState extends State<UserAddPage> {
         decoration: const InputDecoration(
             border: OutlineInputBorder(),
             filled: true,
-            hintText: "Informe um nome de usuário",
-            labelText: "Nome de usuário"),
+            hintText: 'Informe um nome de usuário',
+            labelText: 'Nome de usuário',),
       );
 
   Widget get email => TextFormField(
         validator: Validatorless.multiple([
-          Validatorless.required("* Campo obrigatório"),
-          Validatorless.email("* E-mail inválido"),
+          Validatorless.required('* Campo obrigatório'),
+          Validatorless.email('* E-mail inválido'),
         ]),
         keyboardType: TextInputType.emailAddress,
         onSaved: (value) {
@@ -84,12 +84,12 @@ class UserAddPageState extends State<UserAddPage> {
         decoration: const InputDecoration(
             border: OutlineInputBorder(),
             filled: true,
-            hintText: "Informe um e-mail",
-            labelText: "E-mail"),
+            hintText: 'Informe um e-mail',
+            labelText: 'E-mail',),
       );
 
   Widget get password => TextFormField(
-        validator: Validatorless.required("* Senha obrigatória"),
+        validator: Validatorless.required('* Senha obrigatória'),
         keyboardType: TextInputType.visiblePassword,
         obscureText: true,
         onSaved: (value) {
@@ -98,7 +98,7 @@ class UserAddPageState extends State<UserAddPage> {
         decoration: const InputDecoration(
             border: OutlineInputBorder(),
             filled: true,
-            hintText: "Informe uma senha",
-            labelText: "Senha"),
+            hintText: 'Informe uma senha',
+            labelText: 'Senha',),
       );
 }

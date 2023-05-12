@@ -13,19 +13,20 @@ class UserRepository implements IUserRepository {
   @override
   Future<Result<List<User>, Exception>> allUsers() async {
     try {
-      var response = await client.get('user/');
+      final response = await client.get('user/');
 
       if (response.statusCode == 200) {
-        UserResponse result = UserResponse.allUsersfromJson(response.data);
+        final UserResponse result =
+            UserResponse.allUsersfromJson(response.data);
         return Success(result.listAllUsers ?? []);
       } else {
-        debugPrint("Erro no allUsers");
+        debugPrint('Erro no allUsers');
         debugPrint(response.data);
-        return Error(Exception("Erro no allUsers"));
+        return Error(Exception('Erro no allUsers'));
       }
     } on DioError catch (error) {
       if (error.response != null) {
-        var responseException =
+        final responseException =
             ExceptionResponse.fromJson(error.response!.data);
         return Error(Exception(responseException.message));
       } else {

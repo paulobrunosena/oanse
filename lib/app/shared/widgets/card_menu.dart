@@ -57,6 +57,6 @@ class CardMenuWidget extends StatelessWidget {
               ],
             ),
           ),
-        ));
+        ),);
   }
 }

@@ -61,7 +61,7 @@ mixin _$LoginController on LoginControllerBase, Store {
       ActionController(name: 'LoginControllerBase', context: context);
 
   @override
-  dynamic setUserName(String value) {
+  String setUserName(String value) {
     final _$actionInfo = _$LoginControllerBaseActionController.startAction(
         name: 'LoginControllerBase.setUserName');
     try {

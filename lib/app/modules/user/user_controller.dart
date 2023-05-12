@@ -18,8 +18,8 @@ abstract class UserControllerBase with Store {
   ObservableList<User> users = ObservableList<User>();
 
   Future<void> register() async {
-    EasyLoading.show(status: "Realizando cadastro, aguarde...");
-    var result = await _userService.allUsers();
+    EasyLoading.show(status: 'Realizando cadastro, aguarde...');
+    final result = await _userService.allUsers();
 
     result.when((success) {
       EasyLoading.dismiss();
@@ -31,8 +31,8 @@ abstract class UserControllerBase with Store {
   }
 
   Future<void> allUsers() async {
-    EasyLoading.show(status: "Buscando todos os usuários, aguarde...");
-    var result = await _userService.allUsers();
+    EasyLoading.show(status: 'Buscando todos os usuários, aguarde...');
+    final result = await _userService.allUsers();
     users.clear();
     result.when((success) {
       users.addAll(success);

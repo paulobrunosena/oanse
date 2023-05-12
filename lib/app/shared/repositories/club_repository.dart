@@ -13,24 +13,25 @@ class ClubRepository implements IClubRepository {
   @override
   Future<Result<List<ClubModel>, Exception>> allClubs() async {
     try {
-      var response = await client.get('club/');
+      final response = await client.get('club/');
 
       if (response.statusCode == 200) {
-        bool? status = response.data['status'];
+        final bool? status = response.data['status'];
         if (status != null && status) {
-          List<ClubModel> result = clubModelFromJson(response.data['response']);
+          final List<ClubModel> result =
+              clubModelFromJson(response.data['response']);
           return Success(result);
         } else {
-          return Error(Exception("Não existem clubes cadastrados"));
+          return Error(Exception('Não existem clubes cadastrados'));
         }
       } else {
-        debugPrint("Erro no allClubs");
+        debugPrint('Erro no allClubs');
         debugPrint(response.data);
-        return Error(Exception("Erro no allUsers"));
+        return Error(Exception('Erro no allUsers'));
       }
     } on DioError catch (error) {
       if (error.response != null) {
-        var responseException =
+        final responseException =
             ExceptionResponse.fromJson(error.response!.data);
         return Error(Exception(responseException.message));
       } else {
@@ -41,40 +42,40 @@ class ClubRepository implements IClubRepository {
 
   @override
   Future<Result<List<ClubModel>, Exception>> allClubsMock() async {
-    List<ClubModel> resultMock = [
+    final List<ClubModel> resultMock = [
       ClubModel(
         id: 1,
-        name: "Ursinho",
+        name: 'Ursinho',
         entryAge: 4,
         leaveAge: 6,
       ),
       ClubModel(
         id: 2,
-        name: "Faísca",
+        name: 'Faísca',
         entryAge: 6,
         leaveAge: 9,
       ),
       ClubModel(
         id: 3,
-        name: "Flama",
+        name: 'Flama',
         entryAge: 9,
         leaveAge: 11,
       ),
       ClubModel(
         id: 4,
-        name: "Tocha",
+        name: 'Tocha',
         entryAge: 11,
         leaveAge: 13,
       ),
       ClubModel(
         id: 5,
-        name: "JV",
+        name: 'JV',
         entryAge: 13,
         leaveAge: 15,
       ),
       ClubModel(
         id: 6,
-        name: "VQ7",
+        name: 'VQ7',
         entryAge: 15,
         leaveAge: 19,
       ),
@@ -82,7 +83,7 @@ class ClubRepository implements IClubRepository {
     if (resultMock.isNotEmpty) {
       return Success(resultMock);
     } else {
-      return Error(Exception("Não existem clubes cadastrados"));
+      return Error(Exception('Não existem clubes cadastrados'));
     }
   }
 

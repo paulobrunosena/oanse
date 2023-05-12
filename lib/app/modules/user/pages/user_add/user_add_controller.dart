@@ -21,8 +21,8 @@ abstract class UserAddControllerBase with Store {
 
   Future<void> register() async {
     if (formController.validate()) {
-      EasyLoading.show(status: "Realizando cadastro, aguarde...");
-      var result = await _userService.allUsers();
+      EasyLoading.show(status: 'Realizando cadastro, aguarde...');
+      final result = await _userService.allUsers();
 
       result.when((success) {
         EasyLoading.dismiss();

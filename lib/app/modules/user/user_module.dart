@@ -25,7 +25,7 @@ class UserModule extends Module {
   final List<ModularRoute> routes = [
     ChildRoute(Modular.initialRoute, child: (_, args) => const UserPage()),
     ChildRoute(
-      "/add",
+      '/add',
       child: (_, args) => const UserAddPage(),
       transition: TransitionType.downToUp,
     )

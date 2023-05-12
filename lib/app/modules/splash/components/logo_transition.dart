@@ -12,18 +12,19 @@ class LogoTransition extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Positioned(
-        child: Center(
-      child: AnimatedBuilder(
-        animation: animation,
-        builder: (context, child) {
-          return Opacity(
-            opacity: opacityTween.evaluate(animation),
-            child: Container(
-              child: childWidget,
-            ),
-          );
-        },
+      child: Center(
+        child: AnimatedBuilder(
+          animation: animation,
+          builder: (context, child) {
+            return Opacity(
+              opacity: opacityTween.evaluate(animation),
+              child: Container(
+                child: childWidget,
+              ),
+            );
+          },
+        ),
       ),
-    ));
+    );
   }
 }

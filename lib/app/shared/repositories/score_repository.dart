@@ -9,7 +9,7 @@ class ScoreRepository implements IScoreRepository {
   ScoreRepository() {
     _initDb();
   }
-  _initDb() async {
+  void _initDb() async {
     box = Hive.box<ScoreModel>(boxScore);
   }
 
@@ -32,13 +32,17 @@ class ScoreRepository implements IScoreRepository {
 
   @override
   Future<Result<List<ScoreModel>, Exception>> list(
-      int idMeeting, int idOansist) async {
-    List<ScoreModel> list = box.values.toList();
-    var result = list
-        .where((element) =>
-            element.meetingId == idMeeting &&
-            element.oansistId == idOansist &&
-            ((element.scoreItemId ?? 0) < 11))
+    int idMeeting,
+    int idOansist,
+  ) async {
+    final List<ScoreModel> list = box.values.toList();
+    final result = list
+        .where(
+          (element) =>
+              element.meetingId == idMeeting &&
+              element.oansistId == idOansist &&
+              ((element.scoreItemId ?? 0) < 11),
+        )
         .toList();
     result.sort((a, b) => a.id!.compareTo(b.id!));
     return Success(result);
@@ -46,13 +50,17 @@ class ScoreRepository implements IScoreRepository {
 
   @override
   Future<Result<List<ScoreModel>, Exception>> listScoreSports(
-      int idMeeting, int idOansist) async {
-    List<ScoreModel> list = box.values.toList();
-    var result = list
-        .where((element) =>
-            element.meetingId == idMeeting &&
-            element.oansistId == idOansist &&
-            ((element.scoreItemId ?? 0) > 10))
+    int idMeeting,
+    int idOansist,
+  ) async {
+    final List<ScoreModel> list = box.values.toList();
+    final result = list
+        .where(
+          (element) =>
+              element.meetingId == idMeeting &&
+              element.oansistId == idOansist &&
+              ((element.scoreItemId ?? 0) > 10),
+        )
         .toList();
     result.sort((a, b) => a.id!.compareTo(b.id!));
 

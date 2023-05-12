@@ -23,7 +23,7 @@ class OansistModel {
   OansistModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     name = json['name'];
-    birthDate = DateTime.parse(json["birth_date"]);
+    birthDate = DateTime.parse(json['birth_date']);
     gender = json['gender'];
     clubId = json['club'];
   }

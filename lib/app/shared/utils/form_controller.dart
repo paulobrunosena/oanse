@@ -4,7 +4,7 @@ class FormController {
   var key = GlobalKey<FormState>();
 
   bool validate() {
-    FormState? form = key.currentState;
+    final FormState? form = key.currentState;
 
     if (form != null && form.validate()) {
       form.save();

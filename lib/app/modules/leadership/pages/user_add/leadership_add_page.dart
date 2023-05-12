@@ -9,7 +9,7 @@ class LeadershipAddPage extends StatefulWidget {
 
   const LeadershipAddPage({
     Key? key,
-    this.title = "Cadastre-se",
+    this.title = 'Cadastre-se',
   }) : super(key: key);
 
   @override
@@ -27,7 +27,9 @@ class LeadershipAddPageState extends State<LeadershipAddPage> {
         centerTitle: true,
         actions: [bntSave],
         leading: IconButton(
-            icon: const Icon(Icons.close), onPressed: Modular.to.pop),
+          icon: const Icon(Icons.close),
+          onPressed: Modular.to.pop,
+        ),
       ),
       body: form,
     );
@@ -63,42 +65,45 @@ class LeadershipAddPageState extends State<LeadershipAddPage> {
       );
 
   Widget get name => TextFormField(
-        validator: Validatorless.required("* campo obrigatório"),
+        validator: Validatorless.required('* campo obrigatório'),
         keyboardType: TextInputType.name,
         onSaved: (value) {
           controller.userName = value;
         },
         decoration: const InputDecoration(
-            border: OutlineInputBorder(),
-            filled: true,
-            hintText: "Informe um nome de usuário",
-            labelText: "Nome de usuário"),
+          border: OutlineInputBorder(),
+          filled: true,
+          hintText: 'Informe um nome de usuário',
+          labelText: 'Nome de usuário',
+        ),
       );
 
   Widget get userName => TextFormField(
-        validator: Validatorless.required("* campo obrigatório"),
+        validator: Validatorless.required('* campo obrigatório'),
         keyboardType: TextInputType.name,
         onSaved: (value) {
           controller.userName = value;
         },
         decoration: const InputDecoration(
-            border: OutlineInputBorder(),
-            filled: true,
-            hintText: "Informe um nome de usuário",
-            labelText: "Nome de usuário"),
+          border: OutlineInputBorder(),
+          filled: true,
+          hintText: 'Informe um nome de usuário',
+          labelText: 'Nome de usuário',
+        ),
       );
 
   Widget get password => TextFormField(
-        validator: Validatorless.required("* Senha obrigatória"),
+        validator: Validatorless.required('* Senha obrigatória'),
         keyboardType: TextInputType.visiblePassword,
         obscureText: true,
         onSaved: (value) {
           controller.password = value;
         },
         decoration: const InputDecoration(
-            border: OutlineInputBorder(),
-            filled: true,
-            hintText: "Informe uma senha",
-            labelText: "Senha"),
+          border: OutlineInputBorder(),
+          filled: true,
+          hintText: 'Informe uma senha',
+          labelText: 'Senha',
+        ),
       );
 }

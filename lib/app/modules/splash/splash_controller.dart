@@ -30,25 +30,25 @@ abstract class SplashControllerBase with Store {
   );
 
   Future<void> redirectPage() async {
-    var result = await _authService.getDataUserLocal();
+    final result = await _authService.getDataUserLocal();
     if (result == null) {
       Modular.to.pushReplacementNamed('$routeLogin/');
     } else {
-      debugPrint("token do sharedpreferences: ${result.token}");
+      debugPrint('token do sharedpreferences: ${result.token}');
       if (_authService.getToken() == null) {
-        debugPrint("token vem nulo");
+        debugPrint('token vem nulo');
       } else {
-        debugPrint("Valor do token inicial é ${_authService.getToken()}");
+        debugPrint('Valor do token inicial é ${_authService.getToken()}');
       }
       _authService.setToken(result.token);
-      debugPrint("Valor do token agora de fato é ${_authService.getToken()}");
+      debugPrint('Valor do token agora de fato é ${_authService.getToken()}');
       Modular.to.pushReplacementNamed('$routeHome/');
     }
   }
 
   Future<void> redirectPageLoginLeadership() async {
     await initHive();
-    var result = _authHiveService.getDataUserLocal();
+    final result = _authHiveService.getDataUserLocal();
     if (result == null) {
       Modular.to.pushReplacementNamed('$routeLogin/');
     } else {
@@ -57,8 +57,8 @@ abstract class SplashControllerBase with Store {
   }
 
   Future<void> redirectPageLeadership() async {
-    EasyLoading.show(status: "Selecionando líder, aguarde...");
-    var result = await _leadershipService.allLeaderships();
+    EasyLoading.show(status: 'Selecionando líder, aguarde...');
+    final result = await _leadershipService.allLeaderships();
     result.when(
       (success) async {
         LeadershipModel? leadershipSelect;
@@ -80,59 +80,60 @@ abstract class SplashControllerBase with Store {
   }
 
   Future<void> initHive() async {
-    Box<LeadershipModel> leadershipBox =
+    final Box<LeadershipModel> leadershipBox =
         Hive.box<LeadershipModel>(boxLeadership);
-    Box<ClubModel> clubBox = Hive.box<ClubModel>(boxClub);
-    Box<RoleModel> roleBox = Hive.box<RoleModel>(boxRole);
+    final Box<ClubModel> clubBox = Hive.box<ClubModel>(boxClub);
+    final Box<RoleModel> roleBox = Hive.box<RoleModel>(boxRole);
 
     if (leadershipBox.isEmpty) {
-      int idLeadership = await Sequence.idGenerator();
+      final int idLeadership = await Sequence.idGenerator();
       await leadershipBox.put(
         idLeadership,
         LeadershipModel(
-            id: idLeadership,
-            name: "Paulo Ricardo Martins",
-            password: "oanse2023",
-            userName: "paulomartins",
-            club: 3,
-            role: 2),
+          id: idLeadership,
+          name: 'Paulo Ricardo Martins',
+          password: 'oanse2023',
+          userName: 'paulomartins',
+          club: 3,
+          role: 2,
+        ),
       );
     }
     if (clubBox.isEmpty) {
-      List<ClubModel> listClub = [
+      final List<ClubModel> listClub = [
         ClubModel(
           id: 1,
-          name: "Ursinho",
+          name: 'Ursinho',
           entryAge: 4,
           leaveAge: 6,
         ),
         ClubModel(
           id: 2,
-          name: "Faísca",
+          name: 'Faísca',
           entryAge: 6,
           leaveAge: 9,
         ),
         ClubModel(
           id: 3,
-          name: "Flama",
+          name: 'Flama',
           entryAge: 9,
           leaveAge: 11,
         ),
         ClubModel(
           id: 4,
-          name: "Tocha",
+          name: 'Tocha',
           entryAge: 11,
           leaveAge: 13,
         ),
         ClubModel(
           id: 5,
-          name: "JV",
+          name: 'JV',
           entryAge: 13,
           leaveAge: 15,
         ),
         ClubModel(
           id: 6,
-          name: "VQ7",
+          name: 'VQ7',
           entryAge: 15,
           leaveAge: 19,
         ),
@@ -141,27 +142,27 @@ abstract class SplashControllerBase with Store {
     }
 
     if (roleBox.isEmpty) {
-      List<RoleModel> listRole = [
+      final List<RoleModel> listRole = [
         RoleModel(
           id: 1,
-          name: "Líder de clube",
+          name: 'Líder de clube',
           description:
-              "Líder responsável por passar as seções dos manuais e evangelizar as crianças sobre sua responsabilidade",
+              'Líder responsável por passar as seções dos manuais e evangelizar as crianças sobre sua responsabilidade',
         ),
         RoleModel(
           id: 2,
-          name: "Diretor de clube",
-          description: "Responsável por líderar os líderes de clube",
+          name: 'Diretor de clube',
+          description: 'Responsável por líderar os líderes de clube',
         ),
         RoleModel(
           id: 3,
-          name: "Secretária geral",
-          description: "Responsável por gerir material do oanse",
+          name: 'Secretária geral',
+          description: 'Responsável por gerir material do oanse',
         ),
         RoleModel(
           id: 4,
-          name: "Diretor geral",
-          description: "Responsável por gerir o oanse na igreja local",
+          name: 'Diretor geral',
+          description: 'Responsável por gerir o oanse na igreja local',
         ),
       ];
       await roleBox.addAll(listRole);

@@ -11,7 +11,7 @@ class OansistPage extends StatefulWidget {
   final LeadershipModel leadership;
   const OansistPage({
     Key? key,
-    this.title = "Oansistas",
+    this.title = 'Oansistas',
     required this.leadership,
   }) : super(key: key);
 
@@ -33,19 +33,20 @@ class OansistPageState extends State<OansistPage> {
         builder: (_) {
           if (controller.oansists.isEmpty) {
             return const Center(
-              child: Text("Não existe oansistas cadastrados"),
+              child: Text('Não existe oansistas cadastrados'),
             );
           }
 
           return ListView.separated(
-              separatorBuilder: (context, index) => const Divider(),
-              itemCount: controller.oansists.length,
-              itemBuilder: (context, int index) {
-                return ListTile(
-                  title: Text(controller.oansists[index].name ?? "Nome"),
-                  subtitle: Text(controller.oansists[index].birthDateFormatter),
-                );
-              });
+            separatorBuilder: (context, index) => const Divider(),
+            itemCount: controller.oansists.length,
+            itemBuilder: (context, int index) {
+              return ListTile(
+                title: Text(controller.oansists[index].name ?? 'Nome'),
+                subtitle: Text(controller.oansists[index].birthDateFormatter),
+              );
+            },
+          );
         },
       ),
       floatingActionButton: FloatingActionButton(

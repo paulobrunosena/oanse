@@ -10,8 +10,8 @@ class LoginRequest {
   });
 
   factory LoginRequest.fromJson(Map<String, dynamic> json) => LoginRequest(
-        email: json["email"],
-        password: json["password"],
+        email: json['email'],
+        password: json['password'],
       );
 
   Map<String, dynamic> toJson() {

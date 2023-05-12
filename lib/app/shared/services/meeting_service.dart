@@ -10,12 +10,12 @@ class MeetingService implements IMeetingService {
 
   @override
   Future<Result<bool, Exception>> addMeeting(MeetingModel data) async {
-    return await _repository.addMeeting(data);
+    return _repository.addMeeting(data);
   }
 
   @override
   Future<Result<List<MeetingModel>, Exception>> allMeeting() async {
-    return await _repository.allMeeting();
+    return _repository.allMeeting();
   }
 
   @override

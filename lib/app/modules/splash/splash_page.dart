@@ -7,7 +7,7 @@ import 'splash_controller.dart';
 
 class SplashPage extends StatefulWidget {
   final String title;
-  const SplashPage({Key? key, this.title = "Splash"}) : super(key: key);
+  const SplashPage({Key? key, this.title = 'Splash'}) : super(key: key);
 
   @override
   SplashPageState createState() => SplashPageState();
@@ -25,7 +25,7 @@ class SplashPageState extends State<SplashPage>
   void initState() {
     super.initState();
     splash = Image.asset(
-      "images/logo.png",
+      'images/logo.png',
       width: 180.0,
       //fit: BoxFit.cover,
     );
