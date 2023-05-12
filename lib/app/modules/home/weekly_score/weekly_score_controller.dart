@@ -43,6 +43,27 @@ abstract class WeeklyScoreControllerBase with Store {
   @observable
   bool? isLoaded;
 
+  @action
+  void setIsLoaded(bool? newValue) {
+    isLoaded = newValue;
+  }
+
+  @observable
+  int? positionGames;
+
+  @action
+  void setPositionGames(int? newValue) {
+    positionGames = newValue;
+  }
+
+  @observable
+  int? positionGamesAux;
+
+  @action
+  void setPositionGamesAux(int? newValue) {
+    positionGamesAux = newValue;
+  }
+
   @observable
   MeetingModel? selectMeeting;
 
@@ -54,13 +75,13 @@ abstract class WeeklyScoreControllerBase with Store {
   @observable
   OansistModel? selectOansist;
 
-  @computed
-  bool get showScoreItems => selectMeeting != null && selectOansist != null;
-
   @action
   void setSelectOansist(OansistModel? newValue) {
     selectOansist = newValue;
   }
+
+  @computed
+  bool get showScoreItems => selectMeeting != null && selectOansist != null;
 
   @observable
   bool loadingWidgets = false;
@@ -90,16 +111,12 @@ abstract class WeeklyScoreControllerBase with Store {
     _totalScore = 0;
   }
 
-  @action
-  void setIsLoaded(bool? newValue) {
-    isLoaded = newValue;
-  }
-
   initWidgets(LeadershipModel leadershipModel) {
     leadership = leadershipModel;
-    selectMeeting = null;
-    selectOansist = null;
-    _totalScore = 0;
+    setSelectMeeting(null);
+    setSelectOansist(null);
+    resetTotalScore();
+    setPositionGames(null);
     setIsLoaded(null);
     setLoadingWidgets(true);
     Future.wait([

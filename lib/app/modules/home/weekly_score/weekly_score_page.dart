@@ -23,7 +23,6 @@ class _WeeklyScorePageState extends State<WeeklyScorePage> {
   late TextTheme textTheme = Theme.of(context).textTheme;
   late TextStyle? labelStyle;
   late TextStyle? textStyle;
-  int? positionGames;
 
   @override
   void initState() {
@@ -198,6 +197,7 @@ class _WeeklyScorePageState extends State<WeeklyScorePage> {
       );
 
   Widget get scoreItems => Observer(builder: (_) {
+        controller.setPositionGamesAux(null);
         return controller.showScoreItems
             ? Expanded(
                 child: ListView.separated(
@@ -210,34 +210,39 @@ class _WeeklyScorePageState extends State<WeeklyScorePage> {
 
                     return Observer(builder: (_) {
                       if (scoreItem.isSport) {
+                        controller.setPositionGames(null);
                         if (score.quantity > 0) {
-                          positionGames = index;
+                          controller.setPositionGamesAux(index);
                         }
+                        if (index == (controller.scores.length - 1)) {
+                          controller
+                              .setPositionGames(controller.positionGamesAux);
+                        }
+
                         return RadioListTile<int>(
                           title: Text(scoreItem.name!),
                           subtitle: score.quantity > 0
                               ? Text("${scoreItem.pointsFormatter} pontos")
                               : const Text("Não marcou ponto"),
-                          groupValue: positionGames,
+                          groupValue: controller.positionGames,
                           selected: score.quantity > 0,
                           value: index,
                           onChanged: (value) {
-                            debugPrint(value?.toString());
-                            if (positionGames == null) {
+                            if (controller.positionGames == null) {
                               score.setQuantity(1);
                               controller.incrementTotalScore(scoreItem.points!);
                             } else {
-                              var scoreItemBefore =
-                                  controller.scoreItems[positionGames!];
+                              var scoreItemBefore = controller
+                                  .scoreItems[controller.positionGames!];
                               var scoreStoreBefore =
-                                  controller.scores[positionGames!];
+                                  controller.scores[controller.positionGames!];
                               scoreStoreBefore.setQuantity(0);
                               controller
                                   .decrementTotalScore(scoreItemBefore.points!);
                               score.setQuantity(1);
                               controller.incrementTotalScore(scoreItem.points!);
                             }
-                            positionGames = value;
+                            controller.setPositionGames(value);
                           },
                           controlAffinity: ListTileControlAffinity.trailing,
                         );

@@ -33,6 +33,38 @@ mixin _$WeeklyScoreController on WeeklyScoreControllerBase, Store {
     });
   }
 
+  late final _$positionGamesAtom =
+      Atom(name: 'WeeklyScoreControllerBase.positionGames', context: context);
+
+  @override
+  int? get positionGames {
+    _$positionGamesAtom.reportRead();
+    return super.positionGames;
+  }
+
+  @override
+  set positionGames(int? value) {
+    _$positionGamesAtom.reportWrite(value, super.positionGames, () {
+      super.positionGames = value;
+    });
+  }
+
+  late final _$positionGamesAuxAtom = Atom(
+      name: 'WeeklyScoreControllerBase.positionGamesAux', context: context);
+
+  @override
+  int? get positionGamesAux {
+    _$positionGamesAuxAtom.reportRead();
+    return super.positionGamesAux;
+  }
+
+  @override
+  set positionGamesAux(int? value) {
+    _$positionGamesAuxAtom.reportWrite(value, super.positionGamesAux, () {
+      super.positionGamesAux = value;
+    });
+  }
+
   late final _$selectMeetingAtom =
       Atom(name: 'WeeklyScoreControllerBase.selectMeeting', context: context);
 
@@ -101,6 +133,39 @@ mixin _$WeeklyScoreController on WeeklyScoreControllerBase, Store {
       ActionController(name: 'WeeklyScoreControllerBase', context: context);
 
   @override
+  void setIsLoaded(bool? newValue) {
+    final _$actionInfo = _$WeeklyScoreControllerBaseActionController
+        .startAction(name: 'WeeklyScoreControllerBase.setIsLoaded');
+    try {
+      return super.setIsLoaded(newValue);
+    } finally {
+      _$WeeklyScoreControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void setPositionGames(int? newValue) {
+    final _$actionInfo = _$WeeklyScoreControllerBaseActionController
+        .startAction(name: 'WeeklyScoreControllerBase.setPositionGames');
+    try {
+      return super.setPositionGames(newValue);
+    } finally {
+      _$WeeklyScoreControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void setPositionGamesAux(int? newValue) {
+    final _$actionInfo = _$WeeklyScoreControllerBaseActionController
+        .startAction(name: 'WeeklyScoreControllerBase.setPositionGamesAux');
+    try {
+      return super.setPositionGamesAux(newValue);
+    } finally {
+      _$WeeklyScoreControllerBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   void setSelectMeeting(MeetingModel? newValue) {
     final _$actionInfo = _$WeeklyScoreControllerBaseActionController
         .startAction(name: 'WeeklyScoreControllerBase.setSelectMeeting');
@@ -167,20 +232,11 @@ mixin _$WeeklyScoreController on WeeklyScoreControllerBase, Store {
   }
 
   @override
-  void setIsLoaded(bool? newValue) {
-    final _$actionInfo = _$WeeklyScoreControllerBaseActionController
-        .startAction(name: 'WeeklyScoreControllerBase.setIsLoaded');
-    try {
-      return super.setIsLoaded(newValue);
-    } finally {
-      _$WeeklyScoreControllerBaseActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
   String toString() {
     return '''
 isLoaded: ${isLoaded},
+positionGames: ${positionGames},
+positionGamesAux: ${positionGamesAux},
 selectMeeting: ${selectMeeting},
 selectOansist: ${selectOansist},
 loadingWidgets: ${loadingWidgets},
