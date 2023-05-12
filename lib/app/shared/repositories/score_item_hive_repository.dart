@@ -23,7 +23,21 @@ class ScoreItemHiveRepository implements IScoreItemRepository {
       return Success(list.where((element) => !element.isSport).toList());
     } else {
       await initList();
-      return Success(box.values.toList());
+      list = box.values.toList();
+      return Success(list.where((element) => !element.isSport).toList());
+    }
+  }
+
+  @override
+  Future<Result<List<ScoreItemModel>, Exception>> listScoreItemSports() async {
+    List<ScoreItemModel> list = box.values.toList();
+    if (list.isNotEmpty) {
+      list.sort((a, b) => a.id!.compareTo(b.id!));
+      return Success(list.where((element) => element.isSport).toList());
+    } else {
+      await initList();
+      list = box.values.toList();
+      return Success(list.where((element) => element.isSport).toList());
     }
   }
 
@@ -143,18 +157,6 @@ class ScoreItemHiveRepository implements IScoreItemRepository {
 
     for (var item in listScoreItem) {
       await put(item.id!, item);
-    }
-  }
-
-  @override
-  Future<Result<List<ScoreItemModel>, Exception>> listScoreItemSports() async {
-    List<ScoreItemModel> list = box.values.toList();
-    if (list.isNotEmpty) {
-      list.sort((a, b) => a.id!.compareTo(b.id!));
-      return Success(list.where((element) => element.isSport).toList());
-    } else {
-      await initList();
-      return Success(box.values.toList());
     }
   }
 

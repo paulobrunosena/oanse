@@ -313,6 +313,12 @@ class _WeeklyScorePageState extends State<WeeklyScorePage> {
   Widget get scoreItemsSports => Observer(builder: (_) {
         return ListTile(
           title: const Text('Esportes'),
+          subtitle: controller.scoreSportSelected != null
+              ? controller.scoreSportSelected!.quantity > 0
+                  ? Text(
+                      "${controller.scoreItemSportSelected?.pointsFormatter} pontos")
+                  : const Text("Não marcou ponto")
+              : const Text("Não marcou ponto"),
           trailing: DropdownButton<ScoreItemModel>(
             // Must be one of items.value.
             value: controller.scoreItemSportSelected,

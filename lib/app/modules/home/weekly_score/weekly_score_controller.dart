@@ -50,7 +50,12 @@ abstract class WeeklyScoreControllerBase with Store {
 
   @action
   void setScoreItemSportSelected(ScoreItemModel? newValue) {
+    if (_scoreItemSportSelected != null) {
+      decrementTotalScore(_scoreItemSportSelected?.points ?? 0);
+    }
     _scoreItemSportSelected = newValue;
+    incrementTotalScore(_scoreItemSportSelected?.points ?? 0);
+    updateScoreSport();
   }
 
   @observable
@@ -341,6 +346,29 @@ abstract class WeeklyScoreControllerBase with Store {
     }
   }
 
+  void updateScoreSport() {
+    for (var scoreSport in scoresSports) {
+      scoreSport.quantity = 0;
+    }
+
+    for (var scoreSport in scoresSports) {
+      if (scoreSport.scoreItemId == (_scoreItemSportSelected?.id ?? 0)) {
+        scoreSport.quantity = 1;
+      }
+    }
+  }
+
+  ScoreModel? get scoreSportSelected {
+    if (_scoreItemSportSelected != null) {
+      return scoresSports
+          .where(
+              (element) => element.scoreItemId == _scoreItemSportSelected!.id)
+          .first;
+    }
+
+    return null;
+  }
+
   ScoreItemModel getScoreItem(int key) {
     return _serviceScoreItem.get(key)!;
   }
@@ -348,6 +376,11 @@ abstract class WeeklyScoreControllerBase with Store {
   Future<void> save() async {
     EasyLoading.show(status: "Salvando dados, aguarde...");
     for (ScoreModel score in scores) {
+      int idScore = score.id!;
+      await _serviceScore.put(idScore, score);
+    }
+
+    for (ScoreModel score in scoresSports) {
       int idScore = score.id!;
       await _serviceScore.put(idScore, score);
     }
