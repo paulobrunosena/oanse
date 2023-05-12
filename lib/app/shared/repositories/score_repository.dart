@@ -36,9 +36,26 @@ class ScoreRepository implements IScoreRepository {
     List<ScoreModel> list = box.values.toList();
     var result = list
         .where((element) =>
-            element.meetingId == idMeeting && element.oansistId == idOansist)
+            element.meetingId == idMeeting &&
+            element.oansistId == idOansist &&
+            ((element.scoreItemId ?? 0) < 11))
         .toList();
     result.sort((a, b) => a.id!.compareTo(b.id!));
+    return Success(result);
+  }
+
+  @override
+  Future<Result<List<ScoreModel>, Exception>> listScoreSports(
+      int idMeeting, int idOansist) async {
+    List<ScoreModel> list = box.values.toList();
+    var result = list
+        .where((element) =>
+            element.meetingId == idMeeting &&
+            element.oansistId == idOansist &&
+            ((element.scoreItemId ?? 0) > 10))
+        .toList();
+    result.sort((a, b) => a.id!.compareTo(b.id!));
+
     return Success(result);
   }
 

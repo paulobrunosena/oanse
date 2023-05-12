@@ -5,7 +5,6 @@ import 'package:flutter_modular/flutter_modular.dart';
 import '../../../shared/model/leadership/leadership_model.dart';
 import '../../../shared/model/score/score_model.dart';
 import '../../../shared/model/score_item/score_item_model.dart';
-
 import 'weekly_score_controller.dart';
 
 class WeeklyScorePage extends StatefulWidget {
@@ -197,56 +196,21 @@ class _WeeklyScorePageState extends State<WeeklyScorePage> {
       );
 
   Widget get scoreItems => Observer(builder: (_) {
-        controller.setPositionGamesAux(null);
         return controller.showScoreItems
             ? Expanded(
-                child: ListView.separated(
-                  shrinkWrap: true,
-                  itemCount: controller.scores.length,
-                  itemBuilder: (_, index) {
-                    ScoreModel score = controller.scores[index];
-                    ScoreItemModel scoreItem =
-                        controller.getScoreItem(score.scoreItemId!);
+                child: ListView(
+                primary: true,
+                children: [
+                  ListView.separated(
+                    physics: const ClampingScrollPhysics(),
+                    shrinkWrap: true,
+                    itemCount: controller.scores.length,
+                    itemBuilder: (_, index) {
+                      ScoreModel score = controller.scores[index];
+                      ScoreItemModel scoreItem =
+                          controller.getScoreItem(score.scoreItemId!);
 
-                    return Observer(builder: (_) {
-                      if (scoreItem.isSport) {
-                        controller.setPositionGames(null);
-                        if (score.quantity > 0) {
-                          controller.setPositionGamesAux(index);
-                        }
-                        if (index == (controller.scores.length - 1)) {
-                          controller
-                              .setPositionGames(controller.positionGamesAux);
-                        }
-
-                        return RadioListTile<int>(
-                          title: Text(scoreItem.name!),
-                          subtitle: score.quantity > 0
-                              ? Text("${scoreItem.pointsFormatter} pontos")
-                              : const Text("Não marcou ponto"),
-                          groupValue: controller.positionGames,
-                          selected: score.quantity > 0,
-                          value: index,
-                          onChanged: (value) {
-                            if (controller.positionGames == null) {
-                              score.setQuantity(1);
-                              controller.incrementTotalScore(scoreItem.points!);
-                            } else {
-                              var scoreItemBefore = controller
-                                  .scoreItems[controller.positionGames!];
-                              var scoreStoreBefore =
-                                  controller.scores[controller.positionGames!];
-                              scoreStoreBefore.setQuantity(0);
-                              controller
-                                  .decrementTotalScore(scoreItemBefore.points!);
-                              score.setQuantity(1);
-                              controller.incrementTotalScore(scoreItem.points!);
-                            }
-                            controller.setPositionGames(value);
-                          },
-                          controlAffinity: ListTileControlAffinity.trailing,
-                        );
-                      } else {
+                      return Observer(builder: (_) {
                         return ListTile(
                           title: Text(scoreItem.name!),
                           subtitle: score.quantity > 0
@@ -268,16 +232,18 @@ class _WeeklyScorePageState extends State<WeeklyScorePage> {
                                 }
                               : null,
                         );
-                      }
-                    });
-                  },
-                  separatorBuilder: (_, __) {
-                    return const Divider(
-                      height: 0,
-                    );
-                  },
-                ),
-              )
+                      });
+                    },
+                    separatorBuilder: (_, __) {
+                      return const Divider(
+                        height: 0,
+                      );
+                    },
+                  ),
+                  const Divider(),
+                  scoreItemsSports,
+                ],
+              ))
             : Container();
       });
 
@@ -343,4 +309,28 @@ class _WeeklyScorePageState extends State<WeeklyScorePage> {
         endIndent: 10,
         height: 0,
       );
+
+  Widget get scoreItemsSports => Observer(builder: (_) {
+        return ListTile(
+          title: const Text('Esportes'),
+          trailing: DropdownButton<ScoreItemModel>(
+            // Must be one of items.value.
+            value: controller.scoreItemSportSelected,
+            onChanged: (ScoreItemModel? newValue) {
+              controller.setScoreItemSportSelected(newValue);
+            },
+            items: controller.scoreItemsSports
+                .map((item) => DropdownMenuItem<ScoreItemModel>(
+                      value: item,
+                      child: Text(
+                        item.nameSports,
+                        style: const TextStyle(
+                          fontSize: 14,
+                        ),
+                      ),
+                    ))
+                .toList(),
+          ),
+        );
+      });
 }

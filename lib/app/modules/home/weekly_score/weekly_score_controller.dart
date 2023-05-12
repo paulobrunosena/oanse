@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:asuka/asuka.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -35,10 +37,21 @@ abstract class WeeklyScoreControllerBase with Store {
   ObservableList<MeetingModel> meetings = ObservableList<MeetingModel>();
   ObservableList<OansistModel> oansists = ObservableList<OansistModel>();
   ObservableList<ScoreItemModel> scoreItems = ObservableList<ScoreItemModel>();
+  ObservableList<ScoreItemModel> scoreItemsSports =
+      ObservableList<ScoreItemModel>();
   ObservableList<ScoreModel> scores = ObservableList<ScoreModel>();
+  ObservableList<ScoreModel> scoresSports = ObservableList<ScoreModel>();
   late LeadershipModel leadership;
 
   NumberFormat formatter = NumberFormat('###,###,###');
+
+  @readonly
+  ScoreItemModel? _scoreItemSportSelected;
+
+  @action
+  void setScoreItemSportSelected(ScoreItemModel? newValue) {
+    _scoreItemSportSelected = newValue;
+  }
 
   @observable
   bool? isLoaded;
@@ -46,22 +59,6 @@ abstract class WeeklyScoreControllerBase with Store {
   @action
   void setIsLoaded(bool? newValue) {
     isLoaded = newValue;
-  }
-
-  @observable
-  int? positionGames;
-
-  @action
-  void setPositionGames(int? newValue) {
-    positionGames = newValue;
-  }
-
-  @observable
-  int? positionGamesAux;
-
-  @action
-  void setPositionGamesAux(int? newValue) {
-    positionGamesAux = newValue;
   }
 
   @observable
@@ -115,14 +112,14 @@ abstract class WeeklyScoreControllerBase with Store {
     leadership = leadershipModel;
     setSelectMeeting(null);
     setSelectOansist(null);
+    setScoreItemSportSelected(null);
     resetTotalScore();
-    setPositionGames(null);
     setIsLoaded(null);
     setLoadingWidgets(true);
     Future.wait([
       loadMeetings(),
       loadOansists(),
-      loadScoreItems(),
+      loadScoreItems().then((value) => loadScoreItemsSports()),
     ]).then((value) async {
       setLoadingWidgets(false);
     });
@@ -153,6 +150,20 @@ abstract class WeeklyScoreControllerBase with Store {
     scoreItems.clear();
     result.when((success) async {
       scoreItems.addAll(success);
+    }, (error) {
+      AsukaSnackbar.alert(error.toString()).show();
+    });
+  }
+
+  Future<void> loadScoreItemsSports() async {
+    var result = await _serviceScoreItem.listScoreItemSports();
+    scoreItemsSports.clear();
+    result.when((success) async {
+      log(success.toString());
+      for (var i = 0; i < success.length; i++) {
+        log(success[i].name ?? "");
+      }
+      scoreItemsSports.addAll(success);
     }, (error) {
       AsukaSnackbar.alert(error.toString()).show();
     });
@@ -234,24 +245,49 @@ abstract class WeeklyScoreControllerBase with Store {
 
   Future<void> loadDataWeeklyScore() async {
     if (selectMeeting != null && selectOansist != null) {
-      var result =
-          await _serviceScore.list(selectMeeting!.id, selectOansist!.id!);
-
-      result.when((listScoreModel) async {
-        if (listScoreModel.isEmpty) {
-          await initScore();
-          resetTotalScore();
-          setIsLoaded(false);
-        } else {
-          scores.clear();
-          scores.addAll(listScoreModel);
-          loadTotalScore();
-          setIsLoaded(_totalScore > 0);
-        }
-      }, (error) {
-        AsukaSnackbar.alert(error.toString()).show();
-      });
+      loadScore();
+      loadScoreSport();
     }
+  }
+
+  Future<void> loadScore() async {
+    var result =
+        await _serviceScore.list(selectMeeting!.id, selectOansist!.id!);
+
+    result.when((listScoreModel) async {
+      if (listScoreModel.isEmpty) {
+        await initScore();
+        resetTotalScore();
+        setIsLoaded(false);
+      } else {
+        scores.clear();
+        scores.addAll(listScoreModel);
+        loadTotalScore();
+        setIsLoaded(_totalScore > 0);
+      }
+    }, (error) {
+      AsukaSnackbar.alert(error.toString()).show();
+    });
+  }
+
+  Future<void> loadScoreSport() async {
+    var result = await _serviceScore.listScoreSports(
+        selectMeeting!.id, selectOansist!.id!);
+
+    result.when((listScoreModel) async {
+      if (listScoreModel.isEmpty) {
+        await initScoreSport();
+        resetTotalScore();
+        setIsLoaded(false);
+      } else {
+        scoresSports.clear();
+        scoresSports.addAll(listScoreModel);
+        loadTotalScore();
+        setIsLoaded(_totalScore > 0);
+      }
+    }, (error) {
+      AsukaSnackbar.alert(error.toString()).show();
+    });
   }
 
   Future<void> initScore() async {
@@ -271,12 +307,37 @@ abstract class WeeklyScoreControllerBase with Store {
     }
   }
 
+  Future<void> initScoreSport() async {
+    scoresSports.clear();
+    for (ScoreItemModel scoreItem in scoreItemsSports) {
+      int idScore = await Sequence.idGenerator();
+      ScoreModel scoreModel = ScoreModel(
+        id: idScore,
+        quantity: 0,
+        meetingId: selectMeeting?.id,
+        leadershipId: leadership.id,
+        oansistId: selectOansist?.id,
+        scoreItemId: scoreItem.id,
+      );
+      await _serviceScore.put(idScore, scoreModel);
+      scoresSports.add(scoreModel);
+    }
+  }
+
   loadTotalScore() {
     resetTotalScore();
     for (ScoreModel item in scores) {
       ScoreItemModel scoreItem = getScoreItem(item.scoreItemId!);
       int total = item.quantity * scoreItem.points!;
       incrementTotalScore(total);
+      if (scoreItem.isSport) {
+        item.quantity > 0;
+        setScoreItemSportSelected(scoreItem);
+      }
+    }
+
+    if (_scoreItemSportSelected == null) {
+      setScoreItemSportSelected(getScoreItem(11));
     }
   }
 

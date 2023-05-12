@@ -45,4 +45,6 @@ class ScoreItemModel {
       name!.contains("Atividade"));
 
   bool get isSport => name!.contains("Esportes");
+
+  String get nameSports => name!.replaceAll("(Esportes)", "");
 }

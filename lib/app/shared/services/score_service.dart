@@ -15,6 +15,12 @@ class ScoreService implements IScoreService {
   }
 
   @override
+  Future<Result<List<ScoreModel>, Exception>> listScoreSports(
+      int idMeeting, int idOansist) async {
+    return await _repository.listScoreSports(idMeeting, idOansist);
+  }
+
+  @override
   void dispose() {}
 
   @override

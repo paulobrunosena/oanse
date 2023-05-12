@@ -6,6 +6,8 @@ import '../../model/score/score_model.dart';
 abstract class IScoreService implements Disposable {
   Future<Result<List<ScoreModel>, Exception>> list(
       int idMeeting, int idOansist);
+  Future<Result<List<ScoreModel>, Exception>> listScoreSports(
+      int idMeeting, int idOansist);
   Future<Result<int, Exception>> add(ScoreModel data);
   Future<void> put(int key, ScoreModel data);
   Future<void> delete(int key);

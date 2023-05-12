@@ -20,7 +20,7 @@ class ScoreItemHiveRepository implements IScoreItemRepository {
     List<ScoreItemModel> list = box.values.toList();
     if (list.isNotEmpty) {
       list.sort((a, b) => a.id!.compareTo(b.id!));
-      return Success(list);
+      return Success(list.where((element) => !element.isSport).toList());
     } else {
       await initList();
       return Success(box.values.toList());
