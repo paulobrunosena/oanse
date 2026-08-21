@@ -26,7 +26,6 @@ Pré-requisitos: Node 22+, Docker e [Supabase CLI](https://supabase.com/docs/gui
 npm install
 
 # 2. Stack do Supabase local (Postgres, Auth, Studio)
-npx supabase init      # primeira vez
 npx supabase start     # aplica migrations + seed automaticamente
 
 # 3. Copie as chaves locais para o .env
