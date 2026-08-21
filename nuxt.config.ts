@@ -1,6 +1,6 @@
 export default defineNuxtConfig({
 
-  modules: ['@nuxt/ui', '@nuxt/eslint'],
+  modules: ['@nuxt/ui', '@nuxt/eslint', '@nuxtjs/supabase'],
   devtools: { enabled: true },
 
   app: {
@@ -17,5 +17,10 @@ export default defineNuxtConfig({
     config: {
       stylistic: true,
     },
+  },
+
+  supabase: {
+    // url/key vêm de NUXT_PUBLIC_SUPABASE_URL / NUXT_PUBLIC_SUPABASE_KEY (.env)
+    redirect: false, // redirect próprio em middleware/auth.global.ts
   },
 })

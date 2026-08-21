@@ -1,14 +1,14 @@
--- ============================================================================
+﻿-- ============================================================================
 -- OANSE - docs/02-rls-policies.sql
 -- Row Level Security (Supabase) por perfil:
 --   diretor_geral | secretaria | diretor_clube | lider
 --
--- Arquitetura: funções auxiliares SECURITY DEFINER (evitam recursão de RLS)
--- + política única por operação com OR entre perfis.
+-- Arquitetura: funÃ§Ãµes auxiliares SECURITY DEFINER (evitam recursÃ£o de RLS)
+-- + polÃ­tica Ãºnica por operaÃ§Ã£o com OR entre perfis.
 -- ============================================================================
 
 -- ----------------------------------------------------------------------------
--- FUNÇÕES AUXILIARES (executam sem passar pelas RLS)
+-- FUNÃ‡Ã•ES AUXILIARES (executam sem passar pelas RLS)
 -- ----------------------------------------------------------------------------
 create or replace function fn_perfil()
 returns profiles language sql stable security definer set search_path = public as $$
@@ -25,7 +25,7 @@ returns uuid language sql stable security definer set search_path = public as $$
   select clube_id from profiles where id = auth.uid();
 $$;
 
--- Líder é titular da turma?
+-- LÃ­der Ã© titular da turma?
 create or replace function fn_lider_da_turma(p_turma_id uuid)
 returns boolean language sql stable security definer set search_path = public as $$
   select exists (
@@ -34,7 +34,7 @@ returns boolean language sql stable security definer set search_path = public as
   );
 $$;
 
--- Líder é titular OU substituto da turma naquele encontro? (RN: remanejamento)
+-- LÃ­der Ã© titular OU substituto da turma naquele encontro? (RN: remanejamento)
 create or replace function fn_responsavel_pela_turma(p_turma_id uuid, p_encontro_id uuid)
 returns boolean language sql stable security definer set search_path = public as $$
   select exists (
@@ -48,7 +48,7 @@ returns boolean language sql stable security definer set search_path = public as
   );
 $$;
 
--- Líder é responsável pelo oansista (titular ou substituto) no encontro?
+-- LÃ­der Ã© responsÃ¡vel pelo oansista (titular ou substituto) no encontro?
 create or replace function fn_responsavel_pelo_oansista(p_oansista_id uuid, p_encontro_id uuid)
 returns boolean language sql stable security definer set search_path = public as $$
   select exists (
@@ -58,14 +58,14 @@ returns boolean language sql stable security definer set search_path = public as
   );
 $$;
 
--- É diretor do clube informado?
+-- Ã‰ diretor do clube informado?
 create or replace function fn_diretor_do_clube(p_clube_id uuid)
 returns boolean language sql stable security definer set search_path = public as $$
   select fn_role() = 'diretor_clube' and fn_clube_id() = p_clube_id;
 $$;
 
 -- ----------------------------------------------------------------------------
--- ATIVAÇÃO DO RLS
+-- ATIVAÃ‡ÃƒO DO RLS
 -- ----------------------------------------------------------------------------
 alter table clubes                enable row level security;
 alter table profiles              enable row level security;
@@ -91,7 +91,7 @@ alter table itens_pontuacao       enable row level security;
 alter table jogos_pontos_config   enable row level security;
 
 -- ----------------------------------------------------------------------------
--- CLUBES / CONFIGURAÇÕES — leitura para todos autenticados
+-- CLUBES / CONFIGURAÃ‡Ã•ES â€” leitura para todos autenticados
 -- ----------------------------------------------------------------------------
 create policy "clubes_select" on clubes
   for select to authenticated using (true);
@@ -117,8 +117,8 @@ create policy "jogos_pontos_config_write" on jogos_pontos_config
 
 -- ----------------------------------------------------------------------------
 -- PROFILES
---  - Todos veem perfis do próprio clube (para saber os líderes)
---  - Diretor Geral vê e gerencia tudo (criação de usuários, papéis, vínculos)
+--  - Todos veem perfis do prÃ³prio clube (para saber os lÃ­deres)
+--  - Diretor Geral vÃª e gerencia tudo (criaÃ§Ã£o de usuÃ¡rios, papÃ©is, vÃ­nculos)
 -- ----------------------------------------------------------------------------
 create policy "profiles_select" on profiles
   for select to authenticated
@@ -132,7 +132,7 @@ create policy "profiles_update" on profiles
   for update to authenticated
   using (
     fn_role() = 'diretor_geral'
-    -- usuário edita apenas próprios dados de contato:
+    -- usuÃ¡rio edita apenas prÃ³prios dados de contato:
     or (id = auth.uid()
         and nome   = (select nome   from profiles p where p.id = auth.uid())
         and role   = (select role   from profiles p where p.id = auth.uid())
@@ -151,8 +151,8 @@ create policy "profiles_insert" on profiles
 
 -- ----------------------------------------------------------------------------
 -- TURMAS
---  - Líder vê a própria turma (e as do clube, para contexto)
---  - Diretor de Clube gerencia turmas do seu clube (delegação de chamadas)
+--  - LÃ­der vÃª a prÃ³pria turma (e as do clube, para contexto)
+--  - Diretor de Clube gerencia turmas do seu clube (delegaÃ§Ã£o de chamadas)
 -- ----------------------------------------------------------------------------
 create policy "turmas_select" on turmas
   for select to authenticated
@@ -167,11 +167,11 @@ create policy "turmas_write" on turmas
   with check (fn_role() = 'diretor_geral' or fn_diretor_do_clube(clube_id));
 
 -- ----------------------------------------------------------------------------
--- OANSISTAS — visualização restrita de turmas (RN principal)
---  - Líder vê APENAS os oansistas da sua turma
+-- OANSISTAS â€” visualizaÃ§Ã£o restrita de turmas (RN principal)
+--  - LÃ­der vÃª APENAS os oansistas da sua turma
 --    (+ turmas recebidas por remanejamento, resolvido na FK turma_id)
---  - Diretor de Clube vê/gerencia o clube inteiro (transferências)
---  - Secretária/Diretor Geral: leitura total
+--  - Diretor de Clube vÃª/gerencia o clube inteiro (transferÃªncias)
+--  - SecretÃ¡ria/Diretor Geral: leitura total
 -- ----------------------------------------------------------------------------
 create policy "oansistas_select" on oansistas
   for select to authenticated
@@ -188,7 +188,7 @@ create policy "oansistas_write" on oansistas
 
 -- ----------------------------------------------------------------------------
 -- VISITANTES / VISITAS / PROVA DE INGRESSO
---  - Líder do clube registra e acompanha (Folha de Visitantes)
+--  - LÃ­der do clube registra e acompanha (Folha de Visitantes)
 -- ----------------------------------------------------------------------------
 create policy "visitantes_select" on visitantes
   for select to authenticated
@@ -266,9 +266,9 @@ create policy "encontros_write" on encontros
 
 -- ----------------------------------------------------------------------------
 -- PRESENCAS E FOLHAS SEMANAIS
---  - Líder lança APENAS para oansistas sob sua responsabilidade no encontro
+--  - LÃ­der lanÃ§a APENAS para oansistas sob sua responsabilidade no encontro
 --    (titular da turma OU substituto via remanejamento)
---  - Leitura: líder vê a própria turma; diretor vê o clube; acima disso, tudo
+--  - Leitura: lÃ­der vÃª a prÃ³pria turma; diretor vÃª o clube; acima disso, tudo
 -- ----------------------------------------------------------------------------
 create policy "presencas_select" on presencas
   for select to authenticated
@@ -313,7 +313,7 @@ create policy "folhas_update" on folhas_semanais
   with check (fn_responsavel_pelo_oansista(oansista_id, encontro_id));
 
 -- ----------------------------------------------------------------------------
--- REMANEJAMENTOS TEMPORÁRIOS E TRANSFERÊNCIAS (Diretor de Clube)
+-- REMANEJAMENTOS TEMPORÃRIOS E TRANSFERÃŠNCIAS (Diretor de Clube)
 -- ----------------------------------------------------------------------------
 create policy "remanejamentos_select" on remanejamentos_temporarios
   for select to authenticated
@@ -358,7 +358,7 @@ create policy "transferencias_insert" on transferencias
   );
 
 -- ----------------------------------------------------------------------------
--- PROGRESSO DO MANUAL (Folha Individual) — dispara pendência à Secretaria
+-- PROGRESSO DO MANUAL (Folha Individual) â€” dispara pendÃªncia Ã  Secretaria
 -- ----------------------------------------------------------------------------
 create policy "progresso_select" on progresso_manual
   for select to authenticated
@@ -382,8 +382,8 @@ create policy "progresso_write" on progresso_manual
   );
 
 -- ----------------------------------------------------------------------------
--- MÓDULO DE JOGOS — gestão pelo Diretor de Clube (RN 3)
---  Categoria 'faiscas' => clube Faíscas | 'flamas_tochas' => clubes Flamas/Tochas
+-- MÃ“DULO DE JOGOS â€” gestÃ£o pelo Diretor de Clube (RN 3)
+--  Categoria 'faiscas' => clube FaÃ­scas | 'flamas_tochas' => clubes Flamas/Tochas
 -- ----------------------------------------------------------------------------
 create or replace function fn_clube_da_categoria(p_cat jogo_categoria)
 returns uuid[] language sql stable security definer set search_path = public as $$
@@ -471,7 +471,7 @@ create policy "jogo_resultados_write" on jogo_resultados
   );
 
 -- ----------------------------------------------------------------------------
--- PRÊMIOS / ESTOQUE / PENDÊNCIAS — Secretaria (RN 4)
+-- PRÃŠMIOS / ESTOQUE / PENDÃŠNCIAS â€” Secretaria (RN 4)
 -- ----------------------------------------------------------------------------
 create policy "premios_select" on premios
   for select to authenticated using (true);
@@ -490,7 +490,7 @@ create policy "premios_mov_write" on premios_movimentacoes
   using (fn_role() in ('diretor_geral', 'secretaria'))
   with check (fn_role() in ('diretor_geral', 'secretaria'));
 
--- Pendências: criadas por trigger (SECURITY DEFINER, bypassa INSERT do cliente);
+-- PendÃªncias: criadas por trigger (SECURITY DEFINER, bypassa INSERT do cliente);
 -- apenas a Secretaria altera o status (entrega/cancelamento).
 create policy "pendencias_select" on premios_pendentes
   for select to authenticated
@@ -507,12 +507,12 @@ create policy "pendencias_update" on premios_pendentes
   using (fn_role() in ('diretor_geral', 'secretaria'))
   with check (fn_role() in ('diretor_geral', 'secretaria'));
 
--- Sem política de INSERT/DELETE via cliente: apenas o trigger insere.
+-- Sem polÃ­tica de INSERT/DELETE via cliente: apenas o trigger insere.
 
 -- ----------------------------------------------------------------------------
--- VIEWS (rodam com privilégio do dono, mas herdam filtro via RLS das
--- tabelas base quando o usuário não é o dono; para simplificar, criamos
--- função segura de ranking que aplica o mesmo escopo)
+-- VIEWS (rodam com privilÃ©gio do dono, mas herdam filtro via RLS das
+-- tabelas base quando o usuÃ¡rio nÃ£o Ã© o dono; para simplificar, criamos
+-- funÃ§Ã£o segura de ranking que aplica o mesmo escopo)
 -- ----------------------------------------------------------------------------
 create or replace function fn_ranking_do_encontro(p_encontro_id uuid)
 returns table (
@@ -531,3 +531,18 @@ returns table (
 $$;
 
 grant execute on function fn_ranking_do_encontro(uuid) to authenticated;
+
+-- ----------------------------------------------------------------------------
+-- GRANTS (migration 0003_grants.sql)
+-- RLS decide QUAIS linhas; os grants habilitam a operação em si. Sem eles o
+-- Postgres nega qualquer acesso ("permission denied for table ...").
+-- ----------------------------------------------------------------------------
+
+grant select, insert, update, delete on all tables in schema public to authenticated;
+grant select, insert, update, delete on all tables in schema public to service_role;
+
+grant usage, select on all sequences in schema public to authenticated, service_role;
+
+-- Pendências de prêmios: leitura + atualização de status pela Secretaria;
+-- INSERT acontece apenas via trigger (security definer) — negado ao cliente.
+revoke insert, delete on premios_pendentes from authenticated;

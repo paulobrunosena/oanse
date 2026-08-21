@@ -30,19 +30,26 @@
 
 ## Fase 1 — Auth e Estrutura
 
-- [ ] Login com `@nuxtjs/supabase` (magic link ou senha)
-- [ ] Trigger `on_auth_user_created` criando `profiles` no signup
-- [ ] `app/composables/useAuth.ts` (user + profile + logout)
-- [ ] `app/composables/useRole.ts` (isDiretorGeral, isSecretaria, etc.)
-- [ ] `middleware/auth.global.ts` (exige sessão exceto /login)
-- [ ] `middleware/role.ts` (RBAC de rota por perfil)
-- [ ] Layout default com sidebar por perfil
-- [ ] Admin > Usuários: CRUD de profiles (role, clube, ativo) — Diretor Geral
-- [ ] Admin > Clubes: edição dos 4 clubes — Diretor Geral
-- [ ] Admin > Configurações: itens de pontuação e pontos dos jogos — Diretor Geral
-- [ ] Clube > Turmas: cadastro de turmas e vínculo de líderes — Diretor de Clube
-- [ ] Cadastro/importação de oansistas (CSV ou seed)
-- [ ] Teste de aceitação: líder vê APENAS a própria turma (RLS)
+- [x] Login com `@nuxtjs/supabase` (e-mail/senha; usuários criados pelo Diretor Geral)
+- [x] Trigger `on_auth_user_created` criando `profiles` no signup (já constava da 0001)
+- [x] `app/composables/useAuth.ts` (user + profile + logout)
+- [x] `app/composables/useRole.ts` (isDiretorGeral, isSecretaria, etc.)
+- [x] `middleware/auth.global.ts` (exige sessão exceto /login)
+- [x] `middleware/role.ts` (RBAC de rota por perfil via `definePageMeta({ roles })`)
+- [x] Layout default com sidebar por perfil
+- [x] Admin > Usuários: CRUD de profiles (role, clube, ativo) — Diretor Geral
+- [x] Admin > Clubes: edição dos 4 clubes — Diretor Geral
+- [x] Admin > Configurações: itens de pontuação e pontos dos jogos — Diretor Geral
+- [x] Clube > Turmas: cadastro de turmas e vínculo de líderes — Diretor de Clube
+- [x] Cadastro/importação de oansistas (formulário + CSV colado)
+- [x] Teste de aceitação: líder vê APENAS a própria turma (RLS)
+
+> Notas da Fase 1: usuários de teste no seed (senha `oanse123`):
+> diretor@ / secretaria@ / diretor.ursinhos@ / tia.ana@oanse.local.
+> Migration `0003_grants.sql`: policies RLS sozinhas não bastam — os grants de
+> privilégio para `authenticated`/`service_role` são obrigatórios (descoberto
+> no teste de aceitação). Rotas server em `server/api/usuarios/**` usam
+> service_role somente para criar/excluir auth users.
 
 ## Fase 2 — Lançamento Semanal
 
