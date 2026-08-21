@@ -1,0 +1,40 @@
+# ============================================================
+# Oanse - Ambiente de Desenvolvimento Local
+# Nuxt 3 (container) + Supabase local (via Supabase CLI)
+#
+# O stack do Supabase (Postgres, GoTrue/Auth, Realtime,
+# PostgREST, Studio, Storage) é gerenciado pela CLI oficial,
+# que cria sua própria rede Docker. Por isso o serviço `nuxt`
+# usa network_mode: host para alcançar o Supabase em
+# localhost:54321 sem duplicar containers.
+#
+# Uso:
+#   1) npm install
+#   2) npx supabase init        (primeira vez)
+#   3) npx supabase start       (sobe o stack local do Supabase)
+#   4) docker compose up nuxt   (sobe o frontend em http://localhost:3000)
+# ============================================================
+
+services:
+  nuxt:
+    image: node:20-alpine
+    container_name: oanse-web
+    working_dir: /app
+    network_mode: host # enxerga o Supabase local em 127.0.0.1
+    environment:
+      # Supabase local (credenciais padrão da CLI — NÃO usar em produção)
+      NUXT_PUBLIC_SUPABASE_URL: http://127.0.0.1:54321
+      NUXT_PUBLIC_SUPABASE_ANON_KEY: ${SUPABASE_ANON_KEY:-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0}
+      SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY:-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU}
+      # Postgres direto (migrations/seed fora das migrations do Supabase)
+      DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:54322/postgres
+      HOST: 0.0.0.0
+      CHOKIDAR_USEPOLLING: "true"
+    volumes:
+      - .:/app
+      - node_modules:/app/node_modules
+    command: sh -c "npm install && npm run dev"
+    restart: unless-stopped
+
+volumes:
+  node_modules:

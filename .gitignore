@@ -1,0 +1,34 @@
+# Nuxt
+.nuxt
+.output
+.data
+dist
+.nitro
+.cache
+
+# Node
+node_modules
+
+# Env (nunca commitar chaves)
+.env
+.env.*
+!.env.example
+
+# Supabase CLI
+supabase/.temp
+supabase/.branches
+
+# Logs
+*.log
+
+# IDE / SO
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+Thumbs.db
+
+# Testes
+coverage
+test-results
+playwright-report
