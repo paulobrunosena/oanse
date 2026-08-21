@@ -1,4 +1,4 @@
-# Oanse — Estrutura de Diretórios (Nuxt 3 + Supabase)
+# Oanse — Estrutura de Diretórios (Nuxt 4 + Supabase)
 
 ```
 oanse/
@@ -8,7 +8,7 @@ oanse/
 ├── app.config.ts                 # tokens do Nuxt UI (cores por clube, etc.)
 ├── package.json
 ├── tsconfig.json
-├── tailwind.config.ts
+├── tailwind.config.ts             # (Tailwind v4: config via CSS em app/assets/css/main.css)
 ├── vitest.config.ts
 │
 ├── docs/                         # planejamento e decisões de arquitetura
@@ -24,7 +24,7 @@ oanse/
 │   │   └── 0002_rls.sql
 │   └── seed.sql                  # clubes, itens de pontuação, config de jogos
 │
-├── app/                          # (Nuxt 3 com app/ dir — srcDir padrão moderno)
+├── app/                          # (Nuxt 4: srcDir padrão é app/)
 │   ├── app.vue
 │   ├── error.vue
 │   │

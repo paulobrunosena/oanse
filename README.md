@@ -4,7 +4,7 @@ Sistema web para gestão do ministério infantil Oanse de igreja local: matrícu
 
 ## Stack
 
-- **Frontend:** Nuxt 3 (Vue 3) + Tailwind CSS + Nuxt UI — TypeScript
+- **Frontend:** Nuxt 4 (Vue 3) + Tailwind CSS 4 + Nuxt UI — TypeScript
 - **Backend/DB:** Supabase (PostgreSQL, Auth, Row Level Security, Realtime)
 - **Infra:** Docker (dev) · Vercel + Supabase Cloud (produção)
 
@@ -19,7 +19,7 @@ Sistema web para gestão do ministério infantil Oanse de igreja local: matrícu
 
 ## Rodando localmente
 
-Pré-requisitos: Node 20+, Docker e [Supabase CLI](https://supabase.com/docs/guides/cli).
+Pré-requisitos: Node 22+, Docker e [Supabase CLI](https://supabase.com/docs/guides/cli).
 
 ```bash
 # 1. Dependências

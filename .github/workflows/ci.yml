@@ -1,0 +1,59 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+jobs:
+  lint:
+    name: Lint e Typecheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - run: npm run lint
+
+      - run: npm run typecheck
+
+  database:
+    name: Migrations + Seed + Asserts RLS
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Subir stack Supabase local
+        run: supabase start
+
+      - name: Aplicar migrations + seed
+        run: supabase db reset
+
+      - name: Assert - todas as tabelas public com RLS habilitado
+        run: |
+          count=$(docker exec supabase_db_oanse psql -U postgres -tAc \
+            "select count(*) from pg_tables where schemaname = 'public' and rowsecurity = false")
+          echo "Tabelas sem RLS: $count"
+          test "$count" = "0"
+
+      - name: Assert - policies definidas em todas as tabelas
+        run: |
+          count=$(docker exec supabase_db_oanse psql -U postgres -tAc \
+            "select count(*) from pg_tables t
+             where t.schemaname = 'public'
+               and not exists (
+                 select 1 from pg_policies p
+                 where p.schemaname = 'public' and p.tablename = t.tablename
+               )")
+          echo "Tabelas sem nenhuma policy: $count"
+          test "$count" = "0"

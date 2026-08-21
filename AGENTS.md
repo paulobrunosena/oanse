@@ -4,7 +4,7 @@ Guia de contexto e convenções para qualquer agente (opencode, Cursor, etc.) tr
 
 ## O que é este projeto
 
-Sistema web do ministério infantil Oanse (igreja local). Nuxt 3 + Tailwind + Nuxt UI no frontend; Supabase (Postgres, Auth, RLS, Realtime) no backend. Ambientes: Docker/Supabase CLI (dev) e Vercel/Supabase Cloud (produção).
+Sistema web do ministério infantil Oanse (igreja local). Nuxt 4 + Tailwind + Nuxt UI no frontend; Supabase (Postgres, Auth, RLS, Realtime) no backend. Ambientes: Docker/Supabase CLI (dev) e Vercel/Supabase Cloud (produção).
 
 **Leia antes de começar:** `docs/03-estrutura.md` (estrutura de pastas), `docs/04-roadmap.md` (roteiro em fases) e `.agents/checklist.md` (progresso — marque `[x]` nos itens concluídos; consulte-o antes de assumir o que já existe ou falta).
 

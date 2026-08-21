@@ -4,15 +4,18 @@
 
 ## Fase 0 — Fundação
 
-- [ ] Inicializar projeto Nuxt 3 + Nuxt UI/Tailwind (`npx nuxi init`)
-- [ ] `npx supabase init` (config.toml local)
-- [ ] Subir ambiente: `npx supabase start` + `docker compose up nuxt`
-- [ ] Converter docs/01-schema.sql em `supabase/migrations/0001_schema.sql`
-- [ ] Converter docs/02-rls-policies.sql em `supabase/migrations/0002_rls.sql`
-- [ ] Criar `supabase/seed.sql` (clubes, itens de pontuação, config de jogos)
-- [ ] `npx supabase db reset` passando sem erros
-- [ ] Gerar `app/types/database.types.ts` (`npx supabase gen types`)
-- [ ] CI: lint + typecheck + reset do banco com asserts de RLS
+- [x] Inicializar projeto Nuxt 3 + Nuxt UI/Tailwind (`npx nuxi init`)
+- [x] `npx supabase init` (config.toml local)
+- [x] Subir ambiente: `npx supabase start` + `docker compose up nuxt`
+- [x] Converter docs/01-schema.sql em `supabase/migrations/0001_schema.sql`
+- [x] Converter docs/02-rls-policies.sql em `supabase/migrations/0002_rls.sql`
+- [x] Criar `supabase/seed.sql` (clubes, itens de pontuação, config de jogos)
+- [x] `npx supabase db reset` passando sem erros
+- [x] Gerar `app/types/database.types.ts` (`npx supabase gen types`)
+- [x] CI: lint + typecheck + reset do banco com asserts de RLS
+
+> Nota: usado Nuxt 4.5 + Nuxt UI 4 (template `ui` do nuxi inacessível pela rede local;
+> scaffold criado manualmente). Chaves locais no novo formato `sb_publishable_`/`sb_secret_`.
 
 ## Fase 1 — Auth e Estrutura
 
