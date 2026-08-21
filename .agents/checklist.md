@@ -23,6 +23,11 @@
 > Se funcionar sem o `strict-ssl=false`, remover essa config do docker-compose.yml.
 > Depois disso, iniciar a Fase 1 (Auth).
 
+> **Docker Desktop (toda máquina):** o container `supabase_vector_oanse` só sobe se o
+> Docker Desktop tiver **Settings → General → "Expose daemon on tcp://localhost:2375
+> without TLS"** ativado (o vector usa `DOCKER_HOST=http://host.docker.internal:2375`).
+> Sem isso ele reinicia em loop — mas o impacto é só na aba "Logs" do Studio.
+
 ## Fase 1 — Auth e Estrutura
 
 - [ ] Login com `@nuxtjs/supabase` (magic link ou senha)
