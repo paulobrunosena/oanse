@@ -17,6 +17,12 @@
 > Nota: usado Nuxt 4.5 + Nuxt UI 4 (template `ui` do nuxi inacessível pela rede local;
 > scaffold criado manualmente). Chaves locais no novo formato `sb_publishable_`/`sb_secret_`.
 
+> **PENDENTE (revalidar em casa):** o teste do `docker compose up nuxt` foi feito atrás de
+> proxy corporativo (exigiu `strict-ssl=false` no npm do container). Refazer em rede limpa:
+> `npx supabase start` + `docker compose up nuxt` → confirmar HTTP 200 em localhost:3000.
+> Se funcionar sem o `strict-ssl=false`, remover essa config do docker-compose.yml.
+> Depois disso, iniciar a Fase 1 (Auth).
+
 ## Fase 1 — Auth e Estrutura
 
 - [ ] Login com `@nuxtjs/supabase` (magic link ou senha)
