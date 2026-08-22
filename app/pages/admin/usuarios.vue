@@ -51,7 +51,7 @@ const colunas: TableColumn<Usuario>[] = [
   { accessorKey: 'role', header: 'Perfil' },
   { accessorKey: 'clube', header: 'Clube' },
   { accessorKey: 'ativo', header: 'Situação' },
-  { id: 'acoes', header: '' },
+  { id: 'acoes' },
 ]
 
 // ---- Criação ----

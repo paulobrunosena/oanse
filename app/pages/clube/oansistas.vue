@@ -55,7 +55,7 @@ const colunas: TableColumn<Oansista & { turma_nome: string | null }>[] = [
   { accessorKey: 'idade', header: 'Idade', cell: ({ row }) => idade(row.original.data_nascimento) },
   { accessorKey: 'turma_nome', header: 'Turma', cell: ({ row }) => row.original.turma_nome ?? '—' },
   { accessorKey: 'status', header: 'Situação' },
-  { id: 'acoes', header: '' },
+  { id: 'acoes' },
 ]
 
 // ---- Criação/edição compartilham o form ----

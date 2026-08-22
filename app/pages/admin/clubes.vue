@@ -33,7 +33,7 @@ const colunas: TableColumn<Clube>[] = [
   },
   { accessorKey: 'idade', header: 'Idade', cell: ({ row }) => `${row.original.idade_min} a ${row.original.idade_max} anos` },
   { accessorKey: 'slug', header: 'Slug' },
-  { id: 'acoes', header: '' },
+  { id: 'acoes' },
 ]
 
 const editando = ref<Clube | null>(null)

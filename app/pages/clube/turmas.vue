@@ -53,7 +53,7 @@ const colunas: TableColumn<Turma & { lider_nome: string | null, qtd_oansistas: n
   { accessorKey: 'lider_nome', header: 'Líder' },
   { accessorKey: 'qtd_oansistas', header: 'Oansistas' },
   { accessorKey: 'ativo', header: 'Situação' },
-  { id: 'acoes', header: '' },
+  { id: 'acoes' },
 ]
 
 // ---- Criação ----
