@@ -169,12 +169,26 @@ create table prova_ingresso_licoes (
 -- ----------------------------------------------------------------------------
 -- ENCONTROS SEMANAIS (sábados) E CHAMADA
 -- ----------------------------------------------------------------------------
+-- RN 6: O líder acessa o encontro do sábado corrente (criado sob demanda pelo
+-- server/api/encontros/atual) e pode navegar pelo HISTÓRICO de encontros para
+-- lançar chamadas atrasadas (ex.: sábado sem internet, lançado depois).
+-- A leitura de encontros é aberta (RLS encontros_select = true); a escrita é
+-- restrita a diretor_geral/secretaria.
 
 create table encontros (
   id         uuid primary key default uuid_generate_v4(),
   data       date not null unique,   -- sábado
   tema       text,
   ativo      boolean not null default true,
+  created_at timestamptz not null default now()
+);
+
+-- Sábados sem Oanse (férias/feriados/eventos). RN 7: impede criação de
+-- encontro e lançamento nesses dias (ver server/api/encontros/atual).
+create table dias_sem_oanse (
+  id         uuid primary key default uuid_generate_v4(),
+  data       date not null unique,
+  motivo     text,
   created_at timestamptz not null default now()
 );
 

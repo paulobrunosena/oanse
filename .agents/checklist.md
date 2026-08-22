@@ -49,8 +49,9 @@
 
 ## Fase 2 — Lançamento Semanal
 
-- [x] `useEncontro` — busca/cria o encontro do sábado corrente
-- [x] Tela de chamada da turma (presença/falta)
+- [x] `useEncontro` — busca/cria o encontro do sábado corrente + histórico navegável
+- [x] Tela de chamada da turma (presença/falta) — com seletor de sábado (chamadas atrasadas)
+- [x] Admin > Calendário: sábados sem Oanse (RN 7) — bloqueia chamada/folha em férias/feriados
 - [x] Teste: falta zera pontuação do dia (trigger `fn_calcular_total_folha`)
 - [x] Folha Semanal: uniforme, bíblia, EBD, manual, conduta, seções, extras
 - [x] Preview do total no formulário (`utils/pontos.ts`)

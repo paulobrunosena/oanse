@@ -13,6 +13,7 @@ const tituloPagina = computed(() => {
     '/admin/usuarios': 'Usuários',
     '/admin/clubes': 'Clubes',
     '/admin/configuracoes': 'Configurações',
+    '/admin/calendario': 'Calendário',
     '/clube/turmas': 'Turmas',
     '/clube/lideres': 'Líderes',
     '/clube/oansistas': 'Oansistas',
@@ -34,6 +35,7 @@ const menuItens = computed<NavigationMenuItem[]>(() => {
       { label: 'Usuários', icon: 'i-lucide-users', to: '/admin/usuarios' },
       { label: 'Clubes', icon: 'i-lucide-shield', to: '/admin/clubes' },
       { label: 'Configurações', icon: 'i-lucide-settings', to: '/admin/configuracoes' },
+      { label: 'Calendário', icon: 'i-lucide-calendar-off', to: '/admin/calendario' },
     )
   }
 

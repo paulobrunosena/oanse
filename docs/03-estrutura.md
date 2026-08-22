@@ -34,6 +34,8 @@ oanse/
 │   │   │   ├── AppSidebar.vue
 │   │   │   ├── PageHeader.vue
 │   │   │   └── DataTable.vue
+│   │   ├── encontro/
+│   │   │   └── EncontroSeletor.vue  # seletor de sábado (histórico) — Chamada/Folha
 │   │   ├── folha/                # Folha Semanal / Individual / Visitantes
 │   │   │   ├── FolhaSemanalForm.vue
 │   │   │   ├── FolhaIndividualForm.vue
@@ -92,6 +94,7 @@ oanse/
 │   │   ├── admin/
 │   │   │   ├── usuarios.vue             # Diretor Geral
 │   │   │   ├── clubes.vue               # Diretor Geral
+│   │   │   ├── calendario.vue           # sábados sem Oanse (RN 7) — Diretor Geral
 │   │   │   └── configuracoes.vue        # itens de pontuação / pontos de jogos
 │   │   └── relatorios/
 │   │       ├── frequencia.vue           # Diretor Geral / Diretor de Clube

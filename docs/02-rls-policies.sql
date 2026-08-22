@@ -94,6 +94,7 @@ alter table presencas             enable row level security;
 alter table remanejamentos_temporarios enable row level security;
 alter table transferencias        enable row level security;
 alter table folhas_semanais       enable row level security;
+alter table dias_sem_oanse         enable row level security;
 alter table progresso_manual      enable row level security;
 alter table jogos                 enable row level security;
 alter table jogo_times            enable row level security;
@@ -280,6 +281,26 @@ create policy "encontros_write" on encontros
   for all to authenticated
   using (fn_role() in ('diretor_geral', 'secretaria'))
   with check (fn_role() in ('diretor_geral', 'secretaria'));
+
+-- ----------------------------------------------------------------------------
+-- DIAS SEM OANSE (RN 7) — sábados sem atividade (férias/feriados)
+--  - Leitura aberta (contexto); escrita só Diretor Geral.
+-- ----------------------------------------------------------------------------
+create policy "dias_sem_oanse_select" on dias_sem_oanse
+  for select to authenticated using (true);
+
+create policy "dias_sem_oanse_insert" on dias_sem_oanse
+  for insert to authenticated
+  with check (fn_role() = 'diretor_geral');
+
+create policy "dias_sem_oanse_update" on dias_sem_oanse
+  for update to authenticated
+  using (fn_role() = 'diretor_geral')
+  with check (fn_role() = 'diretor_geral');
+
+create policy "dias_sem_oanse_delete" on dias_sem_oanse
+  for delete to authenticated
+  using (fn_role() = 'diretor_geral');
 
 -- ----------------------------------------------------------------------------
 -- PRESENCAS E FOLHAS SEMANAIS

@@ -67,6 +67,27 @@ export type Database = {
         }
         Relationships: []
       }
+      dias_sem_oanse: {
+        Row: {
+          created_at: string
+          data: string
+          id: string
+          motivo: string | null
+        }
+        Insert: {
+          created_at?: string
+          data: string
+          id?: string
+          motivo?: string | null
+        }
+        Update: {
+          created_at?: string
+          data?: string
+          id?: string
+          motivo?: string | null
+        }
+        Relationships: []
+      }
       encontros: {
         Row: {
           ativo: boolean

@@ -11,7 +11,7 @@ useSeoMeta({ title: 'Folha Semanal — Oanse' })
 const supabase = useSupabaseClient()
 const toast = useToast()
 const { user } = useAuth()
-const { encontro, carregando: carregandoEncontro, carregar: carregarEncontro } = useEncontro()
+const { encontro, encontros, semAtividade, motivoSemAtividade, carregando: carregandoEncontro, carregar: carregarEncontro, selecionar } = useEncontro()
 const { pontos, carregando: carregandoFolhas, carregar: carregarFolhas, folhaDe, salvar } = useFolhaSemanal()
 
 const turma = ref<{ id: string, nome: string } | null>(null)
@@ -105,6 +105,16 @@ async function carregarTudo() {
   carregando.value = false
 }
 
+async function aoSelecionarEncontro(id: string) {
+  selecionar(id)
+  await carregarTurma()
+  await carregarOansistas()
+  await carregarPresencas()
+  if (encontro.value) {
+    await carregarFolhas(encontro.value.id, oansistas.value.map(o => o.id))
+  }
+}
+
 async function onSalvar(o: Oansista, form: FormFolha) {
   if (!encontro.value || !user.value?.sub) return
   const presenca = presencaDe(o)
@@ -130,7 +140,7 @@ onMounted(carregarTudo)
 
 <template>
   <div class="p-4 sm:p-6 max-w-3xl mx-auto w-full">
-    <div class="flex items-center justify-between mb-4">
+    <div class="flex items-center justify-between gap-3 mb-4">
       <div>
         <h1 class="text-2xl font-bold">
           Folha Semanal
@@ -142,11 +152,18 @@ onMounted(carregarTudo)
           {{ dataFormatada }}
         </p>
       </div>
-      <div
-        v-if="turma && oansistas.length"
-        class="text-sm text-muted"
-      >
-        {{ presentes.length }} / {{ oansistas.length }} presentes
+      <div class="flex items-center gap-3">
+        <EncontroSeletor
+          :encontros="encontros"
+          :encontro="encontro"
+          @selecionar="aoSelecionarEncontro"
+        />
+        <div
+          v-if="turma && oansistas.length"
+          class="text-sm text-muted"
+        >
+          {{ presentes.length }} / {{ oansistas.length }} presentes
+        </div>
       </div>
     </div>
 
@@ -159,6 +176,30 @@ onMounted(carregarTudo)
         class="size-6 animate-spin text-muted"
       />
     </div>
+
+    <UCard
+      v-else-if="semAtividade"
+      class="text-center py-6"
+    >
+      <div class="flex flex-col items-center gap-2">
+        <UIcon
+          name="i-lucide-calendar-off"
+          class="size-8 text-muted"
+        />
+        <p class="font-medium">
+          Neste sábado não há Oanse
+        </p>
+        <p
+          v-if="motivoSemAtividade"
+          class="text-sm text-muted"
+        >
+          Motivo: {{ motivoSemAtividade }}
+        </p>
+        <p class="text-sm text-muted">
+          Não é possível lançar folha neste dia.
+        </p>
+      </div>
+    </UCard>
 
     <UCard
       v-else-if="!turma"
