@@ -1,5 +1,6 @@
 import { serverSupabaseUser } from '#supabase/server'
 import type { Database } from '~/types/database.types'
+import { sabadoCorrente } from '../../utils/sabado'
 
 export interface EncontroAtualResponse {
   encontro: Database['public']['Tables']['encontros']['Row'] | null
@@ -24,7 +25,7 @@ export default defineEventHandler(async (event) => {
   }
 
   const admin = supabaseAdmin()
-  const data = satadoCorrente()
+  const data = sabadoCorrente()
 
   const { data: diaSemOanse } = await admin
     .from('dias_sem_oanse')
@@ -64,12 +65,3 @@ export default defineEventHandler(async (event) => {
 
   return { encontro: criado, semAtividade: false, motivo: null, data } satisfies EncontroAtualResponse
 })
-
-/** Data do sábado mais recente (hoje se for sábado, senão o último sábado). */
-function satadoCorrente(d = new Date()): string {
-  const dia = d.getDay()
-  const diasAtras = (dia + 7 - 6) % 7
-  const sabado = new Date(d)
-  sabado.setDate(d.getDate() - diasAtras)
-  return sabado.toISOString().slice(0, 10)
-}
