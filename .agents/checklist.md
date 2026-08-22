@@ -13,6 +13,7 @@
 - [x] `npx supabase db reset` passando sem erros
 - [x] Gerar `app/types/database.types.ts` (`npx supabase gen types`)
 - [x] CI: lint + typecheck + reset do banco com asserts de RLS
+- [x] Vitest + @vue/test-utils + happy-dom configurados (`vitest.config.ts`); testes unit de utils, composables e componentes (69 testes cobrindo o que foi implementado)
 
 > Nota: usado Nuxt 4.5 + Nuxt UI 4 (template `ui` do nuxi inacessível pela rede local;
 > scaffold criado manualmente). Chaves locais no novo formato `sb_publishable_`/`sb_secret_`.

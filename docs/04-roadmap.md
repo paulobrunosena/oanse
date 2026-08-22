@@ -7,7 +7,7 @@
 1. `npm run nuxi init` + Nuxt UI/Tailwind; `npx supabase init`.
 2. Subir ambiente: `npx supabase start` + `npm run dev` (Nuxt no host, ver AGENTS.md).
 3. Aplicar migrations (docs/01 e docs/02) + seed; gerar `database.types.ts`.
-4. CI: lint, typecheck, `supabase db reset` + asserts de RLS.
+4. CI: lint, typecheck, `npm run test` (vitest unit), `supabase db reset` + asserts de RLS.
 
 ## Fase 1 — Auth e Estrutura (1 semana)
 
@@ -68,4 +68,4 @@
 | Líder sem internet no sábado | Chamada otimista com fila local (Fase 4.6) |
 | Erro de lançamento após o fechamento | Edição permitida até domingo 23h59 (policy de tempo) |
 | Premiação duplicada | `unique(oansista_id, premio_id)` + baixa transacional |
-| Complexidade de RLS | Suites de teste automatizadas por perfil desde a Fase 1 |
+| Complexidade de RLS | Suites de teste automatizadas por perfil desde a Fase 1 + asserts de RLS no CI (Fase 0) + vitest unit/composables/componentes |

@@ -7,10 +7,12 @@
 oanse/
 ├── .env.example
 ├── .env                          # credenciais locais (127.0.0.1) — NUNCA comitar
+├── .env.test                     # cópia local p/ ambiente de teste (gitignored)
 ├── AGENTS.md                     # instruções para agentes de IA
 ├── README.md
 ├── eslint.config.mjs
 ├── nuxt.config.ts
+├── vitest.config.ts              # ambiente nuxt (@nuxt/test-utils) + happy-dom
 ├── package.json
 ├── tsconfig.json
 │
@@ -22,7 +24,7 @@ oanse/
 │
 ├── .agents/checklist.md          # progresso de implementação (marcar [x])
 │
-├── .github/workflows/ci.yml      # lint + typecheck + reset do banco + asserts RLS
+├── .github/workflows/ci.yml      # lint + typecheck + testes + reset do banco + asserts RLS
 │
 ├── supabase/                     # CLI do Supabase (npx supabase init/start)
 │   ├── config.toml
@@ -51,20 +53,22 @@ oanse/
 │   │
 │   ├── components/
 │   │   ├── encontro/
-│   │   │   └── EncontroSeletor.vue  # seletor de sábado (histórico) — Chamada/Folha
+│   │   │   ├── EncontroSeletor.vue  # seletor de sábado (histórico) — Chamada/Folha
+│   │   │   └── EncontroSeletor.spec.ts
 │   │   └── folha/
-│   │       └── FolhaSemanalRow.vue  # linha da folha com preview de total
+│   │       ├── FolhaSemanalRow.vue  # linha da folha com preview de total
+│   │       └── FolhaSemanalRow.spec.ts
 │   │   # (planejado) ui/AppSidebar, PageHeader, DataTable
 │   │   # (planejado) folha/FolhaIndividualForm, VisitanteCard, VisitaTracker
 │   │   # (planejado) jogos/, premiacoes/, ranking/
 │   │
 │   ├── composables/
-│   │   ├── useAuth.ts            # user + profile + logout
-│   │   ├── useRole.ts            # helpers: isDiretorGeral, isSecretaria...
-│   │   ├── useEncontro.ts        # sábado corrente + histórico + RN 7 (sem Oanse)
-│   │   ├── useFolhaSemanal.ts    # itens de pontuação + folhas + salvar
-│   │   ├── useRemanejamentos.ts  # substituição temporária de turma
-│   │   └── useTransferencias.ts  # transferência permanente (RPC 0006)
+│   │   ├── useAuth.ts            # user + profile + logout (+ useAuth.spec.ts)
+│   │   ├── useRole.ts            # helpers: isDiretorGeral, isSecretaria... (+ .spec.ts)
+│   │   ├── useEncontro.ts        # sábado corrente + histórico + RN 7 (sem Oanse) (+ .spec.ts)
+│   │   ├── useFolhaSemanal.ts    # itens de pontuação + folhas + salvar (+ .spec.ts)
+│   │   ├── useRemanejamentos.ts  # substituição temporária de turma (+ .spec.ts)
+│   │   └── useTransferencias.ts  # transferência permanente (RPC 0006) (+ .spec.ts)
 │   │   # (planejado) useTurma, useFolhaIndividual, useVisitantes,
 │   │   # useJogos, useRanking, usePendencias (realtime)
 │   │
@@ -100,8 +104,8 @@ oanse/
 │   │   # (planejado) domain.ts
 │   │
 │   └── utils/
-│       ├── pontos.ts             # espelhos do cálculo p/ preview no form
-│       └── data.ts               # datas dos sábados, formatação, logoClube(slug)
+│       ├── pontos.ts             # espelhos do cálculo p/ preview no form (+ pontos.spec.ts)
+│       └── data.ts               # datas dos sábados, formatação, logoClube(slug) (+ data.spec.ts)
 │
 ├── server/                       # Nitro (SSR/API routes; NUNCA expor service_role no client)
 │   ├── api/
@@ -112,9 +116,14 @@ oanse/
 │   │       ├── index.post.ts              # cria usuário auth+profile (service_role)
 │   │       └── [id].delete.ts             # exclui usuário (service_role)
 │   │   # (planejado) remanejamentos.post.ts, premios/[id]/entregar.post.ts
-│   └── utils/supabaseAdmin.ts    # client com service_role (server-only)
+│   │   # (planejado) testes de integração das rotas (exigem stack Supabase local)
+│   └── utils/
+│       ├── supabaseAdmin.ts    # client com service_role (server-only)
+│       └── sabado.ts           # último sábado no fuso local (puro; sabado.spec.ts)
 │
-└── tests/                        # (planejado) vitest unit + playwright e2e
+└── tests/
+    └── helpers/supabase.ts     # mock de cadeia do client Supabase p/ vitest
+    # (planejado) playwright e2e (fluxo de um sábado)
 ```
 
 ## Decisões-chave
@@ -124,3 +133,13 @@ oanse/
 3. **Realtime** apenas em `premios_pendentes` e `presencas` (painel da Secretaria e acompanhamento do sábado).
 4. **`supabase/migrations`** é a fonte de verdade do schema; `docs/*.sql` são a documentação viva (mantê-los sincronizados).
 5. **Dev no host/WSL2**: `npx supabase start` (Docker) + `npm run dev` (Nuxt fora de container) — ver AGENTS.md.
+
+## Testes (vitest)
+
+- Framework: **vitest + @vue/test-utils + happy-dom**, ambiente `nuxt` via `@nuxt/test-utils` (`vitest.config.ts`). Rodar com `npm run test`.
+- Arquivos `*.spec.ts` ficam **ao lado do código** (mesma pasta), seguindo o padrão da própria função/componente testado.
+- **Lógica pura** (`utils/pontos.ts`, `utils/data.ts`, `server/utils/sabado.ts`): testes de unidade simples com pragma `// @vitest-environment node`.
+- **Composables**: `mockNuxtImport` (ex.: `useSupabaseClient`, `$fetch`, `useFetch`) + helper `tests/helpers/supabase.ts` (builder de cadeia com `singleData`).
+- **Componentes**: `mountSuspended` com stubs dos componentes Nuxt UI (evita depender do CSS/portal no teste).
+- **Rotas server (`server/api`)** exigem o stack Supabase (alias `#supabase/server` é do Nitro) → testes de integração, planejados; a lógica pura extraída (ex.: `sabado.ts`) já é coberta por unidade.
+- `.env.test` (gitignored) é a fonte de variáveis do ambiente de teste; sem ele os testes rodam mesmo assim (mockam o Supabase).

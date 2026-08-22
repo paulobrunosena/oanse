@@ -15,6 +15,8 @@ npx supabase start             # sobe o stack local do Supabase (Docker)
 npm run dev                    # dev server no HOST (localhost:3000)
 npm run lint                   # ESLint (rodar antes de todo commit)
 npm run typecheck              # nuxt typecheck (rodar antes de todo commit)
+npm run test                   # vitest (unit + componentes + composables)
+npm run test:watch             # vitest em modo watch
 npx supabase db reset          # recria banco local (migrations + seed)
 npx supabase gen types typescript --local > app/types/database.types.ts  # após mudança de schema
 ```
@@ -26,7 +28,9 @@ npx supabase gen types typescript --local > app/types/database.types.ts  # após
 > `ERR_CONNECTION_TIMED_OUT` no login. As credenciais locais (`127.0.0.1`) vivem no
 > `.env` e funcionam para browser e server-side (localhost forwarding do WSL2).
 
-Sem testes automatizados ainda; quando existirem, atualize esta seção com o comando de teste.
+> **Testes:** vitest + @vue/test-utils + happy-dom, ambiente `nuxt` via `@nuxt/test-utils`
+> (`vitest.config.ts`). Arquivos `*.spec.ts` ao lado do código. O `.env.test` (gitignored)
+> é uma cópia do `.env` local; sem ele os testes rodam mesmo assim (mockam o Supabase).
 
 ## Arquitetura e regras invioláveis
 
@@ -36,6 +40,7 @@ Sem testes automatizados ainda; quando existirem, atualize esta seção com o co
 4. **Lógica de negócio no banco quando for pontuação/auditoria.** Cálculos de total da folha, pontos de jogos, zeramento por falta e geração de pendências são feitos por triggers (`docs/01-schema.sql`). Não duplique essas regras no cliente além de um preview de leitura (`app/utils/pontos.ts`).
 5. **Realtime é intencional.** Apenas `premios_pendentes` e `presencas` estão no publication. Não adicione tabelas ao Realtime sem justificativa.
 6. **Perfis RBAC:** `diretor_geral`, `secretaria`, `diretor_clube`, `lider` (enum `user_role` em `profiles`). Escopo de clube vem de `profiles.clube_id`; escopo de turma do líder vem de `turmas.lider_id` + `remanejamentos_temporarios`.
+7. **Testes automatizados em todo código novo/alteração.** Toda funcionalidade, correção ou ajuste DEVE vir acompanhado de testes `*.spec.ts` (ver convenções abaixo) e passar em `npm run test` antes de concluir a tarefa.
 
 ## Convenções de código
 
@@ -46,13 +51,23 @@ Sem testes automatizados ainda; quando existirem, atualize esta seção com o co
 - Nunca comitar segredos: `.env` está no `.gitignore` e deve continuar. Chaves locais do Supabase demo não vão para produção.
 - Não criar arquivos de documentação além dos existentes em `docs/` sem pedido explícito.
 
+## Convenções de teste (vitest)
+
+- **Teste ao lado do código**: `foo.ts` → `foo.spec.ts` na mesma pasta. Imports explícitos de `vitest` (`import { describe, expect, it, vi } from 'vitest'`).
+- **Lógica pura**: teste direto, sem ambiente Nuxt (pragma `// @vitest-environment node` no topo do arquivo).
+- **Composables**: mock de auto-imports via `mockNuxtImport` (ex.: `useSupabaseClient`, `$fetch`, `useFetch`, `useAuth`) + `tests/helpers/supabase.ts` (builder de cadeia com `singleData`). Use `useState`/`ref` reais do ambiente; não acesse estado não exposto pelo composable.
+- **Componentes**: `mountSuspended` de `@nuxt/test-utils/runtime` com stubs dos componentes Nuxt UI (`global: { stubs: { UBadge: ..., UButton: ... } }`).
+- **Rotas `server/api`**: NÃO testáveis em unidade (alias `#supabase/server` é do Nitro); extraia a lógica pura para `server/utils/*` e teste a função. Testes de integração das rotas ficam planejados (exigem stack Supabase local).
+- **Mock de reatividade do Vue**: arrays de `ref([])` são proxies — compare com `toContainEqual`/`toEqual`, não `toContain`.
+
 ## Checklist de fim de tarefa
 
 1. `npm run lint` passando (e typecheck, quando configurado).
-2. `npx supabase db reset` sem erros se houve mudança de SQL.
-3. Types regenerados se o schema mudou.
-4. Item correspondente marcado em `.agents/checklist.md`.
-5. Commit com mensagem conventional, em português.
+2. `npm run test` passando — **todo código novo ou alterado DEVE ter `*.spec.ts` cobrindo a mudança**.
+3. `npx supabase db reset` sem erros se houve mudança de SQL.
+4. Types regenerados se o schema mudou.
+5. Item correspondente marcado em `.agents/checklist.md`.
+6. Commit com mensagem conventional, em português.
 
 ## Registrar mudanças importantes (obrigatório)
 
