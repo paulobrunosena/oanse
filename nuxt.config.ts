@@ -13,6 +13,18 @@ export default defineNuxtConfig({
   css: ['~/assets/css/main.css'],
   compatibilityDate: '2026-08-01',
 
+  vite: {
+    server: {
+      watch: {
+        usePolling: true,
+      },
+      hmr: {
+        // Garante que o WebSocket do HMR se comunique na porta correta
+        clientPort: 3000,
+      },
+    },
+  },
+
   eslint: {
     config: {
       stylistic: true,
