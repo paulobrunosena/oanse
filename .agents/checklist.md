@@ -36,6 +36,7 @@
 - [x] Admin > Clubes: edição dos 4 clubes — Diretor Geral
 - [x] Admin > Configurações: itens de pontuação e pontos dos jogos — Diretor Geral
 - [x] Clube > Turmas: cadastro de turmas e vínculo de líderes — Diretor de Clube
+- [x] Clube > Líderes: catálogo de leitura da equipe do clube — Diretor de Clube
 - [x] Cadastro/importação de oansistas (formulário + CSV colado)
 - [x] Teste de aceitação: líder vê APENAS a própria turma (RLS)
 

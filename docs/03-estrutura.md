@@ -82,6 +82,7 @@ oanse/
 │   │   │       └── ranking.vue           # Todos
 │   │   ├── clube/
 │   │   │   ├── turmas.vue               # Diretor de Clube
+│   │   │   ├── lideres.vue              # Diretor de Clube
 │   │   │   ├── remanejamentos.vue       # Diretor de Clube
 │   │   │   └── transferencias.vue       # Diretor de Clube
 │   │   ├── secretaria/

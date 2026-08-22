@@ -14,6 +14,7 @@ const tituloPagina = computed(() => {
     '/admin/clubes': 'Clubes',
     '/admin/configuracoes': 'Configurações',
     '/clube/turmas': 'Turmas',
+    '/clube/lideres': 'Líderes',
     '/clube/oansistas': 'Oansistas',
     '/clube/remanejamentos': 'Remanejamentos',
     '/clube/transferencias': 'Transferências',
@@ -39,6 +40,7 @@ const menuItens = computed<NavigationMenuItem[]>(() => {
   if (isDiretorClube.value) {
     itens.push(
       { label: 'Turmas', icon: 'i-lucide-users-round', to: '/clube/turmas' },
+      { label: 'Líderes', icon: 'i-lucide-user-check', to: '/clube/lideres' },
       { label: 'Oansistas', icon: 'i-lucide-baby', to: '/clube/oansistas' },
       { label: 'Remanejamentos', icon: 'i-lucide-shuffle', to: '/clube/remanejamentos' },
       { label: 'Transferências', icon: 'i-lucide-arrow-right-left', to: '/clube/transferencias' },

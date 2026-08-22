@@ -64,7 +64,7 @@ const editando = ref<string | null>(null)
 const form = reactive({
   nome: '',
   data_nascimento: '',
-  turma_id: '',
+  turma_id: null as string | null,
   responsavel: '',
   contato: '',
   status: 'ativo' as Oansista['status'],
@@ -74,7 +74,7 @@ const form = reactive({
 function abrirCriar() {
   editando.value = null
   Object.assign(form, {
-    nome: '', data_nascimento: '', turma_id: '',
+    nome: '', data_nascimento: '', turma_id: null,
     responsavel: '', contato: '', status: 'ativo', observacoes: '',
   })
   modal.value = true
@@ -85,7 +85,7 @@ function abrirEdicao(o: Oansista & { turma_nome: string | null }) {
   Object.assign(form, {
     nome: o.nome,
     data_nascimento: o.data_nascimento,
-    turma_id: o.turma_id ?? '',
+    turma_id: o.turma_id,
     responsavel: o.responsavel ?? '',
     contato: o.contato ?? '',
     status: o.status,
@@ -266,7 +266,7 @@ async function importarCsv() {
             >
               <USelect
                 v-model="form.turma_id"
-                :items="[{ label: 'Sem turma', value: '' }, ...turmas.map(t => ({ label: t.nome, value: t.id }))]"
+                :items="[{ label: 'Sem turma', value: null }, ...turmas.map(t => ({ label: t.nome, value: t.id }))]"
                 class="w-full"
               />
             </UFormField>
