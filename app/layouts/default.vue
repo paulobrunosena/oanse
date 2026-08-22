@@ -16,6 +16,7 @@ const tituloPagina = computed(() => {
     '/clube/turmas': 'Turmas',
     '/clube/oansistas': 'Oansistas',
     '/chamada': 'Chamada',
+    '/folha-semanal': 'Folha Semanal',
   }
   return mapa[route.path] ?? 'Oanse'
 })
@@ -43,6 +44,7 @@ const menuItens = computed<NavigationMenuItem[]>(() => {
   if (isLider.value) {
     itens.push(
       { label: 'Chamada', icon: 'i-lucide-clipboard-check', to: '/chamada' },
+      { label: 'Folha Semanal', icon: 'i-lucide-book-open-check', to: '/folha-semanal' },
     )
   }
 

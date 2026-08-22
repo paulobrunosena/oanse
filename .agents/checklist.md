@@ -50,8 +50,8 @@
 - [x] `useEncontro` — busca/cria o encontro do sábado corrente
 - [x] Tela de chamada da turma (presença/falta)
 - [x] Teste: falta zera pontuação do dia (trigger `fn_calcular_total_folha`)
-- [ ] Folha Semanal: uniforme, bíblia, EBD, manual, conduta, seções, extras
-- [ ] Preview do total no formulário (`utils/pontos.ts`)
+- [x] Folha Semanal: uniforme, bíblia, EBD, manual, conduta, seções, extras
+- [x] Preview do total no formulário (`utils/pontos.ts`)
 - [ ] Clube > Remanejamentos: substituição temporária por encontro — Diretor de Clube
 - [ ] Teste: substituto enxerga/edita a turma remanejada (RLS)
 - [ ] Clube > Transferências: transferência permanente — Diretor de Clube
