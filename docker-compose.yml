@@ -19,6 +19,7 @@ services:
   nuxt:
     image: node:22-alpine
     container_name: oanse-web
+    user: "${UID:-1000}:${GID:-1000}"
     working_dir: /app
     ports:
       - "3000:3000"
