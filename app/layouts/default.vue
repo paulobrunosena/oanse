@@ -5,6 +5,20 @@ const { profile } = useAuth()
 const { roleLabel, isDiretorGeral, isDiretorClube } = useRole()
 const { logout } = useAuth()
 
+const route = useRoute()
+
+const tituloPagina = computed(() => {
+  const mapa: Record<string, string> = {
+    '/': 'Início',
+    '/admin/usuarios': 'Usuários',
+    '/admin/clubes': 'Clubes',
+    '/admin/configuracoes': 'Configurações',
+    '/clube/turmas': 'Turmas',
+    '/clube/oansistas': 'Oansistas',
+  }
+  return mapa[route.path] ?? 'Oanse'
+})
+
 const menuItens = computed<NavigationMenuItem[]>(() => {
   const itens: NavigationMenuItem[] = [
     { label: 'Início', icon: 'i-lucide-home', to: '/' },
@@ -86,6 +100,9 @@ const menuItens = computed<NavigationMenuItem[]>(() => {
     </UDashboardSidebar>
 
     <UDashboardPanel :ui="{ body: 'h-full' }">
+      <template #header>
+        <UDashboardNavbar :title="tituloPagina" />
+      </template>
       <template #body>
         <slot />
       </template>
