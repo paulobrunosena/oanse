@@ -49,7 +49,7 @@
 
 - [x] `useEncontro` — busca/cria o encontro do sábado corrente
 - [x] Tela de chamada da turma (presença/falta)
-- [ ] Teste: falta zera pontuação do dia (trigger `fn_calcular_total_folha`)
+- [x] Teste: falta zera pontuação do dia (trigger `fn_calcular_total_folha`)
 - [ ] Folha Semanal: uniforme, bíblia, EBD, manual, conduta, seções, extras
 - [ ] Preview do total no formulário (`utils/pontos.ts`)
 - [ ] Clube > Remanejamentos: substituição temporária por encontro — Diretor de Clube

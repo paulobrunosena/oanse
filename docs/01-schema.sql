@@ -424,6 +424,22 @@ create trigger trg_folha_total
   on folhas_semanais
   for each row execute function fn_calcular_total_folha();
 
+-- Alternância de presença na chamada (presente <=> falta) recalcula a folha:
+-- "touch" em presenca_id dispara o trg_folha_total acima (migration 0004).
+create or replace function fn_recalcular_folha_por_presenca()
+returns trigger language plpgsql security definer set search_path = public as $$
+begin
+  update folhas_semanais
+     set presenca_id = presenca_id
+   where encontro_id = new.encontro_id
+     and oansista_id = new.oansista_id;
+  return new;
+end $$;
+
+create trigger trg_folha_recalcular_presenca
+  after insert or update of presente on presencas
+  for each row execute function fn_recalcular_folha_por_presenca();
+
 -- Pontos do resultado de um jogo, conforme configuração (1º=100, 2º=70, ...)
 create or replace function fn_definir_pontos_resultado()
 returns trigger language plpgsql security definer set search_path = public as $$
