@@ -17,16 +17,10 @@
 > Nota: usado Nuxt 4.5 + Nuxt UI 4 (template `ui` do nuxi inacessível pela rede local;
 > scaffold criado manualmente). Chaves locais no novo formato `sb_publishable_`/`sb_secret_`.
 
-> **PENDENTE (revalidar em casa):** o teste do `docker compose up nuxt` foi feito atrás de
-> proxy corporativo (exigiu `strict-ssl=false` no npm do container). Refazer em rede limpa:
-> `npx supabase start` + `docker compose up nuxt` → confirmar HTTP 200 em localhost:3000.
-> Se funcionar sem o `strict-ssl=false`, remover essa config do docker-compose.yml.
-> Depois disso, iniciar a Fase 1 (Auth).
-
-> **Docker Desktop (toda máquina):** o container `supabase_vector_oanse` só sobe se o
-> Docker Desktop tiver **Settings → General → "Expose daemon on tcp://localhost:2375
-> without TLS"** ativado (o vector usa `DOCKER_HOST=http://host.docker.internal:2375`).
-> Sem isso ele reinicia em loop — mas o impacto é só na aba "Logs" do Studio.
+> **RESOLVIDO (revalidado em casa, rede limpa):** `docker compose up nuxt` sobe sem o
+> `strict-ssl=false` — config removida do docker-compose.yml. `supabase_vector_oanse`
+> ficou Up (healthy) via bind mount de `/var/run/docker.sock` (integração WSL do Docker
+> Desktop), sem precisar da porta 2375. Válido para o ambiente WSL2 + Docker Desktop.
 
 ## Fase 1 — Auth e Estrutura
 
