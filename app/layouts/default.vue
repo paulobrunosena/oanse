@@ -2,7 +2,7 @@
 import type { NavigationMenuItem } from '@nuxt/ui'
 
 const { profile } = useAuth()
-const { roleLabel, isDiretorGeral, isDiretorClube } = useRole()
+const { roleLabel, isDiretorGeral, isDiretorClube, isLider } = useRole()
 const { logout } = useAuth()
 
 const route = useRoute()
@@ -15,6 +15,7 @@ const tituloPagina = computed(() => {
     '/admin/configuracoes': 'Configurações',
     '/clube/turmas': 'Turmas',
     '/clube/oansistas': 'Oansistas',
+    '/chamada': 'Chamada',
   }
   return mapa[route.path] ?? 'Oanse'
 })
@@ -36,6 +37,12 @@ const menuItens = computed<NavigationMenuItem[]>(() => {
     itens.push(
       { label: 'Turmas', icon: 'i-lucide-users-round', to: '/clube/turmas' },
       { label: 'Oansistas', icon: 'i-lucide-baby', to: '/clube/oansistas' },
+    )
+  }
+
+  if (isLider.value) {
+    itens.push(
+      { label: 'Chamada', icon: 'i-lucide-clipboard-check', to: '/chamada' },
     )
   }
 

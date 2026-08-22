@@ -47,8 +47,8 @@
 
 ## Fase 2 — Lançamento Semanal
 
-- [ ] `useEncontro` — busca/cria o encontro do sábado corrente
-- [ ] Tela de chamada da turma (presença/falta)
+- [x] `useEncontro` — busca/cria o encontro do sábado corrente
+- [x] Tela de chamada da turma (presença/falta)
 - [ ] Teste: falta zera pontuação do dia (trigger `fn_calcular_total_folha`)
 - [ ] Folha Semanal: uniforme, bíblia, EBD, manual, conduta, seções, extras
 - [ ] Preview do total no formulário (`utils/pontos.ts`)
