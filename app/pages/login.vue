@@ -37,6 +37,11 @@ async function entrar() {
     erro.value = 'E-mail ou senha inválidos.'
     return
   }
+  // Sincroniza o usuário antes de navegar: o onAuthStateChange do módulo
+  // atualiza useSupabaseUser() de forma assíncrona, e o middleware auth
+  // ainda veria user nulo e voltaria para /login.
+  const { data } = await supabase.auth.getClaims()
+  user.value = data?.claims ?? null
   await navigateTo('/')
 }
 
