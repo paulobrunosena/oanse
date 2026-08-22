@@ -1,10 +1,10 @@
-export type Json
-  = | string
-    | number
-    | boolean
-    | null
-    | { [key: string]: Json | undefined }
-    | Json[]
+export type Json =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: Json | undefined }
+  | Json[]
 
 export type Database = {
   graphql_public: {
@@ -148,39 +148,39 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'folhas_semanais_encontro_id_fkey'
-            columns: ['encontro_id']
+            foreignKeyName: "folhas_semanais_encontro_id_fkey"
+            columns: ["encontro_id"]
             isOneToOne: false
-            referencedRelation: 'encontros'
-            referencedColumns: ['id']
+            referencedRelation: "encontros"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'folhas_semanais_encontro_id_fkey'
-            columns: ['encontro_id']
+            foreignKeyName: "folhas_semanais_encontro_id_fkey"
+            columns: ["encontro_id"]
             isOneToOne: false
-            referencedRelation: 'v_ranking_semanal'
-            referencedColumns: ['encontro_id']
+            referencedRelation: "v_ranking_semanal"
+            referencedColumns: ["encontro_id"]
           },
           {
-            foreignKeyName: 'folhas_semanais_oansista_id_fkey'
-            columns: ['oansista_id']
+            foreignKeyName: "folhas_semanais_oansista_id_fkey"
+            columns: ["oansista_id"]
             isOneToOne: false
-            referencedRelation: 'oansistas'
-            referencedColumns: ['id']
+            referencedRelation: "oansistas"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'folhas_semanais_presenca_id_fkey'
-            columns: ['presenca_id']
+            foreignKeyName: "folhas_semanais_presenca_id_fkey"
+            columns: ["presenca_id"]
             isOneToOne: false
-            referencedRelation: 'presencas'
-            referencedColumns: ['id']
+            referencedRelation: "presencas"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'folhas_semanais_registrado_por_fkey'
-            columns: ['registrado_por']
+            foreignKeyName: "folhas_semanais_registrado_por_fkey"
+            columns: ["registrado_por"]
             isOneToOne: false
-            referencedRelation: 'profiles'
-            referencedColumns: ['id']
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -235,18 +235,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'jogo_resultados_jogo_id_fkey'
-            columns: ['jogo_id']
+            foreignKeyName: "jogo_resultados_jogo_id_fkey"
+            columns: ["jogo_id"]
             isOneToOne: false
-            referencedRelation: 'jogos'
-            referencedColumns: ['id']
+            referencedRelation: "jogos"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'jogo_resultados_time_id_fkey'
-            columns: ['time_id']
+            foreignKeyName: "jogo_resultados_time_id_fkey"
+            columns: ["time_id"]
             isOneToOne: false
-            referencedRelation: 'jogo_times'
-            referencedColumns: ['id']
+            referencedRelation: "jogo_times"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -268,18 +268,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'jogo_time_integrantes_oansista_id_fkey'
-            columns: ['oansista_id']
+            foreignKeyName: "jogo_time_integrantes_oansista_id_fkey"
+            columns: ["oansista_id"]
             isOneToOne: false
-            referencedRelation: 'oansistas'
-            referencedColumns: ['id']
+            referencedRelation: "oansistas"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'jogo_time_integrantes_time_id_fkey'
-            columns: ['time_id']
+            foreignKeyName: "jogo_time_integrantes_time_id_fkey"
+            columns: ["time_id"]
             isOneToOne: false
-            referencedRelation: 'jogo_times'
-            referencedColumns: ['id']
+            referencedRelation: "jogo_times"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -307,24 +307,24 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'jogo_times_jogo_id_fkey'
-            columns: ['jogo_id']
+            foreignKeyName: "jogo_times_jogo_id_fkey"
+            columns: ["jogo_id"]
             isOneToOne: false
-            referencedRelation: 'jogos'
-            referencedColumns: ['id']
+            referencedRelation: "jogos"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'jogo_times_lider_id_fkey'
-            columns: ['lider_id']
+            foreignKeyName: "jogo_times_lider_id_fkey"
+            columns: ["lider_id"]
             isOneToOne: false
-            referencedRelation: 'profiles'
-            referencedColumns: ['id']
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
         ]
       }
       jogos: {
         Row: {
-          categoria: Database['public']['Enums']['jogo_categoria']
+          categoria: Database["public"]["Enums"]["jogo_categoria"]
           created_at: string
           criado_por: string | null
           encontro_id: string
@@ -332,7 +332,7 @@ export type Database = {
           nome: string
         }
         Insert: {
-          categoria: Database['public']['Enums']['jogo_categoria']
+          categoria: Database["public"]["Enums"]["jogo_categoria"]
           created_at?: string
           criado_por?: string | null
           encontro_id: string
@@ -340,7 +340,7 @@ export type Database = {
           nome: string
         }
         Update: {
-          categoria?: Database['public']['Enums']['jogo_categoria']
+          categoria?: Database["public"]["Enums"]["jogo_categoria"]
           created_at?: string
           criado_por?: string | null
           encontro_id?: string
@@ -349,25 +349,25 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'jogos_criado_por_fkey'
-            columns: ['criado_por']
+            foreignKeyName: "jogos_criado_por_fkey"
+            columns: ["criado_por"]
             isOneToOne: false
-            referencedRelation: 'profiles'
-            referencedColumns: ['id']
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'jogos_encontro_id_fkey'
-            columns: ['encontro_id']
+            foreignKeyName: "jogos_encontro_id_fkey"
+            columns: ["encontro_id"]
             isOneToOne: false
-            referencedRelation: 'encontros'
-            referencedColumns: ['id']
+            referencedRelation: "encontros"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'jogos_encontro_id_fkey'
-            columns: ['encontro_id']
+            foreignKeyName: "jogos_encontro_id_fkey"
+            columns: ["encontro_id"]
             isOneToOne: false
-            referencedRelation: 'v_ranking_semanal'
-            referencedColumns: ['encontro_id']
+            referencedRelation: "v_ranking_semanal"
+            referencedColumns: ["encontro_id"]
           },
         ]
       }
@@ -400,7 +400,7 @@ export type Database = {
           nome: string
           observacoes: string | null
           responsavel: string | null
-          status: Database['public']['Enums']['status_oansista']
+          status: Database["public"]["Enums"]["status_oansista"]
           turma_id: string | null
           updated_at: string
         }
@@ -414,7 +414,7 @@ export type Database = {
           nome: string
           observacoes?: string | null
           responsavel?: string | null
-          status?: Database['public']['Enums']['status_oansista']
+          status?: Database["public"]["Enums"]["status_oansista"]
           turma_id?: string | null
           updated_at?: string
         }
@@ -428,24 +428,24 @@ export type Database = {
           nome?: string
           observacoes?: string | null
           responsavel?: string | null
-          status?: Database['public']['Enums']['status_oansista']
+          status?: Database["public"]["Enums"]["status_oansista"]
           turma_id?: string | null
           updated_at?: string
         }
         Relationships: [
           {
-            foreignKeyName: 'oansistas_clube_id_fkey'
-            columns: ['clube_id']
+            foreignKeyName: "oansistas_clube_id_fkey"
+            columns: ["clube_id"]
             isOneToOne: false
-            referencedRelation: 'clubes'
-            referencedColumns: ['id']
+            referencedRelation: "clubes"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'oansistas_turma_id_fkey'
-            columns: ['turma_id']
+            foreignKeyName: "oansistas_turma_id_fkey"
+            columns: ["turma_id"]
             isOneToOne: false
-            referencedRelation: 'turmas'
-            referencedColumns: ['id']
+            referencedRelation: "turmas"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -460,7 +460,7 @@ export type Database = {
           nivel: number | null
           nome: string
           secao: number | null
-          tipo: Database['public']['Enums']['premio_tipo']
+          tipo: Database["public"]["Enums"]["premio_tipo"]
         }
         Insert: {
           ativo?: boolean
@@ -472,7 +472,7 @@ export type Database = {
           nivel?: number | null
           nome: string
           secao?: number | null
-          tipo: Database['public']['Enums']['premio_tipo']
+          tipo: Database["public"]["Enums"]["premio_tipo"]
         }
         Update: {
           ativo?: boolean
@@ -484,7 +484,7 @@ export type Database = {
           nivel?: number | null
           nome?: string
           secao?: number | null
-          tipo?: Database['public']['Enums']['premio_tipo']
+          tipo?: Database["public"]["Enums"]["premio_tipo"]
         }
         Relationships: []
       }
@@ -518,11 +518,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'premios_movimentacoes_premio_id_fkey'
-            columns: ['premio_id']
+            foreignKeyName: "premios_movimentacoes_premio_id_fkey"
+            columns: ["premio_id"]
             isOneToOne: false
-            referencedRelation: 'premios'
-            referencedColumns: ['id']
+            referencedRelation: "premios"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -537,7 +537,7 @@ export type Database = {
           observacao: string | null
           premio_id: string
           progresso_id: string | null
-          status: Database['public']['Enums']['pendencia_status']
+          status: Database["public"]["Enums"]["pendencia_status"]
         }
         Insert: {
           clube_id: string
@@ -549,7 +549,7 @@ export type Database = {
           observacao?: string | null
           premio_id: string
           progresso_id?: string | null
-          status?: Database['public']['Enums']['pendencia_status']
+          status?: Database["public"]["Enums"]["pendencia_status"]
         }
         Update: {
           clube_id?: string
@@ -561,43 +561,43 @@ export type Database = {
           observacao?: string | null
           premio_id?: string
           progresso_id?: string | null
-          status?: Database['public']['Enums']['pendencia_status']
+          status?: Database["public"]["Enums"]["pendencia_status"]
         }
         Relationships: [
           {
-            foreignKeyName: 'premios_pendentes_clube_id_fkey'
-            columns: ['clube_id']
+            foreignKeyName: "premios_pendentes_clube_id_fkey"
+            columns: ["clube_id"]
             isOneToOne: false
-            referencedRelation: 'clubes'
-            referencedColumns: ['id']
+            referencedRelation: "clubes"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'premios_pendentes_entregue_por_fkey'
-            columns: ['entregue_por']
+            foreignKeyName: "premios_pendentes_entregue_por_fkey"
+            columns: ["entregue_por"]
             isOneToOne: false
-            referencedRelation: 'profiles'
-            referencedColumns: ['id']
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'premios_pendentes_oansista_id_fkey'
-            columns: ['oansista_id']
+            foreignKeyName: "premios_pendentes_oansista_id_fkey"
+            columns: ["oansista_id"]
             isOneToOne: false
-            referencedRelation: 'oansistas'
-            referencedColumns: ['id']
+            referencedRelation: "oansistas"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'premios_pendentes_premio_id_fkey'
-            columns: ['premio_id']
+            foreignKeyName: "premios_pendentes_premio_id_fkey"
+            columns: ["premio_id"]
             isOneToOne: false
-            referencedRelation: 'premios'
-            referencedColumns: ['id']
+            referencedRelation: "premios"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'premios_pendentes_progresso_id_fkey'
-            columns: ['progresso_id']
+            foreignKeyName: "premios_pendentes_progresso_id_fkey"
+            columns: ["progresso_id"]
             isOneToOne: false
-            referencedRelation: 'progresso_manual'
-            referencedColumns: ['id']
+            referencedRelation: "progresso_manual"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -631,32 +631,32 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'presencas_encontro_id_fkey'
-            columns: ['encontro_id']
+            foreignKeyName: "presencas_encontro_id_fkey"
+            columns: ["encontro_id"]
             isOneToOne: false
-            referencedRelation: 'encontros'
-            referencedColumns: ['id']
+            referencedRelation: "encontros"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'presencas_encontro_id_fkey'
-            columns: ['encontro_id']
+            foreignKeyName: "presencas_encontro_id_fkey"
+            columns: ["encontro_id"]
             isOneToOne: false
-            referencedRelation: 'v_ranking_semanal'
-            referencedColumns: ['encontro_id']
+            referencedRelation: "v_ranking_semanal"
+            referencedColumns: ["encontro_id"]
           },
           {
-            foreignKeyName: 'presencas_lider_registrante_id_fkey'
-            columns: ['lider_registrante_id']
+            foreignKeyName: "presencas_lider_registrante_id_fkey"
+            columns: ["lider_registrante_id"]
             isOneToOne: false
-            referencedRelation: 'profiles'
-            referencedColumns: ['id']
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'presencas_oansista_id_fkey'
-            columns: ['oansista_id']
+            foreignKeyName: "presencas_oansista_id_fkey"
+            columns: ["oansista_id"]
             isOneToOne: false
-            referencedRelation: 'oansistas'
-            referencedColumns: ['id']
+            referencedRelation: "oansistas"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -667,7 +667,7 @@ export type Database = {
           created_at: string
           id: string
           nome: string
-          role: Database['public']['Enums']['user_role']
+          role: Database["public"]["Enums"]["user_role"]
           telefone: string | null
           updated_at: string
         }
@@ -677,7 +677,7 @@ export type Database = {
           created_at?: string
           id: string
           nome: string
-          role?: Database['public']['Enums']['user_role']
+          role?: Database["public"]["Enums"]["user_role"]
           telefone?: string | null
           updated_at?: string
         }
@@ -687,17 +687,17 @@ export type Database = {
           created_at?: string
           id?: string
           nome?: string
-          role?: Database['public']['Enums']['user_role']
+          role?: Database["public"]["Enums"]["user_role"]
           telefone?: string | null
           updated_at?: string
         }
         Relationships: [
           {
-            foreignKeyName: 'profiles_clube_id_fkey'
-            columns: ['clube_id']
+            foreignKeyName: "profiles_clube_id_fkey"
+            columns: ["clube_id"]
             isOneToOne: false
-            referencedRelation: 'clubes'
-            referencedColumns: ['id']
+            referencedRelation: "clubes"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -734,18 +734,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'progresso_manual_oansista_id_fkey'
-            columns: ['oansista_id']
+            foreignKeyName: "progresso_manual_oansista_id_fkey"
+            columns: ["oansista_id"]
             isOneToOne: false
-            referencedRelation: 'oansistas'
-            referencedColumns: ['id']
+            referencedRelation: "oansistas"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'progresso_manual_registrado_por_fkey'
-            columns: ['registrado_por']
+            foreignKeyName: "progresso_manual_registrado_por_fkey"
+            columns: ["registrado_por"]
             isOneToOne: false
-            referencedRelation: 'profiles'
-            referencedColumns: ['id']
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -776,18 +776,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'prova_ingresso_licoes_registrado_por_fkey'
-            columns: ['registrado_por']
+            foreignKeyName: "prova_ingresso_licoes_registrado_por_fkey"
+            columns: ["registrado_por"]
             isOneToOne: false
-            referencedRelation: 'profiles'
-            referencedColumns: ['id']
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'prova_ingresso_licoes_visitante_id_fkey'
-            columns: ['visitante_id']
+            foreignKeyName: "prova_ingresso_licoes_visitante_id_fkey"
+            columns: ["visitante_id"]
             isOneToOne: false
-            referencedRelation: 'visitantes'
-            referencedColumns: ['id']
+            referencedRelation: "visitantes"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -821,46 +821,46 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'remanejamentos_temporarios_criado_por_fkey'
-            columns: ['criado_por']
+            foreignKeyName: "remanejamentos_temporarios_criado_por_fkey"
+            columns: ["criado_por"]
             isOneToOne: false
-            referencedRelation: 'profiles'
-            referencedColumns: ['id']
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'remanejamentos_temporarios_encontro_id_fkey'
-            columns: ['encontro_id']
+            foreignKeyName: "remanejamentos_temporarios_encontro_id_fkey"
+            columns: ["encontro_id"]
             isOneToOne: false
-            referencedRelation: 'encontros'
-            referencedColumns: ['id']
+            referencedRelation: "encontros"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'remanejamentos_temporarios_encontro_id_fkey'
-            columns: ['encontro_id']
+            foreignKeyName: "remanejamentos_temporarios_encontro_id_fkey"
+            columns: ["encontro_id"]
             isOneToOne: false
-            referencedRelation: 'v_ranking_semanal'
-            referencedColumns: ['encontro_id']
+            referencedRelation: "v_ranking_semanal"
+            referencedColumns: ["encontro_id"]
           },
           {
-            foreignKeyName: 'remanejamentos_temporarios_lider_substituto_id_fkey'
-            columns: ['lider_substituto_id']
+            foreignKeyName: "remanejamentos_temporarios_lider_substituto_id_fkey"
+            columns: ["lider_substituto_id"]
             isOneToOne: false
-            referencedRelation: 'profiles'
-            referencedColumns: ['id']
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'remanejamentos_temporarios_lider_titular_id_fkey'
-            columns: ['lider_titular_id']
+            foreignKeyName: "remanejamentos_temporarios_lider_titular_id_fkey"
+            columns: ["lider_titular_id"]
             isOneToOne: false
-            referencedRelation: 'profiles'
-            referencedColumns: ['id']
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'remanejamentos_temporarios_turma_id_fkey'
-            columns: ['turma_id']
+            foreignKeyName: "remanejamentos_temporarios_turma_id_fkey"
+            columns: ["turma_id"]
             isOneToOne: false
-            referencedRelation: 'turmas'
-            referencedColumns: ['id']
+            referencedRelation: "turmas"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -874,7 +874,7 @@ export type Database = {
           lider_origem_id: string | null
           motivo: string | null
           oansista_id: string
-          tipo: Database['public']['Enums']['transferencia_tipo']
+          tipo: Database["public"]["Enums"]["transferencia_tipo"]
           turma_destino_id: string | null
           turma_origem_id: string | null
         }
@@ -887,7 +887,7 @@ export type Database = {
           lider_origem_id?: string | null
           motivo?: string | null
           oansista_id: string
-          tipo: Database['public']['Enums']['transferencia_tipo']
+          tipo: Database["public"]["Enums"]["transferencia_tipo"]
           turma_destino_id?: string | null
           turma_origem_id?: string | null
         }
@@ -900,52 +900,52 @@ export type Database = {
           lider_origem_id?: string | null
           motivo?: string | null
           oansista_id?: string
-          tipo?: Database['public']['Enums']['transferencia_tipo']
+          tipo?: Database["public"]["Enums"]["transferencia_tipo"]
           turma_destino_id?: string | null
           turma_origem_id?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: 'transferencias_autorizado_por_fkey'
-            columns: ['autorizado_por']
+            foreignKeyName: "transferencias_autorizado_por_fkey"
+            columns: ["autorizado_por"]
             isOneToOne: false
-            referencedRelation: 'profiles'
-            referencedColumns: ['id']
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'transferencias_lider_destino_id_fkey'
-            columns: ['lider_destino_id']
+            foreignKeyName: "transferencias_lider_destino_id_fkey"
+            columns: ["lider_destino_id"]
             isOneToOne: false
-            referencedRelation: 'profiles'
-            referencedColumns: ['id']
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'transferencias_lider_origem_id_fkey'
-            columns: ['lider_origem_id']
+            foreignKeyName: "transferencias_lider_origem_id_fkey"
+            columns: ["lider_origem_id"]
             isOneToOne: false
-            referencedRelation: 'profiles'
-            referencedColumns: ['id']
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'transferencias_oansista_id_fkey'
-            columns: ['oansista_id']
+            foreignKeyName: "transferencias_oansista_id_fkey"
+            columns: ["oansista_id"]
             isOneToOne: false
-            referencedRelation: 'oansistas'
-            referencedColumns: ['id']
+            referencedRelation: "oansistas"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'transferencias_turma_destino_id_fkey'
-            columns: ['turma_destino_id']
+            foreignKeyName: "transferencias_turma_destino_id_fkey"
+            columns: ["turma_destino_id"]
             isOneToOne: false
-            referencedRelation: 'turmas'
-            referencedColumns: ['id']
+            referencedRelation: "turmas"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'transferencias_turma_origem_id_fkey'
-            columns: ['turma_origem_id']
+            foreignKeyName: "transferencias_turma_origem_id_fkey"
+            columns: ["turma_origem_id"]
             isOneToOne: false
-            referencedRelation: 'turmas'
-            referencedColumns: ['id']
+            referencedRelation: "turmas"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -976,18 +976,18 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'turmas_clube_id_fkey'
-            columns: ['clube_id']
+            foreignKeyName: "turmas_clube_id_fkey"
+            columns: ["clube_id"]
             isOneToOne: false
-            referencedRelation: 'clubes'
-            referencedColumns: ['id']
+            referencedRelation: "clubes"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'turmas_lider_id_fkey'
-            columns: ['lider_id']
+            foreignKeyName: "turmas_lider_id_fkey"
+            columns: ["lider_id"]
             isOneToOne: true
-            referencedRelation: 'profiles'
-            referencedColumns: ['id']
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -1002,7 +1002,7 @@ export type Database = {
           indicado_por: string | null
           nome: string
           responsavel: string | null
-          status: Database['public']['Enums']['status_visitante']
+          status: Database["public"]["Enums"]["status_visitante"]
           updated_at: string
         }
         Insert: {
@@ -1015,7 +1015,7 @@ export type Database = {
           indicado_por?: string | null
           nome: string
           responsavel?: string | null
-          status?: Database['public']['Enums']['status_visitante']
+          status?: Database["public"]["Enums"]["status_visitante"]
           updated_at?: string
         }
         Update: {
@@ -1028,23 +1028,23 @@ export type Database = {
           indicado_por?: string | null
           nome?: string
           responsavel?: string | null
-          status?: Database['public']['Enums']['status_visitante']
+          status?: Database["public"]["Enums"]["status_visitante"]
           updated_at?: string
         }
         Relationships: [
           {
-            foreignKeyName: 'visitantes_clube_id_fkey'
-            columns: ['clube_id']
+            foreignKeyName: "visitantes_clube_id_fkey"
+            columns: ["clube_id"]
             isOneToOne: false
-            referencedRelation: 'clubes'
-            referencedColumns: ['id']
+            referencedRelation: "clubes"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'visitantes_indicado_por_fkey'
-            columns: ['indicado_por']
+            foreignKeyName: "visitantes_indicado_por_fkey"
+            columns: ["indicado_por"]
             isOneToOne: false
-            referencedRelation: 'oansistas'
-            referencedColumns: ['id']
+            referencedRelation: "oansistas"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -1075,11 +1075,11 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'visitas_visitante_id_fkey'
-            columns: ['visitante_id']
+            foreignKeyName: "visitas_visitante_id_fkey"
+            columns: ["visitante_id"]
             isOneToOne: false
-            referencedRelation: 'visitantes'
-            referencedColumns: ['id']
+            referencedRelation: "visitantes"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -1094,8 +1094,8 @@ export type Database = {
           id: string | null
           oansista_nome: string | null
           premio_nome: string | null
-          premio_tipo: Database['public']['Enums']['premio_tipo'] | null
-          status: Database['public']['Enums']['pendencia_status'] | null
+          premio_tipo: Database["public"]["Enums"]["premio_tipo"] | null
+          status: Database["public"]["Enums"]["pendencia_status"] | null
         }
         Relationships: []
       }
@@ -1112,30 +1112,31 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'folhas_semanais_oansista_id_fkey'
-            columns: ['oansista_id']
+            foreignKeyName: "folhas_semanais_oansista_id_fkey"
+            columns: ["oansista_id"]
             isOneToOne: false
-            referencedRelation: 'oansistas'
-            referencedColumns: ['id']
+            referencedRelation: "oansistas"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'oansistas_clube_id_fkey'
-            columns: ['clube_id']
+            foreignKeyName: "oansistas_clube_id_fkey"
+            columns: ["clube_id"]
             isOneToOne: false
-            referencedRelation: 'clubes'
-            referencedColumns: ['id']
+            referencedRelation: "clubes"
+            referencedColumns: ["id"]
           },
         ]
       }
     }
     Functions: {
       fn_clube_da_categoria: {
-        Args: { p_cat: Database['public']['Enums']['jogo_categoria'] }
+        Args: { p_cat: Database["public"]["Enums"]["jogo_categoria"] }
         Returns: string[]
       }
-      fn_clube_id: { Args: never, Returns: string }
-      fn_diretor_do_clube: { Args: { p_clube_id: string }, Returns: boolean }
-      fn_lider_da_turma: { Args: { p_turma_id: string }, Returns: boolean }
+      fn_clube_id: { Args: never; Returns: string }
+      fn_diretor_da_turma: { Args: { p_turma_id: string }; Returns: boolean }
+      fn_diretor_do_clube: { Args: { p_clube_id: string }; Returns: boolean }
+      fn_lider_da_turma: { Args: { p_turma_id: string }; Returns: boolean }
       fn_perfil: {
         Args: never
         Returns: {
@@ -1144,13 +1145,13 @@ export type Database = {
           created_at: string
           id: string
           nome: string
-          role: Database['public']['Enums']['user_role']
+          role: Database["public"]["Enums"]["user_role"]
           telefone: string | null
           updated_at: string
         }
         SetofOptions: {
-          from: '*'
-          to: 'profiles'
+          from: "*"
+          to: "profiles"
           isOneToOne: true
           isSetofReturn: false
         }
@@ -1166,30 +1167,58 @@ export type Database = {
         }[]
       }
       fn_responsavel_pela_turma: {
-        Args: { p_encontro_id: string, p_turma_id: string }
+        Args: { p_encontro_id: string; p_turma_id: string }
         Returns: boolean
       }
       fn_responsavel_pelo_oansista: {
-        Args: { p_encontro_id: string, p_oansista_id: string }
+        Args: { p_encontro_id: string; p_oansista_id: string }
         Returns: boolean
       }
       fn_role: {
         Args: never
-        Returns: Database['public']['Enums']['user_role']
+        Returns: Database["public"]["Enums"]["user_role"]
+      }
+      fn_substituto_da_turma: { Args: { p_turma_id: string }; Returns: boolean }
+      fn_transferir_oansista: {
+        Args: {
+          p_autorizado_por?: string
+          p_motivo?: string
+          p_oansista_id: string
+          p_turma_destino_id: string
+        }
+        Returns: {
+          autorizado_por: string
+          created_at: string
+          data: string
+          id: string
+          lider_destino_id: string | null
+          lider_origem_id: string | null
+          motivo: string | null
+          oansista_id: string
+          tipo: Database["public"]["Enums"]["transferencia_tipo"]
+          turma_destino_id: string | null
+          turma_origem_id: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "transferencias"
+          isOneToOne: true
+          isSetofReturn: false
+        }
       }
     }
     Enums: {
-      jogo_categoria: 'faiscas' | 'flamas_tochas'
-      pendencia_status: 'pendente' | 'entregue' | 'cancelada'
-      premio_tipo: 'manual' | 'botom' | 'premio'
-      status_oansista: 'ativo' | 'inativo' | 'transferido'
+      jogo_categoria: "faiscas" | "flamas_tochas"
+      pendencia_status: "pendente" | "entregue" | "cancelada"
+      premio_tipo: "manual" | "botom" | "premio"
+      status_oansista: "ativo" | "inativo" | "transferido"
       status_visitante:
-        | 'em_visitas'
-        | 'prova_ingresso'
-        | 'matriculado'
-        | 'desistente'
-      transferencia_tipo: 'temporaria' | 'permanente'
-      user_role: 'diretor_geral' | 'secretaria' | 'diretor_clube' | 'lider'
+        | "em_visitas"
+        | "prova_ingresso"
+        | "matriculado"
+        | "desistente"
+      transferencia_tipo: "temporaria" | "permanente"
+      user_role: "diretor_geral" | "secretaria" | "diretor_clube" | "lider"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1197,121 +1226,121 @@ export type Database = {
   }
 }
 
-type DatabaseWithoutInternals = Omit<Database, '__InternalSupabase'>
+type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
 
-type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, 'public'>]
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
 
 export type Tables<
   DefaultSchemaTableNameOrOptions extends
-  | keyof (DefaultSchema['Tables'] & DefaultSchema['Views'])
-  | { schema: keyof DatabaseWithoutInternals },
+    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
+    | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables']
-      & DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Views'])
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
     : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
-  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables']
-    & DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Views'])[TableName] extends {
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
       Row: infer R
     }
-      ? R
-      : never
-  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema['Tables']
-    & DefaultSchema['Views'])
-    ? (DefaultSchema['Tables']
-      & DefaultSchema['Views'])[DefaultSchemaTableNameOrOptions] extends {
+    ? R
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])
+    ? (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
         Row: infer R
       }
-        ? R
-        : never
+      ? R
+      : never
     : never
 
 export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
-  | keyof DefaultSchema['Tables']
-  | { schema: keyof DatabaseWithoutInternals },
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables']
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
-  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'][TableName] extends {
-    Insert: infer I
-  }
-    ? I
-    : never
-  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema['Tables']
-    ? DefaultSchema['Tables'][DefaultSchemaTableNameOrOptions] extends {
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Insert: infer I
     }
+    ? I
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Insert: infer I
+      }
       ? I
       : never
     : never
 
 export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
-  | keyof DefaultSchema['Tables']
-  | { schema: keyof DatabaseWithoutInternals },
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables']
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
-  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions['schema']]['Tables'][TableName] extends {
-    Update: infer U
-  }
-    ? U
-    : never
-  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema['Tables']
-    ? DefaultSchema['Tables'][DefaultSchemaTableNameOrOptions] extends {
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Update: infer U
     }
+    ? U
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Update: infer U
+      }
       ? U
       : never
     : never
 
 export type Enums<
   DefaultSchemaEnumNameOrOptions extends
-  | keyof DefaultSchema['Enums']
-  | { schema: keyof DatabaseWithoutInternals },
+    | keyof DefaultSchema["Enums"]
+    | { schema: keyof DatabaseWithoutInternals },
   EnumName extends DefaultSchemaEnumNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions['schema']]['Enums']
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
     : never = never,
 > = DefaultSchemaEnumNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
-  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions['schema']]['Enums'][EnumName]
-  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema['Enums']
-    ? DefaultSchema['Enums'][DefaultSchemaEnumNameOrOptions]
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
+  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
+    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
     : never
 
 export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
-  | keyof DefaultSchema['CompositeTypes']
-  | { schema: keyof DatabaseWithoutInternals },
+    | keyof DefaultSchema["CompositeTypes"]
+    | { schema: keyof DatabaseWithoutInternals },
   CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes']
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
     : never = never,
 > = PublicCompositeTypeNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
-  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes'][CompositeTypeName]
-  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema['CompositeTypes']
-    ? DefaultSchema['CompositeTypes'][PublicCompositeTypeNameOrOptions]
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
+    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
     : never
 
 export const Constants = {
@@ -1320,18 +1349,19 @@ export const Constants = {
   },
   public: {
     Enums: {
-      jogo_categoria: ['faiscas', 'flamas_tochas'],
-      pendencia_status: ['pendente', 'entregue', 'cancelada'],
-      premio_tipo: ['manual', 'botom', 'premio'],
-      status_oansista: ['ativo', 'inativo', 'transferido'],
+      jogo_categoria: ["faiscas", "flamas_tochas"],
+      pendencia_status: ["pendente", "entregue", "cancelada"],
+      premio_tipo: ["manual", "botom", "premio"],
+      status_oansista: ["ativo", "inativo", "transferido"],
       status_visitante: [
-        'em_visitas',
-        'prova_ingresso',
-        'matriculado',
-        'desistente',
+        "em_visitas",
+        "prova_ingresso",
+        "matriculado",
+        "desistente",
       ],
-      transferencia_tipo: ['temporaria', 'permanente'],
-      user_role: ['diretor_geral', 'secretaria', 'diretor_clube', 'lider'],
+      transferencia_tipo: ["temporaria", "permanente"],
+      user_role: ["diretor_geral", "secretaria", "diretor_clube", "lider"],
     },
   },
 } as const
+

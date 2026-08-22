@@ -54,8 +54,8 @@
 - [x] Preview do total no formulário (`utils/pontos.ts`)
 - [x] Clube > Remanejamentos: substituição temporária por encontro — Diretor de Clube
 - [x] Teste: substituto enxerga/edita a turma remanejada (RLS)
-- [ ] Clube > Transferências: transferência permanente — Diretor de Clube
-- [ ] `server/api/transferencias.post.ts` (transação: update + histórico)
+- [x] Clube > Transferências: transferência permanente — Diretor de Clube
+- [x] `server/api/transferencias.post.ts` (transação: update + histórico)
 - [ ] Folha Individual: progresso de seções/níveis do manual
 - [ ] Teste: conclusão de seção gera pendência em `premios_pendentes`
 - [ ] Folha de Visitantes: cadastro + 3 visitas
