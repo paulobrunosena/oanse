@@ -19,6 +19,12 @@ export default defineNuxtConfig({
     },
   },
 
+  icon: {
+    clientBundle: {
+      scan: true,
+    },
+  },
+
   supabase: {
     // url/key vêm de NUXT_PUBLIC_SUPABASE_URL / NUXT_PUBLIC_SUPABASE_KEY (.env)
     redirect: false, // redirect próprio em middleware/auth.global.ts
