@@ -14,6 +14,7 @@ Sistema web do ministério infantil Oanse (igreja local). Nuxt 4 + Tailwind + Nu
 npx supabase start             # sobe o stack local do Supabase (Docker)
 npm run dev                    # dev server no HOST (localhost:3000)
 npm run lint                   # ESLint (rodar antes de todo commit)
+npm run typecheck              # nuxt typecheck (rodar antes de todo commit)
 npx supabase db reset          # recria banco local (migrations + seed)
 npx supabase gen types typescript --local > app/types/database.types.ts  # após mudança de schema
 ```
@@ -52,3 +53,23 @@ Sem testes automatizados ainda; quando existirem, atualize esta seção com o co
 3. Types regenerados se o schema mudou.
 4. Item correspondente marcado em `.agents/checklist.md`.
 5. Commit com mensagem conventional, em português.
+
+## Registrar mudanças importantes (obrigatório)
+
+Sempre que concluir algo relevante — regra de negócio nova/alterada, mudança de
+schema/RLS, feature de tela, mudança de configuração/ambiente ou arquitetura —
+**verifique e atualize a documentação** antes de dar a tarefa por feita:
+
+1. **Regra de negócio** → `docs/01-schema.sql` (seção de RNs; ex.: `RN 1`..`RN 7`)
+   e/ou `docs/02-rls-policies.sql` se envolver autorização.
+2. **Novos arquivos** (páginas, composables, componentes, rotas server, migrations)
+   → `docs/03-estrutura.md` (reflete o estado REAL; itens ainda não criados ficam
+   marcados como "(planejado)").
+3. **Progresso** → `.agents/checklist.md` (marcar `[x]` no item da fase).
+4. **Comandos/ambiente/arquitetura** → `AGENTS.md` (seção "Comandos",
+   "Arquitetura e regras invioláveis" ou "Convenções de código").
+5. **Schema migrado** → nova migration `supabase/migrations/000N_*.sql` +
+   `npx supabase db reset` + `npx supabase gen types` (tipos regenerados).
+
+Regra de bolso: **se o código mudou, a doc correspondente muda junto.** Não
+comitar mudança de schema/regra sem atualizar `docs/01` e `docs/02`.
