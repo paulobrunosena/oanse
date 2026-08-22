@@ -34,6 +34,7 @@
 - [x] Layout default com sidebar por perfil
 - [x] Admin > Usuários: CRUD de profiles (role, clube, ativo) — Diretor Geral
 - [x] Admin > Clubes: edição dos 4 clubes — Diretor Geral
+- [x] Identidade visual: logos (public/logos/) aplicados no layout/sidebar/login/telas; cores padrão dos clubes (ursinho vermelho, faísca amarelo, flama verde, tocha azul)
 - [x] Admin > Configurações: itens de pontuação e pontos dos jogos — Diretor Geral
 - [x] Clube > Turmas: cadastro de turmas e vínculo de líderes — Diretor de Clube
 - [x] Clube > Líderes: catálogo de leitura da equipe do clube — Diretor de Clube

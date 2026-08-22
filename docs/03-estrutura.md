@@ -36,6 +36,14 @@ oanse/
 │   │   └── 0007_dias_sem_oanse.sql
 │   └── seed.sql                  # clubes, itens de pontuação, config de jogos
 │
+├── public/                       # assets estáticos servidos na raiz (/)
+│   └── logos/
+│       ├── oanse.png             # logo principal (sidebar, login)
+│       ├── clube-ursinhos.png
+│       ├── clube-faiscas.png
+│       ├── clube-flamas.png
+│       └── clube-tochas.png      # nomeados pelo slug (logoClube em utils/data.ts)
+│
 ├── app/                          # (Nuxt 4: srcDir padrão é app/)
 │   ├── app.vue
 │   │
@@ -93,7 +101,7 @@ oanse/
 │   │
 │   └── utils/
 │       ├── pontos.ts             # espelhos do cálculo p/ preview no form
-│       └── data.ts               # datas dos sábados, formatação
+│       └── data.ts               # datas dos sábados, formatação, logoClube(slug)
 │
 ├── server/                       # Nitro (SSR/API routes; NUNCA expor service_role no client)
 │   ├── api/

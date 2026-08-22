@@ -6,6 +6,17 @@ const { roleLabel, isDiretorGeral, isDiretorClube, isLider } = useRole()
 const { logout } = useAuth()
 
 const route = useRoute()
+const supabase = useSupabaseClient()
+
+const { data: clube } = useAsyncData('clube-layout', async () => {
+  if (!profile.value?.clube_id) return null
+  const { data } = await supabase
+    .from('clubes')
+    .select('id, nome, slug, cor')
+    .eq('id', profile.value!.clube_id!)
+    .single()
+  return data
+})
 
 const tituloPagina = computed(() => {
   const mapa: Record<string, string> = {
@@ -70,10 +81,11 @@ const menuItens = computed<NavigationMenuItem[]>(() => {
     >
       <template #header="{ collapsed }">
         <div class="flex items-center gap-2 min-w-0">
-          <UIcon
-            name="i-lucide-flame"
-            class="size-8 shrink-0 text-primary"
-          />
+          <img
+            src="/logos/oanse.png"
+            alt="Oanse"
+            class="size-8 shrink-0 object-contain"
+          >
           <span
             v-if="!collapsed"
             class="text-lg font-bold truncate"
@@ -91,6 +103,21 @@ const menuItens = computed<NavigationMenuItem[]>(() => {
       </template>
 
       <template #footer="{ collapsed }">
+        <div
+          v-if="clube"
+          class="flex items-center gap-2 w-full min-w-0 mb-2"
+        >
+          <img
+            :src="logoClube(clube.slug) ?? undefined"
+            :alt="clube.nome"
+            class="size-6 shrink-0 object-contain"
+          >
+          <span
+            v-if="!collapsed"
+            class="text-sm font-medium truncate"
+            :style="{ color: clube.cor ?? undefined }"
+          >{{ clube.nome }}</span>
+        </div>
         <div class="flex items-center gap-2 w-full min-w-0">
           <UAvatar
             :alt="profile?.nome ?? '?'"

@@ -6,7 +6,7 @@ const { data: clube } = useAsyncData('clube-atual', async () => {
   const supabase = useSupabaseClient()
   const { data } = await supabase
     .from('clubes')
-    .select('nome, cor')
+    .select('nome, cor, slug')
     .eq('id', profile.value!.clube_id!)
     .single()
   return data
@@ -23,10 +23,18 @@ useSeoMeta({ title: 'Início — Oanse' })
     <p class="text-muted mt-1">
       Você está logado como <strong>{{ roleLabel }}</strong>
       <template v-if="clube">
-        do clube <span
-          class="font-semibold"
-          :style="{ color: clube.cor ?? undefined }"
-        >{{ clube.nome }}</span>
+        do clube
+        <span class="inline-flex items-center gap-1 align-middle">
+          <img
+            :src="logoClube(clube.slug) ?? undefined"
+            :alt="clube.nome"
+            class="size-4 object-contain inline-block"
+          >
+          <span
+            class="font-semibold"
+            :style="{ color: clube.cor ?? undefined }"
+          >{{ clube.nome }}</span>
+        </span>
       </template>.
     </p>
 

@@ -27,6 +27,11 @@ const colunas: TableColumn<Clube>[] = [
     accessorKey: 'nome',
     header: 'Clube',
     cell: ({ row }) => h('span', { class: 'font-semibold flex items-center gap-2' }, [
+      h('img', {
+        src: logoClube(row.original.slug) ?? undefined,
+        alt: row.original.nome,
+        class: 'size-6 object-contain',
+      }),
       h('span', { class: 'size-3 rounded-full', style: { backgroundColor: row.original.cor } }),
       row.original.nome,
     ]),

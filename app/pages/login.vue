@@ -53,10 +53,11 @@ onMounted(() => {
 <template>
   <div class="w-full max-w-sm flex flex-col gap-6">
     <div class="flex flex-col items-center gap-2">
-      <UIcon
-        name="i-lucide-flame"
-        class="size-12 text-primary"
-      />
+      <img
+        src="/logos/oanse.png"
+        alt="Oanse"
+        class="h-14 w-auto object-contain"
+      >
       <h1 class="text-2xl font-bold">
         Oanse
       </h1>

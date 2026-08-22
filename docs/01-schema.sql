@@ -581,9 +581,9 @@ alter publication supabase_realtime add table presencas;
 -- SEED (supabase/seed.sql)
 -- ============================================================================
 insert into clubes (nome, slug, idade_min, idade_max, cor, ordem) values
-  ('Ursinhos', 'ursinhos', 4, 5, '#8B5CF6', 1),
-  ('Faíscas',  'faiscas',  6, 8, '#F59E0B', 2),
-  ('Flamas',   'flamas',   9, 10, '#EF4444', 3),
+  ('Ursinhos', 'ursinhos', 4, 5, '#EF4444', 1),
+  ('Faíscas',  'faiscas',  6, 8, '#EAB308', 2),
+  ('Flamas',   'flamas',   9, 10, '#22C55E', 3),
   ('Tochas',   'tochas',   11, 12, '#3B82F6', 4);
 
 insert into itens_pontuacao (chave, descricao, pontos) values
