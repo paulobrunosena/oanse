@@ -5,7 +5,7 @@
 ## Fase 0 — Fundação (2-3 dias)
 
 1. `npm run nuxi init` + Nuxt UI/Tailwind; `npx supabase init`.
-2. Subir ambiente: `npx supabase start` + `docker compose up nuxt`.
+2. Subir ambiente: `npx supabase start` + `npm run dev` (Nuxt no host, ver AGENTS.md).
 3. Aplicar migrations (docs/01 e docs/02) + seed; gerar `database.types.ts`.
 4. CI: lint, typecheck, `supabase db reset` + asserts de RLS.
 

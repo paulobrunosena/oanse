@@ -19,7 +19,7 @@ Sistema web para gestão do ministério infantil Oanse de igreja local: matrícu
 
 ## Rodando localmente
 
-Pré-requisitos: Node 22+, Docker e [Supabase CLI](https://supabase.com/docs/guides/cli).
+Pré-requisitos: Node 22+, Docker (para o Supabase) e [Supabase CLI](https://supabase.com/docs/guides/cli).
 
 ```bash
 # 1. Dependências
@@ -31,9 +31,7 @@ npx supabase start     # aplica migrations + seed automaticamente
 # 3. Copie as chaves locais para o .env
 npx supabase status -o env   # cole os valores no .env (veja .env.example)
 
-# 4. Frontend (container Docker)
-docker compose up nuxt
-# ou, sem Docker:
+# 4. Frontend (no host/WSL2)
 npm run dev
 ```
 

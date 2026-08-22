@@ -6,7 +6,7 @@
 
 - [x] Inicializar projeto Nuxt 3 + Nuxt UI/Tailwind (`npx nuxi init`)
 - [x] `npx supabase init` (config.toml local)
-- [x] Subir ambiente: `npx supabase start` + `docker compose up nuxt`
+- [x] Subir ambiente: `npx supabase start` + `npm run dev` (Nuxt no host)
 - [x] Converter docs/01-schema.sql em `supabase/migrations/0001_schema.sql`
 - [x] Converter docs/02-rls-policies.sql em `supabase/migrations/0002_rls.sql`
 - [x] Criar `supabase/seed.sql` (clubes, itens de pontuação, config de jogos)
@@ -17,10 +17,11 @@
 > Nota: usado Nuxt 4.5 + Nuxt UI 4 (template `ui` do nuxi inacessível pela rede local;
 > scaffold criado manualmente). Chaves locais no novo formato `sb_publishable_`/`sb_secret_`.
 
-> **RESOLVIDO (revalidado em casa, rede limpa):** `docker compose up nuxt` sobe sem o
-> `strict-ssl=false` — config removida do docker-compose.yml. `supabase_vector_oanse`
-> ficou Up (healthy) via bind mount de `/var/run/docker.sock` (integração WSL do Docker
-> Desktop), sem precisar da porta 2375. Válido para o ambiente WSL2 + Docker Desktop.
+> **SUPERADO (2026-08-22):** Nuxt roda no WSL2/host (`npm run dev`); o `docker-compose.yml`
+> foi removido. Rodar Nuxt em container quebrava o login no browser:
+> `host.docker.internal` só resolve dentro do Docker e a entrada antiga no `/etc/hosts`
+> apontava para IP inalcançável → `ERR_CONNECTION_TIMED_OUT`. Com o dev no host, as
+> credenciais `127.0.0.1` do `.env` funcionam tanto no browser quanto no server-side.
 
 ## Fase 1 — Auth e Estrutura
 

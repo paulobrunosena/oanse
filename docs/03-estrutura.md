@@ -2,7 +2,6 @@
 
 ```
 oanse/
-├── docker-compose.yml
 ├── .env.example
 ├── nuxt.config.ts
 ├── app.config.ts                 # tokens do Nuxt UI (cores por clube, etc.)

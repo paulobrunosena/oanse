@@ -11,11 +11,19 @@ Sistema web do ministério infantil Oanse (igreja local). Nuxt 4 + Tailwind + Nu
 ## Comandos
 
 ```bash
-npm run dev                    # dev server (localhost:3000)
+npx supabase start             # sobe o stack local do Supabase (Docker)
+npm run dev                    # dev server no HOST (localhost:3000)
 npm run lint                   # ESLint (rodar antes de todo commit)
 npx supabase db reset          # recria banco local (migrations + seed)
 npx supabase gen types typescript --local > app/types/database.types.ts  # após mudança de schema
 ```
+
+> **Dev env (importante):** o Nuxt roda no WSL2/host com `npm run dev`, NÃO em container.
+> O Docker fica reservado ao stack do Supabase (`npx supabase start`). Rodar o Nuxt em
+> container força o browser a alcançar o Supabase via `host.docker.internal`, que só
+> resolve dentro do Docker e depende de entradas obsoletas no `/etc/hosts` — causa
+> `ERR_CONNECTION_TIMED_OUT` no login. As credenciais locais (`127.0.0.1`) vivem no
+> `.env` e funcionam para browser e server-side (localhost forwarding do WSL2).
 
 Sem testes automatizados ainda; quando existirem, atualize esta seção com o comando de teste.
 
