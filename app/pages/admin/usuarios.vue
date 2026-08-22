@@ -63,7 +63,7 @@ const formCriar = reactive({
   senha: '',
   telefone: '',
   role: 'lider' as UserRole,
-  clube_id: '',
+  clube_id: null as string | null,
 })
 
 async function criar() {
@@ -82,7 +82,7 @@ async function criar() {
     })
     toast.add({ title: 'Usuário criado', color: 'success' })
     modalCriar.value = false
-    Object.assign(formCriar, { nome: '', email: '', senha: '', telefone: '', role: 'lider', clube_id: '' })
+    Object.assign(formCriar, { nome: '', email: '', senha: '', telefone: '', role: 'lider', clube_id: null })
     await carregar()
   }
   catch (e) {
@@ -96,7 +96,7 @@ async function criar() {
 
 // ---- Edição ----
 const editando = ref<Usuario | null>(null)
-const formEditar = reactive({ nome: '', telefone: '', role: 'lider' as UserRole, clube_id: '', ativo: true })
+const formEditar = reactive({ nome: '', telefone: '', role: 'lider' as UserRole, clube_id: null as string | null, ativo: true })
 
 function abrirEdicao(u: Usuario) {
   editando.value = u
@@ -104,7 +104,7 @@ function abrirEdicao(u: Usuario) {
     nome: u.nome,
     telefone: u.telefone ?? '',
     role: u.role,
-    clube_id: u.clube_id ?? '',
+    clube_id: u.clube_id,
     ativo: u.ativo,
   })
 }
@@ -287,7 +287,7 @@ async function confirmarExclusao() {
           >
             <USelect
               v-model="formCriar.clube_id"
-              :items="[{ label: '—', value: '' }, ...clubes.map(c => ({ label: c.nome, value: c.id }))]"
+              :items="[{ label: '—', value: null }, ...clubes.map(c => ({ label: c.nome, value: c.id }))]"
               class="w-full"
             />
           </UFormField>
@@ -359,7 +359,7 @@ async function confirmarExclusao() {
           >
             <USelect
               v-model="formEditar.clube_id"
-              :items="[{ label: '—', value: '' }, ...clubes.map(c => ({ label: c.nome, value: c.id }))]"
+              :items="[{ label: '—', value: null }, ...clubes.map(c => ({ label: c.nome, value: c.id }))]"
               class="w-full"
             />
           </UFormField>
