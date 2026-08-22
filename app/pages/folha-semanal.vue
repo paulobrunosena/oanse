@@ -46,6 +46,23 @@ async function carregarTurma() {
     .eq('ativo', true)
     .maybeSingle()
   turma.value = data ?? null
+
+  if (!turma.value && encontro.value) {
+    const { data: rem } = await supabase
+      .from('remanejamentos_temporarios')
+      .select('turma_id')
+      .eq('encontro_id', encontro.value.id)
+      .eq('lider_substituto_id', user.value.sub)
+      .maybeSingle()
+    if (rem) {
+      const { data: t } = await supabase
+        .from('turmas')
+        .select('id, nome')
+        .eq('id', rem.turma_id)
+        .maybeSingle()
+      turma.value = t ?? null
+    }
+  }
 }
 
 async function carregarOansistas() {
@@ -78,7 +95,8 @@ async function carregarPresencas() {
 
 async function carregarTudo() {
   carregando.value = true
-  await Promise.all([carregarEncontro(), carregarTurma()])
+  await carregarEncontro()
+  await carregarTurma()
   await carregarOansistas()
   await carregarPresencas()
   if (encontro.value) {

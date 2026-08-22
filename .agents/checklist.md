@@ -52,8 +52,8 @@
 - [x] Teste: falta zera pontuação do dia (trigger `fn_calcular_total_folha`)
 - [x] Folha Semanal: uniforme, bíblia, EBD, manual, conduta, seções, extras
 - [x] Preview do total no formulário (`utils/pontos.ts`)
-- [ ] Clube > Remanejamentos: substituição temporária por encontro — Diretor de Clube
-- [ ] Teste: substituto enxerga/edita a turma remanejada (RLS)
+- [x] Clube > Remanejamentos: substituição temporária por encontro — Diretor de Clube
+- [x] Teste: substituto enxerga/edita a turma remanejada (RLS)
 - [ ] Clube > Transferências: transferência permanente — Diretor de Clube
 - [ ] `server/api/transferencias.post.ts` (transação: update + histórico)
 - [ ] Folha Individual: progresso de seções/níveis do manual

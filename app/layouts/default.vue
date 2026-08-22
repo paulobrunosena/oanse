@@ -15,6 +15,7 @@ const tituloPagina = computed(() => {
     '/admin/configuracoes': 'Configurações',
     '/clube/turmas': 'Turmas',
     '/clube/oansistas': 'Oansistas',
+    '/clube/remanejamentos': 'Remanejamentos',
     '/chamada': 'Chamada',
     '/folha-semanal': 'Folha Semanal',
   }
@@ -38,6 +39,7 @@ const menuItens = computed<NavigationMenuItem[]>(() => {
     itens.push(
       { label: 'Turmas', icon: 'i-lucide-users-round', to: '/clube/turmas' },
       { label: 'Oansistas', icon: 'i-lucide-baby', to: '/clube/oansistas' },
+      { label: 'Remanejamentos', icon: 'i-lucide-shuffle', to: '/clube/remanejamentos' },
     )
   }
 

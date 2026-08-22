@@ -64,6 +64,21 @@ returns boolean language sql stable security definer set search_path = public as
   select fn_role() = 'diretor_clube' and fn_clube_id() = p_clube_id;
 $$;
 
+-- Ã‰ diretor do clube ao qual a turma pertence? (SECURITY DEFINER, sem recursÃ£o)
+create or replace function fn_diretor_da_turma(p_turma_id uuid)
+returns boolean language sql stable security definer set search_path = public as $$
+  select fn_diretor_do_clube(t.clube_id) from turmas t where t.id = p_turma_id;
+$$;
+
+-- O usuÃ¡rio Ã© substituto da turma em algum encontro? (remanejamento)
+create or replace function fn_substituto_da_turma(p_turma_id uuid)
+returns boolean language sql stable security definer set search_path = public as $$
+  select exists (
+    select 1 from remanejamentos_temporarios
+    where turma_id = p_turma_id and lider_substituto_id = auth.uid()
+  );
+$$;
+
 -- ----------------------------------------------------------------------------
 -- ATIVAÃ‡ÃƒO DO RLS
 -- ----------------------------------------------------------------------------
@@ -159,6 +174,7 @@ create policy "turmas_select" on turmas
   using (
     fn_role() in ('diretor_geral', 'secretaria')
     or (fn_clube_id() is not null and clube_id = fn_clube_id())
+    or fn_substituto_da_turma(id)
   );
 
 create policy "turmas_write" on turmas
@@ -179,6 +195,7 @@ create policy "oansistas_select" on oansistas
     fn_role() in ('diretor_geral', 'secretaria')
     or fn_diretor_do_clube(clube_id)
     or (fn_role() = 'lider' and fn_lider_da_turma(turma_id))
+    or (fn_role() = 'lider' and fn_substituto_da_turma(turma_id))
   );
 
 create policy "oansistas_write" on oansistas
@@ -320,22 +337,14 @@ create policy "remanejamentos_select" on remanejamentos_temporarios
   using (
     fn_role() in ('diretor_geral', 'secretaria')
     or lider_substituto_id = auth.uid()
-    or exists (select 1 from turmas t
-               where t.id = remanejamentos_temporarios.turma_id
-                 and (fn_diretor_do_clube(t.clube_id)
-                      or t.lider_id = auth.uid()))
+    or fn_diretor_da_turma(turma_id)
+    or fn_lider_da_turma(turma_id)
   );
 
 create policy "remanejamentos_write" on remanejamentos_temporarios
   for all to authenticated
-  using (fn_role() = 'diretor_geral'
-         or exists (select 1 from turmas t
-                    where t.id = remanejamentos_temporarios.turma_id
-                      and fn_diretor_do_clube(t.clube_id)))
-  with check (fn_role() = 'diretor_geral'
-         or exists (select 1 from turmas t
-                    where t.id = remanejamentos_temporarios.turma_id
-                      and fn_diretor_do_clube(t.clube_id)));
+  using (fn_role() = 'diretor_geral' or fn_diretor_da_turma(turma_id))
+  with check (fn_role() = 'diretor_geral' or fn_diretor_da_turma(turma_id));
 
 create policy "transferencias_select" on transferencias
   for select to authenticated
