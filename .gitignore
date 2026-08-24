@@ -1,4 +1,5 @@
 dist
+.nuxt
 .cache
 
 # Node
