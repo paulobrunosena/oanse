@@ -157,7 +157,7 @@ onMounted(carregarTudo)
         <div
           v-for="t in turmas"
           :key="t.id"
-          class="rounded-lg border p-4"
+          class="rounded-lg border bg-[var(--surface-card)] p-4"
         >
           <div class="flex items-center justify-between gap-3 mb-3">
             <div class="flex items-center gap-3 min-w-0">
