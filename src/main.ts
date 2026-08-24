@@ -18,7 +18,7 @@ app.use(pinia)
 setupGuards(router)
 app.use(router)
 app.use(PrimeVue, {
-  license: { key: import.meta.env.VITE_PRIMEUI_LICENSE_KEY || '' },
+  license: import.meta.env.VITE_PRIMEUI_LICENSE_KEY || '',
   theme: {
     preset: Aura,
     options: { darkModeSelector: '.app-dark' },

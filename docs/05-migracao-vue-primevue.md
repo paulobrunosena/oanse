@@ -49,7 +49,7 @@ eslint 10 (flat config) + vue-tsc 3 (typecheck)
 > (variante calibrada para 14px; o padrão do v5 assume 16px). O projeto não usa
 > nenhum componente removido no v5 e mantém os ícones de fonte `pi pi-*`
 > (`primeicons` 8). No v5 a licença PrimeUI (community/comercial) deve ser
-> configurada em `app.use(PrimeVue, { license: { key } })` — sem a chave,
+> configurada em `app.use(PrimeVue, { license: '<chave>' })` — sem a chave,
 > apenas um aviso no console é exibido.
 
 > Deploy: **SPA estático** (perde-se SSR — aceitável para sistema interno de
