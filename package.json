@@ -15,19 +15,19 @@
     "test:watch": "vitest"
   },
   "dependencies": {
+    "@primeuix/themes": "^3.0.0",
     "@supabase/supabase-js": "^2.49.1",
     "@vue/devtools-api": "^8.2.1",
     "h3": "^1.13.0",
     "pinia": "^4.0.3",
-    "primeicons": "^7.0.0",
-    "primevue": "^4.3.3",
+    "primeicons": "^8.0.0",
+    "primevue": "^5.0.1",
     "tailwindcss-primeui": "^0.6.1",
     "vue": "^3.5.13",
     "vue-router": "^4.5.0"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.0",
-    "@primevue/themes": "^4.3.3",
     "@tailwindcss/vite": "^4.3.3",
     "@types/node": "^22.10.5",
     "@vitejs/plugin-vue": "^6.0.8",

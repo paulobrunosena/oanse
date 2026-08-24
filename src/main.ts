@@ -1,7 +1,7 @@
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import PrimeVue from 'primevue/config'
-import Aura from '@primevue/themes/aura'
+import Aura from '@primeuix/themes/aura-compat'
 import ToastService from 'primevue/toastservice'
 import '@/assets/tailwind.css'
 import '@/assets/styles.scss'
