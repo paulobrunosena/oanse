@@ -16,8 +16,9 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.49.1",
+    "@vue/devtools-api": "^8.2.1",
     "h3": "^1.13.0",
-    "pinia": "^3.0.1",
+    "pinia": "^4.0.3",
     "primeicons": "^7.0.0",
     "primevue": "^4.3.3",
     "tailwindcss-primeui": "^0.6.1",
