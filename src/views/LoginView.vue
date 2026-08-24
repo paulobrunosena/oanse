@@ -50,9 +50,6 @@ onMounted(() => {
         alt="Oanse"
         class="h-14 w-auto object-contain"
       >
-      <h1 class="text-2xl font-bold">
-        Oanse
-      </h1>
       <p class="text-sm text-surface-500">
         Ministério Infantil — Acesso ao sistema
       </p>

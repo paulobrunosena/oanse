@@ -29,7 +29,6 @@ const { roleLabel } = useRole()
           alt="Oanse"
           class="h-9 w-auto object-contain"
         >
-        <span>Oanse</span>
       </router-link>
     </div>
 
