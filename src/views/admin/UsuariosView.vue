@@ -4,7 +4,7 @@ import Button from 'primevue/button'
 import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'
 import Dialog from 'primevue/dialog'
-import InputSwitch from 'primevue/inputswitch'
+import ToggleSwitch from 'primevue/toggleswitch'
 import InputText from 'primevue/inputtext'
 import Select from 'primevue/select'
 import Tag from 'primevue/tag'
@@ -371,7 +371,7 @@ async function confirmarExclusao() {
           <small class="text-surface-400">Vazio para Diretor Geral e Secretaria</small>
         </div>
         <div class="flex items-center gap-2">
-          <InputSwitch v-model="formEditar.ativo" />
+          <ToggleSwitch v-model="formEditar.ativo" />
           <label class="text-sm font-medium">Usuário ativo</label>
         </div>
         <div class="flex justify-end gap-2">

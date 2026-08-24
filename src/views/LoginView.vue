@@ -88,7 +88,7 @@ onMounted(() => {
               :feedback="false"
               toggle-mask
               autocomplete="current-password"
-              class="w-full"
+              fluid
             />
           </div>
 

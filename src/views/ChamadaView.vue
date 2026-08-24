@@ -2,7 +2,7 @@
 import { computed, onMounted, ref } from 'vue'
 import Avatar from 'primevue/avatar'
 import Card from 'primevue/card'
-import InputSwitch from 'primevue/inputswitch'
+import ToggleSwitch from 'primevue/toggleswitch'
 import Tag from 'primevue/tag'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/composables/useAuth'
@@ -274,7 +274,7 @@ onMounted(carregarTudo)
               :severity="presente(o) ? 'success' : 'secondary'"
               :value="presente(o) ? 'Presente' : 'Falta'"
             />
-            <InputSwitch
+            <ToggleSwitch
               :model-value="presente(o)"
               :loading="salvandoId === o.id"
               @update:model-value="alternar(o)"
