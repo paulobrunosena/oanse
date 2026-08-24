@@ -34,11 +34,23 @@
 ## 2. Stack alvo
 
 ```
-vue ^3.5        vite ^6        vue-router ^4        pinia ^3
-primevue ^4     primeicons      @supabase/supabase-js  @supabase/ssr
-vitest + @vue/test-utils + happy-dom
-eslint (flat config) + vue-tsc (typecheck)
+vue ^3.5        vite ^8        vue-router ^4        pinia ^4
+primevue ^5     primeicons 8   @supabase/supabase-js  @supabase/ssr
+vitest ^4 + @vue/test-utils + happy-dom
+eslint 10 (flat config) + vue-tsc 3 (typecheck)
 ```
+
+> **Atualização de majors (2026-08-24):** após a migração, o stack foi levado
+> para as versões mais recentes: **Vite 8** (Rolldown), **vitest 4**,
+> **@vitejs/plugin-vue 6**, **Pinia 4** (ESM + `@vue/devtools-api`), **ESLint 10**
+> (com plugin-vue 10, vue-eslint-parser 10 e vue-tsc 3) e **PrimeVue 5**.
+> O tema mudou de `@primevue/themes` para **`@primeuix/themes`**; como o layout
+> Sakai usa raiz de fonte **14px**, o preset usado é **`aura-compat`**
+> (variante calibrada para 14px; o padrão do v5 assume 16px). O projeto não usa
+> nenhum componente removido no v5 e mantém os ícones de fonte `pi pi-*`
+> (`primeicons` 8). No v5 a licença PrimeUI (community/comercial) deve ser
+> configurada em `app.use(PrimeVue, { license: { key } })` — sem a chave,
+> apenas um aviso no console é exibido.
 
 > Deploy: **SPA estático** (perde-se SSR — aceitável para sistema interno de
 > administração). Backend das rotas admin via **Vercel Functions** (`api/**`).

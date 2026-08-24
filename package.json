@@ -51,6 +51,9 @@
     "esbuild@0.21.5": true,
     "esbuild@0.28.2": true
   },
+  "engines": {
+    "node": "^20.19.0 || >=22.12.0"
+  },
   "version": "1.0.0",
   "description": "Sistema web para gestão do ministério infantil Oanse de igreja local: matrícula de crianças por faixa etária (Ursinhos, Faíscas, Flamas, Tochas), folha semanal com pontuação, ranking do sábado, módulo de jogos, controle de premiações/estoque da secretaria e acompanhamento de visitantes.",
   "main": "index.js",

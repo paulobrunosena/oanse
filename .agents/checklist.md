@@ -110,3 +110,4 @@
 - [x] Fase G — CI (`vue-tsc`) + Deploy Vercel (SPA + Functions)
 - [x] Limpeza: remover `nuxt.config.ts`, `app/` (Nuxt), `server/` (Nitro) e dependências Nuxt/Nuxt UI após conclusão
 - [x] **App shell Sakai (PrimeVue)** — integrado ao layout autenticado: `src/layouts/` (AppLayout/AppSidebar/AppTopbar/AppMenu/AppMenuItem/AppFooter + `composables/layout.ts`), SCSS em `src/assets/layout/`, dark mode (`.app-dark`), menu por perfil (RBAC), Tailwind via `tailwindcss-primeui` + `sass`
+- [x] **Upgrade de majors (2026-08-24)** — Vite 8 (Rolldown), vitest 4, plugin-vue 6, Pinia 4 (ESM + `@vue/devtools-api`), ESLint 10 (plugin-vue 10, parser 10, vue-tsc 3) e PrimeVue 5 (tema via `@primeuix/themes`, preset `aura-compat` p/ raiz 14px, `primeicons` 8). Lint/typecheck/build/72 testes verdes.
