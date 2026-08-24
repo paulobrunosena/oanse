@@ -97,7 +97,10 @@ async function salvarTudo() {
                 v-model="(data as any).pontos"
                 :min="0"
                 :max="100"
-                class="w-28"
+                :step="5"
+                show-buttons
+                button-layout="horizontal"
+                class="w-32"
               />
             </template>
           </Column>
@@ -127,7 +130,10 @@ async function salvarTudo() {
                 v-model="(data as any).pontos"
                 :min="0"
                 :max="500"
-                class="w-28"
+                :step="5"
+                show-buttons
+                button-layout="horizontal"
+                class="w-32"
               />
             </template>
           </Column>
