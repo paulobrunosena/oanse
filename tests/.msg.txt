@@ -1,1 +1,0 @@
-chore: remove texto Oanse da tela de login e do AppTopbar (logo ja contem o texto)
