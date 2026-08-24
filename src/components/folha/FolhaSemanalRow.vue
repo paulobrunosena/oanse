@@ -48,7 +48,7 @@ function salvar() {
 </script>
 
 <template>
-  <div class="rounded-lg border p-4">
+  <div class="rounded-lg border bg-[var(--surface-card)] p-4">
     <div class="flex items-center justify-between gap-3 mb-3">
       <div class="flex items-center gap-3 min-w-0">
         <Avatar

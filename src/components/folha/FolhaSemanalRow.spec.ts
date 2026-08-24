@@ -45,6 +45,12 @@ function props(sobre: Partial<ConstructorParameters<typeof FolhaSemanalRow>[0]> 
 }
 
 describe('FolhaSemanalRow', () => {
+  it('renderiza o cartão com fundo de superfície (padrão das outras telas)', () => {
+    const wrapper = mount(FolhaSemanalRow, { props: props(), global: { stubs } })
+
+    expect(wrapper.find('.rounded-lg.border').classes()).toContain('bg-[var(--surface-card)]')
+  })
+
   it('mostra o total apenas com a presença quando não há critérios', () => {
     const wrapper = mount(FolhaSemanalRow, { props: props(), global: { stubs } })
 

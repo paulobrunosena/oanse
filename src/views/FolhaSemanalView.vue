@@ -245,7 +245,7 @@ onMounted(carregarTudo)
           />
           <div
             v-else
-            class="flex items-center justify-between gap-3 rounded-lg border border-dashed p-3 opacity-70"
+            class="flex items-center justify-between gap-3 rounded-lg border border-dashed bg-[var(--surface-card)] p-3 opacity-70"
           >
             <div class="flex items-center gap-3 min-w-0">
               <Avatar

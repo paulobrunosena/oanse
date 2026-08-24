@@ -260,7 +260,7 @@ onMounted(carregarTudo)
         <li
           v-for="o in oansistas"
           :key="o.id"
-          class="flex items-center justify-between gap-3 rounded-lg border p-3"
+          class="flex items-center justify-between gap-3 rounded-lg border bg-[var(--surface-card)] p-3"
         >
           <div class="flex items-center gap-3 min-w-0">
             <Avatar
