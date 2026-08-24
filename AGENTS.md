@@ -29,6 +29,22 @@ npx supabase db reset          # recria banco local (migrations + seed)
 npx supabase gen types typescript --local > src/types/database.types.ts  # após mudança de schema
 ```
 
+> **Como rodar os comandos npm (IMPORTANTE):** o ambiente roda no WSL2 com o Node
+> gerenciado por **nvm** (Linux). Os comandos `npm`/`npx` SÓ funcionam em shell
+> **interativo** do WSL (que carrega o nvm do `~/.bashrc`). Se a ferramenta de
+> automação (ex.: opencode) estiver rodando pelo **PowerShell do Windows**, invoque
+> sempre por um shell interativo do WSL, NÃO por `wsl bash -lc` (não-interativo, que
+> não carrega o nvm e cai no `node.exe`/`npm` do Windows — não executa no Linux):
+>
+> ```powershell
+> # escrever o script em um arquivo .sh (sem CRLF) e executar com bash interativo:
+> wsl -d Ubuntu bash -c "bash -i /caminho/para/script.sh"
+> ```
+>
+> Sintomas de shell não-interativo (falso alarme, NÃO é erro de código): `'vue-tsc'
+> não é reconhecido`, `'eslint' não é reconhecido`, `node: command not found`. O
+> ambiente em si está correto — apenas rode num shell interativo do WSL.
+
 > **Dev env (importante):** o frontend roda no WSL2/host com `npm run dev` (Vite)
 > e a API com `npm run dev:api` (h3 em `localhost:8787`), NÃO em container. O Docker
 > fica reservado ao stack do Supabase (`npx supabase start`). Rodar em container força
