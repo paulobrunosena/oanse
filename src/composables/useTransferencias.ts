@@ -90,6 +90,7 @@ export function useTransferencias() {
     catch (e) {
       throw new Error(
         (e as { statusMessage?: string })?.statusMessage ?? 'Erro ao transferir',
+        { cause: e },
       )
     }
   }
