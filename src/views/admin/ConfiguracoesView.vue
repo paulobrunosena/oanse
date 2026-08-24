@@ -100,7 +100,10 @@ async function salvarTudo() {
                 :step="5"
                 show-buttons
                 button-layout="horizontal"
-                class="w-32"
+                increment-button-icon="pi pi-plus"
+                decrement-button-icon="pi pi-minus"
+                :input-style="{ minWidth: '0', width: '3.5rem', textAlign: 'center' }"
+                class="w-36"
               />
             </template>
           </Column>
@@ -133,7 +136,10 @@ async function salvarTudo() {
                 :step="5"
                 show-buttons
                 button-layout="horizontal"
-                class="w-32"
+                increment-button-icon="pi pi-plus"
+                decrement-button-icon="pi pi-minus"
+                :input-style="{ minWidth: '0', width: '3.5rem', textAlign: 'center' }"
+                class="w-36"
               />
             </template>
           </Column>
