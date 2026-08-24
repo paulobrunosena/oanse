@@ -94,3 +94,18 @@
 - [ ] PWA / instalação no celular do líder
 - [ ] Chamada offline com fila de sincronização (opcional)
 - [ ] Deploy produção: Vercel + Supabase Cloud (revisar chaves, MFA no painel)
+
+## Fase M — Migração Nuxt → Vue 3 + Vite + PrimeVue
+
+> **Concluída (2026-08-24).** Frontend em Vue 3 + Vite + Pinia + PrimeVue (SPA),
+> backend admin em h3 (`server/**` + function `api/index.ts`). Backend Supabase
+> **intacto**. Plano: `docs/05-migracao-vue-primevue.md`.
+
+- [x] Fase A — Scaffold Vue + Vite + PrimeVue (router, pinia, tema Aura, env VITE_*)
+- [x] Fase B — Cliente Supabase (`@supabase/supabase-js` + `@supabase/ssr`) + stores Pinia (auth, role, encontro, folha, remanejamento, transferência)
+- [x] Fase C — Router + guards (auth.global + role RBAC) + layouts (AppLayout/BlankLayout)
+- [x] Fase D — Backend admin: mover as 3 rotas Nitro (`server/api/**`) para Vercel Functions (`api/**`) validando JWT
+- [x] Fase E — Portar as 13 páginas de Nuxt UI → PrimeVue
+- [x] Fase F — Portar testes: remover env `nuxt`, `mockNuxtImport`/`mountSuspended` → `@vue/test-utils` puro + `vi.mock`
+- [x] Fase G — CI (`vue-tsc`) + Deploy Vercel (SPA + Functions)
+- [x] Limpeza: remover `nuxt.config.ts`, `app/` (Nuxt), `server/` (Nitro) e dependências Nuxt/Nuxt UI após conclusão

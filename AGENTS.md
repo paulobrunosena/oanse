@@ -4,49 +4,59 @@ Guia de contexto e convenções para qualquer agente (opencode, Cursor, etc.) tr
 
 ## O que é este projeto
 
-Sistema web do ministério infantil Oanse (igreja local). Nuxt 4 + Tailwind + Nuxt UI no frontend; Supabase (Postgres, Auth, RLS, Realtime) no backend. Ambientes: Docker/Supabase CLI (dev) e Vercel/Supabase Cloud (produção).
+Sistema web do ministério infantil Oanse (igreja local). **Vue 3 + Vite + Vue Router + Pinia + PrimeVue + Tailwind CSS (v4)** no frontend (SPA); Supabase (Postgres, Auth, RLS, Realtime) no backend. Ambientes: Docker/Supabase CLI (dev) e Vercel/Supabase Cloud (produção).
 
 **Leia antes de começar:** `docs/03-estrutura.md` (estrutura de pastas), `docs/04-roadmap.md` (roteiro em fases) e `.agents/checklist.md` (progresso — marque `[x]` nos itens concluídos; consulte-o antes de assumir o que já existe ou falta).
+
+> **STACK (2026-08-24):** o frontend foi migrado de **Nuxt 4 + Nuxt UI** para
+> **Vue 3 + Vite + Vue Router + Pinia + PrimeVue + Tailwind CSS (v4)** (SPA). O backend Supabase
+> (migrations, RLS, triggers, RPCs) permanece **intacto**. Rotas admin que usam
+> `service_role` vivem no servidor h3 (`server/**` + function `api/index.ts` no
+> Vercel). Histórico da migração: `docs/05-migracao-vue-primevue.md`.
 
 ## Comandos
 
 ```bash
 npx supabase start             # sobe o stack local do Supabase (Docker)
-npm run dev                    # dev server no HOST (localhost:3000)
+npm run dev                    # Vite dev server (localhost:5173), com proxy /api -> :8787
+npm run dev:api                # servidor local da API (h3, tsx watch) — necessário em dev
+npm run start:api              # sobe a API uma vez
 npm run lint                   # ESLint (rodar antes de todo commit)
-npm run typecheck              # nuxt typecheck (rodar antes de todo commit)
-npm run test                   # vitest (unit + componentes + composables)
+npm run typecheck              # vue-tsc (rodar antes de todo commit)
+npm run test                   # vitest (unit + stores + componentes + composables)
 npm run test:watch             # vitest em modo watch
 npx supabase db reset          # recria banco local (migrations + seed)
-npx supabase gen types typescript --local > app/types/database.types.ts  # após mudança de schema
+npx supabase gen types typescript --local > src/types/database.types.ts  # após mudança de schema
 ```
 
-> **Dev env (importante):** o Nuxt roda no WSL2/host com `npm run dev`, NÃO em container.
-> O Docker fica reservado ao stack do Supabase (`npx supabase start`). Rodar o Nuxt em
-> container força o browser a alcançar o Supabase via `host.docker.internal`, que só
-> resolve dentro do Docker e depende de entradas obsoletas no `/etc/hosts` — causa
-> `ERR_CONNECTION_TIMED_OUT` no login. As credenciais locais (`127.0.0.1`) vivem no
-> `.env` e funcionam para browser e server-side (localhost forwarding do WSL2).
+> **Dev env (importante):** o frontend roda no WSL2/host com `npm run dev` (Vite)
+> e a API com `npm run dev:api` (h3 em `localhost:8787`), NÃO em container. O Docker
+> fica reservado ao stack do Supabase (`npx supabase start`). Rodar em container força
+> o browser a alcançar o Supabase via `host.docker.internal`, que só resolve dentro do
+> Docker — causa `ERR_CONNECTION_TIMED_OUT` no login. As credenciais locais
+> (`127.0.0.1`) vivem no `.env` (`VITE_*`) e funcionam para browser e server-side.
 
-> **Testes:** vitest + @vue/test-utils + happy-dom, ambiente `nuxt` via `@nuxt/test-utils`
-> (`vitest.config.ts`). Arquivos `*.spec.ts` ao lado do código. O `.env.test` (gitignored)
-> é uma cópia do `.env` local; sem ele os testes rodam mesmo assim (mockam o Supabase).
+> **Testes:** vitest + @vue/test-utils + happy-dom. Arquivos `*.spec.ts` ao lado do
+> código. O `.env.test` (gitignored) é uma cópia do `.env` local; sem ele os testes
+> rodam mesmo assim (mockam o Supabase via `vi.mock('@/lib/supabase')`).
 
 ## Arquitetura e regras invioláveis
 
-1. **RLS-first.** O frontend usa SOMENTE a chave `anon`. Toda autorização vive nas políticas RLS (`supabase/migrations/0002_rls.sql`). Nunca confie apenas em `middleware/role.ts` — ele é UX, não segurança.
-2. **`service_role` apenas no servidor.** A chave `SUPABASE_SERVICE_ROLE_KEY` só pode ser usada em `server/utils/supabaseAdmin.ts` e rotas `server/api/**`. Nunca importe nada que a exponha em `app/`.
+1. **RLS-first.** O frontend usa SOMENTE a chave `anon`. Toda autorização vive nas políticas RLS (`supabase/migrations/0002_rls.sql`). Nunca confie apenas em `src/router/guards.ts` — ele é UX, não segurança.
+2. **`service_role` apenas no servidor.** A chave `VITE_SUPABASE_SERVICE_ROLE_KEY` só pode ser usada em `server/lib/supabaseAdmin.ts` e rotas `server/**` / `api/**`. Nunca importe nada que a exponha em `src/`.
 3. **Schema por migrations.** Fonte de verdade: `supabase/migrations/*.sql`. Os arquivos em `docs/` são a documentação viva — ao alterar o schema, atualize a migration E o doc correspondente, depois rode `npx supabase db reset` e gere os types novamente.
-4. **Lógica de negócio no banco quando for pontuação/auditoria.** Cálculos de total da folha, pontos de jogos, zeramento por falta e geração de pendências são feitos por triggers (`docs/01-schema.sql`). Não duplique essas regras no cliente além de um preview de leitura (`app/utils/pontos.ts`).
+4. **Lógica de negócio no banco quando for pontuação/auditoria.** Cálculos de total da folha, pontos de jogos, zeramento por falta e geração de pendências são feitos por triggers (`docs/01-schema.sql`). Não duplique essas regras no cliente além de um preview de leitura (`src/utils/pontos.ts`).
 5. **Realtime é intencional.** Apenas `premios_pendentes` e `presencas` estão no publication. Não adicione tabelas ao Realtime sem justificativa.
 6. **Perfis RBAC:** `diretor_geral`, `secretaria`, `diretor_clube`, `lider` (enum `user_role` em `profiles`). Escopo de clube vem de `profiles.clube_id`; escopo de turma do líder vem de `turmas.lider_id` + `remanejamentos_temporarios`.
 7. **Testes automatizados em todo código novo/alteração.** Toda funcionalidade, correção ou ajuste DEVE vir acompanhado de testes `*.spec.ts` (ver convenções abaixo) e passar em `npm run test` antes de concluir a tarefa.
 
 ## Convenções de código
 
-- TypeScript estrito; use os tipos gerados em `app/types/database.types.ts` para queries Supabase.
-- Componentes: `app/components/` agrupados por domínio (`folha/`, `jogos/`, `premiacoes/`, `ranking/`).
-- Estado/lógica de dados: composables em `app/composables/` (`useX.ts`), um por domínio.
+- TypeScript estrito; use os tipos gerados em `src/types/database.types.ts` para queries Supabase.
+- Estilo: **Tailwind CSS v4** (plugin `@tailwindcss/vite`). As cores `surface`/`primary` são utilitárias Tailwind mapeadas para o tema PrimeVue em `src/assets/main.css` (`@theme` + variáveis `--p-*`) — não adicione cores hardcoded no template. Componentes complexos de UI usam PrimeVue.
+- Componentes: `src/components/` agrupados por domínio (`folha/`, `jogos/`, `premiacoes/`, `ranking/`).
+- Estado/lógica de dados: stores em `src/stores/` (`useXStore`) e composables em `src/composables/` (`useX.ts`).
+- Telas: `src/views/` espelhando as rotas (`admin/`, `clube/`).
 - Commits em português, conventional commits: `feat:`, `fix:`, `chore:`, `docs:`, `refactor:`.
 - Nunca comitar segredos: `.env` está no `.gitignore` e deve continuar. Chaves locais do Supabase demo não vão para produção.
 - Não criar arquivos de documentação além dos existentes em `docs/` sem pedido explícito.
@@ -54,10 +64,11 @@ npx supabase gen types typescript --local > app/types/database.types.ts  # após
 ## Convenções de teste (vitest)
 
 - **Teste ao lado do código**: `foo.ts` → `foo.spec.ts` na mesma pasta. Imports explícitos de `vitest` (`import { describe, expect, it, vi } from 'vitest'`).
-- **Lógica pura**: teste direto, sem ambiente Nuxt (pragma `// @vitest-environment node` no topo do arquivo).
-- **Composables**: mock de auto-imports via `mockNuxtImport` (ex.: `useSupabaseClient`, `$fetch`, `useFetch`, `useAuth`) + `tests/helpers/supabase.ts` (builder de cadeia com `singleData`). Use `useState`/`ref` reais do ambiente; não acesse estado não exposto pelo composable.
-- **Componentes**: `mountSuspended` de `@nuxt/test-utils/runtime` com stubs dos componentes Nuxt UI (`global: { stubs: { UBadge: ..., UButton: ... } }`).
-- **Rotas `server/api`**: NÃO testáveis em unidade (alias `#supabase/server` é do Nitro); extraia a lógica pura para `server/utils/*` e teste a função. Testes de integração das rotas ficam planejados (exigem stack Supabase local).
+- **Lógica pura**: teste direto, sem ambiente Vue (pragma `// @vitest-environment node` no topo do arquivo).
+- **Stores**: `setActivePinia(createPinia())` no `beforeEach` + mock de `@/lib/supabase` via `vi.hoisted`/getter; `tests/helpers/supabase.ts` (builder de cadeia com `singleData`).
+- **Composables**: mock de `@/lib/supabase` (getter reatribuível por teste) + `global.fetch` para as rotas `apiFetch`; teste a fachada (`useX()`).
+- **Componentes**: `mount` de `@vue/test-utils` com stubs dos componentes PrimeVue (`global: { stubs: { Select: ..., Button: ... } }`).
+- **Rotas `server/api`**: NÃO testáveis em unidade (h3 + Supabase real); extraia a lógica pura para `server/utils/*` e teste a função. Testes de integração das rotas ficam planejados (exigem stack Supabase local).
 - **Mock de reatividade do Vue**: arrays de `ref([])` são proxies — compare com `toContainEqual`/`toEqual`, não `toContain`.
 
 ## Checklist de fim de tarefa

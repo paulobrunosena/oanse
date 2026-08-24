@@ -10,7 +10,7 @@ export function sabadoCorrente(d = new Date()): string {
   const dia = d.getDay()
   const diasAtras = (dia + 7 - 6) % 7
   const sabado = new Date(d)
-  sabado.setDate(sabado.getDate() - diasAtras)
+  sabado.setDate(d.getDate() - diasAtras)
   const ano = sabado.getFullYear()
   const mes = String(sabado.getMonth() + 1).padStart(2, '0')
   const diaDoMes = String(sabado.getDate()).padStart(2, '0')

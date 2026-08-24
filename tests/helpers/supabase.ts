@@ -55,7 +55,10 @@ export function clienteSupabase(
 
   return {
     from,
-    auth: { signOut: vi.fn(() => Promise.resolve()) },
+    auth: {
+      signOut: vi.fn(() => Promise.resolve()),
+      getSession: vi.fn(() => Promise.resolve({ data: { session: null }, error: null })),
+    },
     builderDe: obter,
   }
 }
