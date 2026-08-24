@@ -57,20 +57,20 @@ describe('useTransferencias', () => {
 
   describe('transferir', () => {
     it('chama a API e resolve quando não há erro', async () => {
-      global.fetch = vi.fn(() => Promise.resolve(new Response(JSON.stringify({ ok: true }), { status: 200 }))) as unknown as typeof fetch
+      globalThis.fetch = vi.fn(() => Promise.resolve(new Response(JSON.stringify({ ok: true }), { status: 200 }))) as unknown as typeof fetch
       const transferencias = useTransferencias()
       await expect(transferencias.transferir('o1', 't2', 'Conflito')).resolves.toBeUndefined()
-      expect(global.fetch).toHaveBeenCalledWith('/api/transferencias', expect.objectContaining({ method: 'POST' }))
+      expect(globalThis.fetch).toHaveBeenCalledWith('/api/transferencias', expect.objectContaining({ method: 'POST' }))
     })
 
     it('lança a mensagem de statusMessage quando a API retorna erro', async () => {
-      global.fetch = vi.fn(() => Promise.resolve(new Response(JSON.stringify({ statusMessage: 'Transferência não permitida' }), { status: 400 }))) as unknown as typeof fetch
+      globalThis.fetch = vi.fn(() => Promise.resolve(new Response(JSON.stringify({ statusMessage: 'Transferência não permitida' }), { status: 400 }))) as unknown as typeof fetch
       const transferencias = useTransferencias()
       await expect(transferencias.transferir('o1', 't2', 'Conflito')).rejects.toThrow('Transferência não permitida')
     })
 
     it('lança mensagem genérica quando não há statusMessage', async () => {
-      global.fetch = vi.fn(() => Promise.resolve(new Response(JSON.stringify({}), { status: 500 }))) as unknown as typeof fetch
+      globalThis.fetch = vi.fn(() => Promise.resolve(new Response(JSON.stringify({}), { status: 500 }))) as unknown as typeof fetch
       const transferencias = useTransferencias()
       await expect(transferencias.transferir('o1', 't2', 'Conflito')).rejects.toThrow('Erro ao transferir')
     })

@@ -22,7 +22,7 @@ describe('store de encontro', () => {
     mocks.supabase = clienteSupabase({ encontros: () => builder(ENCONTROS) })
     fetchResposta = null
     fetchFalha = false
-    global.fetch = vi.fn(async () => {
+    globalThis.fetch = vi.fn(async () => {
       if (fetchFalha) throw new Error('rede fora do ar')
       return new Response(JSON.stringify(fetchResposta), { status: 200, headers: { 'Content-Type': 'application/json' } })
     }) as unknown as typeof fetch
