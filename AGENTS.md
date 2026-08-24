@@ -97,6 +97,13 @@ npx supabase gen types typescript --local > src/types/database.types.ts  # após
 5. Item correspondente marcado em `.agents/checklist.md`.
 6. Commit com mensagem conventional, em português.
 
+> **Commit obrigatório ao concluir (regra do usuário):** sempre que terminar de
+> criar uma funcionalidade ou corrigir um bug/ajustar uma funcionalidade, **faça o
+> commit imediatamente** (mensagem conventional em português), antes de passar para
+> a próxima tarefa. Separe em commits distintos por mudança lógica (`feat:`, `fix:`,
+> `docs:`, etc.). Não deixe trabalho pronto sem commit. Os comandos git devem rodar
+> no mesmo shell interativo do WSL usado para o npm (ver seção "Comandos").
+
 ## Registrar mudanças importantes (obrigatório)
 
 Sempre que concluir algo relevante — regra de negócio nova/alterada, mudança de
