@@ -1,9 +1,4 @@
-# Nuxt
-.nuxt
-.output
-.data
 dist
-.nitro
 .cache
 
 # Node

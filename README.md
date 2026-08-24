@@ -4,9 +4,10 @@ Sistema web para gestão do ministério infantil Oanse de igreja local: matrícu
 
 ## Stack
 
-- **Frontend:** Nuxt 4 (Vue 3) + Tailwind CSS 4 + Nuxt UI — TypeScript
+- **Frontend:** Vue 3 + Vite + Vue Router + Pinia + PrimeVue + Tailwind CSS 4 — TypeScript
 - **Backend/DB:** Supabase (PostgreSQL, Auth, Row Level Security, Realtime)
-- **Infra:** Docker (dev) · Vercel + Supabase Cloud (produção)
+- **API (server-side):** h3 (Vercel)
+- **Infra:** Docker/Supabase CLI (dev) · Vercel + Supabase Cloud (produção)
 
 ## Perfis de acesso (RBAC)
 
@@ -35,17 +36,18 @@ npx supabase status -o env   # cole os valores no .env (veja .env.example)
 npm run dev
 ```
 
-- App: http://localhost:3000
+- App: http://localhost:5173
+- API local (h3): http://localhost:8787
 - Supabase Studio: http://localhost:54323
 
 ## Principais comandos
 
 ```bash
-npm run dev            # dev server
-npm run build          # build de produção
+npm run dev            # dev server (Vite)
+npm run dev:api        # API local (h3, tsx watch)
 npm run lint           # ESLint
 npx supabase db reset  # recria o banco local (migrations + seed)
-npx supabase gen types typescript --local > app/types/database.types.ts
+npx supabase gen types typescript --local > src/types/database.types.ts
 ```
 
 ## Documentação
