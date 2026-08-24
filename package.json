@@ -20,6 +20,7 @@
     "pinia": "^3.0.1",
     "primeicons": "^7.0.0",
     "primevue": "^4.3.3",
+    "tailwindcss-primeui": "^0.6.1",
     "vue": "^3.5.13",
     "vue-router": "^4.5.0"
   },
@@ -33,6 +34,7 @@
     "eslint": "^9.18.0",
     "eslint-plugin-vue": "^9.32.0",
     "happy-dom": "^15.11.7",
+    "sass": "^1.103.1",
     "tailwindcss": "^4.3.3",
     "tsx": "^4.19.2",
     "typescript": "^5.7.3",
@@ -46,5 +48,23 @@
     "esbuild@0.25.12": true,
     "esbuild@0.21.5": true,
     "esbuild@0.28.2": true
-  }
+  },
+  "version": "1.0.0",
+  "description": "Sistema web para gestão do ministério infantil Oanse de igreja local: matrícula de crianças por faixa etária (Ursinhos, Faíscas, Flamas, Tochas), folha semanal com pontuação, ranking do sábado, módulo de jogos, controle de premiações/estoque da secretaria e acompanhamento de visitantes.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs",
+    "test": "tests"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/paulobrunosena/oanse.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/paulobrunosena/oanse/issues"
+  },
+  "homepage": "https://github.com/paulobrunosena/oanse#readme"
 }

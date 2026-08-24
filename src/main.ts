@@ -3,8 +3,8 @@ import { createPinia } from 'pinia'
 import PrimeVue from 'primevue/config'
 import Aura from '@primevue/themes/aura'
 import ToastService from 'primevue/toastservice'
-import 'primeicons/primeicons.css'
-import '@/assets/main.css'
+import '@/assets/tailwind.css'
+import '@/assets/styles.scss'
 import App from './App.vue'
 import router from './router'
 import { setupGuards } from './router/guards'
@@ -20,7 +20,7 @@ app.use(router)
 app.use(PrimeVue, {
   theme: {
     preset: Aura,
-    options: { darkModeSelector: false },
+    options: { darkModeSelector: '.app-dark' },
   },
 })
 app.use(ToastService)

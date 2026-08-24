@@ -10,6 +10,13 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
+  css: {
+    preprocessorOptions: {
+      scss: {
+        api: 'modern-compiler',
+      },
+    },
+  },
   server: {
     proxy: {
       // Backend local (server/index.ts, h3) — ver server/README.md

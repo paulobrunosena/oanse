@@ -1,0 +1,4 @@
+/* Estilos globais — shell do layout Sakai (sidebar/topbar/menu) + Tailwind.
+   Importado em main.ts. O layout usa SCSS próprio derivado do tema PrimeVue. */
+@use 'primeicons/primeicons.css';
+@use '@/assets/layout/layout.scss';

@@ -50,9 +50,12 @@ oanse/
 │       └── clube-tochas.png      # nomeados pelo slug (logoClube em src/utils/data.ts)
 │
 ├── src/
-│   ├── main.ts                   # createApp + pinia + router + PrimeVue(Aura) + ToastService
+│   ├── main.ts                   # createApp + pinia + router + PrimeVue(Aura) + ToastService + CSS (tailwind + layout)
 │   ├── App.vue                   # <router-view /> + <Toast />
-│   ├── assets/main.css           # Tailwind v4 (@theme com cores primary/surface -> tema PrimeVue) + reset
+│   ├── assets/
+│   │   ├── tailwind.css          # Tailwind v4 + plugin tailwindcss-primeui (tokens PrimeVue) + dark variant
+│   │   ├── styles.scss           # primeicons + SCSS do shell do layout
+│   │   └── layout/               # SCSS do app shell Sakai (core, menu, topbar, sidebar, variáveis)
 │   │
 │   ├── lib/
 │   │   ├── supabase.ts           # client anon (browser) — SÓ anon key
@@ -79,9 +82,15 @@ oanse/
 │   │   ├── index.ts              # createRouter + rotas (meta.roles por rota)
 │   │   └── guards.ts             # setupGuards: auth (sessão) + role (RBAC de rota)
 │   │
-│   ├── layouts/
-│   │   ├── BlankLayout.vue       # tela de login
-│   │   └── AppLayout.vue         # app shell + sidebar por perfil
+│   ├── layouts/                  # app shell baseado no template Sakai (PrimeVue)
+│   │   ├── BlankLayout.vue       # tela de login (sem shell)
+│   │   ├── AppLayout.vue         # shell: wrapper + <router-view /> + <Toast />
+│   │   ├── AppSidebar.vue        # sidebar + lógica de overlay/mobile/outisde-click
+│   │   ├── AppTopbar.vue         # topbar: toggle de menu + dark mode + logo + usuário/logout
+│   │   ├── AppMenu.vue           # menu lateral por perfil (RBAC via useRole)
+│   │   ├── AppMenuItem.vue       # item de menu recursivo (modelo do Sakai)
+│   │   ├── AppFooter.vue         # rodapé
+│   │   └── composables/layout.ts # estado do layout (menu mode, dark, sidebar)
 │   │
 │   ├── views/                    # espelha as rotas
 │   │   ├── LoginView.vue

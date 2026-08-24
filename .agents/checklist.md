@@ -109,3 +109,4 @@
 - [x] Fase F — Portar testes: remover env `nuxt`, `mockNuxtImport`/`mountSuspended` → `@vue/test-utils` puro + `vi.mock`
 - [x] Fase G — CI (`vue-tsc`) + Deploy Vercel (SPA + Functions)
 - [x] Limpeza: remover `nuxt.config.ts`, `app/` (Nuxt), `server/` (Nitro) e dependências Nuxt/Nuxt UI após conclusão
+- [x] **App shell Sakai (PrimeVue)** — integrado ao layout autenticado: `src/layouts/` (AppLayout/AppSidebar/AppTopbar/AppMenu/AppMenuItem/AppFooter + `composables/layout.ts`), SCSS em `src/assets/layout/`, dark mode (`.app-dark`), menu por perfil (RBAC), Tailwind via `tailwindcss-primeui` + `sass`

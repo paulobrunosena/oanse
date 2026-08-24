@@ -38,6 +38,14 @@ export default tseslint.config(
     },
   },
   {
+    files: ['**/*.{ts,mts,cts,vue}'],
+    rules: {
+      // TypeScript/vue-tsc já checa tipos/globais; no-undef duplica e gera falsos
+      // positivos para globals do DOM (Event, HTMLElement, document, window...).
+      'no-undef': 'off',
+    },
+  },
+  {
     rules: {
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
