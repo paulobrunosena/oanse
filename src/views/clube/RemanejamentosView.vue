@@ -194,7 +194,7 @@ onMounted(carregarTudo)
               />
             </div>
             <Button
-              icon="pi pi-user-check"
+              icon="pi pi-check-circle"
               label="Aplicar"
               :loading="processandoId === t.id"
               @click="aplicar(t)"

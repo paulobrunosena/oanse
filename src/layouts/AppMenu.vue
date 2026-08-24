@@ -30,9 +30,9 @@ const model = computed<MenuItem[]>(() => {
       label: 'Clube',
       items: [
         { label: 'Turmas', icon: 'pi pi-fw pi-users', to: '/clube/turmas' },
-        { label: 'Líderes', icon: 'pi pi-fw pi-user-check', to: '/clube/lideres' },
+        { label: 'Líderes', icon: 'pi pi-fw pi-id-card', to: '/clube/lideres' },
         { label: 'Oansistas', icon: 'pi pi-fw pi-heart', to: '/clube/oansistas' },
-        { label: 'Remanejamentos', icon: 'pi pi-fw pi-shuffle', to: '/clube/remanejamentos' },
+        { label: 'Remanejamentos', icon: 'pi pi-fw pi-arrows-h', to: '/clube/remanejamentos' },
         { label: 'Transferências', icon: 'pi pi-fw pi-arrow-right-arrow-left', to: '/clube/transferencias' },
       ],
     })
