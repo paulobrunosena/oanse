@@ -85,7 +85,7 @@ oanse/
 │   ├── layouts/                  # app shell baseado no template Sakai (PrimeVue)
 │   │   ├── BlankLayout.vue       # tela de login (sem shell)
 │   │   ├── AppLayout.vue         # shell: wrapper + <router-view /> + <Toast />
-│   │   ├── AppSidebar.vue        # sidebar + lógica de overlay/mobile/outisde-click
+│   │   ├── AppSidebar.vue        # sidebar + lógica de overlay/mobile/outisde-click + perfil no rodapé (mobile)
 │   │   ├── AppTopbar.vue         # topbar: toggle de menu + dark mode + logo + usuário/logout
 │   │   ├── AppMenu.vue           # menu lateral por perfil (RBAC via useRole)
 │   │   ├── AppMenuItem.vue       # item de menu recursivo (modelo do Sakai)

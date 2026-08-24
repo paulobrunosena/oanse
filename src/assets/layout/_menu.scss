@@ -157,3 +157,12 @@
     overflow: hidden;
     transition: max-height 1s ease-in-out;
 }
+
+.layout-sidebar-profile {
+    position: sticky;
+    bottom: 0;
+    margin-top: 1rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--surface-border);
+    background-color: var(--surface-overlay);
+}

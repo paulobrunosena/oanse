@@ -11,6 +11,7 @@ export default tseslint.config(
       'public/**',
       '.cache/**',
       'coverage/**',
+      'supabase/.temp/**',
       'src/types/database.types.ts',
       'server/types/database.types.ts',
     ],
