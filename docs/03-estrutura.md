@@ -129,7 +129,7 @@ oanse/
 │   │       ├── FolhaSemanalRow.vue  # linha da folha com preview de total (uniformes, bíblia, EBD, manual, conduta, leitura bíblica, visitantes, seções sem/com ajuda, atividade extra, cor do time)
 │   │       └── FolhaSemanalRow.spec.ts
 │   │   └── jogos/
-│   │       ├── EventoJogosCard.vue   # evento do sábado: clubes, cores, oansistas por cor, finalizar/reabrir
+│   │       ├── EventoJogosCard.vue   # evento do sábado: clubes, cores, oansistas por cor (nome na cor do clube, removível/trocável), finalizar/reabrir/excluir
 │   │       ├── EventoJogosCard.spec.ts
 │   │       ├── RodadasJogosCard.vue  # registro de rodada (jogo + colocações das cores) + lista de rodadas
 │   │       ├── RodadasJogosCard.spec.ts
