@@ -123,13 +123,16 @@ function normalizarRodada(linha: LinhaRodada): RodadaJogo {
 }
 
 /**
- * Módulo de jogos do sábado (Líder de Jogos): o evento é cadastrado uma única
- * vez (clubes, cores e oansistas de cada cor); depois o líder só registra o
- * resultado de cada rodada (nome do jogo + colocação das cores). Ao final,
- * finaliza o evento e consulta o ranking das cores. A propagação de pontos/
- * cor_time para as folhas é feita pelo trigger fn_propagar_pontos_jogos no banco.
+ * Módulo de jogos do sábado (Líder de Jogos). Um sábado pode ter vários
+ * eventos (ex.: um dos Flamas+Tochas e outro dos Ursinhos+Faíscas); cada clube
+ * participa de no máximo UM evento por sábado. Cada evento é cadastrado uma
+ * única vez (clubes, cores e oansistas de cada cor); depois o líder só registra
+ * o resultado de cada rodada. Ao final, finaliza o evento e consulta o ranking
+ * das cores. A propagação de pontos/cor_time para as folhas é feita pelo
+ * trigger fn_propagar_pontos_jogos no banco.
  */
 export function useJogos() {
+  const eventos = ref<EventoJogo[]>([])
   const evento = ref<EventoJogo | null>(null)
   const rodadas = ref<RodadaJogo[]>([])
   const catalogo = ref<{ id: string, clube_id: string, nome: string }[]>([])
@@ -138,7 +141,7 @@ export function useJogos() {
   const encontroIdAtual = ref<string | null>(null)
   const eventoIdAtual = ref<string | null>(null)
 
-  async function carregarEvento(encontroId: string) {
+  async function carregarEventos(encontroId: string) {
     carregando.value = true
     encontroIdAtual.value = encontroId
     const { data, error } = await supabase
@@ -152,12 +155,29 @@ export function useJogos() {
         )
       `)
       .eq('encontro_id', encontroId)
-      .maybeSingle()
+      .order('created_at')
     if (error) throw error
-    evento.value = data ? normalizarEvento(data as unknown as LinhaEvento) : null
-    eventoIdAtual.value = evento.value?.id ?? null
+    eventos.value = ((data ?? []) as unknown as LinhaEvento[]).map(normalizarEvento)
+
+    const atual = evento.value?.id
+    const proximo = eventos.value.find(e => e.id === atual) ?? eventos.value[0] ?? null
+    evento.value = proximo
+    eventoIdAtual.value = proximo?.id ?? null
     carregando.value = false
-    if (evento.value) await carregarRodadas(evento.value.id)
+
+    if (evento.value) {
+      await carregarRodadas(evento.value.id)
+      await carregarRanking(evento.value.id)
+    }
+  }
+
+  async function selecionarEvento(eventoId: string) {
+    evento.value = eventos.value.find(e => e.id === eventoId) ?? null
+    eventoIdAtual.value = eventoId
+    if (evento.value) {
+      await carregarRodadas(eventoId)
+      await carregarRanking(eventoId)
+    }
   }
 
   async function carregarRodadas(eventoId: string) {
@@ -170,7 +190,7 @@ export function useJogos() {
       .eq('evento_id', eventoId)
       .order('created_at')
     if (error) throw error
-    rodadas.value = (data ?? []).map(normalizarRodada as (r: unknown) => RodadaJogo)
+    rodadas.value = ((data ?? []) as unknown as LinhaRodada[]).map(normalizarRodada)
   }
 
   async function criarEvento(nome: string, clubeIds: string[], cores: string[], criadoPor: string): Promise<string> {
@@ -184,7 +204,8 @@ export function useJogos() {
     })
     if (error) throw error
     if (!data?.id) throw new Error('Erro ao criar o evento de jogos')
-    await carregarEvento(encontroIdAtual.value)
+    await carregarEventos(encontroIdAtual.value)
+    await selecionarEvento(data.id)
     return data.id
   }
 
@@ -196,6 +217,7 @@ export function useJogos() {
   async function excluirEvento(eventoId: string) {
     const { error } = await supabase.from('eventos_jogos').delete().eq('id', eventoId)
     if (error) throw error
+    if (evento.value?.id === eventoId) evento.value = null
   }
 
   async function adicionarCor(eventoId: string, cor: string) {
@@ -252,14 +274,19 @@ export function useJogos() {
     if (error) throw error
   }
 
+  function aplicarStatus(eventoId: string, status: 'em_andamento' | 'finalizado') {
+    eventos.value = eventos.value.map(e => e.id === eventoId ? { ...e, status } : e)
+    if (evento.value?.id === eventoId) evento.value = { ...evento.value, status }
+  }
+
   async function finalizarEvento(eventoId: string) {
     await atualizarEvento(eventoId, { status: 'finalizado' })
-    evento.value = evento.value ? { ...evento.value, status: 'finalizado' } : evento.value
+    aplicarStatus(eventoId, 'finalizado')
   }
 
   async function reabrirEvento(eventoId: string) {
     await atualizarEvento(eventoId, { status: 'em_andamento' })
-    evento.value = evento.value ? { ...evento.value, status: 'em_andamento' } : evento.value
+    aplicarStatus(eventoId, 'em_andamento')
   }
 
   async function carregarCatalogo() {
@@ -303,8 +330,8 @@ export function useJogos() {
   }
 
   return {
-    evento, rodadas, catalogo, ranking, carregando,
-    carregarEvento, carregarRodadas, carregarCatalogo, carregarRanking,
+    eventos, evento, rodadas, catalogo, ranking, carregando,
+    carregarEventos, selecionarEvento, carregarRodadas, carregarCatalogo, carregarRanking,
     criarEvento, atualizarEvento, excluirEvento,
     adicionarCor, removerCor,
     adicionarOansista, removerOansista,

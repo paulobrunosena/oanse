@@ -3,7 +3,7 @@ import { builder, clienteSupabase } from '../../tests/helpers/supabase'
 import { useJogos } from './useJogos'
 import { CORES_PREDEFINIDAS, pontosDoResultado, type PontosJogosConfig } from '@/utils/jogos'
 
-const EVENTO = {
+const EVENTO_FLAMAS = {
   id: 'ev1',
   encontro_id: 'e1',
   nome: 'Jogos dos Flamas e Tochas',
@@ -16,6 +16,22 @@ const EVENTO = {
   evento_jogos_cores: [
     { id: 'cor1', cor: 'verde', evento_jogos_cores_oansistas: [{ oansista_id: 'o1', oansistas: { nome: 'Ana' } }] },
     { id: 'cor2', cor: 'azul', evento_jogos_cores_oansistas: [] },
+  ],
+}
+
+const EVENTO_URSINHOS = {
+  id: 'ev2',
+  encontro_id: 'e1',
+  nome: 'Jogos dos Ursinhos e Faíscas',
+  status: 'em_andamento',
+  criado_por: 'p1',
+  evento_jogos_clubes: [
+    { clube_id: 'c3', clubes: { nome: 'Ursinhos', slug: 'ursinhos', cor: '#EF4444' } },
+    { clube_id: 'c4', clubes: { nome: 'Faíscas', slug: 'faiscas', cor: '#EAB308' } },
+  ],
+  evento_jogos_cores: [
+    { id: 'cor3', cor: 'vermelho', evento_jogos_cores_oansistas: [] },
+    { id: 'cor4', cor: 'amarelo', evento_jogos_cores_oansistas: [] },
   ],
 }
 
@@ -36,49 +52,77 @@ vi.mock('@/lib/supabase', () => ({
 describe('useJogos', () => {
   beforeEach(() => {
     mocks.supabase = clienteSupabase({
-      eventos_jogos: () => builder(EVENTO),
+      eventos_jogos: () => builder([EVENTO_FLAMAS, EVENTO_URSINHOS]),
       jogos: () => builder(RODADAS),
       jogos_catalogo: () => builder([]),
     })
   })
 
-  describe('carregarEvento', () => {
-    it('normaliza evento, clubes, cores, oansistas e rodadas', async () => {
+  describe('carregarEventos', () => {
+    it('carrega todos os eventos do encontro e seleciona o primeiro', async () => {
       const jogos = useJogos()
-      await jogos.carregarEvento('e1')
+      await jogos.carregarEventos('e1')
 
+      expect(jogos.eventos.value).toHaveLength(2)
       expect(jogos.evento.value?.id).toBe('ev1')
       expect(jogos.evento.value?.nome).toBe('Jogos dos Flamas e Tochas')
-      expect(jogos.evento.value?.status).toBe('em_andamento')
       expect(jogos.evento.value?.clubes).toEqual([
         { clube_id: 'c1', nome: 'Flamas', slug: 'flamas', cor: '#22C55E' },
         { clube_id: 'c2', nome: 'Tochas', slug: 'tochas', cor: '#3B82F6' },
       ])
-      expect(jogos.evento.value?.cores).toHaveLength(2)
       expect(jogos.evento.value?.cores[0]?.oansistas).toEqual([{ oansista_id: 'o1', nome: 'Ana' }])
 
       expect(jogos.rodadas.value).toHaveLength(1)
       expect(jogos.rodadas.value[0]?.nome).toBe('maratona')
-      expect(jogos.rodadas.value[0]?.resultados[0]).toEqual({ id: 'r1', cor_id: 'cor1', colocacao: 1, desclassificado: false, pontos: 100 })
       expect(jogos.carregando.value).toBe(false)
     })
 
-    it('deixa evento nulo quando não existe evento no encontro', async () => {
+    it('deixa eventos vazios e evento nulo quando não há eventos no encontro', async () => {
       mocks.supabase = clienteSupabase({
-        eventos_jogos: () => builder(null),
+        eventos_jogos: () => builder([]),
         jogos: () => builder([]),
       })
       const jogos = useJogos()
-      await jogos.carregarEvento('e1')
+      await jogos.carregarEventos('e1')
+      expect(jogos.eventos.value).toEqual([])
       expect(jogos.evento.value).toBeNull()
+    })
+
+    it('mantém a seleção atual quando ela ainda existe na lista', async () => {
+      const jogos = useJogos()
+      await jogos.carregarEventos('e1')
+      await jogos.selecionarEvento('ev2')
+      expect(jogos.evento.value?.id).toBe('ev2')
+
+      await jogos.carregarEventos('e1')
+      expect(jogos.evento.value?.id).toBe('ev2')
+    })
+  })
+
+  describe('selecionarEvento', () => {
+    it('troca o evento selecionado e carrega rodadas e ranking', async () => {
+      const jogos = useJogos()
+      await jogos.carregarEventos('e1')
+
+      await jogos.selecionarEvento('ev2')
+      expect(jogos.evento.value?.id).toBe('ev2')
+      expect(jogos.evento.value?.nome).toBe('Jogos dos Ursinhos e Faíscas')
+      expect(mocks.supabase.builderDe('jogos').eq).toHaveBeenCalledWith('evento_id', 'ev2')
     })
   })
 
   describe('criarEvento', () => {
-    it('chama a RPC fn_criar_evento_jogos e recarrega o evento', async () => {
-      mocks.supabase.rpc.mockResolvedValue({ data: { id: 'ev9' }, error: null })
+    it('chama a RPC fn_criar_evento_jogos e seleciona o novo evento', async () => {
+      mocks.supabase.rpc.mockImplementation((nome: string) => {
+        if (nome === 'fn_ranking_cores_do_evento') return Promise.resolve({ data: [], error: null })
+        return Promise.resolve({ data: { id: 'ev9' }, error: null })
+      })
+      mocks.supabase.builderDe('eventos_jogos').data = [...mocks.supabase.builderDe('eventos_jogos').data, {
+        id: 'ev9', encontro_id: 'e1', nome: 'Jogos dos Flamas e Tochas', status: 'em_andamento',
+        criado_por: 'p1', evento_jogos_clubes: [], evento_jogos_cores: [],
+      }]
       const jogos = useJogos()
-      await jogos.carregarEvento('e1')
+      await jogos.carregarEventos('e1')
       const id = await jogos.criarEvento('Jogos dos Flamas e Tochas', ['c1', 'c2'], ['verde', 'azul'], 'p1')
 
       expect(id).toBe('ev9')
@@ -89,14 +133,17 @@ describe('useJogos', () => {
         p_cores: ['verde', 'azul'],
         p_criado_por: 'p1',
       })
-      expect(mocks.supabase.builderDe('eventos_jogos').eq).toHaveBeenCalledWith('encontro_id', 'e1')
+      expect(jogos.evento.value?.id).toBe('ev9')
     })
 
-    it('lança erro quando a RPC falha', async () => {
-      mocks.supabase.rpc.mockResolvedValue({ data: null, error: { message: 'Já existe um evento de jogos para este encontro' } })
+    it('lança erro quando a RPC falha (clube já jogou no sábado)', async () => {
+      mocks.supabase.rpc.mockImplementation((nome: string) => {
+        if (nome === 'fn_ranking_cores_do_evento') return Promise.resolve({ data: [], error: null })
+        return Promise.resolve({ data: null, error: { message: 'Um dos clubes selecionados já participou de um evento de jogos neste sábado' } })
+      })
       const jogos = useJogos()
-      await jogos.carregarEvento('e1')
-      await expect(jogos.criarEvento('X', ['c1'], ['verde', 'azul'], 'p1')).rejects.toThrow('Já existe um evento de jogos para este encontro')
+      await jogos.carregarEventos('e1')
+      await expect(jogos.criarEvento('X', ['c1'], ['verde', 'azul'], 'p1')).rejects.toThrow('Um dos clubes selecionados já participou de um evento de jogos neste sábado')
     })
   })
 
@@ -124,13 +171,14 @@ describe('useJogos', () => {
   })
 
   describe('finalizar/reabrir', () => {
-    it('atualiza o status do evento para finalizado e depois em_andamento', async () => {
+    it('atualiza o status do evento na lista e no selecionado', async () => {
       const jogos = useJogos()
-      await jogos.carregarEvento('e1')
+      await jogos.carregarEventos('e1')
 
       await jogos.finalizarEvento('ev1')
       expect(mocks.supabase.builderDe('eventos_jogos').update).toHaveBeenCalledWith({ status: 'finalizado' })
       expect(jogos.evento.value?.status).toBe('finalizado')
+      expect(jogos.eventos.value.find(e => e.id === 'ev1')?.status).toBe('finalizado')
 
       await jogos.reabrirEvento('ev1')
       expect(jogos.evento.value?.status).toBe('em_andamento')
@@ -185,7 +233,7 @@ describe('useJogos', () => {
 
     it('retorna os pontos da colocação da cor na rodada (espelho do trigger)', async () => {
       const jogos = useJogos()
-      await jogos.carregarEvento('e1')
+      await jogos.carregarEventos('e1')
       const rodada = jogos.rodadas.value[0]!
       expect(jogos.pontosDaCorNaRodada(rodada, 'cor1', CONFIG)).toBe(100)
       expect(jogos.pontosDaCorNaRodada(rodada, 'cor2', CONFIG)).toBe(0)

@@ -5,6 +5,8 @@ import Card from 'primevue/card'
 import Dialog from 'primevue/dialog'
 import InputText from 'primevue/inputtext'
 import MultiSelect from 'primevue/multiselect'
+import Select from 'primevue/select'
+import Tag from 'primevue/tag'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/composables/useAuth'
 import { useEncontro } from '@/composables/useEncontro'
@@ -23,7 +25,7 @@ const toast = useToast()
 const { user } = useAuth()
 const { encontro, encontros, carregando: carregandoEncontro, carregar: carregarEncontro, selecionar } = useEncontro()
 const {
-  evento, rodadas, catalogo, ranking, carregando, carregarEvento, carregarCatalogo, carregarRanking,
+  eventos, evento, rodadas, catalogo, ranking, carregando, carregarEventos, carregarCatalogo, selecionarEvento,
   criarEvento, excluirEvento, adicionarCor, removerCor,
   adicionarOansista, removerOansista,
   adicionarRodada, excluirRodada, lancarResultado, removerResultado,
@@ -48,7 +50,28 @@ const dataFormatada = computed(() => {
   })
 })
 
-const opcoesClubes = computed(() => clubes.value.map(c => ({ label: c.nome, value: c.id })))
+/** Clubes que já participaram de algum evento no sábado — não podem repetir. */
+const clubesUsados = computed(() => {
+  const usados = new Set<string>()
+  for (const ev of eventos.value) {
+    for (const c of ev.clubes) usados.add(c.clube_id)
+  }
+  return usados
+})
+
+const clubesDisponiveis = computed(() =>
+  clubes.value.filter(c => !clubesUsados.value.has(c.id)),
+)
+
+const opcoesClubes = computed(() => clubesDisponiveis.value.map(c => ({ label: c.nome, value: c.id })))
+
+const opcoesEventos = computed(() =>
+  eventos.value.map(ev => ({
+    label: ev.status === 'finalizado' ? `${ev.nome} (finalizado)` : ev.nome,
+    value: ev.id,
+  })),
+)
+
 const opcoesNomes = computed(() =>
   jogosDisponiveis(catalogo.value, evento.value?.clubes.map(c => c.clube_id) ?? []),
 )
@@ -79,8 +102,7 @@ async function carregarOansistas() {
 
 async function carregarJogosDoEncontro() {
   if (!encontro.value) return
-  await carregarEvento(encontro.value.id)
-  if (evento.value) await carregarRanking(evento.value.id)
+  await carregarEventos(encontro.value.id)
 }
 
 async function carregarTudo() {
@@ -108,7 +130,6 @@ async function confirmarCriarEvento() {
   salvando.value = true
   try {
     await criarEvento(novoNome.value.trim(), novosClubes.value, novasCores.value, user.value.sub)
-    await carregarRanking(evento.value?.id ?? '')
     toast.add({ title: 'Evento de jogos criado', description: novoNome.value.trim(), color: 'success' })
     dialogAberto.value = false
   }
@@ -215,10 +236,9 @@ onMounted(carregarTudo)
           @selecionar="aoSelecionarEncontro"
         />
         <Button
-          v-if="evento && evento.status === 'em_andamento'"
+          v-if="encontro && clubesDisponiveis.length > 0"
           icon="pi pi-plus"
           label="Novo evento"
-          :disabled="!encontro"
           @click="abrirNovoEvento"
         />
       </div>
@@ -247,7 +267,7 @@ onMounted(carregarTudo)
       class="flex flex-col gap-4"
     >
       <Card
-        v-if="!evento"
+        v-if="eventos.length === 0"
         class="text-center py-6"
       >
         <template #content>
@@ -270,52 +290,85 @@ onMounted(carregarTudo)
       </Card>
 
       <template v-else>
-        <div class="relative">
-          <EventoJogosCard
-            :evento="evento"
-            :oansistas="oansistas"
-            @adicionar-cor="cor => acaoComAtualizacao(() => adicionarCor(evento!.id, cor), 'Cor adicionada')"
-            @remover-cor="corId => acaoComAtualizacao(() => removerCor(corId), 'Cor removida')"
-            @adicionar-oansista="(corId, oansistaId) => acaoComAtualizacao(() => adicionarOansista(corId, oansistaId))"
-            @remover-oansista="(corId, oansistaId) => acaoComAtualizacao(() => removerOansista(corId, oansistaId))"
-            @finalizar="finalizar"
-            @reabrir="reabrir"
+        <div class="flex items-center gap-3">
+          <Select
+            :model-value="evento?.id"
+            :options="opcoesEventos"
+            option-label="label"
+            option-value="value"
+            class="w-full sm:w-80"
+            @update:model-value="selecionarEvento($event as string)"
           />
-          <Button
-            v-if="evento.status === 'em_andamento'"
-            icon="pi pi-trash"
-            severity="danger"
-            text
-            size="small"
-            title="Excluir evento"
-            class="absolute -top-2 -right-2"
-            @click="excluirEventoConfirmado"
+          <Tag
+            v-if="evento"
+            :severity="evento.status === 'finalizado' ? 'success' : 'info'"
+            :value="evento.status === 'finalizado' ? 'Finalizado' : 'Em andamento'"
           />
         </div>
-
-        <RodadasJogosCard
-          v-if="evento.status === 'em_andamento'"
-          :rodadas="rodadas"
-          :cores="evento.cores"
-          :opcoes-nomes="opcoesNomes"
-          :pontos-config="pontosConfig"
-          :nome-inicial="ultimoNome"
-          @registrar="registrarRodada"
-          @excluir-rodada="excluirRodadaConfirmada"
-          @lancar-resultado="(jogoId, corId, resultado) => acaoComAtualizacao(() => lancarResultado(jogoId, corId, resultado))"
-          @remover-resultado="(jogoId, corId) => acaoComAtualizacao(() => removerResultado(jogoId, corId))"
-        />
-
-        <RankingCoresCard
-          :ranking="ranking"
-        />
-
-        <p
-          v-if="evento.status === 'finalizado'"
-          class="text-xs text-surface-500 text-center"
-        >
-          Evento finalizado. Para ajustar algo, clique em "Reabrir".
+        <p class="text-xs text-surface-500">
+          Cada clube participa de apenas um evento por sábado. Ao criar um novo
+          evento, só aparecem os clubes que ainda não jogaram.
         </p>
+
+        <div v-if="evento">
+          <div class="relative mb-4">
+            <EventoJogosCard
+              :evento="evento"
+              :oansistas="oansistas"
+              @adicionar-cor="cor => acaoComAtualizacao(() => adicionarCor(evento!.id, cor), 'Cor adicionada')"
+              @remover-cor="corId => acaoComAtualizacao(() => removerCor(corId), 'Cor removida')"
+              @adicionar-oansista="(corId, oansistaId) => acaoComAtualizacao(() => adicionarOansista(corId, oansistaId))"
+              @remover-oansista="(corId, oansistaId) => acaoComAtualizacao(() => removerOansista(corId, oansistaId))"
+              @finalizar="finalizar"
+              @reabrir="reabrir"
+            />
+            <Button
+              v-if="evento.status === 'em_andamento'"
+              icon="pi pi-trash"
+              severity="danger"
+              text
+              size="small"
+              title="Excluir evento"
+              class="absolute -top-2 -right-2"
+              @click="excluirEventoConfirmado"
+            />
+          </div>
+
+          <RodadasJogosCard
+            v-if="evento.status === 'em_andamento'"
+            :rodadas="rodadas"
+            :cores="evento.cores"
+            :opcoes-nomes="opcoesNomes"
+            :pontos-config="pontosConfig"
+            :nome-inicial="ultimoNome"
+            @registrar="registrarRodada"
+            @excluir-rodada="excluirRodadaConfirmada"
+            @lancar-resultado="(jogoId, corId, resultado) => acaoComAtualizacao(() => lancarResultado(jogoId, corId, resultado))"
+            @remover-resultado="(jogoId, corId) => acaoComAtualizacao(() => removerResultado(jogoId, corId))"
+          />
+
+          <RankingCoresCard
+            :ranking="ranking"
+          />
+
+          <p
+            v-if="evento.status === 'finalizado'"
+            class="text-xs text-surface-500 text-center"
+          >
+            Evento finalizado. Para ajustar algo, clique em "Reabrir".
+          </p>
+        </div>
+
+        <Card
+          v-if="clubesDisponiveis.length === 0"
+          class="text-center py-4"
+        >
+          <template #content>
+            <p class="text-surface-500 text-sm">
+              Todos os clubes já participaram de um evento de jogos neste sábado.
+            </p>
+          </template>
+        </Card>
       </template>
     </div>
 
@@ -334,9 +387,12 @@ onMounted(carregarTudo)
             option-label="label"
             option-value="value"
             filter
-            placeholder="Selecione 1 a 4 clubes"
+            placeholder="Selecione os clubes"
             class="w-full"
           />
+          <p class="text-xs text-surface-500">
+            Só aparecem os clubes que ainda não jogaram neste sábado.
+          </p>
         </div>
         <div class="flex flex-col gap-1">
           <label class="text-sm font-medium">Cores participantes</label>

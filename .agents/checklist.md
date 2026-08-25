@@ -85,7 +85,7 @@
 ## Fase 4 — Módulo de Jogos e Ranking Geral
 
 - [x] Novo perfil `lider_jogos` (`user_role`) + usuário de teste no seed/login (`lider.jogos@oanse.local`)
-- [x] Evento de jogos por sábado: cadastro ÚNICO (clubes participantes + cores pré-definidas verde/vermelho/amarelo/azul + oansistas de cada cor) via RPC `fn_criar_evento_jogos` (migration `0010`/`0011`)
+- [x] Eventos de jogos por sábado (VÁRIOS por sábado — ex.: Flamas+Tochas e Ursinhos+Faíscas): cadastro único por evento (clubes participantes + cores pré-definidas verde/vermelho/amarelo/azul + oansistas de cada cor) via RPC `fn_criar_evento_jogos` (migration `0010`/`0011`/`0012`); clubes que já jogaram no sábado não aparecem para novo evento (RPC + trigger `trg_clube_evento_duplicado`)
 - [x] Catálogo de jogos por clube (`jogos_catalogo`): CRUD (Ursinhos/Faíscas/Flamas/Tochas); combo do registro de rodada une os jogos dos clubes participantes sem duplicar nomes iguais (`jogosDisponiveis`)
 - [x] Registro de rodada: nome do jogo (pré-preenchido com o último lançado) + colocação das cores; `jogo_resultados` por cor
 - [x] Finalização do evento + ranking das cores do sábado (`fn_ranking_cores_do_evento`) para o anúncio final

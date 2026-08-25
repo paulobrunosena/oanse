@@ -109,7 +109,7 @@ oanse/
 │   │   │   ├── OansistasView.vue         # Diretor de Clube (CRUD + import CSV)
 │   │   │   ├── RemanejamentosView.vue    # Diretor de Clube
 │   │   │   ├── TransferenciasView.vue    # Diretor de Clube
-│   │   │   ├── JogosView.vue             # Líder de Jogos/Diretor Geral (evento, rodadas, finalizar, ranking das cores)
+│   │   │   ├── JogosView.vue             # Líder de Jogos/Diretor Geral (vários eventos por sábado, rodadas, finalizar, ranking das cores)
 │   │   │   ├── JogosCatalogoView.vue     # Líder de Jogos/Diretor Geral/Diretor de Clube (CRUD de nomes de jogos por clube)
 │   │   │   └── RankingView.vue           # Diretor de Clube/Diretor Geral (ranking do sábado)
 │   │   └── admin/

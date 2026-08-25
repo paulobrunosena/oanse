@@ -52,7 +52,7 @@
 
 **Meta:** o Líder de Jogos cadastra o evento uma vez por sábado e registra só os resultados das rodadas; pontos alimentam o ranking do sábado automaticamente.
 
-1. **Eventos de jogos por sábado (Líder de Jogos)** — novo perfil `lider_jogos` (login de teste no seed/login). O líder cadastra o evento UMA vez (clubes participantes, cores — verde/vermelho/amarelo/azul — e oansistas de cada cor) e depois só registra o resultado de cada rodada (nome do jogo vindo do catálogo, já pré-preenchido com o último lançado). Criação atômica na RPC `fn_criar_evento_jogos`.
+1. **Eventos de jogos por sábado (Líder de Jogos)** — novo perfil `lider_jogos` (login de teste no seed/login). O líder cadastra cada evento (pode haver vários no mesmo sábado — ex.: Flamas+Tochas e Ursinhos+Faíscas): clubes participantes (só os que ainda não jogaram no sábado), cores — verde/vermelho/amarelo/azul — e oansistas de cada cor; depois só registra o resultado de cada rodada (nome do jogo vindo do catálogo, já pré-preenchido com o último lançado). Criação atômica na RPC `fn_criar_evento_jogos` + trigger anti-duplicação de clube no sábado.
 2. **Catálogo de jogos por clube** (`jogos_catalogo`): CRUD de nomes por clube (Ursinhos/Faíscas/Flamas/Tochas); combo mostra os jogos dos clubes participantes sem duplicar nomes iguais.
 3. **Finalização + ranking das cores**: ao finalizar o evento, o placar das cores do sábado é calculado por `fn_ranking_cores_do_evento` para o anúncio no final da programação.
 4. Trigger `fn_propagar_pontos_jogos` recalcula `pontos_jogos` e `cor_time` das folhas → ranking individual do sábado atualiza.
