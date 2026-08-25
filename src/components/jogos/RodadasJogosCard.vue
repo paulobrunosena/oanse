@@ -156,16 +156,16 @@ function aoDefinirPlacar(rodada: RodadaJogo, corId: string, valor: string) {
         :key="rodada.id"
         class="rounded-md border p-3"
       >
-        <div class="flex items-center justify-between gap-2">
+        <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <span class="truncate font-medium text-sm">{{ rodada.nome }}</span>
-          <div class="flex items-center gap-1 shrink-0">
+          <div class="flex flex-wrap items-center gap-1.5 shrink-0">
             <div
               v-for="cor in cores"
               :key="cor.id"
               class="flex items-center gap-1"
             >
               <span
-                class="inline-block h-3 w-3 rounded-full border border-surface-300"
+                class="inline-block h-3 w-3 shrink-0 rounded-full border border-surface-300"
                 :style="{ backgroundColor: corHex(cor.cor) }"
               />
               <Select
@@ -174,7 +174,7 @@ function aoDefinirPlacar(rodada: RodadaJogo, corId: string, valor: string) {
                 option-label="label"
                 option-value="value"
                 size="small"
-                class="w-32"
+                class="w-28 sm:w-32"
                 @update:model-value="valor => aoDefinirPlacar(rodada, cor.id, valor as string)"
               />
             </div>

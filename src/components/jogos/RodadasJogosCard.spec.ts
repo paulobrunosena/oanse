@@ -77,4 +77,26 @@ describe('RodadasJogosCard', () => {
     await excluir!.trigger('click')
     expect(wrapper.emitted('excluir-rodada')).toEqual([['j1']])
   })
+
+  it('empilha a linha da rodada no mobile e permite quebrar linha com 4 cores', () => {
+    const CORES_4: EventoCor[] = [
+      { id: 'c1', cor: 'verde', oansistas: [] },
+      { id: 'c2', cor: 'vermelho', oansistas: [] },
+      { id: 'c3', cor: 'amarelo', oansistas: [] },
+      { id: 'c4', cor: 'azul', oansistas: [] },
+    ]
+    const wrapper = mount(RodadasJogosCard, {
+      props: { rodadas: [{ id: 'j1', nome: 'maratona', criado_por: 'p1', resultados: [] }], cores: CORES_4, opcoesNomes: ['maratona'], nomeInicial: '' },
+      global: { stubs },
+    })
+
+    const linha = wrapper.findAll('div').find(el => el.classes().includes('sm:flex-row'))
+    expect(linha).toBeDefined()
+    expect(linha!.classes()).toContain('flex-col')
+    expect(linha!.classes()).toContain('sm:items-center')
+
+    const controles = wrapper.findAll('div').find(el => el.classes().includes('flex-wrap'))
+    expect(controles).toBeDefined()
+    expect(controles!.findAll('input.sel')).toHaveLength(4)
+  })
 })

@@ -110,6 +110,18 @@ describe('JogosView', () => {
     expect(wrapper.text()).toContain('Criar evento de jogos')
   })
 
+  it('empilha o cabeçalho no mobile (título em uma linha; seletor e botão na linha de baixo)', async () => {
+    perfilLiderJogos()
+    const wrapper = montar()
+    await flushPromises()
+
+    const header = wrapper.findAll('div').find(el => el.classes().includes('sm:flex-row'))
+    expect(header).toBeDefined()
+    expect(header!.classes()).toContain('flex-col')
+    expect(header!.classes()).toContain('sm:justify-between')
+    expect(header!.find('h1')?.text()).toBe('Jogos do sábado')
+  })
+
   it('lista os eventos do sábado no seletor e não oferece clubes já usados', async () => {
     mocks.supabase.builderDe('eventos_jogos').data = EVENTOS
     perfilLiderJogos()
