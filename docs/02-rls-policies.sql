@@ -484,12 +484,14 @@ create policy "progresso_write" on progresso_manual
 
 -- ----------------------------------------------------------------------------
 -- MÓDULO DE JOGOS — gestão pelo Líder de Jogos (RN 3 revisado)
---  O líder de jogos cadastra o evento do sábado UMA vez (clubes, cores e
---  oansistas de cada cor) e registra o resultado de cada rodada. A criação do
---  evento é atômica na RPC fn_criar_evento_jogos (SECURITY DEFINER), que valida
---  que o autor é lider_jogos ou diretor_geral. As demais operações (cores,
---  oansistas, rodadas e resultados) passam por RLS com escrita restrita a esses
---  dois perfis; leitura aberta a qualquer autenticado.
+--  O líder de jogos cadastra o(s) evento(s) do sábado (clubes, cores e
+--  oansistas de cada cor) e registra o resultado de cada rodada. Pode haver
+--  vários eventos por sábado (um por grupo de clubes); um clube não repete em
+--  outro evento do mesmo sábado (validado por trigger). A criação do evento é
+--  atômica na RPC fn_criar_evento_jogos (SECURITY DEFINER), que valida que o
+--  autor é lider_jogos ou diretor_geral. As demais operações (cores, oansistas,
+--  rodadas e resultados) passam por RLS com escrita restrita a esses dois
+--  perfis; leitura aberta a qualquer autenticado.
 --  Catálogo: escrita p/ diretor_geral, lider_jogos e diretor_clube (próprio clube).
 -- ----------------------------------------------------------------------------
 create policy "jogos_catalogo_select" on jogos_catalogo

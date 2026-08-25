@@ -243,14 +243,14 @@ export type Database = {
           {
             foreignKeyName: "eventos_jogos_encontro_id_fkey"
             columns: ["encontro_id"]
-            isOneToOne: true
+            isOneToOne: false
             referencedRelation: "encontros"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "eventos_jogos_encontro_id_fkey"
             columns: ["encontro_id"]
-            isOneToOne: true
+            isOneToOne: false
             referencedRelation: "v_ranking_semanal"
             referencedColumns: ["encontro_id"]
           },

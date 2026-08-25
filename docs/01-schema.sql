@@ -292,9 +292,13 @@ create table progresso_manual (
 -- jogo vindo do catálogo + colocação das cores). Ao final, finaliza o evento e
 -- consulta o ranking das cores para o anúncio.
 --
+-- Um sábado pode ter VÁRIOS eventos (ex.: um dos Flamas+Tochas e outro dos
+-- Ursinhos+Faíscas). Cada clube participa de no máximo UM evento por sábado —
+-- validado por trigger em evento_jogos_clubes e pela RPC fn_criar_evento_jogos.
+--
 --  - jogos_catalogo: nomes de jogos por clube (CRUD) — combo do registro de
 --    rodada (nomes repetidos entre clubes não aparecem duplicados)
---  - eventos_jogos: sessão de jogos do sábado (uma por encontro), status
+--  - eventos_jogos: sessão de jogos do sábado (várias por encontro), status
 --    em_andamento/finalizado
 --  - evento_jogos_clubes: clubes participantes (definem o combo de jogos)
 --  - evento_jogos_cores: cores participantes (verde/vermelho/amarelo/azul)
@@ -322,8 +326,7 @@ create table eventos_jogos (
               check (status in ('em_andamento', 'finalizado')),
   criado_por  uuid references profiles(id),
   created_at  timestamptz not null default now(),
-  updated_at  timestamptz not null default now(),
-  unique (encontro_id)
+  updated_at  timestamptz not null default now()
 );
 
 create table evento_jogos_clubes (
@@ -545,7 +548,8 @@ create trigger trg_resultado_pontos
   for each row execute function fn_definir_pontos_resultado();
 
 -- Criação atômica do evento de jogos + clubes + cores (RN 3 revisado):
--- autoriza apenas lider_jogos ou diretor_geral. Uma sessão por encontro.
+-- autoriza apenas lider_jogos ou diretor_geral. Permite vários eventos por
+-- sábado, mas nenhum clube pode repetir em outro evento do mesmo sábado.
 create or replace function fn_criar_evento_jogos(
   p_encontro_id uuid,
   p_nome        text,
@@ -574,8 +578,13 @@ begin
     raise exception 'Apenas o líder de jogos pode criar o evento de jogos';
   end if;
 
-  if exists (select 1 from eventos_jogos where encontro_id = p_encontro_id) then
-    raise exception 'Já existe um evento de jogos para este encontro';
+  if exists (
+    select 1 from evento_jogos_clubes ec
+    join eventos_jogos ev on ev.id = ec.evento_id
+    where ev.encontro_id = p_encontro_id
+      and ec.clube_id = any (p_clubes)
+  ) then
+    raise exception 'Um dos clubes selecionados já participou de um evento de jogos neste sábado';
   end if;
 
   foreach v_cor in array p_cores loop
@@ -601,6 +610,33 @@ end;
 $$;
 
 grant execute on function fn_criar_evento_jogos(uuid, text, uuid[], text[], uuid) to authenticated;
+
+-- Garante (em qualquer via de entrada) que um clube não entra em dois eventos
+-- do mesmo sábado.
+create or replace function fn_validar_clube_sem_evento_no_sabado()
+returns trigger language plpgsql security definer set search_path = public as $$
+declare
+  v_encontro uuid;
+begin
+  select ev.encontro_id into v_encontro from eventos_jogos ev where ev.id = new.evento_id;
+
+  if exists (
+    select 1 from evento_jogos_clubes ec
+    join eventos_jogos ev on ev.id = ec.evento_id
+    where ev.encontro_id = v_encontro
+      and ec.clube_id = new.clube_id
+      and ec.id <> new.id
+  ) then
+    raise exception 'O clube já participou de um evento de jogos neste sábado';
+  end if;
+
+  return new;
+end;
+$$;
+
+create trigger trg_clube_evento_duplicado
+  before insert or update of clube_id on evento_jogos_clubes
+  for each row execute function fn_validar_clube_sem_evento_no_sabado();
 
 -- Ranking das cores do evento (anúncio do placar no final da programação)
 create or replace function fn_ranking_cores_do_evento(p_evento_id uuid)
