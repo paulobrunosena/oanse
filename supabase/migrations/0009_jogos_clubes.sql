@@ -155,6 +155,10 @@ create policy "jogos_clubes_write" on jogos_clubes
   using (fn_role() = 'diretor_geral' or fn_diretor_do_jogo(jogo_id))
   with check (fn_role() = 'diretor_geral' or fn_diretor_do_jogo(jogo_id));
 
+-- Tabela criada após a migration 0003 (grants em "all tables"): precisa de
+-- grants explícitos, senão o cliente autenticado recebe "permission denied".
+grant select, insert, update, delete on jogos_clubes to authenticated, service_role;
+
 -- oansistas: diretor de clube lê também crianças dos clubes que jogam junto com
 -- o dele em algum jogo (necessário para montar times inter-clubes).
 drop policy if exists "oansistas_select" on oansistas;
