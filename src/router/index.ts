@@ -27,6 +27,7 @@ const rotas: RouteRecordRaw[] = [
       { path: 'clube/remanejamentos', name: 'clube-remanejamentos', component: () => import('@/views/clube/RemanejamentosView.vue'), meta: { roles: ['diretor_clube'] } },
       { path: 'clube/transferencias', name: 'clube-transferencias', component: () => import('@/views/clube/TransferenciasView.vue'), meta: { roles: ['diretor_clube'] } },
       { path: 'clube/jogos', name: 'clube-jogos', component: () => import('@/views/clube/JogosView.vue'), meta: { roles: ['diretor_geral', 'diretor_clube'] } },
+      { path: 'clube/ranking', name: 'clube-ranking', component: () => import('@/views/clube/RankingView.vue'), meta: { roles: ['diretor_geral', 'diretor_clube'] } },
     ],
   },
   { path: '/:pathMatch(.*)*', redirect: '/' },
