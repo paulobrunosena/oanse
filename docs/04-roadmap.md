@@ -52,12 +52,16 @@
 
 **Meta:** pontos dos jogos alimentando o ranking do sábado automaticamente.
 
-1. Diretor de Clube cria jogos por encontro com categoria `faiscas` ou `flamas_tochas`.
-2. Montagem de times (2-4) e integrantes (busca de oansistas do clube/clubes).
+1. Diretor de Clube cria jogos por encontro marcados com **1 a 4 clubes** participantes (qualquer combinação; ex.: Flamas + Tochas jogam juntos). Criação atômica na RPC `fn_criar_jogo`.
+2. Montagem de times (2-4) e integrantes (busca de oansistas do clube/clubes participantes).
 3. Lançamento do placar: colocação 1-4 ou desclassificado; pontos vêm de `jogos_pontos_config` (100/70/50/40/0).
-4. Trigger `fn_propagar_pontos_jogos` recalcula `pontos_jogos` das folhas → ranking atualiza.
+4. Trigger `fn_propagar_pontos_jogos` recalcula `pontos_jogos` e `cor_time` das folhas → ranking atualiza.
 5. Ranking consolidado do sábado (por clube e geral) + relatórios de frequência/premiação acumulada.
 6. Polimento: PWA/instalação no celular do líder, modo offline da chamada (fila de sincronização) se houver tempo.
+
+> **Estado (2026-08-24):** itens 1-4 e o ranking consolidado (item 5, parte) estão
+> implementados. Pendentes: relatórios de frequência/premiação acumulada, PWA,
+> offline e deploy de produção.
 
 **Entrega:** MVP completo. Produção: Vercel (frontend, variáveis `NUXT_PUBLIC_SUPABASE_*`) + Supabase Cloud (mesmas migrations; revisar chaves e ativar MFA no painel).
 

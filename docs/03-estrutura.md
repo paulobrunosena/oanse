@@ -75,9 +75,11 @@ oanse/
 │   │   ├── useFolhaSemanal.ts    # itens de pontuação + folhas + salvar (+ spec.ts)
 │   │   ├── useRemanejamentos.ts  # substituição temporária de turma (+ spec.ts)
 │   │   ├── useTransferencias.ts  # transferência permanente (RPC 0006) (+ spec.ts)
+│   │   ├── useJogos.ts           # jogos do encontro: criação RPC, times, integrantes, placar (+ spec.ts)
+│   │   ├── useRanking.ts         # ranking do sábado via RPC fn_ranking_do_encontro + geral (+ spec.ts)
 │   │   └── useToast.ts           # fachada do Toast do PrimeVue (api tipo Nuxt UI)
 │   │   # (planejado) useTurma, useFolhaIndividual, useVisitantes,
-│   │   # useJogos, useRanking, usePendencias (realtime)
+│   │   # usePendencias (realtime)
 │   │
 │   ├── router/
 │   │   ├── index.ts              # createRouter + rotas (meta.roles por rota)
@@ -103,7 +105,9 @@ oanse/
 │   │   │   ├── LideresView.vue           # Diretor de Clube (catálogo da equipe)
 │   │   │   ├── OansistasView.vue         # Diretor de Clube (CRUD + import CSV)
 │   │   │   ├── RemanejamentosView.vue    # Diretor de Clube
-│   │   │   └── TransferenciasView.vue    # Diretor de Clube
+│   │   │   ├── TransferenciasView.vue    # Diretor de Clube
+│   │   │   ├── JogosView.vue             # Diretor de Clube/Diretor Geral (jogos do encontro)
+│   │   │   └── RankingView.vue           # Diretor de Clube/Diretor Geral (ranking do sábado)
 │   │   └── admin/
 │   │       ├── UsuariosView.vue          # Diretor Geral
 │   │       ├── ClubesView.vue            # Diretor Geral
@@ -120,9 +124,12 @@ oanse/
 │   │   └── folha/
 │   │       ├── FolhaSemanalRow.vue  # linha da folha com preview de total (uniformes, bíblia, EBD, manual, conduta, leitura bíblica, visitantes, seções sem/com ajuda, atividade extra, cor do time)
 │   │       └── FolhaSemanalRow.spec.ts
+│   │   └── jogos/
+│   │       ├── JogoCard.vue         # card de jogo: times, integrantes (busca), placar
+│   │       └── JogoCard.spec.ts
 │   │   # (planejado) ui/AppSidebar, PageHeader, DataTable
 │   │   # (planejado) folha/FolhaIndividualForm, VisitanteCard, VisitaTracker
-│   │   # (planejado) jogos/, premiacoes/, ranking/
+│   │   # (planejado) premiacoes/
 │   │
 │   ├── types/
 │   │   ├── database.types.ts     # gerado: npx supabase gen types typescript --local
@@ -131,6 +138,7 @@ oanse/
 │   │
 │   └── utils/
 │       ├── pontos.ts             # espelhos do cálculo p/ preview no form (+ pontos.spec.ts)
+│       ├── jogos.ts              # pontos do placar (100/70/50/40/0) + validação de times (+ jogos.spec.ts)
 │       ├── data.ts               # formatação de datas + logoClube(slug) (+ data.spec.ts)
 │       └── sabado.ts             # último sábado no fuso local (cópia p/ client, se preciso)
 │

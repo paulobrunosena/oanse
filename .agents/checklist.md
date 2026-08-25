@@ -68,7 +68,7 @@
 - [ ] Folha de Visitantes: cadastro + 3 visitas
 - [ ] Folha de Visitantes: lições da Prova de Ingresso
 - [ ] Ação "matricular": converte visitante em oansista
-- [ ] Ranking do sábado por clube (`v_ranking_semanal` / pódio)
+- [x] Ranking do sábado por clube (pódio via `fn_ranking_do_encontro` + `RankingView`)
 - [ ] E2E: fluxo completo de um sábado simulado
 
 ## Fase 3 — Painel da Secretaria
@@ -84,13 +84,13 @@
 
 ## Fase 4 — Módulo de Jogos e Ranking Geral
 
-- [ ] Criação de jogos por encontro (categoria faisca / flamas_tochas)
-- [ ] Validação: 2 a 4 times por jogo
-- [ ] Montagem de times + integrantes (busca de oansistas)
-- [ ] Lançamento do placar (colocação 1-4 ou desclassificado)
-- [ ] Teste: pontos 100/70/50/40/0 conforme `jogos_pontos_config`
-- [ ] Teste: trigger `fn_propagar_pontos_jogos` atualiza folhas e ranking
-- [ ] Ranking consolidado do sábado (por clube e geral)
+- [x] Criação de jogos por encontro marcados com **1 a 4 clubes** (RPC `fn_criar_jogo`; migration `0009_jogos_clubes.sql` remove a categoria fixa `faiscas`/`flamas_tochas`)
+- [x] Validação: 2 a 4 times por jogo
+- [x] Montagem de times + integrantes (busca de oansistas, inclusive inter-clubes via RLS)
+- [x] Lançamento do placar (colocação 1-4 ou desclassificado)
+- [x] Teste: pontos 100/70/50/40/0 conforme `jogos_pontos_config` (espelho `utils/jogos.ts` + validação via smoke test local)
+- [x] Teste: trigger `fn_propagar_pontos_jogos` atualiza folhas (pontos_jogos + cor_time) e ranking (validado via smoke test; testes de integração automatizados ficam planejados)
+- [x] Ranking consolidado do sábado (por clube e geral)
 - [ ] Relatório de frequência acumulada
 - [ ] Relatório de premiações acumuladas
 - [ ] PWA / instalação no celular do líder
