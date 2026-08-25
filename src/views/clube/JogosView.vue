@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import Button from 'primevue/button'
 import Card from 'primevue/card'
 import Dialog from 'primevue/dialog'
@@ -8,11 +8,13 @@ import MultiSelect from 'primevue/multiselect'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/composables/useAuth'
 import { useEncontro } from '@/composables/useEncontro'
-import { useJogos } from '@/composables/useJogos'
+import { useJogos, type OansistaOpcao } from '@/composables/useJogos'
 import { useToast } from '@/composables/useToast'
 import EncontroSeletor from '@/components/encontro/EncontroSeletor.vue'
-import JogoCard, { type OansistaOpcao } from '@/components/jogos/JogoCard.vue'
-import type { PontosJogosConfig } from '@/utils/jogos'
+import EventoJogosCard from '@/components/jogos/EventoJogosCard.vue'
+import RodadasJogosCard, { type RodadaRegistro } from '@/components/jogos/RodadasJogosCard.vue'
+import RankingCoresCard from '@/components/jogos/RankingCoresCard.vue'
+import { CORES_PREDEFINIDAS, gerarNomeEvento, jogosDisponiveis, type PontosJogosConfig } from '@/utils/jogos'
 import type { Database } from '@/types/database.types'
 
 type Clube = Database['public']['Tables']['clubes']['Row']
@@ -21,8 +23,11 @@ const toast = useToast()
 const { user } = useAuth()
 const { encontro, encontros, carregando: carregandoEncontro, carregar: carregarEncontro, selecionar } = useEncontro()
 const {
-  jogos, carregando, carregar, criarJogo, excluirJogo, criarTime,
-  adicionarIntegrante, removerIntegrante, excluirTime, lancarResultado, removerResultado,
+  evento, rodadas, catalogo, ranking, carregando, carregarEvento, carregarCatalogo, carregarRanking,
+  criarEvento, excluirEvento, adicionarCor, removerCor,
+  adicionarOansista, removerOansista,
+  adicionarRodada, excluirRodada, lancarResultado, removerResultado,
+  finalizarEvento, reabrirEvento,
 } = useJogos()
 
 const clubes = ref<Clube[]>([])
@@ -33,6 +38,7 @@ const carregandoInicial = ref(true)
 const dialogAberto = ref(false)
 const novoNome = ref('')
 const novosClubes = ref<string[]>([])
+const novasCores = ref<string[]>([])
 const salvando = ref(false)
 
 const dataFormatada = computed(() => {
@@ -43,6 +49,15 @@ const dataFormatada = computed(() => {
 })
 
 const opcoesClubes = computed(() => clubes.value.map(c => ({ label: c.nome, value: c.id })))
+const opcoesNomes = computed(() =>
+  jogosDisponiveis(catalogo.value, evento.value?.clubes.map(c => c.clube_id) ?? []),
+)
+const ultimoNome = computed(() => rodadas.value[rodadas.value.length - 1]?.nome ?? '')
+
+watch(novosClubes, (ids) => {
+  const nomes = clubes.value.filter(c => ids.includes(c.id)).map(c => c.nome)
+  novoNome.value = gerarNomeEvento(nomes)
+})
 
 async function carregarClubesEConfig() {
   const [rClubes, rConfig] = await Promise.all([
@@ -54,53 +69,52 @@ async function carregarClubesEConfig() {
 }
 
 async function carregarOansistas() {
-  const ids = [...new Set(jogos.value.flatMap(j => j.clubes.map(c => c.clube_id)))]
-  if (ids.length === 0) {
-    oansistas.value = []
-    return
-  }
   const { data } = await supabase
     .from('oansistas')
     .select('id, nome')
-    .in('clube_id', ids)
     .eq('status', 'ativo')
     .order('nome')
   oansistas.value = (data ?? []).map(o => ({ id: o.id, nome: o.nome }))
 }
 
+async function carregarJogosDoEncontro() {
+  if (!encontro.value) return
+  await carregarEvento(encontro.value.id)
+  if (evento.value) await carregarRanking(evento.value.id)
+}
+
 async function carregarTudo() {
   carregandoInicial.value = true
-  await carregarClubesEConfig()
+  await Promise.all([carregarClubesEConfig(), carregarCatalogo(), carregarOansistas()])
   await carregarEncontro()
-  if (encontro.value) await carregar(encontro.value.id)
-  await carregarOansistas()
+  await carregarJogosDoEncontro()
   carregandoInicial.value = false
 }
 
 async function aoSelecionarEncontro(id: string) {
   selecionar(id)
-  if (encontro.value) await carregar(encontro.value.id)
-  await carregarOansistas()
+  await carregarJogosDoEncontro()
 }
 
-function abrirNovoJogo() {
+function abrirNovoEvento() {
   novoNome.value = ''
   novosClubes.value = []
+  novasCores.value = []
   dialogAberto.value = true
 }
 
-async function confirmarCriarJogo() {
-  if (!novoNome.value.trim() || novosClubes.value.length === 0 || !user.value?.sub) return
+async function confirmarCriarEvento() {
+  if (!novoNome.value.trim() || novosClubes.value.length === 0 || novasCores.value.length < 2 || !user.value?.sub) return
   salvando.value = true
   try {
-    await criarJogo(novoNome.value.trim(), novosClubes.value, user.value.sub)
-    await carregarOansistas()
-    toast.add({ title: 'Jogo criado', description: novoNome.value.trim(), color: 'success' })
+    await criarEvento(novoNome.value.trim(), novosClubes.value, novasCores.value, user.value.sub)
+    await carregarRanking(evento.value?.id ?? '')
+    toast.add({ title: 'Evento de jogos criado', description: novoNome.value.trim(), color: 'success' })
     dialogAberto.value = false
   }
   catch (e) {
     toast.add({
-      title: 'Erro ao criar jogo',
+      title: 'Erro ao criar evento',
       description: (e as { message?: string })?.message ?? 'Tente novamente',
       color: 'error',
     })
@@ -110,18 +124,17 @@ async function confirmarCriarJogo() {
   }
 }
 
-async function excluirJogoConfirmado(jogoId: string) {
-  const jogo = jogos.value.find(j => j.id === jogoId)
-  if (!jogo) return
-  if (!window.confirm(`Excluir o jogo "${jogo.nome}"? Os times e pontos serão removidos.`)) return
+async function excluirEventoConfirmado() {
+  if (!evento.value) return
+  if (!window.confirm(`Excluir o evento "${evento.value.nome}"? Rodadas, pontos e cores serão removidos.`)) return
   try {
-    await excluirJogo(jogo.id)
-    await carregarOansistas()
-    toast.add({ title: 'Jogo excluído', color: 'info' })
+    await excluirEvento(evento.value.id)
+    toast.add({ title: 'Evento excluído', color: 'info' })
+    await carregarJogosDoEncontro()
   }
   catch (e) {
     toast.add({
-      title: 'Erro ao excluir jogo',
+      title: 'Erro ao excluir evento',
       description: (e as { message?: string })?.message ?? 'Tente novamente',
       color: 'error',
     })
@@ -131,8 +144,7 @@ async function excluirJogoConfirmado(jogoId: string) {
 async function acaoComAtualizacao(acao: () => Promise<unknown>, mensagemSucesso?: string) {
   try {
     await acao()
-    await carregar(encontro.value?.id ?? '')
-    await carregarOansistas()
+    await carregarJogosDoEncontro()
     if (mensagemSucesso) toast.add({ title: mensagemSucesso, color: 'success' })
   }
   catch (e) {
@@ -144,15 +156,50 @@ async function acaoComAtualizacao(acao: () => Promise<unknown>, mensagemSucesso?
   }
 }
 
+async function registrarRodada(registro: RodadaRegistro) {
+  if (!evento.value || !user.value?.sub) return
+  try {
+    const jogoId = await adicionarRodada(evento.value.id, registro.nome, user.value.sub)
+    for (const r of registro.resultados) {
+      await lancarResultado(jogoId, r.cor_id, { colocacao: r.colocacao, desclassificado: r.desclassificado })
+    }
+    await carregarJogosDoEncontro()
+    toast.add({ title: 'Rodada registrada', description: registro.nome, color: 'success' })
+  }
+  catch (e) {
+    toast.add({
+      title: 'Erro ao registrar rodada',
+      description: (e as { message?: string })?.message ?? 'Tente novamente',
+      color: 'error',
+    })
+  }
+}
+
+async function excluirRodadaConfirmada(jogoId: string) {
+  if (!window.confirm('Excluir esta rodada? Os pontos dela serão removidos.')) return
+  await acaoComAtualizacao(() => excluirRodada(jogoId), 'Rodada excluída')
+}
+
+async function finalizar() {
+  if (!evento.value) return
+  if (!window.confirm('Finalizar os jogos do sábado? O placar das cores será fixado para o anúncio.')) return
+  await acaoComAtualizacao(() => finalizarEvento(evento.value!.id), 'Jogos finalizados')
+}
+
+async function reabrir() {
+  if (!evento.value) return
+  await acaoComAtualizacao(() => reabrirEvento(evento.value!.id), 'Jogos reabertos')
+}
+
 onMounted(carregarTudo)
 </script>
 
 <template>
-  <div class="p-4 sm:p-6 max-w-5xl mx-auto w-full">
+  <div class="p-4 sm:p-6 max-w-4xl mx-auto w-full">
     <div class="flex items-center justify-between gap-3 mb-4">
       <div>
         <h1 class="text-2xl font-bold">
-          Jogos
+          Jogos do sábado
         </h1>
         <p
           v-if="dataFormatada"
@@ -168,10 +215,11 @@ onMounted(carregarTudo)
           @selecionar="aoSelecionarEncontro"
         />
         <Button
+          v-if="evento && evento.status === 'em_andamento'"
           icon="pi pi-plus"
-          label="Novo jogo"
+          label="Novo evento"
           :disabled="!encontro"
-          @click="abrirNovoJogo"
+          @click="abrirNovoEvento"
         />
       </div>
     </div>
@@ -195,56 +243,91 @@ onMounted(carregarTudo)
     </Card>
 
     <div
-      v-else-if="jogos.length === 0"
-      class="text-center py-10 text-surface-500"
-    >
-      <i class="pi pi-flag text-3xl mb-2 block text-surface-300" />
-      <p>Nenhum jogo criado neste sábado ainda.</p>
-      <p class="text-sm mt-1">
-        Crie um jogo marcando 1 a 4 clubes participantes (qualquer combinação).
-      </p>
-    </div>
-
-    <div
       v-else
       class="flex flex-col gap-4"
     >
-      <div
-        v-for="jogo in jogos"
-        :key="jogo.id"
+      <Card
+        v-if="!evento"
+        class="text-center py-6"
       >
-        <JogoCard
-          :jogo="jogo"
-          :oansistas="oansistas"
+        <template #content>
+          <div class="flex flex-col items-center gap-3">
+            <i class="pi pi-flag text-3xl text-surface-300" />
+            <p class="text-surface-500">
+              Nenhum evento de jogos criado neste sábado ainda.
+            </p>
+            <p class="text-sm text-surface-500">
+              Cadastre uma única vez: clubes que vão jogar, cores participantes e quem fica em cada cor.
+              Depois é só registrar o resultado de cada rodada.
+            </p>
+            <Button
+              icon="pi pi-plus"
+              label="Criar evento de jogos"
+              @click="abrirNovoEvento"
+            />
+          </div>
+        </template>
+      </Card>
+
+      <template v-else>
+        <div class="relative">
+          <EventoJogosCard
+            :evento="evento"
+            :oansistas="oansistas"
+            @adicionar-cor="cor => acaoComAtualizacao(() => adicionarCor(evento!.id, cor), 'Cor adicionada')"
+            @remover-cor="corId => acaoComAtualizacao(() => removerCor(corId), 'Cor removida')"
+            @adicionar-oansista="(corId, oansistaId) => acaoComAtualizacao(() => adicionarOansista(corId, oansistaId))"
+            @remover-oansista="(corId, oansistaId) => acaoComAtualizacao(() => removerOansista(corId, oansistaId))"
+            @finalizar="finalizar"
+            @reabrir="reabrir"
+          />
+          <Button
+            v-if="evento.status === 'em_andamento'"
+            icon="pi pi-trash"
+            severity="danger"
+            text
+            size="small"
+            title="Excluir evento"
+            class="absolute -top-2 -right-2"
+            @click="excluirEventoConfirmado"
+          />
+        </div>
+
+        <RodadasJogosCard
+          v-if="evento.status === 'em_andamento'"
+          :rodadas="rodadas"
+          :cores="evento.cores"
+          :opcoes-nomes="opcoesNomes"
           :pontos-config="pontosConfig"
-          @criar-time="(jogoId, nome, cor) => acaoComAtualizacao(() => criarTime(jogoId, nome, cor))"
-          @excluir-jogo="excluirJogoConfirmado"
-          @excluir-time="(jogoId, timeId) => acaoComAtualizacao(() => excluirTime(timeId), 'Time removido')"
-          @adicionar-integrante="(jogoId, timeId, oansistaId) => acaoComAtualizacao(() => adicionarIntegrante(timeId, oansistaId))"
-          @remover-integrante="(jogoId, timeId, oansistaId) => acaoComAtualizacao(() => removerIntegrante(timeId, oansistaId))"
-          @lancar-resultado="(jogoId, timeId, resultado) => acaoComAtualizacao(() => lancarResultado(jogoId, timeId, resultado))"
-          @remover-resultado="(jogoId, timeId) => acaoComAtualizacao(() => removerResultado(timeId))"
+          :nome-inicial="ultimoNome"
+          @registrar="registrarRodada"
+          @excluir-rodada="excluirRodadaConfirmada"
+          @lancar-resultado="(jogoId, corId, resultado) => acaoComAtualizacao(() => lancarResultado(jogoId, corId, resultado))"
+          @remover-resultado="(jogoId, corId) => acaoComAtualizacao(() => removerResultado(jogoId, corId))"
         />
-      </div>
+
+        <RankingCoresCard
+          :ranking="ranking"
+        />
+
+        <p
+          v-if="evento.status === 'finalizado'"
+          class="text-xs text-surface-500 text-center"
+        >
+          Evento finalizado. Para ajustar algo, clique em "Reabrir".
+        </p>
+      </template>
     </div>
 
     <Dialog
       v-model:visible="dialogAberto"
       modal
-      header="Novo jogo"
-      :style="{ width: '26rem' }"
+      header="Novo evento de jogos"
+      :style="{ width: '28rem' }"
     >
       <div class="flex flex-col gap-4 pt-2">
         <div class="flex flex-col gap-1">
-          <label class="text-sm font-medium">Nome do jogo</label>
-          <InputText
-            v-model="novoNome"
-            placeholder="Ex.: Corrida de obstáculos"
-            class="w-full"
-          />
-        </div>
-        <div class="flex flex-col gap-1">
-          <label class="text-sm font-medium">Clubes participantes</label>
+          <label class="text-sm font-medium">Clubes que vão jogar</label>
           <MultiSelect
             v-model="novosClubes"
             :options="opcoesClubes"
@@ -254,8 +337,30 @@ onMounted(carregarTudo)
             placeholder="Selecione 1 a 4 clubes"
             class="w-full"
           />
+        </div>
+        <div class="flex flex-col gap-1">
+          <label class="text-sm font-medium">Cores participantes</label>
+          <MultiSelect
+            v-model="novasCores"
+            :options="CORES_PREDEFINIDAS.map(c => ({ label: c, value: c }))"
+            option-label="label"
+            option-value="value"
+            placeholder="Verde, vermelho, amarelo ou azul"
+            class="w-full"
+          />
           <p class="text-xs text-surface-500">
-            Mínimo 1, máximo os 4 clubes. Ex.: Flamas + Tochas jogam juntos.
+            Mínimo 2 cores. As cores já vêm prontas — você só escolhe as que participam.
+          </p>
+        </div>
+        <div class="flex flex-col gap-1">
+          <label class="text-sm font-medium">Nome do evento</label>
+          <InputText
+            v-model="novoNome"
+            placeholder="Ex.: Jogos dos Flamas e Tochas"
+            class="w-full"
+          />
+          <p class="text-xs text-surface-500">
+            Preenchido automaticamente pelos clubes — edite se quiser.
           </p>
         </div>
         <div class="flex justify-end gap-2">
@@ -266,10 +371,10 @@ onMounted(carregarTudo)
             @click="dialogAberto = false"
           />
           <Button
-            label="Criar"
+            label="Criar evento"
             :loading="salvando"
-            :disabled="!novoNome.trim() || novosClubes.length === 0"
-            @click="confirmarCriarJogo"
+            :disabled="!novoNome.trim() || novosClubes.length === 0 || novasCores.length < 2"
+            @click="confirmarCriarEvento"
           />
         </div>
       </div>

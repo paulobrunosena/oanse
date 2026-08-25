@@ -19,6 +19,7 @@ const contasTeste = [
   { email: 'diretor@oanse.local', perfil: 'Diretor Geral' },
   { email: 'secretaria@oanse.local', perfil: 'Secretaria' },
   { email: 'diretor.ursinhos@oanse.local', perfil: 'Diretor de Clube' },
+  { email: 'lider.jogos@oanse.local', perfil: 'Líder de Jogos' },
   { email: 'tia.ana@oanse.local', perfil: 'Líder' },
 ]
 

@@ -107,11 +107,10 @@ async function carregarCores() {
     return
   }
   const { data } = await supabase
-    .from('jogo_times')
-    .select('cor, jogos!inner(encontro_id)')
-    .eq('jogos.encontro_id', encontro.value.id)
-    .not('cor', 'is', null)
-  cores.value = [...new Set((data ?? []).map(t => (t.cor as string).trim()).filter(Boolean))]
+    .from('evento_jogos_cores')
+    .select('cor, eventos_jogos!inner(encontro_id)')
+    .eq('eventos_jogos.encontro_id', encontro.value.id)
+  cores.value = (data ?? []).map(c => c.cor).filter(Boolean)
 }
 
 async function carregarTudo() {

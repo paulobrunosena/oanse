@@ -84,12 +84,14 @@
 
 ## Fase 4 — Módulo de Jogos e Ranking Geral
 
-- [x] Criação de jogos por encontro marcados com **1 a 4 clubes** (RPC `fn_criar_jogo`; migration `0009_jogos_clubes.sql` remove a categoria fixa `faiscas`/`flamas_tochas`)
-- [x] Validação: 2 a 4 times por jogo
-- [x] Montagem de times + integrantes (busca de oansistas, inclusive inter-clubes via RLS)
-- [x] Lançamento do placar (colocação 1-4 ou desclassificado)
-- [x] Teste: pontos 100/70/50/40/0 conforme `jogos_pontos_config` (espelho `utils/jogos.ts` + validação via smoke test local)
-- [x] Teste: trigger `fn_propagar_pontos_jogos` atualiza folhas (pontos_jogos + cor_time) e ranking (validado via smoke test; testes de integração automatizados ficam planejados)
+- [x] Novo perfil `lider_jogos` (`user_role`) + usuário de teste no seed/login (`lider.jogos@oanse.local`)
+- [x] Evento de jogos por sábado: cadastro ÚNICO (clubes participantes + cores pré-definidas verde/vermelho/amarelo/azul + oansistas de cada cor) via RPC `fn_criar_evento_jogos` (migration `0010`/`0011`)
+- [x] Catálogo de jogos por clube (`jogos_catalogo`): CRUD (Ursinhos/Faíscas/Flamas/Tochas); combo do registro de rodada une os jogos dos clubes participantes sem duplicar nomes iguais (`jogosDisponiveis`)
+- [x] Registro de rodada: nome do jogo (pré-preenchido com o último lançado) + colocação das cores; `jogo_resultados` por cor
+- [x] Finalização do evento + ranking das cores do sábado (`fn_ranking_cores_do_evento`) para o anúncio final
+- [x] Teste: pontos 100/70/50/40/0 conforme `jogos_pontos_config` (trigger + espelho `utils/jogos.ts`; smoke test local RLS: evento, rodadas, ranking, propagação)
+- [x] Teste: trigger `fn_propagar_pontos_jogos` atualiza folhas (pontos_jogos + cor_time) — validado via smoke test local
+- [x] RLS do módulo: escrita só `lider_jogos`/`diretor_geral` (evento, cores, oansistas, rodadas, resultados); diretor de clube NÃO cria evento (validado no smoke test)
 - [x] Ranking consolidado do sábado (por clube e geral)
 - [ ] Relatório de frequência acumulada
 - [ ] Relatório de premiações acumuladas

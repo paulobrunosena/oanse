@@ -39,8 +39,11 @@ oanse/
 │   │   ├── 0005_remanejamento_select.sql
 │   │   ├── 0006_transferencia_rpc.sql
 │   │   ├── 0007_dias_sem_oanse.sql
-│   │   └── 0008_folha_novos_itens.sql
-│   └── seed.sql                  # clubes, itens de pontuação, config de jogos
+│   │   ├── 0008_folha_novos_itens.sql
+│   │   ├── 0009_jogos_clubes.sql
+│   │   ├── 0010_lider_jogos_role.sql   # perfil líder de jogos (enum)
+│   │   └── 0011_jogos_eventos.sql      # eventos de jogos + catálogo + RLS/triggers
+│   └── seed.sql                  # clubes, itens de pontuação, config de jogos, catálogo, usuários teste
 │
 ├── public/                       # assets estáticos servidos na raiz (/)
 │   └── logos/
@@ -75,7 +78,7 @@ oanse/
 │   │   ├── useFolhaSemanal.ts    # itens de pontuação + folhas + salvar (+ spec.ts)
 │   │   ├── useRemanejamentos.ts  # substituição temporária de turma (+ spec.ts)
 │   │   ├── useTransferencias.ts  # transferência permanente (RPC 0006) (+ spec.ts)
-│   │   ├── useJogos.ts           # jogos do encontro: criação RPC, times, integrantes, placar (+ spec.ts)
+│   │   ├── useJogos.ts           # eventos de jogos do sábado: criação, cores, oansistas, rodadas, resultados, finalizar, ranking + catálogo (+ spec.ts)
 │   │   ├── useRanking.ts         # ranking do sábado via RPC fn_ranking_do_encontro + geral (+ spec.ts)
 │   │   └── useToast.ts           # fachada do Toast do PrimeVue (api tipo Nuxt UI)
 │   │   # (planejado) useTurma, useFolhaIndividual, useVisitantes,
@@ -106,7 +109,8 @@ oanse/
 │   │   │   ├── OansistasView.vue         # Diretor de Clube (CRUD + import CSV)
 │   │   │   ├── RemanejamentosView.vue    # Diretor de Clube
 │   │   │   ├── TransferenciasView.vue    # Diretor de Clube
-│   │   │   ├── JogosView.vue             # Diretor de Clube/Diretor Geral (jogos do encontro)
+│   │   │   ├── JogosView.vue             # Líder de Jogos/Diretor Geral (evento, rodadas, finalizar, ranking das cores)
+│   │   │   ├── JogosCatalogoView.vue     # Líder de Jogos/Diretor Geral/Diretor de Clube (CRUD de nomes de jogos por clube)
 │   │   │   └── RankingView.vue           # Diretor de Clube/Diretor Geral (ranking do sábado)
 │   │   └── admin/
 │   │       ├── UsuariosView.vue          # Diretor Geral
@@ -125,8 +129,12 @@ oanse/
 │   │       ├── FolhaSemanalRow.vue  # linha da folha com preview de total (uniformes, bíblia, EBD, manual, conduta, leitura bíblica, visitantes, seções sem/com ajuda, atividade extra, cor do time)
 │   │       └── FolhaSemanalRow.spec.ts
 │   │   └── jogos/
-│   │       ├── JogoCard.vue         # card de jogo: times, integrantes (busca), placar
-│   │       └── JogoCard.spec.ts
+│   │       ├── EventoJogosCard.vue   # evento do sábado: clubes, cores, oansistas por cor, finalizar/reabrir
+│   │       ├── EventoJogosCard.spec.ts
+│   │       ├── RodadasJogosCard.vue  # registro de rodada (jogo + colocações das cores) + lista de rodadas
+│   │       ├── RodadasJogosCard.spec.ts
+│   │       ├── RankingCoresCard.vue  # pódio das cores do sábado (anúncio final)
+│   │       └── RankingCoresCard.spec.ts
 │   │   # (planejado) ui/AppSidebar, PageHeader, DataTable
 │   │   # (planejado) folha/FolhaIndividualForm, VisitanteCard, VisitaTracker
 │   │   # (planejado) premiacoes/
@@ -138,7 +146,7 @@ oanse/
 │   │
 │   └── utils/
 │       ├── pontos.ts             # espelhos do cálculo p/ preview no form (+ pontos.spec.ts)
-│       ├── jogos.ts              # pontos do placar (100/70/50/40/0) + validação de times (+ jogos.spec.ts)
+│       ├── jogos.ts              # pontos do placar (100/70/50/40/0), cores pré-definidas, jogosDisponiveis (combo sem duplicar), gerarNomeEvento, corHex (+ jogos.spec.ts)
 │       ├── data.ts               # formatação de datas + logoClube(slug) (+ data.spec.ts)
 │       └── sabado.ts             # último sábado no fuso local (cópia p/ client, se preciso)
 │

@@ -11,6 +11,7 @@ export const useRoleStore = defineStore('role', () => {
   const isDiretorGeral = computed(() => auth.profile?.role === 'diretor_geral')
   const isSecretaria = computed(() => auth.profile?.role === 'secretaria')
   const isDiretorClube = computed(() => auth.profile?.role === 'diretor_clube')
+  const isLiderJogos = computed(() => auth.profile?.role === 'lider_jogos')
   const isLider = computed(() => auth.profile?.role === 'lider')
 
   const roleLabel = computed(() => {
@@ -18,6 +19,7 @@ export const useRoleStore = defineStore('role', () => {
       case 'diretor_geral': return 'Diretor Geral'
       case 'secretaria': return 'Secretaria'
       case 'diretor_clube': return 'Diretor de Clube'
+      case 'lider_jogos': return 'Líder de Jogos'
       case 'lider': return 'Líder'
       default: return ''
     }
@@ -27,5 +29,5 @@ export const useRoleStore = defineStore('role', () => {
     return !!auth.profile && roles.includes(auth.profile.role)
   }
 
-  return { isDiretorGeral, isSecretaria, isDiretorClube, isLider, roleLabel, hasAny }
+  return { isDiretorGeral, isSecretaria, isDiretorClube, isLiderJogos, isLider, roleLabel, hasAny }
 })

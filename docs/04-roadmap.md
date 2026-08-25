@@ -50,16 +50,16 @@
 
 ## Fase 4 — Módulo de Jogos e Ranking Geral (1-2 semanas)
 
-**Meta:** pontos dos jogos alimentando o ranking do sábado automaticamente.
+**Meta:** o Líder de Jogos cadastra o evento uma vez por sábado e registra só os resultados das rodadas; pontos alimentam o ranking do sábado automaticamente.
 
-1. Diretor de Clube cria jogos por encontro marcados com **1 a 4 clubes** participantes (qualquer combinação; ex.: Flamas + Tochas jogam juntos). Criação atômica na RPC `fn_criar_jogo`.
-2. Montagem de times (2-4) e integrantes (busca de oansistas do clube/clubes participantes).
-3. Lançamento do placar: colocação 1-4 ou desclassificado; pontos vêm de `jogos_pontos_config` (100/70/50/40/0).
-4. Trigger `fn_propagar_pontos_jogos` recalcula `pontos_jogos` e `cor_time` das folhas → ranking atualiza.
+1. **Eventos de jogos por sábado (Líder de Jogos)** — novo perfil `lider_jogos` (login de teste no seed/login). O líder cadastra o evento UMA vez (clubes participantes, cores — verde/vermelho/amarelo/azul — e oansistas de cada cor) e depois só registra o resultado de cada rodada (nome do jogo vindo do catálogo, já pré-preenchido com o último lançado). Criação atômica na RPC `fn_criar_evento_jogos`.
+2. **Catálogo de jogos por clube** (`jogos_catalogo`): CRUD de nomes por clube (Ursinhos/Faíscas/Flamas/Tochas); combo mostra os jogos dos clubes participantes sem duplicar nomes iguais.
+3. **Finalização + ranking das cores**: ao finalizar o evento, o placar das cores do sábado é calculado por `fn_ranking_cores_do_evento` para o anúncio no final da programação.
+4. Trigger `fn_propagar_pontos_jogos` recalcula `pontos_jogos` e `cor_time` das folhas → ranking individual do sábado atualiza.
 5. Ranking consolidado do sábado (por clube e geral) + relatórios de frequência/premiação acumulada.
 6. Polimento: PWA/instalação no celular do líder, modo offline da chamada (fila de sincronização) se houver tempo.
 
-> **Estado (2026-08-24):** itens 1-4 e o ranking consolidado (item 5, parte) estão
+> **Estado (2026-08-25):** itens 1-4 e o ranking consolidado (item 5, parte) estão
 > implementados. Pendentes: relatórios de frequência/premiação acumulada, PWA,
 > offline e deploy de produção.
 

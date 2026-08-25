@@ -21,6 +21,7 @@ describe('store de role', () => {
     expect(role.isDiretorGeral).toBe(false)
     expect(role.isSecretaria).toBe(false)
     expect(role.isDiretorClube).toBe(false)
+    expect(role.isLiderJogos).toBe(false)
     expect(role.isLider).toBe(false)
     expect(role.roleLabel).toBe('')
     expect(role.hasAny(['lider', 'diretor_clube'])).toBe(false)
@@ -53,6 +54,14 @@ describe('store de role', () => {
     const role = useRoleStore()
     expect(role.isLider).toBe(true)
     expect(role.roleLabel).toBe('Líder')
+  })
+
+  it('identifica lider_jogos', () => {
+    useAuthStore().profile = perfil('lider_jogos')
+    const role = useRoleStore()
+    expect(role.isLiderJogos).toBe(true)
+    expect(role.isLider).toBe(false)
+    expect(role.roleLabel).toBe('Líder de Jogos')
   })
 
   it('hasAny retorna true apenas quando o role está na lista', () => {

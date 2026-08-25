@@ -1,8 +1,6 @@
 import { ref } from 'vue'
 import { supabase } from '@/lib/supabase'
-import { podeAdicionarTime, podeLancarResultado } from '@/utils/jogos'
-
-export { podeAdicionarTime, podeLancarResultado }
+import { pontosDoResultado, type PontosJogosConfig } from '@/utils/jogos'
 
 export interface JogoClube {
   clube_id: string
@@ -16,68 +14,47 @@ export interface JogoIntegrante {
   nome: string
 }
 
-export interface JogoResultado {
+/** Opção de oansista para os selects de busca (id + nome). */
+export interface OansistaOpcao {
   id: string
+  nome: string
+}
+
+export interface EventoCor {
+  id: string
+  cor: string
+  oansistas: JogoIntegrante[]
+}
+
+export interface EventoJogo {
+  id: string
+  encontro_id: string
+  nome: string
+  status: 'em_andamento' | 'finalizado'
+  criado_por: string | null
+  clubes: JogoClube[]
+  cores: EventoCor[]
+}
+
+export interface JogoResultadoCor {
+  id: string
+  cor_id: string
   colocacao: number | null
   desclassificado: boolean
   pontos: number
 }
 
-export interface JogoTime {
-  id: string
-  nome: string
-  cor: string | null
-  lider_id: string | null
-  integrantes: JogoIntegrante[]
-  resultado: JogoResultado | null
-}
-
-export interface Jogo {
+export interface RodadaJogo {
   id: string
   nome: string
   criado_por: string | null
-  clubes: JogoClube[]
-  times: JogoTime[]
+  resultados: JogoResultadoCor[]
 }
 
-type LinhaJogo = {
-  id: string
-  nome: string
-  criado_por: string | null
-  jogos_clubes: { clube_id: string, clubes: { nome: string, slug: string, cor: string | null } | null }[]
-  jogo_times: {
-    id: string
-    nome: string
-    cor: string | null
-    lider_id: string | null
-    jogo_time_integrantes: { oansista_id: string, oansistas: { nome: string } | null }[]
-    jogo_resultados: { id: string, colocacao: number | null, desclassificado: boolean, pontos: number }[]
-  }[]
-}
-
-function normalizarJogo(linha: LinhaJogo): Jogo {
-  return {
-    id: linha.id,
-    nome: linha.nome,
-    criado_por: linha.criado_por,
-    clubes: (linha.jogos_clubes ?? []).map(jc => ({
-      clube_id: jc.clube_id,
-      nome: jc.clubes?.nome ?? '?',
-      slug: jc.clubes?.slug ?? '',
-      cor: jc.clubes?.cor ?? null,
-    })),
-    times: (linha.jogo_times ?? []).map(t => ({
-      id: t.id,
-      nome: t.nome,
-      cor: t.cor,
-      lider_id: t.lider_id,
-      integrantes: (t.jogo_time_integrantes ?? []).map(i => ({
-        oansista_id: i.oansista_id,
-        nome: i.oansistas?.nome ?? '?',
-      })),
-      resultado: (t.jogo_resultados ?? [])[0] ?? null,
-    })),
-  }
+export interface RankingCor {
+  cor: string
+  pontos: number
+  posicao: number
 }
 
 export type FormResultado = {
@@ -85,117 +62,256 @@ export type FormResultado = {
   desclassificado: boolean
 }
 
+type LinhaEvento = {
+  id: string
+  encontro_id: string
+  nome: string
+  status: string
+  criado_por: string | null
+  evento_jogos_clubes: { clube_id: string, clubes: { nome: string, slug: string, cor: string | null } | null }[]
+  evento_jogos_cores: {
+    id: string
+    cor: string
+    evento_jogos_cores_oansistas: { oansista_id: string, oansistas: { nome: string } | null }[]
+  }[]
+}
+
+type LinhaRodada = {
+  id: string
+  nome: string
+  criado_por: string | null
+  jogo_resultados: { id: string, cor_id: string, colocacao: number | null, desclassificado: boolean, pontos: number }[]
+}
+
+function normalizarEvento(linha: LinhaEvento): EventoJogo {
+  return {
+    id: linha.id,
+    encontro_id: linha.encontro_id,
+    nome: linha.nome,
+    status: linha.status === 'finalizado' ? 'finalizado' : 'em_andamento',
+    criado_por: linha.criado_por,
+    clubes: (linha.evento_jogos_clubes ?? []).map(jc => ({
+      clube_id: jc.clube_id,
+      nome: jc.clubes?.nome ?? '?',
+      slug: jc.clubes?.slug ?? '',
+      cor: jc.clubes?.cor ?? null,
+    })),
+    cores: (linha.evento_jogos_cores ?? []).map(c => ({
+      id: c.id,
+      cor: c.cor,
+      oansistas: (c.evento_jogos_cores_oansistas ?? []).map(i => ({
+        oansista_id: i.oansista_id,
+        nome: i.oansistas?.nome ?? '?',
+      })),
+    })),
+  }
+}
+
+function normalizarRodada(linha: LinhaRodada): RodadaJogo {
+  return {
+    id: linha.id,
+    nome: linha.nome,
+    criado_por: linha.criado_por,
+    resultados: (linha.jogo_resultados ?? []).map(r => ({
+      id: r.id,
+      cor_id: r.cor_id,
+      colocacao: r.colocacao,
+      desclassificado: r.desclassificado,
+      pontos: r.pontos,
+    })),
+  }
+}
+
 /**
- * Jogos do encontro (Diretor de Clube): criação via RPC fn_criar_jogo (atômica,
- * valida o clube do autor), times (2-4), integrantes com busca de oansistas e
- * lançamento do placar. A propagação de pontos/ cor_time para as folhas é feita
- * pelo trigger fn_propagar_pontos_jogos no banco.
+ * Módulo de jogos do sábado (Líder de Jogos): o evento é cadastrado uma única
+ * vez (clubes, cores e oansistas de cada cor); depois o líder só registra o
+ * resultado de cada rodada (nome do jogo + colocação das cores). Ao final,
+ * finaliza o evento e consulta o ranking das cores. A propagação de pontos/
+ * cor_time para as folhas é feita pelo trigger fn_propagar_pontos_jogos no banco.
  */
 export function useJogos() {
-  const jogos = ref<Jogo[]>([])
+  const evento = ref<EventoJogo | null>(null)
+  const rodadas = ref<RodadaJogo[]>([])
+  const catalogo = ref<{ id: string, clube_id: string, nome: string }[]>([])
+  const ranking = ref<RankingCor[]>([])
   const carregando = ref(false)
   const encontroIdAtual = ref<string | null>(null)
+  const eventoIdAtual = ref<string | null>(null)
 
-  async function carregar(encontroId: string) {
+  async function carregarEvento(encontroId: string) {
     carregando.value = true
     encontroIdAtual.value = encontroId
+    const { data, error } = await supabase
+      .from('eventos_jogos')
+      .select(`
+        id, encontro_id, nome, status, criado_por,
+        evento_jogos_clubes(clube_id, clubes(nome, slug, cor)),
+        evento_jogos_cores(
+          id, cor,
+          evento_jogos_cores_oansistas(oansista_id, oansistas(nome))
+        )
+      `)
+      .eq('encontro_id', encontroId)
+      .maybeSingle()
+    if (error) throw error
+    evento.value = data ? normalizarEvento(data as unknown as LinhaEvento) : null
+    eventoIdAtual.value = evento.value?.id ?? null
+    carregando.value = false
+    if (evento.value) await carregarRodadas(evento.value.id)
+  }
+
+  async function carregarRodadas(eventoId: string) {
     const { data, error } = await supabase
       .from('jogos')
       .select(`
         id, nome, criado_por,
-        jogos_clubes(clube_id, clubes(nome, slug, cor)),
-        jogo_times(
-          id, nome, cor, lider_id,
-          jogo_time_integrantes(oansista_id, oansistas(nome)),
-          jogo_resultados(id, colocacao, desclassificado, pontos)
-        )
+        jogo_resultados(id, cor_id, colocacao, desclassificado, pontos)
       `)
-      .eq('encontro_id', encontroId)
+      .eq('evento_id', eventoId)
       .order('created_at')
     if (error) throw error
-    jogos.value = (data ?? []).map(normalizarJogo)
-    carregando.value = false
+    rodadas.value = (data ?? []).map(normalizarRodada as (r: unknown) => RodadaJogo)
   }
 
-  async function criarJogo(nome: string, clubeIds: string[], criadoPor: string): Promise<string> {
+  async function criarEvento(nome: string, clubeIds: string[], cores: string[], criadoPor: string): Promise<string> {
     if (!encontroIdAtual.value) throw new Error('Nenhum encontro selecionado')
-    const { data, error } = await supabase.rpc('fn_criar_jogo', {
+    const { data, error } = await supabase.rpc('fn_criar_evento_jogos', {
       p_encontro_id: encontroIdAtual.value,
       p_nome: nome,
       p_clubes: clubeIds,
+      p_cores: cores,
       p_criado_por: criadoPor,
     })
     if (error) throw error
-    if (!data?.id) throw new Error('Erro ao criar o jogo')
-    await carregar(encontroIdAtual.value)
+    if (!data?.id) throw new Error('Erro ao criar o evento de jogos')
+    await carregarEvento(encontroIdAtual.value)
     return data.id
   }
 
-  async function atualizarJogo(jogoId: string, nome: string) {
-    const { error } = await supabase.from('jogos').update({ nome }).eq('id', jogoId)
+  async function atualizarEvento(eventoId: string, dados: { nome?: string, status?: 'em_andamento' | 'finalizado' }) {
+    const { error } = await supabase.from('eventos_jogos').update(dados).eq('id', eventoId)
     if (error) throw error
   }
 
-  async function excluirJogo(jogoId: string) {
-    const { error } = await supabase.from('jogos').delete().eq('id', jogoId)
+  async function excluirEvento(eventoId: string) {
+    const { error } = await supabase.from('eventos_jogos').delete().eq('id', eventoId)
     if (error) throw error
   }
 
-  async function criarTime(jogoId: string, nome: string, cor: string | null): Promise<string> {
+  async function adicionarCor(eventoId: string, cor: string) {
+    const { error } = await supabase.from('evento_jogos_cores').insert({ evento_id: eventoId, cor })
+    if (error) throw error
+  }
+
+  async function removerCor(corId: string) {
+    const { error } = await supabase.from('evento_jogos_cores').delete().eq('id', corId)
+    if (error) throw error
+  }
+
+  async function adicionarOansista(corId: string, oansistaId: string) {
+    const { error } = await supabase.from('evento_jogos_cores_oansistas').insert({ cor_id: corId, oansista_id: oansistaId })
+    if (error) throw error
+  }
+
+  async function removerOansista(corId: string, oansistaId: string) {
+    const { error } = await supabase.from('evento_jogos_cores_oansistas').delete().eq('cor_id', corId).eq('oansista_id', oansistaId)
+    if (error) throw error
+  }
+
+  async function adicionarRodada(eventoId: string, nome: string, criadoPor: string): Promise<string> {
     const { data, error } = await supabase
-      .from('jogo_times')
-      .insert({ jogo_id: jogoId, nome, cor })
+      .from('jogos')
+      .insert({ evento_id: eventoId, nome, criado_por: criadoPor })
       .select('id')
       .single()
     if (error || !data) throw error
     return data.id
   }
 
-  async function atualizarTime(timeId: string, dados: { nome: string, cor: string | null }) {
-    const { error } = await supabase.from('jogo_times').update(dados).eq('id', timeId)
+  async function excluirRodada(jogoId: string) {
+    const { error } = await supabase.from('jogos').delete().eq('id', jogoId)
     if (error) throw error
   }
 
-  async function excluirTime(timeId: string) {
-    const { error } = await supabase.from('jogo_times').delete().eq('id', timeId)
-    if (error) throw error
-  }
-
-  async function adicionarIntegrante(timeId: string, oansistaId: string) {
-    const { error } = await supabase
-      .from('jogo_time_integrantes')
-      .insert({ time_id: timeId, oansista_id: oansistaId })
-    if (error) throw error
-  }
-
-  async function removerIntegrante(timeId: string, oansistaId: string) {
-    const { error } = await supabase
-      .from('jogo_time_integrantes')
-      .delete()
-      .eq('time_id', timeId)
-      .eq('oansista_id', oansistaId)
-    if (error) throw error
-  }
-
-  async function lancarResultado(jogoId: string, timeId: string, resultado: FormResultado) {
+  async function lancarResultado(jogoId: string, corId: string, resultado: FormResultado) {
     const { error } = await supabase
       .from('jogo_resultados')
       .upsert(
-        { jogo_id: jogoId, time_id: timeId, ...resultado },
-        { onConflict: 'jogo_id,time_id' },
+        { jogo_id: jogoId, cor_id: corId, ...resultado },
+        { onConflict: 'jogo_id,cor_id' },
       )
     if (error) throw error
   }
 
-  async function removerResultado(timeId: string) {
-    const { error } = await supabase.from('jogo_resultados').delete().eq('time_id', timeId)
+  async function removerResultado(jogoId: string, corId: string) {
+    const { error } = await supabase
+      .from('jogo_resultados')
+      .delete()
+      .eq('jogo_id', jogoId)
+      .eq('cor_id', corId)
     if (error) throw error
   }
 
+  async function finalizarEvento(eventoId: string) {
+    await atualizarEvento(eventoId, { status: 'finalizado' })
+    evento.value = evento.value ? { ...evento.value, status: 'finalizado' } : evento.value
+  }
+
+  async function reabrirEvento(eventoId: string) {
+    await atualizarEvento(eventoId, { status: 'em_andamento' })
+    evento.value = evento.value ? { ...evento.value, status: 'em_andamento' } : evento.value
+  }
+
+  async function carregarCatalogo() {
+    const { data, error } = await supabase
+      .from('jogos_catalogo')
+      .select('id, clube_id, nome')
+      .order('nome')
+    if (error) throw error
+    catalogo.value = data ?? []
+  }
+
+  async function criarCatalogoItem(clubeId: string, nome: string) {
+    const { error } = await supabase.from('jogos_catalogo').insert({ clube_id: clubeId, nome })
+    if (error) throw error
+  }
+
+  async function atualizarCatalogoItem(id: string, dados: { clube_id?: string, nome?: string }) {
+    const { error } = await supabase.from('jogos_catalogo').update(dados).eq('id', id)
+    if (error) throw error
+  }
+
+  async function excluirCatalogoItem(id: string) {
+    const { error } = await supabase.from('jogos_catalogo').delete().eq('id', id)
+    if (error) throw error
+  }
+
+  async function carregarRanking(eventoId: string) {
+    const { data, error } = await supabase.rpc('fn_ranking_cores_do_evento', { p_evento_id: eventoId })
+    if (error) throw error
+    ranking.value = (data ?? []).map(r => ({
+      cor: r.cor,
+      pontos: Number(r.pontos),
+      posicao: Number(r.posicao),
+    }))
+  }
+
+  /** Pontos de uma cor numa rodada (espelho do trigger, só para exibição). */
+  function pontosDaCorNaRodada(rodada: RodadaJogo, corId: string, config: PontosJogosConfig[]): number {
+    const r = rodada.resultados.find(r => r.cor_id === corId)
+    return r ? pontosDoResultado(r, config) : 0
+  }
+
   return {
-    jogos, carregando, carregar, criarJogo, atualizarJogo, excluirJogo,
-    criarTime, atualizarTime, excluirTime,
-    adicionarIntegrante, removerIntegrante,
+    evento, rodadas, catalogo, ranking, carregando,
+    carregarEvento, carregarRodadas, carregarCatalogo, carregarRanking,
+    criarEvento, atualizarEvento, excluirEvento,
+    adicionarCor, removerCor,
+    adicionarOansista, removerOansista,
+    adicionarRodada, excluirRodada,
     lancarResultado, removerResultado,
+    finalizarEvento, reabrirEvento,
+    criarCatalogoItem, atualizarCatalogoItem, excluirCatalogoItem,
+    pontosDaCorNaRodada,
   }
 }

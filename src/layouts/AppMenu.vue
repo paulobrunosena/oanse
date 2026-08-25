@@ -3,7 +3,7 @@ import { computed } from 'vue'
 import { useRole } from '@/composables/useRole'
 import AppMenuItem, { type MenuItem } from './AppMenuItem.vue'
 
-const { isDiretorGeral, isDiretorClube, isLider } = useRole()
+const { isDiretorGeral, isDiretorClube, isLiderJogos, isLider } = useRole()
 
 const model = computed<MenuItem[]>(() => {
   const itens: MenuItem[] = [
@@ -23,6 +23,13 @@ const model = computed<MenuItem[]>(() => {
         { label: 'Calendário', icon: 'pi pi-fw pi-calendar', to: '/admin/calendario' },
       ],
     })
+    itens.push({
+      label: 'Jogos',
+      items: [
+        { label: 'Jogos do sábado', icon: 'pi pi-fw pi-flag', to: '/clube/jogos' },
+        { label: 'Catálogo de jogos', icon: 'pi pi-fw pi-list', to: '/clube/jogos-catalogo' },
+      ],
+    })
   }
 
   if (isDiretorClube.value) {
@@ -34,8 +41,17 @@ const model = computed<MenuItem[]>(() => {
         { label: 'Oansistas', icon: 'pi pi-fw pi-heart', to: '/clube/oansistas' },
         { label: 'Remanejamentos', icon: 'pi pi-fw pi-arrows-h', to: '/clube/remanejamentos' },
         { label: 'Transferências', icon: 'pi pi-fw pi-arrow-right-arrow-left', to: '/clube/transferencias' },
-        { label: 'Jogos', icon: 'pi pi-fw pi-flag', to: '/clube/jogos' },
         { label: 'Ranking', icon: 'pi pi-fw pi-trophy', to: '/clube/ranking' },
+      ],
+    })
+  }
+
+  if (isLiderJogos.value) {
+    itens.push({
+      label: 'Jogos',
+      items: [
+        { label: 'Jogos do sábado', icon: 'pi pi-fw pi-flag', to: '/clube/jogos' },
+        { label: 'Catálogo de jogos', icon: 'pi pi-fw pi-list', to: '/clube/jogos-catalogo' },
       ],
     })
   }

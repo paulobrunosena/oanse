@@ -8,6 +8,7 @@ import RadioButton from 'primevue/radiobutton'
 import Tag from 'primevue/tag'
 import type { FormFolha } from '@/composables/useFolhaSemanal'
 import { previewTotalFolha, type ItensPontuacaoMap } from '@/utils/pontos'
+import { corHex } from '@/utils/jogos'
 
 const props = withDefaults(defineProps<{
   nome: string
@@ -211,7 +212,7 @@ function salvar() {
             />
             <span
               class="inline-block h-4 w-4 rounded-full border border-surface-300"
-              :style="{ backgroundColor: cor }"
+              :style="{ backgroundColor: corHex(cor) }"
             />
             <span class="text-sm">{{ cor }}</span>
           </label>

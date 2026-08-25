@@ -63,7 +63,7 @@ npx supabase gen types typescript --local > src/types/database.types.ts  # após
 3. **Schema por migrations.** Fonte de verdade: `supabase/migrations/*.sql`. Os arquivos em `docs/` são a documentação viva — ao alterar o schema, atualize a migration E o doc correspondente, depois rode `npx supabase db reset` e gere os types novamente.
 4. **Lógica de negócio no banco quando for pontuação/auditoria.** Cálculos de total da folha, pontos de jogos, zeramento por falta e geração de pendências são feitos por triggers (`docs/01-schema.sql`). Não duplique essas regras no cliente além de um preview de leitura (`src/utils/pontos.ts`).
 5. **Realtime é intencional.** Apenas `premios_pendentes` e `presencas` estão no publication. Não adicione tabelas ao Realtime sem justificativa.
-6. **Perfis RBAC:** `diretor_geral`, `secretaria`, `diretor_clube`, `lider` (enum `user_role` em `profiles`). Escopo de clube vem de `profiles.clube_id`; escopo de turma do líder vem de `turmas.lider_id` + `remanejamentos_temporarios`.
+6. **Perfis RBAC:** `diretor_geral`, `secretaria`, `diretor_clube`, `lider_jogos`, `lider` (enum `user_role` em `profiles`). Escopo de clube vem de `profiles.clube_id`; escopo de turma do líder vem de `turmas.lider_id` + `remanejamentos_temporarios`. O `lider_jogos` não tem clube: ele gere o módulo de jogos (evento do sábado, rodadas, catálogo) com leitura ampla de oansistas.
 7. **Testes automatizados em todo código novo/alteração.** Toda funcionalidade, correção ou ajuste DEVE vir acompanhado de testes `*.spec.ts` (ver convenções abaixo) e passar em `npm run test` antes de concluir a tarefa.
 
 ## Convenções de código
