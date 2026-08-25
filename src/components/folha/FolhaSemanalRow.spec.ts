@@ -31,8 +31,8 @@ const stubs = {
   },
   InputNumber: {
     name: 'InputNumber',
-    template: '<input type="number" :value="modelValue" @input="$emit(\'update:modelValue\', Number($event.target.value))" />',
-    props: ['modelValue'],
+    template: '<input type="number" :style="inputStyle" :value="modelValue" @input="$emit(\'update:modelValue\', Number($event.target.value))" />',
+    props: ['modelValue', 'inputStyle'],
   },
   RadioButton: {
     name: 'RadioButton',
@@ -53,6 +53,14 @@ function props(sobre: Partial<ConstructorParameters<typeof FolhaSemanalRow>[0]> 
 }
 
 describe('FolhaSemanalRow', () => {
+  it('aplica largura maior no input numérico para não cortar os números', () => {
+    const wrapper = mount(FolhaSemanalRow, { props: props(), global: { stubs } })
+
+    for (const input of wrapper.findAll('input[type="number"]')) {
+      expect(input.attributes('style')).toContain('width: 5rem')
+    }
+  })
+
   it('renderiza o cartão com fundo de superfície (padrão das outras telas)', () => {
     const wrapper = mount(FolhaSemanalRow, { props: props(), global: { stubs } })
 
