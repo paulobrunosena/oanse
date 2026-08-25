@@ -34,6 +34,7 @@ const model = computed<MenuItem[]>(() => {
         { label: 'Oansistas', icon: 'pi pi-fw pi-heart', to: '/clube/oansistas' },
         { label: 'Remanejamentos', icon: 'pi pi-fw pi-arrows-h', to: '/clube/remanejamentos' },
         { label: 'Transferências', icon: 'pi pi-fw pi-arrow-right-arrow-left', to: '/clube/transferencias' },
+        { label: 'Jogos', icon: 'pi pi-fw pi-flag', to: '/clube/jogos' },
       ],
     })
   }

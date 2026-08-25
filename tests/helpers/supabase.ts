@@ -28,6 +28,7 @@ export function builder<T = unknown>(data: T | null, error: unknown = null) {
     limit: vi.fn(() => b),
     update: vi.fn(() => b),
     insert: vi.fn(() => b),
+    upsert: vi.fn(() => b),
     delete: vi.fn(() => b),
     maybeSingle: vi.fn(() => b),
     single: vi.fn(() => Promise.resolve({ data: b.singleData, error: b.error })),
@@ -56,6 +57,7 @@ export function clienteSupabase(
 
   return {
     from,
+    rpc: vi.fn(() => Promise.resolve({ data: null, error: null })),
     auth: {
       signOut: vi.fn(() => Promise.resolve()),
       getSession: vi.fn(() => Promise.resolve({ data: { session: null }, error: null })),
