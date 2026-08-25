@@ -26,8 +26,6 @@ create type premio_tipo as enum ('manual', 'botom', 'premio');
 
 create type pendencia_status as enum ('pendente', 'entregue', 'cancelada');
 
-create type jogo_categoria as enum ('faiscas', 'flamas_tochas');
-
 -- ----------------------------------------------------------------------------
 -- TABELAS DE APOIO / CONFIGURAÇÃO
 -- ----------------------------------------------------------------------------
@@ -288,14 +286,26 @@ create table progresso_manual (
 -- ----------------------------------------------------------------------------
 -- MÓDULO DE JOGOS
 -- ----------------------------------------------------------------------------
+-- RN 3: jogos por encontro marcados com 1..N clubes participantes (mínimo 1,
+-- máximo os 4). A criação é atômica na RPC fn_criar_jogo (valida que o autor é
+-- diretor_geral ou diretor de um clube participante). A categoria fixa
+-- 'faiscas'/'flamas_tochas' foi substituída pela marcação explícita de clubes,
+-- permitindo qualquer combinação (ex.: Faíscas + Flamas jogam juntos).
 
 create table jogos (
   id          uuid primary key default uuid_generate_v4(),
   encontro_id uuid not null references encontros(id) on delete cascade,
-  categoria   jogo_categoria not null,   -- 'faiscas' | 'flamas_tochas'
   nome        text not null,
   criado_por  uuid references profiles(id),
   created_at  timestamptz not null default now()
+);
+
+-- Clubes participantes do jogo (criação via RPC fn_criar_jogo)
+create table jogos_clubes (
+  id       uuid primary key default uuid_generate_v4(),
+  jogo_id  uuid not null references jogos(id) on delete cascade,
+  clube_id uuid not null references clubes(id),
+  unique (jogo_id, clube_id)
 );
 
 create table jogo_times (
@@ -356,6 +366,7 @@ create index idx_folhas_encontro    on folhas_semanais(encontro_id);
 create index idx_folhas_oansista    on folhas_semanais(oansista_id);
 create index idx_progresso_oansista on progresso_manual(oansista_id);
 create index idx_jogos_encontro     on jogos(encontro_id);
+create index idx_jogos_clubes_clube on jogos_clubes(clube_id);
 create index idx_pendencias_status  on premios_pendentes(status);
 create index idx_visitas_visitante  on visitas(visitante_id);
 
@@ -495,31 +506,98 @@ create trigger trg_resultado_pontos
   on jogo_resultados
   for each row execute function fn_definir_pontos_resultado();
 
--- Recalcula pontos_jogos das folhas dos integrantes do time (RN 3)
+-- Criação atômica do jogo + clubes participantes (RN 3): autoriza apenas
+-- diretor_geral ou diretor de um clube participante.
+create or replace function fn_criar_jogo(
+  p_encontro_id uuid,
+  p_nome        text,
+  p_clubes      uuid[],
+  p_criado_por  uuid default auth.uid()
+)
+returns jogos
+language plpgsql security definer set search_path = public as $$
+declare
+  v_jogo jogos;
+  v_n    int;
+begin
+  select array_length(p_clubes, 1) into v_n;
+
+  if v_n is null or v_n < 1 then
+    raise exception 'O jogo precisa de ao menos 1 clube';
+  end if;
+  if v_n > 4 then
+    raise exception 'Um jogo pode envolver no máximo os 4 clubes';
+  end if;
+
+  if not (
+    fn_role() = 'diretor_geral'
+    or (fn_role() = 'diretor_clube' and fn_clube_id() = any (p_clubes))
+  ) then
+    raise exception 'Apenas o diretor de um clube participante pode criar o jogo';
+  end if;
+
+  insert into jogos (encontro_id, nome, criado_por)
+  values (p_encontro_id, p_nome, p_criado_por)
+  returning * into v_jogo;
+
+  insert into jogos_clubes (jogo_id, clube_id)
+  select v_jogo.id, c
+    from unnest(p_clubes) as c
+  on conflict (jogo_id, clube_id) do nothing;
+
+  return v_jogo;
+end;
+$$;
+
+grant execute on function fn_criar_jogo(uuid, text, uuid[], uuid) to authenticated;
+
+-- Recalcula pontos_jogos das folhas dos integrantes do time (RN 3). Soma os
+-- pontos de TODOS os jogos do encontro; integrantes sem resultado ficam com 0.
+-- Também grava cor_time (informacional, não pontua) com a cor do time do jogo.
 create or replace function fn_propagar_pontos_jogos()
 returns trigger language plpgsql security definer set search_path = public as $$
 declare
   v_encontro uuid;
-  v_oansista uuid;
+  v_jogo_id  uuid;
 begin
-  select encontro_id into v_encontro from jogos where id = new.jogo_id;
+  if TG_OP = 'DELETE' then
+    v_jogo_id := old.jogo_id;
+  else
+    v_jogo_id := new.jogo_id;
+  end if;
 
-  perform 1; -- atualiza as folhas de todos os integrantes do time
+  select encontro_id into v_encontro from jogos where id = v_jogo_id;
+
   update folhas_semanais f
-     set pontos_jogos = sub.pontos
+     set pontos_jogos = coalesce(sub.pontos, 0)
     from (
+      select distinct i.oansista_id
+        from jogo_time_integrantes i
+        join jogo_times t on t.id = i.time_id
+        join jogos j on j.id = t.jogo_id and j.encontro_id = v_encontro
+    ) participante
+    left join (
       select i.oansista_id, sum(r.pontos) as pontos
-      from jogo_resultados r
-      join jogo_times t on t.id = r.time_id
-      join jogos j on j.id = r.jogo_id and j.encontro_id = v_encontro
-      join jogo_time_integrantes i on i.time_id = t.id
-      group by i.oansista_id
-    ) sub
-   where f.oansista_id = sub.oansista_id
+        from jogo_resultados r
+        join jogo_times t on t.id = r.time_id
+        join jogos j on j.id = r.jogo_id and j.encontro_id = v_encontro
+        join jogo_time_integrantes i on i.time_id = t.id
+       group by i.oansista_id
+    ) sub on sub.oansista_id = participante.oansista_id
+   where f.oansista_id = participante.oansista_id
      and f.encontro_id = v_encontro;
 
-  return new;
-end $$;
+  update folhas_semanais f
+     set cor_time = t.cor
+    from jogo_time_integrantes i
+    join jogo_times t on t.id = i.time_id
+   where t.jogo_id = v_jogo_id
+     and f.oansista_id = i.oansista_id
+     and f.encontro_id = v_encontro;
+
+  return null;
+end;
+$$;
 
 create trigger trg_propagar_pontos_jogos
   after insert or update or delete

@@ -357,7 +357,6 @@ export type Database = {
       }
       jogos: {
         Row: {
-          categoria: Database["public"]["Enums"]["jogo_categoria"]
           created_at: string
           criado_por: string | null
           encontro_id: string
@@ -365,7 +364,6 @@ export type Database = {
           nome: string
         }
         Insert: {
-          categoria: Database["public"]["Enums"]["jogo_categoria"]
           created_at?: string
           criado_por?: string | null
           encontro_id: string
@@ -373,7 +371,6 @@ export type Database = {
           nome: string
         }
         Update: {
-          categoria?: Database["public"]["Enums"]["jogo_categoria"]
           created_at?: string
           criado_por?: string | null
           encontro_id?: string
@@ -401,6 +398,39 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "v_ranking_semanal"
             referencedColumns: ["encontro_id"]
+          },
+        ]
+      }
+      jogos_clubes: {
+        Row: {
+          clube_id: string
+          id: string
+          jogo_id: string
+        }
+        Insert: {
+          clube_id: string
+          id?: string
+          jogo_id: string
+        }
+        Update: {
+          clube_id?: string
+          id?: string
+          jogo_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "jogos_clubes_clube_id_fkey"
+            columns: ["clube_id"]
+            isOneToOne: false
+            referencedRelation: "clubes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "jogos_clubes_jogo_id_fkey"
+            columns: ["jogo_id"]
+            isOneToOne: false
+            referencedRelation: "jogos"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -1162,13 +1192,35 @@ export type Database = {
       }
     }
     Functions: {
-      fn_clube_da_categoria: {
-        Args: { p_cat: Database["public"]["Enums"]["jogo_categoria"] }
-        Returns: string[]
-      }
       fn_clube_id: { Args: never; Returns: string }
+      fn_criar_jogo: {
+        Args: {
+          p_clubes: string[]
+          p_criado_por?: string
+          p_encontro_id: string
+          p_nome: string
+        }
+        Returns: {
+          created_at: string
+          criado_por: string | null
+          encontro_id: string
+          id: string
+          nome: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "jogos"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       fn_diretor_da_turma: { Args: { p_turma_id: string }; Returns: boolean }
       fn_diretor_do_clube: { Args: { p_clube_id: string }; Returns: boolean }
+      fn_diretor_do_jogo: { Args: { p_jogo_id: string }; Returns: boolean }
+      fn_diretor_do_jogo_do_time: {
+        Args: { p_time_id: string }
+        Returns: boolean
+      }
       fn_lider_da_turma: { Args: { p_turma_id: string }; Returns: boolean }
       fn_perfil: {
         Args: never
@@ -1241,7 +1293,6 @@ export type Database = {
       }
     }
     Enums: {
-      jogo_categoria: "faiscas" | "flamas_tochas"
       pendencia_status: "pendente" | "entregue" | "cancelada"
       premio_tipo: "manual" | "botom" | "premio"
       status_oansista: "ativo" | "inativo" | "transferido"
@@ -1382,7 +1433,6 @@ export const Constants = {
   },
   public: {
     Enums: {
-      jogo_categoria: ["faiscas", "flamas_tochas"],
       pendencia_status: ["pendente", "entregue", "cancelada"],
       premio_tipo: ["manual", "botom", "premio"],
       status_oansista: ["ativo", "inativo", "transferido"],

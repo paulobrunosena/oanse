@@ -97,6 +97,7 @@ alter table folhas_semanais       enable row level security;
 alter table dias_sem_oanse         enable row level security;
 alter table progresso_manual      enable row level security;
 alter table jogos                 enable row level security;
+alter table jogos_clubes          enable row level security;
 alter table jogo_times            enable row level security;
 alter table jogo_time_integrantes enable row level security;
 alter table jogo_resultados       enable row level security;
@@ -188,6 +189,8 @@ create policy "turmas_write" on turmas
 --  - LÃ­der vÃª APENAS os oansistas da sua turma
 --    (+ turmas recebidas por remanejamento, resolvido na FK turma_id)
 --  - Diretor de Clube vÃª/gerencia o clube inteiro (transferÃªncias)
+--  - Diretor de Clube lÃª tambÃ©m as crianÃ§as dos clubes que jogam junto com o
+--    dele em algum jogo (necessÃ¡rio p/ montar times inter-clubes)
 --  - SecretÃ¡ria/Diretor Geral: leitura total
 -- ----------------------------------------------------------------------------
 create policy "oansistas_select" on oansistas
@@ -197,6 +200,11 @@ create policy "oansistas_select" on oansistas
     or fn_diretor_do_clube(clube_id)
     or (fn_role() = 'lider' and fn_lider_da_turma(turma_id))
     or (fn_role() = 'lider' and fn_substituto_da_turma(turma_id))
+    or (fn_role() = 'diretor_clube' and exists (
+          select 1 from jogos j
+          join jogos_clubes jc  on jc.jogo_id = j.id and jc.clube_id = oansistas.clube_id
+          join jogos_clubes jc2 on jc2.jogo_id = j.id and jc2.clube_id = fn_clube_id()
+        ))
   );
 
 create policy "oansistas_write" on oansistas
@@ -479,91 +487,74 @@ create policy "progresso_write" on progresso_manual
 
 -- ----------------------------------------------------------------------------
 -- MÃ“DULO DE JOGOS â€” gestÃ£o pelo Diretor de Clube (RN 3)
---  Categoria 'faiscas' => clube FaÃ­scas | 'flamas_tochas' => clubes Flamas/Tochas
+--  Um jogo Ã© marcado com 1..N clubes participantes (jogos_clubes). A criaÃ§Ã£o do
+--  jogo Ã© atÃ´mica na RPC fn_criar_jogo (SECURITY DEFINER), que valida que o autor
+--  Ã© diretor_geral ou diretor de um clube participante. Por isso `jogos` nÃ£o tem
+--  policy de INSERT: apenas a RPC insere. Times/integrantes/resultados sÃ£o geridos
+--  pelo diretor de qualquer clube participante do jogo.
 -- ----------------------------------------------------------------------------
-create or replace function fn_clube_da_categoria(p_cat jogo_categoria)
-returns uuid[] language sql stable security definer set search_path = public as $$
-  select array_agg(id) from clubes
-  where slug = case p_cat
-                  when 'faiscas' then 'faiscas'
-                  when 'flamas_tochas' then 'flamas'  -- inclui 'tochas' abaixo
-                end
-     or (p_cat = 'flamas_tochas' and slug in ('flamas', 'tochas'));
+create or replace function fn_diretor_do_jogo(p_jogo_id uuid)
+returns boolean language sql stable security definer set search_path = public as $$
+  select exists (
+    select 1 from jogos_clubes jc
+    where jc.jogo_id = p_jogo_id and jc.clube_id = fn_clube_id()
+  );
+$$;
+
+create or replace function fn_diretor_do_jogo_do_time(p_time_id uuid)
+returns boolean language sql stable security definer set search_path = public as $$
+  select exists (
+    select 1 from jogo_times t
+    join jogos_clubes jc on jc.jogo_id = t.jogo_id
+    where t.id = p_time_id and jc.clube_id = fn_clube_id()
+  );
 $$;
 
 create policy "jogos_select" on jogos
   for select to authenticated using (true);
 
-create policy "jogos_write" on jogos
-  for all to authenticated
-  using (
-    fn_role() = 'diretor_geral'
-    or (fn_role() = 'diretor_clube'
-        and fn_clube_id() = any (fn_clube_da_categoria(categoria)))
-  )
-  with check (
-    fn_role() = 'diretor_geral'
-    or (fn_role() = 'diretor_clube'
-        and fn_clube_id() = any (fn_clube_da_categoria(categoria)))
-  );
+create policy "jogos_update" on jogos
+  for update to authenticated
+  using (fn_role() = 'diretor_geral' or fn_diretor_do_jogo(id))
+  with check (fn_role() = 'diretor_geral' or fn_diretor_do_jogo(id));
+
+create policy "jogos_delete" on jogos
+  for delete to authenticated
+  using (fn_role() = 'diretor_geral' or fn_diretor_do_jogo(id));
 
 create policy "jogo_times_select" on jogo_times
   for select to authenticated using (true);
 
 create policy "jogo_times_write" on jogo_times
   for all to authenticated
-  using (
-    fn_role() = 'diretor_geral'
-    or (fn_role() = 'diretor_clube'
-        and fn_clube_id() = any (fn_clube_da_categoria(
-              (select j.categoria from jogos j where j.id = jogo_times.jogo_id))))
-  )
-  with check (
-    fn_role() = 'diretor_geral'
-    or (fn_role() = 'diretor_clube'
-        and fn_clube_id() = any (fn_clube_da_categoria(
-              (select j.categoria from jogos j where j.id = jogo_times.jogo_id))))
-  );
+  using (fn_role() = 'diretor_geral' or fn_diretor_do_jogo(jogo_id))
+  with check (fn_role() = 'diretor_geral' or fn_diretor_do_jogo(jogo_id));
 
 create policy "jogo_integrantes_select" on jogo_time_integrantes
   for select to authenticated using (true);
 
 create policy "jogo_integrantes_write" on jogo_time_integrantes
   for all to authenticated
-  using (
-    fn_role() = 'diretor_geral'
-    or (fn_role() = 'diretor_clube'
-        and fn_clube_id() = any (fn_clube_da_categoria(
-              (select j.categoria from jogos j
-                join jogo_times t on t.id = jogo_time_integrantes.time_id
-               where j.id = t.jogo_id))))
-  )
-  with check (
-    fn_role() = 'diretor_geral'
-    or (fn_role() = 'diretor_clube'
-        and fn_clube_id() = any (fn_clube_da_categoria(
-              (select j.categoria from jogos j
-                join jogo_times t on t.id = jogo_time_integrantes.time_id
-               where j.id = t.jogo_id))))
-  );
+  using (fn_role() = 'diretor_geral' or fn_diretor_do_jogo_do_time(time_id))
+  with check (fn_role() = 'diretor_geral' or fn_diretor_do_jogo_do_time(time_id));
 
 create policy "jogo_resultados_select" on jogo_resultados
   for select to authenticated using (true);
 
 create policy "jogo_resultados_write" on jogo_resultados
   for all to authenticated
-  using (
-    fn_role() = 'diretor_geral'
-    or (fn_role() = 'diretor_clube'
-        and fn_clube_id() = any (fn_clube_da_categoria(
-              (select j.categoria from jogos j where j.id = jogo_resultados.jogo_id))))
-  )
-  with check (
-    fn_role() = 'diretor_geral'
-    or (fn_role() = 'diretor_clube'
-        and fn_clube_id() = any (fn_clube_da_categoria(
-              (select j.categoria from jogos j where j.id = jogo_resultados.jogo_id))))
-  );
+  using (fn_role() = 'diretor_geral' or fn_diretor_do_jogo(jogo_id))
+  with check (fn_role() = 'diretor_geral' or fn_diretor_do_jogo(jogo_id));
+
+-- jogos_clubes: leitura aberta; escrita sÃ³ diretor_geral ou diretor participante
+-- (a criaÃ§Ã£o em si Ã© atÃ´mica na RPC fn_criar_jogo).
+create policy "jogos_clubes_select" on jogos_clubes
+  for select to authenticated using (true);
+
+create policy "jogos_clubes_write" on jogos_clubes
+  for all to authenticated
+  using (fn_role() = 'diretor_geral' or fn_diretor_do_jogo(jogo_id))
+  with check (fn_role() = 'diretor_geral' or fn_diretor_do_jogo(jogo_id));
 
 -- ----------------------------------------------------------------------------
 -- PRÃŠMIOS / ESTOQUE / PENDÃŠNCIAS â€” Secretaria (RN 4)
