@@ -57,7 +57,7 @@ vi.mock('@/lib/api', () => ({
 
 const stubs = {
   EncontroSeletor: { name: 'EncontroSeletor', template: '<div />' },
-  EventoJogosCard: { name: 'EventoJogosCard', template: '<div />' },
+  EventoJogosCard: { name: 'EventoJogosCard', props: ['evento', 'oansistas'], template: '<div />' },
   RodadasJogosCard: { name: 'RodadasJogosCard', template: '<div />' },
   RankingCoresCard: { name: 'RankingCoresCard', template: '<div />' },
   Card: { name: 'Card', template: '<div><slot name="content" /></div>' },
@@ -119,5 +119,21 @@ describe('JogosView', () => {
     expect(wrapper.text()).toContain('Jogos dos Flamas e Tochas')
     expect(wrapper.text()).toContain('Jogos dos Ursinhos e Faíscas')
     expect(wrapper.text()).toContain('Todos os clubes já participaram de um evento de jogos neste sábado.')
+  })
+
+  it('só oferece no card oansistas dos clubes que participam do evento', async () => {
+    mocks.supabase.builderDe('eventos_jogos').data = EVENTOS
+    mocks.supabase.builderDe('oansistas').data = [
+      { id: 'o1', nome: 'Criança Flamas', clube_id: 'c3', clubes: { nome: 'Flamas', cor: '#22C55E' } },
+      { id: 'o2', nome: 'Criança Tochas', clube_id: 'c4', clubes: { nome: 'Tochas', cor: '#3B82F6' } },
+      { id: 'o3', nome: 'Criança Ursinhos', clube_id: 'c1', clubes: { nome: 'Ursinhos', cor: '#EF4444' } },
+    ]
+    perfilLiderJogos()
+    const wrapper = montar()
+    await flushPromises()
+
+    const card = wrapper.findComponent({ name: 'EventoJogosCard' })
+    const nomes = (card.props('oansistas') as { id: string }[]).map(o => o.id).sort()
+    expect(nomes).toEqual(['o1', 'o2'])
   })
 })

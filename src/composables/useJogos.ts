@@ -14,10 +14,12 @@ export interface JogoIntegrante {
   nome: string
 }
 
-/** Opção de oansista para os selects de busca (id + nome). */
+/** Opção de oansista para os selects de busca (id + nome + clube p/ badge). */
 export interface OansistaOpcao {
   id: string
   nome: string
+  clube_id: string
+  clube: { nome: string, cor: string | null } | null
 }
 
 export interface EventoCor {

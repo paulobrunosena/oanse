@@ -77,6 +77,13 @@ const opcoesNomes = computed(() =>
 )
 const ultimoNome = computed(() => rodadas.value[rodadas.value.length - 1]?.nome ?? '')
 
+/** Só oferece para adicionar as crianças dos clubes que participam do evento. */
+const oansistasDoEvento = computed(() => {
+  if (!evento.value) return []
+  const ids = new Set(evento.value.clubes.map(c => c.clube_id))
+  return oansistas.value.filter(o => ids.has(o.clube_id))
+})
+
 watch(novosClubes, (ids) => {
   const nomes = clubes.value.filter(c => ids.includes(c.id)).map(c => c.nome)
   novoNome.value = gerarNomeEvento(nomes)
@@ -91,13 +98,25 @@ async function carregarClubesEConfig() {
   pontosConfig.value = (rConfig.data ?? []) as PontosJogosConfig[]
 }
 
+type LinhaOansista = {
+  id: string
+  nome: string
+  clube_id: string
+  clubes: { nome: string, cor: string | null } | null
+}
+
 async function carregarOansistas() {
   const { data } = await supabase
     .from('oansistas')
-    .select('id, nome')
+    .select('id, nome, clube_id, clubes(nome, cor)')
     .eq('status', 'ativo')
     .order('nome')
-  oansistas.value = (data ?? []).map(o => ({ id: o.id, nome: o.nome }))
+  oansistas.value = ((data ?? []) as unknown as LinhaOansista[]).map(o => ({
+    id: o.id,
+    nome: o.nome,
+    clube_id: o.clube_id,
+    clube: o.clubes ? { nome: o.clubes.nome, cor: o.clubes.cor } : null,
+  }))
 }
 
 async function carregarJogosDoEncontro() {
@@ -314,7 +333,7 @@ onMounted(carregarTudo)
           <div class="relative mb-4">
             <EventoJogosCard
               :evento="evento"
-              :oansistas="oansistas"
+              :oansistas="oansistasDoEvento"
               @adicionar-cor="cor => acaoComAtualizacao(() => adicionarCor(evento!.id, cor), 'Cor adicionada')"
               @remover-cor="corId => acaoComAtualizacao(() => removerCor(corId), 'Cor removida')"
               @adicionar-oansista="(corId, oansistaId) => acaoComAtualizacao(() => adicionarOansista(corId, oansistaId))"

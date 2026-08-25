@@ -27,7 +27,12 @@ const stubs = {
     emits: ['click'],
     template: '<button v-bind="$attrs" :disabled="disabled" @click="$emit(\'click\')">{{ label }}</button>',
   },
-  Select: { name: 'Select', template: '<div />' },
+  Select: {
+    name: 'Select',
+    props: ['options', 'optionLabel', 'optionValue', 'modelValue'],
+    emits: ['update:modelValue'],
+    template: '<div class="select-stub"><template v-for="o in options" :key="o[optionValue]"><slot name="option" :option="o" /></template></div>',
+  },
   Tag: {
     name: 'Tag',
     props: ['value'],
@@ -38,7 +43,7 @@ const stubs = {
 describe('EventoJogosCard', () => {
   it('renderiza nome, clubes e cores participantes', () => {
     const wrapper = mount(EventoJogosCard, {
-      props: { evento: EVENTO, oansistas: [{ id: 'o2', nome: 'Beto' }] },
+      props: { evento: EVENTO, oansistas: [{ id: 'o2', nome: 'Beto', clube_id: 'c1', clube: { nome: 'Flamas', cor: '#22C55E' } }] },
       global: { stubs },
     })
     expect(wrapper.text()).toContain('Jogos dos Flamas e Tochas')
@@ -47,6 +52,31 @@ describe('EventoJogosCard', () => {
     expect(wrapper.text()).toContain('verde')
     expect(wrapper.text()).toContain('azul')
     expect(wrapper.text()).toContain('Ana')
+  })
+
+  it('mostra o clube como badge nas opções de busca de criança', () => {
+    const comCoresVazias = {
+      ...EVENTO,
+      cores: [
+        { id: 'cor1', cor: 'verde', oansistas: [] },
+        { id: 'cor2', cor: 'azul', oansistas: [] },
+      ],
+    }
+    const wrapper = mount(EventoJogosCard, {
+      props: {
+        evento: comCoresVazias,
+        oansistas: [
+          { id: 'o3', nome: 'Beto', clube_id: 'c1', clube: { nome: 'Flamas', cor: '#22C55E' } },
+          { id: 'o4', nome: 'Cida', clube_id: 'c2', clube: { nome: 'Tochas', cor: '#3B82F6' } },
+        ],
+      },
+      global: { stubs },
+    })
+    const opcoes = wrapper.findAll('.select-stub').at(0)!
+    expect(opcoes.text()).toContain('Beto')
+    expect(opcoes.text()).toContain('Flamas')
+    expect(opcoes.text()).toContain('Cida')
+    expect(opcoes.text()).toContain('Tochas')
   })
 
   it('emite finalizar ao clicar no botão de finalizar jogos', async () => {

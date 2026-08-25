@@ -151,7 +151,19 @@ function aoSelecionarOansista(cor: EventoCor) {
               size="small"
               class="w-full max-w-xs"
               @update:model-value="aoSelecionarOansista(cor)"
-            />
+            >
+              <template #option="slotProps">
+                <div class="flex items-center justify-between gap-2 w-full pr-4">
+                  <span class="truncate">{{ slotProps.option.nome }}</span>
+                  <Tag
+                    v-if="slotProps.option.clube"
+                    :value="slotProps.option.clube.nome"
+                    :style="{ background: `${slotProps.option.clube.cor ?? '#64748b'}20`, color: slotProps.option.clube.cor ?? '#64748b' }"
+                    class="shrink-0 text-xs"
+                  />
+                </div>
+              </template>
+            </Select>
           </div>
         </div>
       </div>

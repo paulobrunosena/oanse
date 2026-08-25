@@ -18,9 +18,15 @@ const erro = ref<string | null>(null)
 const contasTeste = [
   { email: 'diretor@oanse.local', perfil: 'Diretor Geral' },
   { email: 'secretaria@oanse.local', perfil: 'Secretaria' },
-  { email: 'diretor.ursinhos@oanse.local', perfil: 'Diretor de Clube' },
   { email: 'lider.jogos@oanse.local', perfil: 'Líder de Jogos' },
-  { email: 'tia.ana@oanse.local', perfil: 'Líder' },
+  { email: 'diretor.ursinhos@oanse.local', perfil: 'Diretor de Clube (Ursinhos)' },
+  { email: 'diretor.faiscas@oanse.local', perfil: 'Diretor de Clube (Faíscas)' },
+  { email: 'diretor.flamas@oanse.local', perfil: 'Diretor de Clube (Flamas)' },
+  { email: 'diretor.tochas@oanse.local', perfil: 'Diretor de Clube (Tochas)' },
+  { email: 'tia.ana@oanse.local', perfil: 'Líder (Ursinhos)' },
+  { email: 'tia.bea@oanse.local', perfil: 'Líder (Faíscas)' },
+  { email: 'tio.carlos@oanse.local', perfil: 'Líder (Flamas)' },
+  { email: 'tia.duda@oanse.local', perfil: 'Líder (Tochas)' },
 ]
 
 async function entrar() {
