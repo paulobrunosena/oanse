@@ -55,7 +55,7 @@ describe('ConfiguracoesView', () => {
     for (const input of inputs) {
       const style = input.attributes('style') ?? ''
       expect(style).toContain('min-width: 0')
-      expect(style).toContain('width: 3.5rem')
+      expect(style).toContain('width: 5rem')
     }
   })
 })
@@ -73,7 +73,7 @@ describe('InputNumber horizontal', () => {
         buttonLayout: 'horizontal',
         incrementButtonIcon: 'pi pi-plus',
         decrementButtonIcon: 'pi pi-minus',
-        inputStyle: { minWidth: '0', width: '3.5rem', textAlign: 'center' },
+        inputStyle: { minWidth: '0', width: '5rem', textAlign: 'center' },
         class: 'w-36',
       },
     })
@@ -82,6 +82,6 @@ describe('InputNumber horizontal', () => {
     expect(input.exists()).toBe(true)
     const style = input.attributes('style') ?? ''
     expect(style).toContain('min-width: 0')
-    expect(style).toContain('width: 3.5rem')
+    expect(style).toContain('width: 5rem')
   })
 })
