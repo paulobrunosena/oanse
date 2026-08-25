@@ -12,6 +12,7 @@ export interface JogoClube {
 export interface JogoIntegrante {
   oansista_id: string
   nome: string
+  clube: { nome: string, cor: string | null } | null
 }
 
 /** Opção de oansista para os selects de busca (id + nome + clube p/ badge). */
@@ -74,7 +75,7 @@ type LinhaEvento = {
   evento_jogos_cores: {
     id: string
     cor: string
-    evento_jogos_cores_oansistas: { oansista_id: string, oansistas: { nome: string } | null }[]
+    evento_jogos_cores_oansistas: { oansista_id: string, oansistas: { nome: string, clube_id: string, clubes: { nome: string, cor: string | null } | null } | null }[]
   }[]
 }
 
@@ -104,6 +105,7 @@ function normalizarEvento(linha: LinhaEvento): EventoJogo {
       oansistas: (c.evento_jogos_cores_oansistas ?? []).map(i => ({
         oansista_id: i.oansista_id,
         nome: i.oansistas?.nome ?? '?',
+        clube: i.oansistas?.clubes ? { nome: i.oansistas.clubes.nome, cor: i.oansistas.clubes.cor } : null,
       })),
     })),
   }
@@ -153,7 +155,7 @@ export function useJogos() {
         evento_jogos_clubes(clube_id, clubes(nome, slug, cor)),
         evento_jogos_cores(
           id, cor,
-          evento_jogos_cores_oansistas(oansista_id, oansistas(nome))
+          evento_jogos_cores_oansistas(oansista_id, oansistas(nome, clube_id, clubes(nome, cor)))
         )
       `)
       .eq('encontro_id', encontroId)

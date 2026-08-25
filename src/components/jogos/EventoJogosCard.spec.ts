@@ -14,7 +14,7 @@ const EVENTO: EventoJogo = {
     { clube_id: 'c2', nome: 'Tochas', slug: 'tochas', cor: '#3B82F6' },
   ],
   cores: [
-    { id: 'cor1', cor: 'verde', oansistas: [{ oansista_id: 'o1', nome: 'Ana' }] },
+    { id: 'cor1', cor: 'verde', oansistas: [{ oansista_id: 'o1', nome: 'Ana', clube: null }] },
     { id: 'cor2', cor: 'azul', oansistas: [] },
   ],
 }
@@ -77,6 +77,54 @@ describe('EventoJogosCard', () => {
     expect(opcoes.text()).toContain('Flamas')
     expect(opcoes.text()).toContain('Cida')
     expect(opcoes.text()).toContain('Tochas')
+  })
+
+  it('mostra o clube ao lado da criança distribuída quando há mais de um clube', () => {
+    const comIntegrantes = {
+      ...EVENTO,
+      cores: [
+        {
+          id: 'cor1',
+          cor: 'verde',
+          oansistas: [
+            { oansista_id: 'o1', nome: 'Ana', clube: { nome: 'Flamas', cor: '#22C55E' } },
+            { oansista_id: 'o5', nome: 'Duda', clube: { nome: 'Tochas', cor: '#3B82F6' } },
+          ],
+        },
+        { id: 'cor2', cor: 'azul', oansistas: [] },
+      ],
+    }
+    const wrapper = mount(EventoJogosCard, {
+      props: { evento: comIntegrantes },
+      global: { stubs },
+    })
+    const corVerde = wrapper.findAll('.rounded-md.border.p-3').at(0)!
+    expect(corVerde.text()).toContain('Ana')
+    expect(corVerde.text()).toContain('Flamas')
+    expect(corVerde.text()).toContain('Duda')
+    expect(corVerde.text()).toContain('Tochas')
+  })
+
+  it('não repete o clube ao lado da criança quando há apenas um clube', () => {
+    const umClube = {
+      ...EVENTO,
+      clubes: [{ clube_id: 'c1', nome: 'Flamas', slug: 'flamas', cor: '#22C55E' }],
+      cores: [
+        {
+          id: 'cor1',
+          cor: 'verde',
+          oansistas: [{ oansista_id: 'o1', nome: 'Ana', clube: { nome: 'Flamas', cor: '#22C55E' } }],
+        },
+        { id: 'cor2', cor: 'azul', oansistas: [] },
+      ],
+    }
+    const wrapper = mount(EventoJogosCard, {
+      props: { evento: umClube },
+      global: { stubs },
+    })
+    const corVerde = wrapper.findAll('.rounded-md.border.p-3').at(0)!
+    expect(corVerde.text()).toContain('Ana')
+    expect(corVerde.text()).not.toContain('Flamas')
   })
 
   it('emite finalizar ao clicar no botão de finalizar jogos', async () => {

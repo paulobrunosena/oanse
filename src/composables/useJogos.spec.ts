@@ -14,7 +14,7 @@ const EVENTO_FLAMAS = {
     { clube_id: 'c2', clubes: { nome: 'Tochas', slug: 'tochas', cor: '#3B82F6' } },
   ],
   evento_jogos_cores: [
-    { id: 'cor1', cor: 'verde', evento_jogos_cores_oansistas: [{ oansista_id: 'o1', oansistas: { nome: 'Ana' } }] },
+    { id: 'cor1', cor: 'verde', evento_jogos_cores_oansistas: [{ oansista_id: 'o1', oansistas: { nome: 'Ana', clube_id: 'c1', clubes: { nome: 'Flamas', cor: '#22C55E' } } }] },
     { id: 'cor2', cor: 'azul', evento_jogos_cores_oansistas: [] },
   ],
 }
@@ -70,7 +70,7 @@ describe('useJogos', () => {
         { clube_id: 'c1', nome: 'Flamas', slug: 'flamas', cor: '#22C55E' },
         { clube_id: 'c2', nome: 'Tochas', slug: 'tochas', cor: '#3B82F6' },
       ])
-      expect(jogos.evento.value?.cores[0]?.oansistas).toEqual([{ oansista_id: 'o1', nome: 'Ana' }])
+      expect(jogos.evento.value?.cores[0]?.oansistas).toEqual([{ oansista_id: 'o1', nome: 'Ana', clube: { nome: 'Flamas', cor: '#22C55E' } }])
 
       expect(jogos.rodadas.value).toHaveLength(1)
       expect(jogos.rodadas.value[0]?.nome).toBe('maratona')

@@ -129,14 +129,24 @@ function aoSelecionarOansista(cor: EventoCor) {
           <div class="flex items-center gap-2">
             <span class="text-xs text-surface-500 w-16 shrink-0">Oansistas</span>
             <div class="flex flex-wrap gap-2">
-              <Tag
+              <span
                 v-for="i in cor.oansistas"
                 :key="i.oansista_id"
-                :value="i.nome"
-                rounded
-                removable
-                @remove="$emit('remover-oansista', cor.id, i.oansista_id)"
-              />
+                class="inline-flex items-center gap-1"
+              >
+                <Tag
+                  :value="i.nome"
+                  rounded
+                  removable
+                  @remove="$emit('remover-oansista', cor.id, i.oansista_id)"
+                />
+                <Tag
+                  v-if="i.clube && evento.clubes.length > 1"
+                  :value="i.clube.nome"
+                  class="text-[10px]"
+                  :style="{ background: `${i.clube.cor ?? '#64748b'}20`, color: i.clube.cor ?? '#64748b' }"
+                />
+              </span>
               <span
                 v-if="cor.oansistas.length === 0"
                 class="text-xs text-surface-500"
