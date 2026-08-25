@@ -79,7 +79,7 @@ describe('EventoJogosCard', () => {
     expect(opcoes.text()).toContain('Tochas')
   })
 
-  it('mostra o clube ao lado da criança distribuída quando há mais de um clube', () => {
+  it('colore o nome da criança com a cor do clube dela', () => {
     const comIntegrantes = {
       ...EVENTO,
       cores: [
@@ -99,13 +99,13 @@ describe('EventoJogosCard', () => {
       global: { stubs },
     })
     const corVerde = wrapper.findAll('.rounded-md.border.p-3').at(0)!
-    expect(corVerde.text()).toContain('Ana')
-    expect(corVerde.text()).toContain('Flamas')
-    expect(corVerde.text()).toContain('Duda')
-    expect(corVerde.text()).toContain('Tochas')
+    const ana = corVerde.findAll('span').find(s => s.text() === 'Ana')!
+    const duda = corVerde.findAll('span').find(s => s.text() === 'Duda')!
+    expect(ana.attributes('style')).toContain('#22C55E')
+    expect(duda.attributes('style')).toContain('#3B82F6')
   })
 
-  it('não repete o clube ao lado da criança quando há apenas um clube', () => {
+  it('usa a cor do clube no nome mesmo quando há um único clube', () => {
     const umClube = {
       ...EVENTO,
       clubes: [{ clube_id: 'c1', nome: 'Flamas', slug: 'flamas', cor: '#22C55E' }],
@@ -123,8 +123,27 @@ describe('EventoJogosCard', () => {
       global: { stubs },
     })
     const corVerde = wrapper.findAll('.rounded-md.border.p-3').at(0)!
-    expect(corVerde.text()).toContain('Ana')
-    expect(corVerde.text()).not.toContain('Flamas')
+    const ana = corVerde.findAll('span').find(s => s.text() === 'Ana')!
+    expect(ana.attributes('style')).toContain('#22C55E')
+  })
+
+  it('emite remover-oansista ao clicar no botão de remover a criança da cor', async () => {
+    const wrapper = mount(EventoJogosCard, {
+      props: { evento: EVENTO },
+      global: { stubs },
+    })
+    const botao = wrapper.find('button[title="Remover Ana desta cor"]')
+    await botao.trigger('click')
+    expect(wrapper.emitted('remover-oansista')).toEqual([['cor1', 'o1']])
+  })
+
+  it('não permite remover criança quando o evento está finalizado', () => {
+    const finalizado = { ...EVENTO, status: 'finalizado' as const }
+    const wrapper = mount(EventoJogosCard, {
+      props: { evento: finalizado },
+      global: { stubs },
+    })
+    expect(wrapper.find('button[title="Remover Ana desta cor"]').exists()).toBe(false)
   })
 
   it('emite finalizar ao clicar no botão de finalizar jogos', async () => {

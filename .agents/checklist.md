@@ -94,7 +94,7 @@
 - [x] Teste: trigger `fn_propagar_pontos_jogos` atualiza folhas (pontos_jogos + cor_time) — validado via smoke test local
 - [x] RLS do módulo: escrita só `lider_jogos`/`diretor_geral` (evento, cores, oansistas, rodadas, resultados); diretor de clube NÃO cria evento (validado no smoke test)
 - [x] Ranking consolidado do sábado (por clube e geral)
-- [x] UX do módulo: busca de criança no evento lista só os clubes participantes (badge do clube nas opções); criança distribuída mostra o clube (badge com a cor do clube) quando o evento tem mais de um clube; excluir evento dentro do card (não "flutua" fora); refresh após ações não derruba o scroll da página (mantém conteúdo montado)
+- [x] UX do módulo: busca de criança no evento lista só os clubes participantes (badge do clube nas opções); criança distribuída mostra o nome na cor do clube (chip com fundo suave + botão de remover, removível antes de finalizar); excluir evento dentro do card (não "flutua" fora); refresh após ações não derruba o scroll da página (mantém conteúdo montado)
 - [ ] Relatório de frequência acumulada
 - [ ] Relatório de premiações acumuladas
 - [ ] PWA / instalação no celular do líder

@@ -3,7 +3,7 @@ import { computed, ref } from 'vue'
 import Button from 'primevue/button'
 import Select from 'primevue/select'
 import Tag from 'primevue/tag'
-import type { EventoCor, EventoJogo, OansistaOpcao } from '@/composables/useJogos'
+import type { EventoCor, EventoJogo, JogoIntegrante, OansistaOpcao } from '@/composables/useJogos'
 import { CORES_PREDEFINIDAS, corHex } from '@/utils/jogos'
 
 const props = withDefaults(defineProps<{
@@ -40,6 +40,11 @@ function aoSelecionarOansista(cor: EventoCor) {
   if (!oansistaId) return
   emit('adicionar-oansista', cor.id, oansistaId)
   oansistaPorCor.value[cor.id] = ''
+}
+
+function estiloDoClube(i: JogoIntegrante) {
+  const cor = i.clube?.cor ?? '#64748b'
+  return { backgroundColor: `${cor}1a`, color: cor }
 }
 </script>
 
@@ -132,19 +137,16 @@ function aoSelecionarOansista(cor: EventoCor) {
               <span
                 v-for="i in cor.oansistas"
                 :key="i.oansista_id"
-                class="inline-flex items-center gap-1"
+                class="inline-flex items-center gap-1 rounded-full border border-surface-300 px-2 py-1 text-xs"
+                :style="estiloDoClube(i)"
               >
-                <Tag
-                  :value="i.nome"
-                  rounded
-                  removable
-                  @remove="$emit('remover-oansista', cor.id, i.oansista_id)"
-                />
-                <Tag
-                  v-if="i.clube && evento.clubes.length > 1"
-                  :value="i.clube.nome"
-                  class="text-[10px]"
-                  :style="{ background: `${i.clube.cor ?? '#64748b'}20`, color: i.clube.cor ?? '#64748b' }"
+                {{ i.nome }}
+                <button
+                  v-if="evento.status === 'em_andamento'"
+                  type="button"
+                  class="pi pi-times cursor-pointer text-[10px] hover:opacity-70"
+                  :title="`Remover ${i.nome} desta cor`"
+                  @click="$emit('remover-oansista', cor.id, i.oansista_id)"
                 />
               </span>
               <span
