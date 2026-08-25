@@ -89,6 +89,16 @@ describe('EventoJogosCard', () => {
     expect(wrapper.emitted('finalizar')).toHaveLength(1)
   })
 
+  it('emite excluir ao clicar no botão de excluir evento', async () => {
+    const wrapper = mount(EventoJogosCard, {
+      props: { evento: EVENTO },
+      global: { stubs },
+    })
+    const botao = wrapper.findAll('button').find(b => b.attributes('title') === 'Excluir evento')
+    await botao!.trigger('click')
+    expect(wrapper.emitted('excluir')).toHaveLength(1)
+  })
+
   it('emite adicionar-cor com a cor disponível', async () => {
     const wrapper = mount(EventoJogosCard, {
       props: { evento: EVENTO },

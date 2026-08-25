@@ -25,7 +25,7 @@ const toast = useToast()
 const { user } = useAuth()
 const { encontro, encontros, carregando: carregandoEncontro, carregar: carregarEncontro, selecionar } = useEncontro()
 const {
-  eventos, evento, rodadas, catalogo, ranking, carregando, carregarEventos, carregarCatalogo, selecionarEvento,
+  eventos, evento, rodadas, catalogo, ranking, carregarEventos, carregarCatalogo, selecionarEvento,
   criarEvento, excluirEvento, adicionarCor, removerCor,
   adicionarOansista, removerOansista,
   adicionarRodada, excluirRodada, lancarResultado, removerResultado,
@@ -264,7 +264,7 @@ onMounted(carregarTudo)
     </div>
 
     <div
-      v-if="carregandoInicial || carregandoEncontro || carregando"
+      v-if="carregandoInicial || carregandoEncontro"
       class="flex justify-center py-10"
     >
       <i class="pi pi-spin pi-spinner text-2xl text-surface-400" />
@@ -330,7 +330,7 @@ onMounted(carregarTudo)
         </p>
 
         <div v-if="evento">
-          <div class="relative mb-4">
+          <div class="mb-4">
             <EventoJogosCard
               :evento="evento"
               :oansistas="oansistasDoEvento"
@@ -340,16 +340,7 @@ onMounted(carregarTudo)
               @remover-oansista="(corId, oansistaId) => acaoComAtualizacao(() => removerOansista(corId, oansistaId))"
               @finalizar="finalizar"
               @reabrir="reabrir"
-            />
-            <Button
-              v-if="evento.status === 'em_andamento'"
-              icon="pi pi-trash"
-              severity="danger"
-              text
-              size="small"
-              title="Excluir evento"
-              class="absolute -top-2 -right-2"
-              @click="excluirEventoConfirmado"
+              @excluir="excluirEventoConfirmado"
             />
           </div>
 

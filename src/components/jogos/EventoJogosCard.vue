@@ -20,6 +20,7 @@ const emit = defineEmits<{
   'remover-oansista': [corId: string, oansistaId: string]
   'finalizar': []
   'reabrir': []
+  'excluir': []
 }>()
 
 const oansistaPorCor = ref<Record<string, string>>({})
@@ -80,6 +81,15 @@ function aoSelecionarOansista(cor: EventoCor) {
           text
           size="small"
           @click="$emit('reabrir')"
+        />
+        <Button
+          v-if="evento.status === 'em_andamento'"
+          icon="pi pi-trash"
+          severity="danger"
+          text
+          size="small"
+          title="Excluir evento"
+          @click="$emit('excluir')"
         />
       </div>
     </div>

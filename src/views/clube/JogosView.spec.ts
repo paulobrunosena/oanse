@@ -136,4 +136,20 @@ describe('JogosView', () => {
     const nomes = (card.props('oansistas') as { id: string }[]).map(o => o.id).sort()
     expect(nomes).toEqual(['o1', 'o2'])
   })
+
+  it('exclui o evento via emit do card', async () => {
+    mocks.supabase.builderDe('eventos_jogos').data = EVENTOS
+    perfilLiderJogos()
+    const confirmMock = vi.fn(() => true)
+    vi.stubGlobal('confirm', confirmMock)
+    const wrapper = montar()
+    await flushPromises()
+
+    wrapper.findComponent({ name: 'EventoJogosCard' }).vm.$emit('excluir')
+    await flushPromises()
+
+    expect(confirmMock).toHaveBeenCalledWith('Excluir o evento "Jogos dos Flamas e Tochas"? Rodadas, pontos e cores serão removidos.')
+    expect(mocks.supabase.builderDe('eventos_jogos').delete).toHaveBeenCalled()
+    vi.unstubAllGlobals()
+  })
 })
