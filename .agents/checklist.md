@@ -53,6 +53,7 @@
 
 - [x] `useEncontro` — busca/cria o encontro do sábado corrente + histórico navegável
 - [x] Tela de chamada da turma (presença/falta) — com seletor de sábado (chamadas atrasadas)
+- [x] Backfill de "sábado perdido" — o líder cria o encontro de um sábado passado nunca registrado (ex.: sistema fora do ar) via `POST /api/encontros/retro` (`EncontroRetroativo.vue` + store `encontro.ts`); valida sábado/não-futuro/fora de `dias_sem_oanse`
 - [x] Admin > Calendário: sábados sem Oanse (RN 7) — bloqueia chamada/folha em férias/feriados
 - [x] Teste: falta zera pontuação do dia (trigger `fn_calcular_total_folha`)
 - [x] Folha Semanal: uniforme, bíblia, EBD, manual, conduta, leitura bíblica, visitantes convidados, seções do manual (sem ajuda vale mais / com ajuda), atividade extra e cor do time nos jogos

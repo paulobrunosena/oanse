@@ -9,6 +9,7 @@ import { useAuth } from '@/composables/useAuth'
 import { useEncontro } from '@/composables/useEncontro'
 import { useToast } from '@/composables/useToast'
 import EncontroSeletor from '@/components/encontro/EncontroSeletor.vue'
+import EncontroRetroativo from '@/components/encontro/EncontroRetroativo.vue'
 import type { Database } from '@/types/database.types'
 
 type Oansista = Database['public']['Tables']['oansistas']['Row']
@@ -198,6 +199,10 @@ onMounted(carregarTudo)
           {{ presentes }} / {{ oansistas.length }} presentes
         </div>
       </div>
+    </div>
+
+    <div class="flex justify-end mb-3">
+      <EncontroRetroativo @criado="aoSelecionarEncontro" />
     </div>
 
     <div

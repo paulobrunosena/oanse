@@ -16,3 +16,17 @@ export function sabadoCorrente(d = new Date()): string {
   const diaDoMes = String(sabado.getDate()).padStart(2, '0')
   return `${ano}-${mes}-${diaDoMes}`
 }
+
+/** Lista dos últimos n sábados (mais recente primeiro), em 'YYYY-MM-DD'. */
+export function sabadosAnteriores(n: number, hoje = new Date()): string[] {
+  const lista: string[] = []
+  const sabado = new Date(`${sabadoCorrente(hoje)}T00:00:00`)
+  for (let i = 0; i < n; i++) {
+    const ano = sabado.getFullYear()
+    const mes = String(sabado.getMonth() + 1).padStart(2, '0')
+    const diaDoMes = String(sabado.getDate()).padStart(2, '0')
+    lista.push(`${ano}-${mes}-${diaDoMes}`)
+    sabado.setDate(sabado.getDate() - 7)
+  }
+  return lista
+}

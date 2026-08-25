@@ -28,6 +28,7 @@ vi.mock('@/lib/api', () => ({
 
 const stubs = {
   EncontroSeletor: { name: 'EncontroSeletor', template: '<div />' },
+  EncontroRetroativo: { name: 'EncontroRetroativo', template: '<div />' },
   Card: { name: 'Card', template: '<div><slot name="content" /></div>' },
   Avatar: { name: 'Avatar', props: ['label'], template: '<span>{{ label }}</span>' },
   Tag: { name: 'Tag', props: ['value'], template: '<span>{{ value }}</span>' },

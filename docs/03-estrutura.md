@@ -65,7 +65,7 @@ oanse/
 │   ├── stores/                   # estado global (Pinia)
 │   │   ├── auth.ts               # user + profile + loadProfile + logout (+ auth.spec.ts)
 │   │   ├── role.ts               # isDiretorGeral, roleLabel, hasAny (+ role.spec.ts)
-│   │   └── encontro.ts           # sábado corrente + histórico + RN 7 (+ encontro.spec.ts)
+│   │   └── encontro.ts           # sábado corrente + histórico + RN 7 + sábados faltantes/retro (+ encontro.spec.ts)
 │   │   # (planejado) folha, remanejamento, transferência como stores se forem globais
 │   │
 │   ├── composables/
@@ -113,8 +113,10 @@ oanse/
 │   │
 │   ├── components/
 │   │   ├── encontro/
-│   │   │   ├── EncontroSeletor.vue  # seletor de sábado (histórico) — Chamada/Folha
-│   │   │   └── EncontroSeletor.spec.ts
+│   │   │   ├── EncontroSeletor.vue     # seletor de sábado (histórico) — Chamada/Folha
+│   │   │   ├── EncontroSeletor.spec.ts
+│   │   │   ├── EncontroRetroativo.vue  # backfill de "sábado perdido" (botão + dialog)
+│   │   │   └── EncontroRetroativo.spec.ts
 │   │   └── folha/
 │   │       ├── FolhaSemanalRow.vue  # linha da folha com preview de total (uniformes, bíblia, EBD, manual, conduta, leitura bíblica, visitantes, seções sem/com ajuda, atividade extra, cor do time)
 │   │       └── FolhaSemanalRow.spec.ts
@@ -140,6 +142,7 @@ oanse/
 │   │   └── auth.ts               # getUsuarioDoRequest(): lê Bearer token e valida JWT
 │   ├── api/
 │   │   ├── encontros/atual.ts    # cria/obtém sábado corrente (RN 7)
+│   │   ├── encontros/retro.ts    # backfill de "sábado perdido" (POST; RN 6)
 │   │   ├── transferencias.ts     # transferência permanente (RPC 0006)
 │   │   └── usuarios/
 │   │       ├── index.ts          # GET lista + POST cria usuário (service_role)

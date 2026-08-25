@@ -9,6 +9,7 @@ import { useEncontro } from '@/composables/useEncontro'
 import { useFolhaSemanal, type FormFolha } from '@/composables/useFolhaSemanal'
 import { useToast } from '@/composables/useToast'
 import EncontroSeletor from '@/components/encontro/EncontroSeletor.vue'
+import EncontroRetroativo from '@/components/encontro/EncontroRetroativo.vue'
 import FolhaSemanalRow from '@/components/folha/FolhaSemanalRow.vue'
 import type { Database } from '@/types/database.types'
 
@@ -187,6 +188,10 @@ onMounted(carregarTudo)
           {{ presentes.length }} / {{ oansistas.length }} presentes
         </div>
       </div>
+    </div>
+
+    <div class="flex justify-end mb-3">
+      <EncontroRetroativo @criado="aoSelecionarEncontro" />
     </div>
 
     <div

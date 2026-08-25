@@ -13,5 +13,6 @@ export function useEncontro() {
     carregar: store.carregar,
     carregarHistorico: store.carregarHistorico,
     selecionar: store.selecionar,
+    criarRetroativo: store.criarRetroativo,
   }
 }

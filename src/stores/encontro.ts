@@ -1,7 +1,8 @@
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
 import { supabase } from '@/lib/supabase'
 import { apiFetch } from '@/lib/api'
+import { sabadosAnteriores } from '@/utils/sabado'
 import type { Database } from '@/types/database.types'
 
 export type Encontro = Database['public']['Tables']['encontros']['Row']
@@ -26,6 +27,7 @@ interface EncontroAtualResponse {
 export const useEncontroStore = defineStore('encontro', () => {
   const encontro = ref<Encontro | null>(null)
   const encontros = ref<Encontro[]>([])
+  const diasSemOanse = ref<string[]>([])
   const semAtividade = ref(false)
   const motivoSemAtividade = ref<string | null>(null)
   const carregando = ref(false)
@@ -40,6 +42,18 @@ export const useEncontroStore = defineStore('encontro', () => {
     encontros.value = data ?? []
   }
 
+  async function carregarDiasSemOanse() {
+    const { data } = await supabase.from('dias_sem_oanse').select('data')
+    diasSemOanse.value = (data ?? []).map(d => d.data)
+  }
+
+  /** Sábados recentes sem encontro e fora de dias_sem_oanse (backfill). */
+  const sabadosFaltantes = computed(() => {
+    const comEncontro = new Set(encontros.value.map(e => e.data))
+    const semOanse = new Set(diasSemOanse.value)
+    return sabadosAnteriores(12).filter(d => !comEncontro.has(d) && !semOanse.has(d))
+  })
+
   async function carregar() {
     carregando.value = true
     erro.value = null
@@ -49,6 +63,7 @@ export const useEncontroStore = defineStore('encontro', () => {
       semAtividade.value = resposta.semAtividade
       motivoSemAtividade.value = resposta.motivo
       await carregarHistorico()
+      await carregarDiasSemOanse()
     }
     catch {
       encontro.value = null
@@ -66,8 +81,27 @@ export const useEncontroStore = defineStore('encontro', () => {
     motivoSemAtividade.value = null
   }
 
+  /**
+   * Backfill de sábado perdido: cria o encontro de um sábado passado (via
+   * servidor) e o seleciona, para o líder preencher chamada/folha depois.
+   */
+  async function criarRetroativo(data: string): Promise<{ encontro: Encontro, criado: boolean }> {
+    const resposta = await apiFetch<{ encontro: Encontro, criado: boolean }>('/api/encontros/retro', {
+      method: 'POST',
+      body: { data },
+    })
+    if (!encontros.value.some(e => e.id === resposta.encontro.id)) {
+      encontros.value = [...encontros.value, resposta.encontro].sort((a, b) =>
+        b.data.localeCompare(a.data),
+      )
+    }
+    selecionar(resposta.encontro.id)
+    return resposta
+  }
+
   return {
-    encontro, encontros, semAtividade, motivoSemAtividade, carregando, erro,
-    carregar, carregarHistorico, selecionar,
+    encontro, encontros, diasSemOanse, semAtividade, motivoSemAtividade, carregando, erro,
+    sabadosFaltantes,
+    carregar, carregarHistorico, carregarDiasSemOanse, selecionar, criarRetroativo,
   }
 })

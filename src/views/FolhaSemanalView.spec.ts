@@ -33,6 +33,7 @@ vi.mock('@/lib/api', () => ({
 
 const stubs = {
   EncontroSeletor: { name: 'EncontroSeletor', template: '<div />' },
+  EncontroRetroativo: { name: 'EncontroRetroativo', template: '<div />' },
   FolhaSemanalRow: { name: 'FolhaSemanalRow', template: '<div class="folha-row" />' },
   Card: { name: 'Card', template: '<div><slot name="content" /></div>' },
   Avatar: { name: 'Avatar', props: ['label'], template: '<span>{{ label }}</span>' },

@@ -172,6 +172,10 @@ create table prova_ingresso_licoes (
 -- RN 6: O líder acessa o encontro do sábado corrente (criado sob demanda pelo
 -- server/api/encontros/atual) e pode navegar pelo HISTÓRICO de encontros para
 -- lançar chamadas atrasadas (ex.: sábado sem internet, lançado depois).
+-- Backfill de "sábado perdido": server/api/encontros/retro cria o encontro de
+-- um sábado passado que nunca foi registrado (ex.: sistema fora do ar o sábado
+-- inteiro). Mesma autorização do atual (service_role p/ qualquer autenticado);
+-- valida que é sábado, não está no futuro e não é dia sem Oanse (RN 7).
 -- A leitura de encontros é aberta (RLS encontros_select = true); a escrita é
 -- restrita a diretor_geral/secretaria.
 

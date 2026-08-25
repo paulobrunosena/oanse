@@ -19,7 +19,10 @@ describe('store de encontro', () => {
 
   beforeEach(() => {
     setActivePinia(createPinia())
-    mocks.supabase = clienteSupabase({ encontros: () => builder(ENCONTROS) })
+    mocks.supabase = clienteSupabase({
+      encontros: () => builder(ENCONTROS),
+      dias_sem_oanse: () => builder([{ data: '2026-08-08' }]),
+    })
     fetchResposta = null
     fetchFalha = false
     globalThis.fetch = vi.fn(async () => {
@@ -92,6 +95,44 @@ describe('store de encontro', () => {
       await store.carregarHistorico()
       store.selecionar('inexistente')
       expect(store.encontro).toBeNull()
+    })
+  })
+
+  describe('sabadosFaltantes', () => {
+    it('lista sábados recentes sem encontro e fora de dias sem Oanse', () => {
+      vi.useFakeTimers()
+      vi.setSystemTime(new Date(2026, 7, 24)) // segunda-feira
+      const store = useEncontroStore()
+      store.encontros = ENCONTROS as Encontro[] // 22 e 15/08
+      store.diasSemOanse = ['2026-08-08']
+
+      expect(store.sabadosFaltantes[0]).toBe('2026-08-01')
+      expect(store.sabadosFaltantes).not.toContain('2026-08-22')
+      expect(store.sabadosFaltantes).not.toContain('2026-08-15')
+      expect(store.sabadosFaltantes).not.toContain('2026-08-08')
+      vi.useRealTimers()
+    })
+  })
+
+  describe('criarRetroativo', () => {
+    it('cria o sábado perdido, adiciona ao histórico e seleciona', async () => {
+      const novo = { id: 'e2', data: '2026-08-01', ativo: true } as unknown as Encontro
+      fetchResposta = { encontro: novo, criado: true }
+      const store = useEncontroStore()
+      await store.carregarHistorico()
+
+      const resposta = await store.criarRetroativo('2026-08-01')
+
+      expect(resposta.criado).toBe(true)
+      expect(store.encontros).toHaveLength(3)
+      expect(store.encontros).toContainEqual(novo)
+      expect(store.encontro?.id).toBe('e2')
+      expect(store.semAtividade).toBe(false)
+
+      const [url, init] = (globalThis.fetch as ReturnType<typeof vi.fn>).mock.calls.at(-1) as [string, RequestInit]
+      expect(url).toBe('/api/encontros/retro')
+      expect(init.method).toBe('POST')
+      expect(JSON.parse(init.body as string)).toEqual({ data: '2026-08-01' })
     })
   })
 })
