@@ -102,18 +102,22 @@ end $$;
 select seed_auth_user('diretor@oanse.local',  'oanse123', 'Diretor Geral',      '81999990001', 'diretor_geral');
 select seed_auth_user('secretaria@oanse.local','oanse123', 'Secretária',        '81999990002', 'secretaria');
 select seed_auth_user('diretor.ursinhos@oanse.local', 'oanse123', 'Diretor Ursinhos', '81999990003', 'diretor_clube', 'ursinhos');
+select seed_auth_user('diretor.faiscas@oanse.local',  'oanse123', 'Diretor Faíscas',  '81999990006', 'diretor_clube', 'faiscas');
+select seed_auth_user('diretor.flamas@oanse.local',   'oanse123', 'Diretor Flamas',   '81999990007', 'diretor_clube', 'flamas');
+select seed_auth_user('diretor.tochas@oanse.local',   'oanse123', 'Diretor Tochas',   '81999990008', 'diretor_clube', 'tochas');
 select seed_auth_user('lider.jogos@oanse.local', 'oanse123', 'Líder de Jogos',   '81999990005', 'lider_jogos');
-select seed_auth_user('tia.ana@oanse.local',  'oanse123', 'Tia Ana',            '81999990004', 'lider', 'ursinhos');
+select seed_auth_user('tia.ana@oanse.local',    'oanse123', 'Tia Ana',          '81999990004', 'lider', 'ursinhos');
+select seed_auth_user('tia.bea@oanse.local',    'oanse123', 'Tia Bea',          '81999990009', 'lider', 'faiscas');
+select seed_auth_user('tio.carlos@oanse.local', 'oanse123', 'Tio Carlos',       '81999990010', 'lider', 'flamas');
+select seed_auth_user('tia.duda@oanse.local',   'oanse123', 'Tia Duda',         '81999990011', 'lider', 'tochas');
 
--- Turma da líder Tia Ana + oansistas
+-- Líderes e oansistas de todos os clubes
 do $$
 declare
-  v_lider uuid;
   v_turma uuid;
 begin
-  select id into v_lider from profiles where nome = 'Tia Ana';
   insert into turmas (clube_id, lider_id, nome)
-  values ((select id from clubes where slug = 'ursinhos'), v_lider, 'Turma 1 - Tia Ana')
+  values ((select id from clubes where slug = 'ursinhos'), (select id from profiles where nome = 'Tia Ana'), 'Turma 1 - Tia Ana')
   returning id into v_turma;
 
   insert into oansistas (nome, data_nascimento, clube_id, turma_id, responsavel, contato) values
@@ -121,6 +125,35 @@ begin
     ('Helena Lima',    '2021-07-02', (select id from clubes where slug = 'ursinhos'), v_turma, 'Rita Lima',    '81988880102'),
     ('Benício Alves',  '2022-01-20', (select id from clubes where slug = 'ursinhos'), v_turma, 'João Alves',   '81988880103'),
     ('Alice Ferreira', '2021-11-08', (select id from clubes where slug = 'ursinhos'), v_turma, 'Marta Pereira','81988880104');
+
+  insert into turmas (clube_id, lider_id, nome)
+  values ((select id from clubes where slug = 'faiscas'), (select id from profiles where nome = 'Tia Bea'), 'Turma 1 - Tia Bea')
+  returning id into v_turma;
+
+  insert into oansistas (nome, data_nascimento, clube_id, turma_id, responsavel, contato) values
+    ('Davi Rocha',   '2019-04-10', (select id from clubes where slug = 'faiscas'), v_turma, 'Ana Rocha',    '81988880201'),
+    ('Laura Castro', '2018-09-22', (select id from clubes where slug = 'faiscas'), v_turma, 'Paula Castro', '81988880202'),
+    ('Heitor Dias',  '2019-01-05', (select id from clubes where slug = 'faiscas'), v_turma, 'Jorge Dias',   '81988880203');
+
+  insert into turmas (clube_id, lider_id, nome)
+  values ((select id from clubes where slug = 'flamas'), (select id from profiles where nome = 'Tio Carlos'), 'Turma 1 - Tio Carlos')
+  returning id into v_turma;
+
+  insert into oansistas (nome, data_nascimento, clube_id, turma_id, responsavel, contato) values
+    ('Valentina Nunes', '2016-06-14', (select id from clubes where slug = 'flamas'), v_turma, 'Sônia Nunes',  '81988880301'),
+    ('Gabriel Pinto',   '2017-02-28', (select id from clubes where slug = 'flamas'), v_turma, 'Rafael Pinto', '81988880302'),
+    ('Cecília Ramos',   '2016-11-09', (select id from clubes where slug = 'flamas'), v_turma, 'Lúcia Ramos',  '81988880303'),
+    ('Arthur Melo',     '2017-07-17', (select id from clubes where slug = 'flamas'), v_turma, 'Pedro Melo',   '81988880304');
+
+  insert into turmas (clube_id, lider_id, nome)
+  values ((select id from clubes where slug = 'tochas'), (select id from profiles where nome = 'Tia Duda'), 'Turma 1 - Tia Duda')
+  returning id into v_turma;
+
+  insert into oansistas (nome, data_nascimento, clube_id, turma_id, responsavel, contato) values
+    ('Samuel Barros',  '2015-03-30', (select id from clubes where slug = 'tochas'), v_turma, 'Mônica Barros', '81988880401'),
+    ('Isabela Farias', '2014-10-12', (select id from clubes where slug = 'tochas'), v_turma, 'Tadeu Farias',  '81988880402'),
+    ('Theo Cardoso',   '2015-08-21', (select id from clubes where slug = 'tochas'), v_turma, 'Diana Cardoso', '81988880403'),
+    ('Larissa Prado',  '2014-12-04', (select id from clubes where slug = 'tochas'), v_turma, 'Vera Prado',    '81988880404');
 end $$;
 
 drop function seed_auth_user(text, text, text, text, text, text);

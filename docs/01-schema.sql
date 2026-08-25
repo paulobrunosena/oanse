@@ -302,7 +302,8 @@ create table progresso_manual (
 --    em_andamento/finalizado
 --  - evento_jogos_clubes: clubes participantes (definem o combo de jogos)
 --  - evento_jogos_cores: cores participantes (verde/vermelho/amarelo/azul)
---  - evento_jogos_cores_oansistas: oansistas de cada cor
+--  - evento_jogos_cores_oansistas: oansistas de cada cor (a busca só oferece
+--    crianças dos clubes que participam do evento, com badge do clube na tela)
 --  - jogos: rodada de um jogo dentro do evento (nome vem do catálogo)
 --  - jogo_resultados: colocação/desclassificado de cada cor na rodada
 --

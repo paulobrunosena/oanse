@@ -43,7 +43,8 @@
 - [x] Teste de aceitação: líder vê APENAS a própria turma (RLS)
 
 > Notas da Fase 1: usuários de teste no seed (senha `oanse123`):
-> diretor@ / secretaria@ / diretor.ursinhos@ / tia.ana@oanse.local.
+> diretor@ / secretaria@ / diretor.{ursinhos,faiscas,flamas,tochas}@ /
+> tia.ana@ / tia.bea@ / tio.carlos@ / tia.duda@ / lider.jogos@oanse.local.
 > Migration `0003_grants.sql`: policies RLS sozinhas não bastam — os grants de
 > privilégio para `authenticated`/`service_role` são obrigatórios (descoberto
 > no teste de aceitação). Rotas server em `server/api/usuarios/**` usam
