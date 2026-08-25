@@ -499,8 +499,7 @@ create policy "jogos_write" on jogos
   using (
     fn_role() = 'diretor_geral'
     or (fn_role() = 'diretor_clube'
-        and fn_clube_id() = any (fn_clube_da_categoria(
-              (select categoria from jogos j where j.id = jogos.id))))
+        and fn_clube_id() = any (fn_clube_da_categoria(categoria)))
   )
   with check (
     fn_role() = 'diretor_geral'
