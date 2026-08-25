@@ -116,7 +116,7 @@ oanse/
 │   │   │   ├── EncontroSeletor.vue  # seletor de sábado (histórico) — Chamada/Folha
 │   │   │   └── EncontroSeletor.spec.ts
 │   │   └── folha/
-│   │       ├── FolhaSemanalRow.vue  # linha da folha com preview de total
+│   │       ├── FolhaSemanalRow.vue  # linha da folha com preview de total (uniformes, bíblia, EBD, manual, conduta, leitura bíblica, visitantes, seções sem/com ajuda, atividade extra, cor do time)
 │   │       └── FolhaSemanalRow.spec.ts
 │   │   # (planejado) ui/AppSidebar, PageHeader, DataTable
 │   │   # (planejado) folha/FolhaIndividualForm, VisitanteCard, VisitaTracker

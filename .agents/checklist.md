@@ -55,8 +55,9 @@
 - [x] Tela de chamada da turma (presença/falta) — com seletor de sábado (chamadas atrasadas)
 - [x] Admin > Calendário: sábados sem Oanse (RN 7) — bloqueia chamada/folha em férias/feriados
 - [x] Teste: falta zera pontuação do dia (trigger `fn_calcular_total_folha`)
-- [x] Folha Semanal: uniforme, bíblia, EBD, manual, conduta, seções, extras
+- [x] Folha Semanal: uniforme, bíblia, EBD, manual, conduta, leitura bíblica, visitantes convidados, seções do manual (sem ajuda vale mais / com ajuda), atividade extra e cor do time nos jogos
 - [x] Preview do total no formulário (`utils/pontos.ts`)
+  - (2026-08-24) Itens ampliados na migration `0008_folha_novos_itens.sql`: `secoes_dia` vira `secoes_sem_ajuda` + `secoes_com_ajuda`; novas chaves `leitura_biblica`/`visitante`; `cor_time` é armazenado mas **não pontua** (fica para o módulo de jogos — Fase 4).
 - [x] Clube > Remanejamentos: substituição temporária por encontro — Diretor de Clube
 - [x] Teste: substituto enxerga/edita a turma remanejada (RLS)
 - [x] Clube > Transferências: transferência permanente — Diretor de Clube
@@ -110,4 +111,5 @@
 - [x] Fase G — CI (`vue-tsc`) + Deploy Vercel (SPA + Functions)
 - [x] Limpeza: remover `nuxt.config.ts`, `app/` (Nuxt), `server/` (Nitro) e dependências Nuxt/Nuxt UI após conclusão
 - [x] **App shell Sakai (PrimeVue)** — integrado ao layout autenticado: `src/layouts/` (AppLayout/AppSidebar/AppTopbar/AppMenu/AppMenuItem/AppFooter + `composables/layout.ts`), SCSS em `src/assets/layout/`, dark mode (`.app-dark`), menu por perfil (RBAC), Tailwind via `tailwindcss-primeui` + `sass`
+- [x] **Ajustes de UI pós-migração (2026-08-24)** — perfil (avatar, nome, cargo, logout) fixo no rodapé da sidebar no mobile (`AppSidebar.vue` + SCSS `layout-sidebar-profile`); fundo `bg-[var(--surface-card)]` nas telas do líder (Chamada, Folha Semanal, Remanejamentos) para o padrão claro/dark; InputNumber com largura maior (`5rem`, `w-36`/`w-40`) para não cortar os números (Folha Semanal e Configurações); limpeza de artefatos Nuxt (`.nuxt/`, container/volume/rede Docker órfãos)
 - [x] **Upgrade de majors (2026-08-24)** — Vite 8 (Rolldown), vitest 4, plugin-vue 6, Pinia 4 (ESM + `@vue/devtools-api`), ESLint 10 (plugin-vue 10, parser 10, vue-tsc 3) e PrimeVue 5 (tema via `@primeuix/themes`, preset `aura-compat` p/ raiz 14px, `primeicons` 8). Lint/typecheck/build/72 testes verdes.
