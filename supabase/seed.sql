@@ -25,6 +25,43 @@ insert into jogos_pontos_config (colocacao, pontos) values
   (1, 100), (2, 70), (3, 50), (4, 40);
 
 -- ============================================================================
+-- Catálogo de jogos por clube (alimenta o combo do registro de rodadas)
+-- ============================================================================
+insert into jogos_catalogo (clube_id, nome) values
+  ((select id from clubes where slug = 'ursinhos'), 'trenzinho de mãos dadas'),
+  ((select id from clubes where slug = 'ursinhos'), 'de gatinhos (em pé)'),
+  ((select id from clubes where slug = 'ursinhos'), 'saquinho de feijão na cabeça'),
+  ((select id from clubes where slug = 'faiscas'),  'de gatinhos (de joelhos)'),
+  ((select id from clubes where slug = 'faiscas'),  'saquinho de feijão na cabeça'),
+  ((select id from clubes where slug = 'faiscas'),  'agilidade zigue-zague'),
+  ((select id from clubes where slug = 'faiscas'),  'queimada'),
+  ((select id from clubes where slug = 'faiscas'),  'boliche dos faíscas'),
+  ((select id from clubes where slug = 'faiscas'),  'revezamento com bexigas'),
+  ((select id from clubes where slug = 'flamas'),   'revezamento com saquinho de feijão'),
+  ((select id from clubes where slug = 'flamas'),   'corrida de 3 pernas'),
+  ((select id from clubes where slug = 'flamas'),   'revezamento sprint'),
+  ((select id from clubes where slug = 'flamas'),   'agilidade zigue-zague'),
+  ((select id from clubes where slug = 'flamas'),   'sprint'),
+  ((select id from clubes where slug = 'flamas'),   'cabo de guerra'),
+  ((select id from clubes where slug = 'flamas'),   'derrubando o pino'),
+  ((select id from clubes where slug = 'flamas'),   'revezamento maratona'),
+  ((select id from clubes where slug = 'flamas'),   'bonanza'),
+  ((select id from clubes where slug = 'flamas'),   'maratona'),
+  ((select id from clubes where slug = 'flamas'),   'bola no túnel'),
+  ((select id from clubes where slug = 'tochas'),   'revezamento com saquinho de feijão'),
+  ((select id from clubes where slug = 'tochas'),   'corrida de 3 pernas'),
+  ((select id from clubes where slug = 'tochas'),   'revezamento sprint'),
+  ((select id from clubes where slug = 'tochas'),   'agilidade zigue-zague'),
+  ((select id from clubes where slug = 'tochas'),   'sprint'),
+  ((select id from clubes where slug = 'tochas'),   'cabo de guerra'),
+  ((select id from clubes where slug = 'tochas'),   'derrubando o pino'),
+  ((select id from clubes where slug = 'tochas'),   'revezamento maratona'),
+  ((select id from clubes where slug = 'tochas'),   'bonanza'),
+  ((select id from clubes where slug = 'tochas'),   'maratona'),
+  ((select id from clubes where slug = 'tochas'),   'bola no túnel'),
+  ((select id from clubes where slug = 'tochas'),   'revezamento com bola de basquete');
+
+-- ============================================================================
 -- Usuários de teste (senha: oanse123). O trigger on_auth_user_created cria o
 -- profile a partir dos metadados; depois vinculamos o clube onde aplicável.
 -- ============================================================================
@@ -65,6 +102,7 @@ end $$;
 select seed_auth_user('diretor@oanse.local',  'oanse123', 'Diretor Geral',      '81999990001', 'diretor_geral');
 select seed_auth_user('secretaria@oanse.local','oanse123', 'Secretária',        '81999990002', 'secretaria');
 select seed_auth_user('diretor.ursinhos@oanse.local', 'oanse123', 'Diretor Ursinhos', '81999990003', 'diretor_clube', 'ursinhos');
+select seed_auth_user('lider.jogos@oanse.local', 'oanse123', 'Líder de Jogos',   '81999990005', 'lider_jogos');
 select seed_auth_user('tia.ana@oanse.local',  'oanse123', 'Tia Ana',            '81999990004', 'lider', 'ursinhos');
 
 -- Turma da líder Tia Ana + oansistas

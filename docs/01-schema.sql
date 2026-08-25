@@ -284,55 +284,88 @@ create table progresso_manual (
 );
 
 -- ----------------------------------------------------------------------------
--- MÓDULO DE JOGOS
+-- MÓDULO DE JOGOS (Líder de Jogos)
 -- ----------------------------------------------------------------------------
--- RN 3: jogos por encontro marcados com 1..N clubes participantes (mínimo 1,
--- máximo os 4). A criação é atômica na RPC fn_criar_jogo (valida que o autor é
--- diretor_geral ou diretor de um clube participante). A categoria fixa
--- 'faiscas'/'flamas_tochas' foi substituída pela marcação explícita de clubes,
--- permitindo qualquer combinação (ex.: Faíscas + Flamas jogam juntos).
+-- RN 3 (revisado 2026-08-25): fluxo simplificado para o líder de jogos. O evento
+-- é cadastrado UMA vez por sábado (clubes, cores participantes e oansistas de
+-- cada cor); depois o líder só registra o resultado de cada rodada (nome do
+-- jogo vindo do catálogo + colocação das cores). Ao final, finaliza o evento e
+-- consulta o ranking das cores para o anúncio.
+--
+--  - jogos_catalogo: nomes de jogos por clube (CRUD) — combo do registro de
+--    rodada (nomes repetidos entre clubes não aparecem duplicados)
+--  - eventos_jogos: sessão de jogos do sábado (uma por encontro), status
+--    em_andamento/finalizado
+--  - evento_jogos_clubes: clubes participantes (definem o combo de jogos)
+--  - evento_jogos_cores: cores participantes (verde/vermelho/amarelo/azul)
+--  - evento_jogos_cores_oansistas: oansistas de cada cor
+--  - jogos: rodada de um jogo dentro do evento (nome vem do catálogo)
+--  - jogo_resultados: colocação/desclassificado de cada cor na rodada
+--
+-- Criação atômica do evento na RPC fn_criar_evento_jogos (valida que o autor é
+-- lider_jogos ou diretor_geral). Pontos/cor_time são propagados às folhas pelo
+-- trigger fn_propagar_pontos_jogos. Ranking das cores via fn_ranking_cores_do_evento.
 
-create table jogos (
+create table jogos_catalogo (
+  id         uuid primary key default uuid_generate_v4(),
+  clube_id   uuid not null references clubes(id) on delete cascade,
+  nome       text not null,
+  created_at timestamptz not null default now(),
+  unique (clube_id, nome)
+);
+
+create table eventos_jogos (
   id          uuid primary key default uuid_generate_v4(),
   encontro_id uuid not null references encontros(id) on delete cascade,
   nome        text not null,
+  status      text not null default 'em_andamento'
+              check (status in ('em_andamento', 'finalizado')),
   criado_por  uuid references profiles(id),
-  created_at  timestamptz not null default now()
+  created_at  timestamptz not null default now(),
+  updated_at  timestamptz not null default now(),
+  unique (encontro_id)
 );
 
--- Clubes participantes do jogo (criação via RPC fn_criar_jogo)
-create table jogos_clubes (
-  id       uuid primary key default uuid_generate_v4(),
-  jogo_id  uuid not null references jogos(id) on delete cascade,
-  clube_id uuid not null references clubes(id),
-  unique (jogo_id, clube_id)
+create table evento_jogos_clubes (
+  id         uuid primary key default uuid_generate_v4(),
+  evento_id  uuid not null references eventos_jogos(id) on delete cascade,
+  clube_id   uuid not null references clubes(id),
+  unique (evento_id, clube_id)
 );
 
-create table jogo_times (
-  id       uuid primary key default uuid_generate_v4(),
-  jogo_id  uuid not null references jogos(id) on delete cascade,
-  nome     text not null,
-  cor      text,
-  lider_id uuid references profiles(id)  -- líder responsável pelo time
+create table evento_jogos_cores (
+  id         uuid primary key default uuid_generate_v4(),
+  evento_id  uuid not null references eventos_jogos(id) on delete cascade,
+  cor        text not null check (cor in ('verde', 'vermelho', 'amarelo', 'azul')),
+  unique (evento_id, cor)
 );
 
--- Composição dos times (para propagar pontos ao ranking individual)
-create table jogo_time_integrantes (
+create table evento_jogos_cores_oansistas (
   id          uuid primary key default uuid_generate_v4(),
-  time_id     uuid not null references jogo_times(id) on delete cascade,
+  cor_id      uuid not null references evento_jogos_cores(id) on delete cascade,
   oansista_id uuid not null references oansistas(id) on delete cascade,
-  unique (time_id, oansista_id)
+  unique (cor_id, oansista_id)
 );
 
+-- Rodada de um jogo dentro do evento
+create table jogos (
+  id         uuid primary key default uuid_generate_v4(),
+  evento_id  uuid not null references eventos_jogos(id) on delete cascade,
+  nome       text not null,
+  criado_por uuid references profiles(id),
+  created_at timestamptz not null default now()
+);
+
+-- Resultado de cada cor na rodada (pontos derivados de jogos_pontos_config)
 create table jogo_resultados (
   id              uuid primary key default uuid_generate_v4(),
   jogo_id         uuid not null references jogos(id) on delete cascade,
-  time_id         uuid not null references jogo_times(id) on delete cascade,
+  cor_id          uuid not null references evento_jogos_cores(id) on delete cascade,
   colocacao       smallint check (colocacao between 1 and 4),
   desclassificado boolean not null default false,
   pontos          int not null default 0,   -- derivado de jogos_pontos_config
   created_at      timestamptz not null default now(),
-  unique (jogo_id, time_id),
+  unique (jogo_id, cor_id),
   check (desclassificado or colocacao is not null)
 );
 
@@ -365,8 +398,12 @@ create index idx_presencas_encontro on presencas(encontro_id);
 create index idx_folhas_encontro    on folhas_semanais(encontro_id);
 create index idx_folhas_oansista    on folhas_semanais(oansista_id);
 create index idx_progresso_oansista on progresso_manual(oansista_id);
-create index idx_jogos_encontro     on jogos(encontro_id);
-create index idx_jogos_clubes_clube on jogos_clubes(clube_id);
+create index idx_jogos_catalogo_clube on jogos_catalogo(clube_id);
+create index idx_evento_jogos_clubes_evento on evento_jogos_clubes(evento_id);
+create index idx_evento_jogos_cores_evento on evento_jogos_cores(evento_id);
+create index idx_evento_cores_oansistas_cor on evento_jogos_cores_oansistas(cor_id);
+create index idx_jogos_evento         on jogos(evento_id);
+create index idx_jogo_resultados_jogo on jogo_resultados(jogo_id);
 create index idx_pendencias_status  on premios_pendentes(status);
 create index idx_visitas_visitante  on visitas(visitante_id);
 
@@ -385,6 +422,7 @@ end $$;
 create trigger trg_profiles_updated  before update on profiles  for each row execute function fn_set_updated_at();
 create trigger trg_oansistas_updated before update on oansistas for each row execute function fn_set_updated_at();
 create trigger trg_folhas_updated     before update on folhas_semanais for each row execute function fn_set_updated_at();
+create trigger trg_eventos_jogos_updated before update on eventos_jogos for each row execute function fn_set_updated_at();
 
 -- Cria profile automaticamente no signup (role/nome vindos dos metadados)
 create or replace function fn_handle_new_user()
@@ -506,92 +544,122 @@ create trigger trg_resultado_pontos
   on jogo_resultados
   for each row execute function fn_definir_pontos_resultado();
 
--- Criação atômica do jogo + clubes participantes (RN 3): autoriza apenas
--- diretor_geral ou diretor de um clube participante.
-create or replace function fn_criar_jogo(
+-- Criação atômica do evento de jogos + clubes + cores (RN 3 revisado):
+-- autoriza apenas lider_jogos ou diretor_geral. Uma sessão por encontro.
+create or replace function fn_criar_evento_jogos(
   p_encontro_id uuid,
   p_nome        text,
   p_clubes      uuid[],
+  p_cores       text[],
   p_criado_por  uuid default auth.uid()
 )
-returns jogos
+returns eventos_jogos
 language plpgsql security definer set search_path = public as $$
 declare
-  v_jogo jogos;
-  v_n    int;
+  v_evento  eventos_jogos;
+  v_n       int;
+  v_cor     text;
 begin
   select array_length(p_clubes, 1) into v_n;
-
   if v_n is null or v_n < 1 then
-    raise exception 'O jogo precisa de ao menos 1 clube';
-  end if;
-  if v_n > 4 then
-    raise exception 'Um jogo pode envolver no máximo os 4 clubes';
+    raise exception 'Selecione ao menos um clube participante';
   end if;
 
-  if not (
-    fn_role() = 'diretor_geral'
-    or (fn_role() = 'diretor_clube' and fn_clube_id() = any (p_clubes))
-  ) then
-    raise exception 'Apenas o diretor de um clube participante pode criar o jogo';
+  select array_length(p_cores, 1) into v_n;
+  if v_n is null or v_n < 2 then
+    raise exception 'Selecione ao menos 2 cores participantes';
   end if;
 
-  insert into jogos (encontro_id, nome, criado_por)
+  if not (fn_role() in ('lider_jogos', 'diretor_geral')) then
+    raise exception 'Apenas o líder de jogos pode criar o evento de jogos';
+  end if;
+
+  if exists (select 1 from eventos_jogos where encontro_id = p_encontro_id) then
+    raise exception 'Já existe um evento de jogos para este encontro';
+  end if;
+
+  foreach v_cor in array p_cores loop
+    if v_cor not in ('verde', 'vermelho', 'amarelo', 'azul') then
+      raise exception 'Cor inválida: %', v_cor;
+    end if;
+  end loop;
+
+  insert into eventos_jogos (encontro_id, nome, criado_por)
   values (p_encontro_id, p_nome, p_criado_por)
-  returning * into v_jogo;
+  returning * into v_evento;
 
-  insert into jogos_clubes (jogo_id, clube_id)
-  select v_jogo.id, c
-    from unnest(p_clubes) as c
-  on conflict (jogo_id, clube_id) do nothing;
+  insert into evento_jogos_clubes (evento_id, clube_id)
+  select v_evento.id, c from unnest(p_clubes) c
+  on conflict (evento_id, clube_id) do nothing;
 
-  return v_jogo;
+  insert into evento_jogos_cores (evento_id, cor)
+  select v_evento.id, c from unnest(p_cores) c
+  on conflict (evento_id, cor) do nothing;
+
+  return v_evento;
 end;
 $$;
 
-grant execute on function fn_criar_jogo(uuid, text, uuid[], uuid) to authenticated;
+grant execute on function fn_criar_evento_jogos(uuid, text, uuid[], text[], uuid) to authenticated;
 
--- Recalcula pontos_jogos das folhas dos integrantes do time (RN 3). Soma os
--- pontos de TODOS os jogos do encontro; integrantes sem resultado ficam com 0.
--- Também grava cor_time (informacional, não pontua) com a cor do time do jogo.
+-- Ranking das cores do evento (anúncio do placar no final da programação)
+create or replace function fn_ranking_cores_do_evento(p_evento_id uuid)
+returns table (cor text, pontos bigint, posicao bigint)
+language sql stable security definer set search_path = public as $$
+  select c.cor,
+         coalesce(sum(r.pontos), 0) as pontos,
+         rank() over (order by coalesce(sum(r.pontos), 0) desc, c.cor)
+  from evento_jogos_cores c
+  left join jogo_resultados r on r.cor_id = c.id
+  where c.evento_id = p_evento_id
+  group by c.id, c.cor
+  order by 2 desc, c.cor;
+$$;
+
+grant execute on function fn_ranking_cores_do_evento(uuid) to authenticated;
+
+-- Recalcula pontos_jogos e cor_time das folhas do encontro (RN 3). Soma os
+-- pontos de TODAS as rodadas do evento para cada oansista de cor; integrantes
+-- de cor sem resultado ficam com 0. cor_time é informacional (não pontua).
 create or replace function fn_propagar_pontos_jogos()
 returns trigger language plpgsql security definer set search_path = public as $$
 declare
+  v_evento   uuid;
   v_encontro uuid;
-  v_jogo_id  uuid;
 begin
   if TG_OP = 'DELETE' then
-    v_jogo_id := old.jogo_id;
+    select evento_id into v_evento from jogos where id = old.jogo_id;
   else
-    v_jogo_id := new.jogo_id;
+    select evento_id into v_evento from jogos where id = new.jogo_id;
   end if;
 
-  select encontro_id into v_encontro from jogos where id = v_jogo_id;
+  select encontro_id into v_encontro from eventos_jogos where id = v_evento;
 
   update folhas_semanais f
      set pontos_jogos = coalesce(sub.pontos, 0)
     from (
       select distinct i.oansista_id
-        from jogo_time_integrantes i
-        join jogo_times t on t.id = i.time_id
-        join jogos j on j.id = t.jogo_id and j.encontro_id = v_encontro
+        from evento_jogos_cores_oansistas i
+        join evento_jogos_cores c on c.id = i.cor_id
+        join eventos_jogos ev on ev.id = c.evento_id and ev.encontro_id = v_encontro
     ) participante
     left join (
       select i.oansista_id, sum(r.pontos) as pontos
         from jogo_resultados r
-        join jogo_times t on t.id = r.time_id
-        join jogos j on j.id = r.jogo_id and j.encontro_id = v_encontro
-        join jogo_time_integrantes i on i.time_id = t.id
+        join jogos j on j.id = r.jogo_id
+        join eventos_jogos ev on ev.id = j.evento_id and ev.encontro_id = v_encontro
+        join evento_jogos_cores c on c.id = r.cor_id
+        join evento_jogos_cores_oansistas i on i.cor_id = c.id
        group by i.oansista_id
     ) sub on sub.oansista_id = participante.oansista_id
    where f.oansista_id = participante.oansista_id
      and f.encontro_id = v_encontro;
 
   update folhas_semanais f
-     set cor_time = t.cor
-    from jogo_time_integrantes i
-    join jogo_times t on t.id = i.time_id
-   where t.jogo_id = v_jogo_id
+     set cor_time = c.cor
+    from evento_jogos_cores_oansistas i
+    join evento_jogos_cores c on c.id = i.cor_id
+   where c.evento_id = v_evento
      and f.oansista_id = i.oansista_id
      and f.encontro_id = v_encontro;
 
@@ -700,3 +768,41 @@ insert into itens_pontuacao (chave, descricao, pontos) values
 
 insert into jogos_pontos_config (colocacao, pontos) values
   (1, 100), (2, 70), (3, 50), (4, 40);
+
+-- Catálogo de jogos por clube (combo do registro de rodada)
+insert into jogos_catalogo (clube_id, nome) values
+  ((select id from clubes where slug = 'ursinhos'), 'trenzinho de mãos dadas'),
+  ((select id from clubes where slug = 'ursinhos'), 'de gatinhos (em pé)'),
+  ((select id from clubes where slug = 'ursinhos'), 'saquinho de feijão na cabeça'),
+  ((select id from clubes where slug = 'faiscas'),  'de gatinhos (de joelhos)'),
+  ((select id from clubes where slug = 'faiscas'),  'saquinho de feijão na cabeça'),
+  ((select id from clubes where slug = 'faiscas'),  'agilidade zigue-zague'),
+  ((select id from clubes where slug = 'faiscas'),  'queimada'),
+  ((select id from clubes where slug = 'faiscas'),  'boliche dos faíscas'),
+  ((select id from clubes where slug = 'faiscas'),  'revezamento com bexigas'),
+  ((select id from clubes where slug = 'flamas'),   'revezamento com saquinho de feijão'),
+  ((select id from clubes where slug = 'flamas'),   'corrida de 3 pernas'),
+  ((select id from clubes where slug = 'flamas'),   'revezamento sprint'),
+  ((select id from clubes where slug = 'flamas'),   'agilidade zigue-zague'),
+  ((select id from clubes where slug = 'flamas'),   'sprint'),
+  ((select id from clubes where slug = 'flamas'),   'cabo de guerra'),
+  ((select id from clubes where slug = 'flamas'),   'derrubando o pino'),
+  ((select id from clubes where slug = 'flamas'),   'revezamento maratona'),
+  ((select id from clubes where slug = 'flamas'),   'bonanza'),
+  ((select id from clubes where slug = 'flamas'),   'maratona'),
+  ((select id from clubes where slug = 'flamas'),   'bola no túnel'),
+  ((select id from clubes where slug = 'tochas'),   'revezamento com saquinho de feijão'),
+  ((select id from clubes where slug = 'tochas'),   'corrida de 3 pernas'),
+  ((select id from clubes where slug = 'tochas'),   'revezamento sprint'),
+  ((select id from clubes where slug = 'tochas'),   'agilidade zigue-zague'),
+  ((select id from clubes where slug = 'tochas'),   'sprint'),
+  ((select id from clubes where slug = 'tochas'),   'cabo de guerra'),
+  ((select id from clubes where slug = 'tochas'),   'derrubando o pino'),
+  ((select id from clubes where slug = 'tochas'),   'revezamento maratona'),
+  ((select id from clubes where slug = 'tochas'),   'bonanza'),
+  ((select id from clubes where slug = 'tochas'),   'maratona'),
+  ((select id from clubes where slug = 'tochas'),   'bola no túnel'),
+  ((select id from clubes where slug = 'tochas'),   'revezamento com bola de basquete');
+
+-- Usuários de teste (senha oanse123) — inclui o Líder de Jogos
+-- (diretor@, secretaria@, diretor.ursinhos@, lider.jogos@, tia.ana@)

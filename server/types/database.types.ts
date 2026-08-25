@@ -112,6 +112,150 @@ export type Database = {
         }
         Relationships: []
       }
+      evento_jogos_clubes: {
+        Row: {
+          clube_id: string
+          evento_id: string
+          id: string
+        }
+        Insert: {
+          clube_id: string
+          evento_id: string
+          id?: string
+        }
+        Update: {
+          clube_id?: string
+          evento_id?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "evento_jogos_clubes_clube_id_fkey"
+            columns: ["clube_id"]
+            isOneToOne: false
+            referencedRelation: "clubes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "evento_jogos_clubes_evento_id_fkey"
+            columns: ["evento_id"]
+            isOneToOne: false
+            referencedRelation: "eventos_jogos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      evento_jogos_cores: {
+        Row: {
+          cor: string
+          evento_id: string
+          id: string
+        }
+        Insert: {
+          cor: string
+          evento_id: string
+          id?: string
+        }
+        Update: {
+          cor?: string
+          evento_id?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "evento_jogos_cores_evento_id_fkey"
+            columns: ["evento_id"]
+            isOneToOne: false
+            referencedRelation: "eventos_jogos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      evento_jogos_cores_oansistas: {
+        Row: {
+          cor_id: string
+          id: string
+          oansista_id: string
+        }
+        Insert: {
+          cor_id: string
+          id?: string
+          oansista_id: string
+        }
+        Update: {
+          cor_id?: string
+          id?: string
+          oansista_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "evento_jogos_cores_oansistas_cor_id_fkey"
+            columns: ["cor_id"]
+            isOneToOne: false
+            referencedRelation: "evento_jogos_cores"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "evento_jogos_cores_oansistas_oansista_id_fkey"
+            columns: ["oansista_id"]
+            isOneToOne: false
+            referencedRelation: "oansistas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      eventos_jogos: {
+        Row: {
+          created_at: string
+          criado_por: string | null
+          encontro_id: string
+          id: string
+          nome: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          criado_por?: string | null
+          encontro_id: string
+          id?: string
+          nome: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          criado_por?: string | null
+          encontro_id?: string
+          id?: string
+          nome?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "eventos_jogos_criado_por_fkey"
+            columns: ["criado_por"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "eventos_jogos_encontro_id_fkey"
+            columns: ["encontro_id"]
+            isOneToOne: true
+            referencedRelation: "encontros"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "eventos_jogos_encontro_id_fkey"
+            columns: ["encontro_id"]
+            isOneToOne: true
+            referencedRelation: "v_ranking_semanal"
+            referencedColumns: ["encontro_id"]
+          },
+        ]
+      }
       folhas_semanais: {
         Row: {
           atividade_extra: number
@@ -241,116 +385,44 @@ export type Database = {
       jogo_resultados: {
         Row: {
           colocacao: number | null
+          cor_id: string
           created_at: string
           desclassificado: boolean
           id: string
           jogo_id: string
           pontos: number
-          time_id: string
         }
         Insert: {
           colocacao?: number | null
+          cor_id: string
           created_at?: string
           desclassificado?: boolean
           id?: string
           jogo_id: string
           pontos?: number
-          time_id: string
         }
         Update: {
           colocacao?: number | null
+          cor_id?: string
           created_at?: string
           desclassificado?: boolean
           id?: string
           jogo_id?: string
           pontos?: number
-          time_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "jogo_resultados_cor_id_fkey"
+            columns: ["cor_id"]
+            isOneToOne: false
+            referencedRelation: "evento_jogos_cores"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "jogo_resultados_jogo_id_fkey"
             columns: ["jogo_id"]
             isOneToOne: false
             referencedRelation: "jogos"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "jogo_resultados_time_id_fkey"
-            columns: ["time_id"]
-            isOneToOne: false
-            referencedRelation: "jogo_times"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      jogo_time_integrantes: {
-        Row: {
-          id: string
-          oansista_id: string
-          time_id: string
-        }
-        Insert: {
-          id?: string
-          oansista_id: string
-          time_id: string
-        }
-        Update: {
-          id?: string
-          oansista_id?: string
-          time_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "jogo_time_integrantes_oansista_id_fkey"
-            columns: ["oansista_id"]
-            isOneToOne: false
-            referencedRelation: "oansistas"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "jogo_time_integrantes_time_id_fkey"
-            columns: ["time_id"]
-            isOneToOne: false
-            referencedRelation: "jogo_times"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      jogo_times: {
-        Row: {
-          cor: string | null
-          id: string
-          jogo_id: string
-          lider_id: string | null
-          nome: string
-        }
-        Insert: {
-          cor?: string | null
-          id?: string
-          jogo_id: string
-          lider_id?: string | null
-          nome: string
-        }
-        Update: {
-          cor?: string | null
-          id?: string
-          jogo_id?: string
-          lider_id?: string | null
-          nome?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "jogo_times_jogo_id_fkey"
-            columns: ["jogo_id"]
-            isOneToOne: false
-            referencedRelation: "jogos"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "jogo_times_lider_id_fkey"
-            columns: ["lider_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -359,21 +431,21 @@ export type Database = {
         Row: {
           created_at: string
           criado_por: string | null
-          encontro_id: string
+          evento_id: string
           id: string
           nome: string
         }
         Insert: {
           created_at?: string
           criado_por?: string | null
-          encontro_id: string
+          evento_id: string
           id?: string
           nome: string
         }
         Update: {
           created_at?: string
           criado_por?: string | null
-          encontro_id?: string
+          evento_id?: string
           id?: string
           nome?: string
         }
@@ -386,50 +458,39 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "jogos_encontro_id_fkey"
-            columns: ["encontro_id"]
+            foreignKeyName: "jogos_evento_id_fkey"
+            columns: ["evento_id"]
             isOneToOne: false
-            referencedRelation: "encontros"
+            referencedRelation: "eventos_jogos"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "jogos_encontro_id_fkey"
-            columns: ["encontro_id"]
-            isOneToOne: false
-            referencedRelation: "v_ranking_semanal"
-            referencedColumns: ["encontro_id"]
           },
         ]
       }
-      jogos_clubes: {
+      jogos_catalogo: {
         Row: {
           clube_id: string
+          created_at: string
           id: string
-          jogo_id: string
+          nome: string
         }
         Insert: {
           clube_id: string
+          created_at?: string
           id?: string
-          jogo_id: string
+          nome: string
         }
         Update: {
           clube_id?: string
+          created_at?: string
           id?: string
-          jogo_id?: string
+          nome?: string
         }
         Relationships: [
           {
-            foreignKeyName: "jogos_clubes_clube_id_fkey"
+            foreignKeyName: "jogos_catalogo_clube_id_fkey"
             columns: ["clube_id"]
             isOneToOne: false
             referencedRelation: "clubes"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "jogos_clubes_jogo_id_fkey"
-            columns: ["jogo_id"]
-            isOneToOne: false
-            referencedRelation: "jogos"
             referencedColumns: ["id"]
           },
         ]
@@ -1193,9 +1254,10 @@ export type Database = {
     }
     Functions: {
       fn_clube_id: { Args: never; Returns: string }
-      fn_criar_jogo: {
+      fn_criar_evento_jogos: {
         Args: {
           p_clubes: string[]
+          p_cores: string[]
           p_criado_por?: string
           p_encontro_id: string
           p_nome: string
@@ -1206,21 +1268,18 @@ export type Database = {
           encontro_id: string
           id: string
           nome: string
+          status: string
+          updated_at: string
         }
         SetofOptions: {
           from: "*"
-          to: "jogos"
+          to: "eventos_jogos"
           isOneToOne: true
           isSetofReturn: false
         }
       }
       fn_diretor_da_turma: { Args: { p_turma_id: string }; Returns: boolean }
       fn_diretor_do_clube: { Args: { p_clube_id: string }; Returns: boolean }
-      fn_diretor_do_jogo: { Args: { p_jogo_id: string }; Returns: boolean }
-      fn_diretor_do_jogo_do_time: {
-        Args: { p_time_id: string }
-        Returns: boolean
-      }
       fn_lider_da_turma: { Args: { p_turma_id: string }; Returns: boolean }
       fn_perfil: {
         Args: never
@@ -1240,6 +1299,14 @@ export type Database = {
           isOneToOne: true
           isSetofReturn: false
         }
+      }
+      fn_ranking_cores_do_evento: {
+        Args: { p_evento_id: string }
+        Returns: {
+          cor: string
+          pontos: number
+          posicao: number
+        }[]
       }
       fn_ranking_do_encontro: {
         Args: { p_encontro_id: string }
@@ -1302,7 +1369,12 @@ export type Database = {
         | "matriculado"
         | "desistente"
       transferencia_tipo: "temporaria" | "permanente"
-      user_role: "diretor_geral" | "secretaria" | "diretor_clube" | "lider"
+      user_role:
+        | "diretor_geral"
+        | "secretaria"
+        | "diretor_clube"
+        | "lider"
+        | "lider_jogos"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1443,7 +1515,13 @@ export const Constants = {
         "desistente",
       ],
       transferencia_tipo: ["temporaria", "permanente"],
-      user_role: ["diretor_geral", "secretaria", "diretor_clube", "lider"],
+      user_role: [
+        "diretor_geral",
+        "secretaria",
+        "diretor_clube",
+        "lider",
+        "lider_jogos",
+      ],
     },
   },
 } as const
