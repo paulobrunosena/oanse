@@ -10,7 +10,10 @@ const PONTOS: ItensPontuacaoMap = pontosPorChave([
   { chave: 'ebd', pontos: 5 },
   { chave: 'manual', pontos: 5 },
   { chave: 'conduta', pontos: 5 },
-  { chave: 'secao_manual', pontos: 2 },
+  { chave: 'leitura_biblica', pontos: 10 },
+  { chave: 'visitante', pontos: 5 },
+  { chave: 'secao_sem_ajuda', pontos: 10 },
+  { chave: 'secao_com_ajuda', pontos: 5 },
 ])
 
 const stubs = {
@@ -30,6 +33,11 @@ const stubs = {
     name: 'InputNumber',
     template: '<input type="number" :value="modelValue" @input="$emit(\'update:modelValue\', Number($event.target.value))" />',
     props: ['modelValue'],
+  },
+  RadioButton: {
+    name: 'RadioButton',
+    template: '<input type="radio" :checked="modelValue === value" @change="$emit(\'update:modelValue\', value)" />',
+    props: ['modelValue', 'value'],
   },
 }
 
@@ -66,12 +74,51 @@ describe('FolhaSemanalRow', () => {
     expect(wrapper.find('.tag').text()).toContain('0 pts')
   })
 
-  it('recalcula o total ao editar as seções do manual', async () => {
+  it('recalcula o total ao editar as seções sem ajuda do manual', async () => {
     const wrapper = mount(FolhaSemanalRow, { props: props(), global: { stubs } })
 
-    await wrapper.findAll('input[type="number"]')[0]!.setValue(3)
+    const numericos = wrapper.findAll('input[type="number"]')
+    await numericos[0]!.setValue(3)
 
-    expect(wrapper.find('.tag').text()).toContain('16 pts')
+    expect(wrapper.find('.tag').text()).toContain('40 pts')
+  })
+
+  it('recalcula o total ao marcar a leitura bíblica', async () => {
+    const wrapper = mount(FolhaSemanalRow, { props: props(), global: { stubs } })
+
+    const checkboxes = wrapper.findAll('input[type="checkbox"]')
+    await checkboxes[5]!.setValue(true)
+
+    expect(wrapper.find('.tag').text()).toContain('20 pts')
+  })
+
+  it('recalcula o total ao informar visitantes convidados', async () => {
+    const wrapper = mount(FolhaSemanalRow, { props: props(), global: { stubs } })
+
+    const numericos = wrapper.findAll('input[type="number"]')
+    await numericos[2]!.setValue(2)
+
+    expect(wrapper.find('.tag').text()).toContain('20 pts')
+  })
+
+  it('recalcula o total com as seções com ajuda (valem menos)', async () => {
+    const wrapper = mount(FolhaSemanalRow, { props: props(), global: { stubs } })
+
+    const numericos = wrapper.findAll('input[type="number"]')
+    await numericos[1]!.setValue(2)
+
+    expect(wrapper.find('.tag').text()).toContain('20 pts')
+  })
+
+  it('exibe os radios de cores dos times e a opção de não participação', () => {
+    const wrapper = mount(FolhaSemanalRow, {
+      props: props({ cores: ['#EF4444', '#3B82F6'] }),
+      global: { stubs },
+    })
+
+    const radios = wrapper.findAll('input[type="radio"]')
+    expect(radios).toHaveLength(3)
+    expect(wrapper.text()).toContain('Não participou')
   })
 
   it('habilita o botão salvar quando ainda não há folha persistida', () => {
@@ -84,7 +131,7 @@ describe('FolhaSemanalRow', () => {
   it('desabilita o botão salvar quando o formulário está limpo em relação à folha persistida', () => {
     const wrapper = mount(FolhaSemanalRow, {
       props: props({
-        folha: { uniforme: false, biblia: false, ebd: false, manual: false, conduta: false, secoes_dia: 0, atividade_extra: 0 },
+        folha: { uniforme: false, biblia: false, ebd: false, manual: false, conduta: false, leitura_biblica: false, visitantes_convidados: 0, secoes_sem_ajuda: 0, secoes_com_ajuda: 0, cor_time: null, atividade_extra: 0 },
       }),
       global: { stubs },
     })
@@ -99,6 +146,6 @@ describe('FolhaSemanalRow', () => {
 
     const emitido = wrapper.emitted('salvar')
     expect(emitido).toHaveLength(1)
-    expect(emitido![0]![0]).toEqual({ uniforme: false, biblia: false, ebd: false, manual: false, conduta: false, secoes_dia: 0, atividade_extra: 0 })
+    expect(emitido![0]![0]).toEqual({ uniforme: false, biblia: false, ebd: false, manual: false, conduta: false, leitura_biblica: false, visitantes_convidados: 0, secoes_sem_ajuda: 0, secoes_com_ajuda: 0, cor_time: null, atividade_extra: 0 })
   })
 })

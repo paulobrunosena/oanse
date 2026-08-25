@@ -71,7 +71,7 @@ create table premios_movimentacoes (
 
 -- Configuração de pontuação da Folha Semanal (editável pelo Diretor Geral)
 create table itens_pontuacao (
-  chave      text primary key,   -- 'presenca','uniforme','biblia','ebd','manual','conduta','secao_manual'
+  chave      text primary key,   -- 'presenca','uniforme','biblia','ebd','manual','conduta','leitura_biblica','visitante','secao_sem_ajuda','secao_com_ajuda'
   descricao  text not null,
   pontos     int  not null default 0,
   ativo      boolean not null default true
@@ -242,22 +242,26 @@ create table transferencias (
 -- pontos_jogos e total são calculados por triggers. Ausente => total = 0.
 
 create table folhas_semanais (
-  id                 uuid primary key default uuid_generate_v4(),
-  encontro_id        uuid not null references encontros(id) on delete cascade,
-  oansista_id        uuid not null references oansistas(id) on delete cascade,
-  presenca_id        uuid not null references presencas(id) on delete cascade,
-  uniforme           boolean not null default false,
-  biblia             boolean not null default false,
-  ebd                boolean not null default false,
-  manual             boolean not null default false,   -- trouxe o manual
-  conduta            boolean not null default false,
-  secoes_dia         smallint not null default 0,      -- seções concluídas no dia
-  atividade_extra    smallint not null default 0,      -- pontos de atividades extras
-  pontos_jogos       int not null default 0,           -- derivado do módulo de jogos
-  total              int not null default 0,           -- calculado por trigger
-  registrado_por     uuid not null references profiles(id),
-  created_at         timestamptz not null default now(),
-  updated_at         timestamptz not null default now(),
+  id                    uuid primary key default uuid_generate_v4(),
+  encontro_id           uuid not null references encontros(id) on delete cascade,
+  oansista_id           uuid not null references oansistas(id) on delete cascade,
+  presenca_id           uuid not null references presencas(id) on delete cascade,
+  uniforme              boolean not null default false,
+  biblia                boolean not null default false,
+  ebd                   boolean not null default false,
+  manual                boolean not null default false,   -- trouxe o manual
+  conduta               boolean not null default false,
+  leitura_biblica       boolean not null default false,   -- fez a leitura bíblica
+  visitantes_convidados smallint not null default 0,      -- visitantes convidados
+  secoes_sem_ajuda      smallint not null default 0,      -- seções do manual sem ajuda (vale mais)
+  secoes_com_ajuda      smallint not null default 0,      -- seções do manual com ajuda
+  cor_time              text,                             -- cor do time nos jogos do sábado (NULL = não participou)
+  atividade_extra       smallint not null default 0,      -- pontos de atividades extras
+  pontos_jogos          int not null default 0,           -- derivado do módulo de jogos
+  total                 int not null default 0,           -- calculado por trigger
+  registrado_por        uuid not null references profiles(id),
+  created_at            timestamptz not null default now(),
+  updated_at            timestamptz not null default now(),
   unique (encontro_id, oansista_id)
 );
 
@@ -389,34 +393,44 @@ create trigger on_auth_user_created
 create or replace function fn_calcular_total_folha()
 returns trigger language plpgsql security definer set search_path = public as $$
 declare
-  p_presenca    int := 0;
-  p_uniforme    int := 0;
-  p_biblia      int := 0;
-  p_ebd         int := 0;
-  p_manual      int := 0;
-  p_conduta     int := 0;
-  p_secao_unit  int := 0;
-  presente      boolean;
+  p_presenca          int := 0;
+  p_uniforme          int := 0;
+  p_biblia            int := 0;
+  p_ebd               int := 0;
+  p_manual            int := 0;
+  p_conduta           int := 0;
+  p_leitura           int := 0;
+  p_visitante_unit    int := 0;
+  p_secao_sem_ajuda   int := 0;
+  p_secao_com_ajuda   int := 0;
+  presente            boolean;
 begin
   select pr.presente into presente
   from presencas pr where pr.id = new.presenca_id;
 
   if presente is null or not presente then
     -- Ausente: pontuações do dia zeradas (RN 1)
-    new.secoes_dia      := 0;
-    new.atividade_extra := 0;
-    new.pontos_jogos    := 0;
-    new.total           := 0;
+    new.leitura_biblica       := false;
+    new.visitantes_convidados := 0;
+    new.secoes_sem_ajuda      := 0;
+    new.secoes_com_ajuda      := 0;
+    new.cor_time              := null;
+    new.atividade_extra       := 0;
+    new.pontos_jogos          := 0;
+    new.total                 := 0;
     return new;
   end if;
 
-  select pontos into p_presenca   from itens_pontuacao where chave = 'presenca'      and ativo;
-  select pontos into p_uniforme   from itens_pontuacao where chave = 'uniforme'      and ativo;
-  select pontos into p_biblia     from itens_pontuacao where chave = 'biblia'        and ativo;
-  select pontos into p_ebd        from itens_pontuacao where chave = 'ebd'           and ativo;
-  select pontos into p_manual     from itens_pontuacao where chave = 'manual'        and ativo;
-  select pontos into p_conduta    from itens_pontuacao where chave = 'conduta'       and ativo;
-  select pontos into p_secao_unit from itens_pontuacao where chave = 'secao_manual'  and ativo;
+  select pontos into p_presenca        from itens_pontuacao where chave = 'presenca'        and ativo;
+  select pontos into p_uniforme        from itens_pontuacao where chave = 'uniforme'        and ativo;
+  select pontos into p_biblia          from itens_pontuacao where chave = 'biblia'          and ativo;
+  select pontos into p_ebd             from itens_pontuacao where chave = 'ebd'             and ativo;
+  select pontos into p_manual          from itens_pontuacao where chave = 'manual'          and ativo;
+  select pontos into p_conduta         from itens_pontuacao where chave = 'conduta'         and ativo;
+  select pontos into p_leitura         from itens_pontuacao where chave = 'leitura_biblica' and ativo;
+  select pontos into p_visitante_unit  from itens_pontuacao where chave = 'visitante'       and ativo;
+  select pontos into p_secao_sem_ajuda from itens_pontuacao where chave = 'secao_sem_ajuda' and ativo;
+  select pontos into p_secao_com_ajuda from itens_pontuacao where chave = 'secao_com_ajuda' and ativo;
 
   new.total :=
     coalesce(p_presenca, 0)
@@ -425,7 +439,10 @@ begin
     + (case when new.ebd      then coalesce(p_ebd, 0)      else 0 end)
     + (case when new.manual   then coalesce(p_manual, 0)   else 0 end)
     + (case when new.conduta  then coalesce(p_conduta, 0)  else 0 end)
-    + (coalesce(new.secoes_dia, 0) * coalesce(p_secao_unit, 0))
+    + (case when new.leitura_biblica then coalesce(p_leitura, 0) else 0 end)
+    + (coalesce(new.visitantes_convidados, 0) * coalesce(p_visitante_unit, 0))
+    + (coalesce(new.secoes_sem_ajuda, 0) * coalesce(p_secao_sem_ajuda, 0))
+    + (coalesce(new.secoes_com_ajuda, 0) * coalesce(p_secao_com_ajuda, 0))
     + coalesce(new.atividade_extra, 0)
     + coalesce(new.pontos_jogos, 0);
 
@@ -434,7 +451,8 @@ end $$;
 
 create trigger trg_folha_total
   before insert or update of presenca_id, uniforme, biblia, ebd, manual, conduta,
-                          secoes_dia, atividade_extra, pontos_jogos
+                          leitura_biblica, visitantes_convidados, secoes_sem_ajuda,
+                          secoes_com_ajuda, cor_time, atividade_extra, pontos_jogos
   on folhas_semanais
   for each row execute function fn_calcular_total_folha();
 
@@ -587,13 +605,16 @@ insert into clubes (nome, slug, idade_min, idade_max, cor, ordem) values
   ('Tochas',   'tochas',   11, 12, '#3B82F6', 4);
 
 insert into itens_pontuacao (chave, descricao, pontos) values
-  ('presenca',     'Presença no sábado',           10),
-  ('uniforme',     'Está com o uniforme',          10),
-  ('biblia',       'Trouxe a Bíblia',              10),
-  ('ebd',          'Participou da EBD',            10),
-  ('manual',       'Trouxe o manual',              10),
-  ('conduta',      'Boa conduta no clube',         10),
-  ('secao_manual', 'Por seção do manual concluída', 5);
+  ('presenca',           'Presença no sábado',                10),
+  ('uniforme',           'Está com o uniforme',               10),
+  ('biblia',             'Trouxe a Bíblia',                   10),
+  ('ebd',                'Participou da EBD',                 10),
+  ('manual',             'Trouxe o manual',                   10),
+  ('conduta',            'Boa conduta no clube',              10),
+  ('leitura_biblica',    'Leitura bíblica',                   10),
+  ('visitante',          'Por visitante convidado',            5),
+  ('secao_sem_ajuda',    'Por seção do manual sem ajuda',     10),
+  ('secao_com_ajuda',    'Por seção do manual com ajuda',      5);
 
 insert into jogos_pontos_config (colocacao, pontos) values
   (1, 100), (2, 70), (3, 50), (4, 40);

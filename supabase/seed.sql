@@ -10,13 +10,16 @@ insert into clubes (nome, slug, idade_min, idade_max, cor, ordem) values
   ('Tochas',   'tochas',   11, 12, '#3B82F6', 4);
 
 insert into itens_pontuacao (chave, descricao, pontos) values
-  ('presenca',     'Presença no sábado',           10),
-  ('uniforme',     'Está com o uniforme',          10),
-  ('biblia',       'Trouxe a Bíblia',              10),
-  ('ebd',          'Participou da EBD',            10),
-  ('manual',       'Trouxe o manual',              10),
-  ('conduta',      'Boa conduta no clube',         10),
-  ('secao_manual', 'Por seção do manual concluída', 5);
+  ('presenca',           'Presença no sábado',                10),
+  ('uniforme',           'Está com o uniforme',               10),
+  ('biblia',             'Trouxe a Bíblia',                   10),
+  ('ebd',                'Participou da EBD',                 10),
+  ('manual',             'Trouxe o manual',                   10),
+  ('conduta',            'Boa conduta no clube',              10),
+  ('leitura_biblica',    'Leitura bíblica',                   10),
+  ('visitante',          'Por visitante convidado',            5),
+  ('secao_sem_ajuda',    'Por seção do manual sem ajuda',     10),
+  ('secao_com_ajuda',    'Por seção do manual com ajuda',      5);
 
 insert into jogos_pontos_config (colocacao, pontos) values
   (1, 100), (2, 70), (3, 50), (4, 40);

@@ -5,7 +5,8 @@ import { pontosPorChave, previewTotalFolha, type FolhaPreview, type ItensPontuac
 describe('pontosPorChave', () => {
   it('retorna mapa zerado quando não há itens', () => {
     expect(pontosPorChave([])).toEqual({
-      presenca: 0, uniforme: 0, biblia: 0, ebd: 0, manual: 0, conduta: 0, secao_manual: 0,
+      presenca: 0, uniforme: 0, biblia: 0, ebd: 0, manual: 0, conduta: 0,
+      leitura_biblica: 0, visitante: 0, secao_sem_ajuda: 0, secao_com_ajuda: 0,
     })
   })
 
@@ -17,14 +18,18 @@ describe('pontosPorChave', () => {
       { chave: 'ebd', pontos: 5 },
       { chave: 'manual', pontos: 5 },
       { chave: 'conduta', pontos: 5 },
-      { chave: 'secao_manual', pontos: 2 },
+      { chave: 'leitura_biblica', pontos: 10 },
+      { chave: 'visitante', pontos: 5 },
+      { chave: 'secao_sem_ajuda', pontos: 10 },
+      { chave: 'secao_com_ajuda', pontos: 5 },
     ])
     expect(mapa).toEqual({
-      presenca: 10, uniforme: 5, biblia: 5, ebd: 5, manual: 5, conduta: 5, secao_manual: 2,
+      presenca: 10, uniforme: 5, biblia: 5, ebd: 5, manual: 5, conduta: 5,
+      leitura_biblica: 10, visitante: 5, secao_sem_ajuda: 10, secao_com_ajuda: 5,
     })
   })
 
-  it('ignora chaves fora das 7 reconhecidas', () => {
+  it('ignora chaves fora das reconhecidas', () => {
     const mapa = pontosPorChave([
       { chave: 'presenca', pontos: 10 },
       { chave: 'chave_inexistente', pontos: 999 },
@@ -50,7 +55,10 @@ function folha(parcial: Partial<FolhaPreview> = {}): FolhaPreview {
     ebd: false,
     manual: false,
     conduta: false,
-    secoes_dia: 0,
+    leitura_biblica: false,
+    visitantes_convidados: 0,
+    secoes_sem_ajuda: 0,
+    secoes_com_ajuda: 0,
     atividade_extra: 0,
     ...parcial,
   }
@@ -58,11 +66,12 @@ function folha(parcial: Partial<FolhaPreview> = {}): FolhaPreview {
 
 describe('previewTotalFolha', () => {
   const itens: ItensPontuacaoMap = {
-    presenca: 10, uniforme: 5, biblia: 5, ebd: 5, manual: 5, conduta: 5, secao_manual: 2,
+    presenca: 10, uniforme: 5, biblia: 5, ebd: 5, manual: 5, conduta: 5,
+    leitura_biblica: 10, visitante: 5, secao_sem_ajuda: 10, secao_com_ajuda: 5,
   }
 
   it('zera tudo quando o oansista faltou', () => {
-    expect(previewTotalFolha(itens, folha({ uniforme: true, secoes_dia: 3 }), false)).toBe(0)
+    expect(previewTotalFolha(itens, folha({ uniforme: true, secoes_sem_ajuda: 3 }), false)).toBe(0)
   })
 
   it('soma apenas a presença quando nenhum critério é atendido', () => {
@@ -73,8 +82,16 @@ describe('previewTotalFolha', () => {
     expect(previewTotalFolha(itens, folha({ uniforme: true, biblia: true, manual: true }), true)).toBe(10 + 5 + 5 + 5)
   })
 
-  it('multiplica seções do manual pelo valor da seção', () => {
-    expect(previewTotalFolha(itens, folha({ secoes_dia: 3 }), true)).toBe(10 + 3 * 2)
+  it('soma a leitura bíblica quando marcada', () => {
+    expect(previewTotalFolha(itens, folha({ leitura_biblica: true }), true)).toBe(10 + 10)
+  })
+
+  it('multiplica visitantes convidados pelo valor por visitante', () => {
+    expect(previewTotalFolha(itens, folha({ visitantes_convidados: 2 }), true)).toBe(10 + 2 * 5)
+  })
+
+  it('multiplica seções sem ajuda pelo valor maior e com ajuda pelo menor', () => {
+    expect(previewTotalFolha(itens, folha({ secoes_sem_ajuda: 2, secoes_com_ajuda: 1 }), true)).toBe(10 + 2 * 10 + 1 * 5)
   })
 
   it('soma atividade extra como pontos diretos', () => {
@@ -88,13 +105,13 @@ describe('previewTotalFolha', () => {
   it('combina todos os critérios', () => {
     const total = previewTotalFolha(
       itens,
-      folha({ uniforme: true, biblia: true, ebd: true, manual: true, conduta: true, secoes_dia: 4, atividade_extra: 3, pontos_jogos: 40 }),
+      folha({ uniforme: true, biblia: true, ebd: true, manual: true, conduta: true, leitura_biblica: true, visitantes_convidados: 1, secoes_sem_ajuda: 3, secoes_com_ajuda: 2, atividade_extra: 3, pontos_jogos: 40 }),
       true,
     )
-    expect(total).toBe(10 + 5 * 5 + 4 * 2 + 3 + 40)
+    expect(total).toBe(10 + 5 * 5 + 10 + 1 * 5 + 3 * 10 + 2 * 5 + 3 + 40)
   })
 
-  it('trata seções e extras como número quando vêm undefined/0', () => {
-    expect(previewTotalFolha(itens, folha({ secoes_dia: 0, atividade_extra: 0 }), true)).toBe(10)
+  it('trata números como zero quando vêm undefined/0', () => {
+    expect(previewTotalFolha(itens, folha(), true)).toBe(10)
   })
 })

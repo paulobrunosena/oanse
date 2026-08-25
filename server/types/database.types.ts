@@ -117,55 +117,67 @@ export type Database = {
           atividade_extra: number
           biblia: boolean
           conduta: boolean
+          cor_time: string | null
           created_at: string
           ebd: boolean
           encontro_id: string
           id: string
+          leitura_biblica: boolean
           manual: boolean
           oansista_id: string
           pontos_jogos: number
           presenca_id: string
           registrado_por: string
-          secoes_dia: number
+          secoes_com_ajuda: number
+          secoes_sem_ajuda: number
           total: number
           uniforme: boolean
           updated_at: string
+          visitantes_convidados: number
         }
         Insert: {
           atividade_extra?: number
           biblia?: boolean
           conduta?: boolean
+          cor_time?: string | null
           created_at?: string
           ebd?: boolean
           encontro_id: string
           id?: string
+          leitura_biblica?: boolean
           manual?: boolean
           oansista_id: string
           pontos_jogos?: number
           presenca_id: string
           registrado_por: string
-          secoes_dia?: number
+          secoes_com_ajuda?: number
+          secoes_sem_ajuda?: number
           total?: number
           uniforme?: boolean
           updated_at?: string
+          visitantes_convidados?: number
         }
         Update: {
           atividade_extra?: number
           biblia?: boolean
           conduta?: boolean
+          cor_time?: string | null
           created_at?: string
           ebd?: boolean
           encontro_id?: string
           id?: string
+          leitura_biblica?: boolean
           manual?: boolean
           oansista_id?: string
           pontos_jogos?: number
           presenca_id?: string
           registrado_por?: string
-          secoes_dia?: number
+          secoes_com_ajuda?: number
+          secoes_sem_ajuda?: number
           total?: number
           uniforme?: boolean
           updated_at?: string
+          visitantes_convidados?: number
         }
         Relationships: [
           {

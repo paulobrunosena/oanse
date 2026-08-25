@@ -38,7 +38,8 @@ oanse/
 │   │   ├── 0004_folha_recalcular_presenca.sql
 │   │   ├── 0005_remanejamento_select.sql
 │   │   ├── 0006_transferencia_rpc.sql
-│   │   └── 0007_dias_sem_oanse.sql
+│   │   ├── 0007_dias_sem_oanse.sql
+│   │   └── 0008_folha_novos_itens.sql
 │   └── seed.sql                  # clubes, itens de pontuação, config de jogos
 │
 ├── public/                       # assets estáticos servidos na raiz (/)

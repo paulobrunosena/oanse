@@ -6,7 +6,11 @@ import type { Database } from '@/types/database.types'
 export type Folha = Database['public']['Tables']['folhas_semanais']['Row']
 type ItemPontuacao = Database['public']['Tables']['itens_pontuacao']['Row']
 
-export type FormFolha = Pick<Folha, 'uniforme' | 'biblia' | 'ebd' | 'manual' | 'conduta' | 'secoes_dia' | 'atividade_extra'>
+export type FormFolha = Pick<Folha,
+  'uniforme' | 'biblia' | 'ebd' | 'manual' | 'conduta' | 'leitura_biblica'
+  | 'visitantes_convidados' | 'secoes_sem_ajuda' | 'secoes_com_ajuda'
+  | 'atividade_extra' | 'cor_time'
+>
 
 /**
  * Folha Semanal: configuração de pontuação + folhas do encontro.

@@ -23,6 +23,7 @@ export function builder<T = unknown>(data: T | null, error: unknown = null) {
     select: vi.fn(() => b),
     eq: vi.fn(() => b),
     in: vi.fn(() => b),
+    not: vi.fn(() => b),
     order: vi.fn(() => b),
     limit: vi.fn(() => b),
     update: vi.fn(() => b),

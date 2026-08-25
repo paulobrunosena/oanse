@@ -5,15 +5,15 @@ import { useFolhaSemanal, type FormFolha } from './useFolhaSemanal'
 const ITENS = [
   { id: 'i1', chave: 'presenca', pontos: 10, ativo: true },
   { id: 'i2', chave: 'uniforme', pontos: 5, ativo: true },
-  { id: 'i3', chave: 'secao_manual', pontos: 2, ativo: true },
+  { id: 'i3', chave: 'secao_sem_ajuda', pontos: 10, ativo: true },
 ]
 
 const FOLHAS = [
-  { id: 'f1', encontro_id: 'e1', oansista_id: 'o1', presenca_id: 'p1', registrado_por: 'u1', uniforme: true, biblia: false, ebd: false, manual: false, conduta: false, secoes_dia: 2, atividade_extra: 0, total: 19, pontos_jogos: 0 },
+  { id: 'f1', encontro_id: 'e1', oansista_id: 'o1', presenca_id: 'p1', registrado_por: 'u1', uniforme: true, biblia: false, ebd: false, manual: false, conduta: false, leitura_biblica: false, visitantes_convidados: 0, secoes_sem_ajuda: 2, secoes_com_ajuda: 0, cor_time: null, atividade_extra: 0, total: 29, pontos_jogos: 0 },
 ]
 
 function form(): FormFolha {
-  return { uniforme: true, biblia: false, ebd: false, manual: false, conduta: false, secoes_dia: 2, atividade_extra: 0 }
+  return { uniforme: true, biblia: false, ebd: false, manual: false, conduta: false, leitura_biblica: false, visitantes_convidados: 0, secoes_sem_ajuda: 2, secoes_com_ajuda: 0, cor_time: null, atividade_extra: 0 }
 }
 
 const mocks = vi.hoisted(() => ({ supabase: null as any }))
@@ -54,7 +54,7 @@ describe('useFolhaSemanal', () => {
 
       expect(folha.pontos.value.presenca).toBe(10)
       expect(folha.pontos.value.uniforme).toBe(5)
-      expect(folha.pontos.value.secao_manual).toBe(2)
+      expect(folha.pontos.value.secao_sem_ajuda).toBe(10)
     })
   })
 
@@ -72,7 +72,7 @@ describe('useFolhaSemanal', () => {
       const folha = useFolhaSemanal()
       await folha.carregar('e1', ['o1'])
 
-      const atualizada = { ...FOLHAS[0], biblia: true, total: 24 }
+      const atualizada = { ...FOLHAS[0], biblia: true, total: 34 }
       const bFolhas = mocks.supabase.builderDe('folhas_semanais')
       bFolhas.singleData = atualizada
 
@@ -91,7 +91,7 @@ describe('useFolhaSemanal', () => {
       const folha = useFolhaSemanal()
       await folha.carregar('e1', ['o1'])
 
-      const nova = { id: 'f2', encontro_id: 'e1', oansista_id: 'o9', presenca_id: 'p9', registrado_por: 'u1', uniforme: true, biblia: false, ebd: false, manual: false, conduta: false, secoes_dia: 2, atividade_extra: 0, total: 19, pontos_jogos: 0 }
+      const nova = { id: 'f2', encontro_id: 'e1', oansista_id: 'o9', presenca_id: 'p9', registrado_por: 'u1', uniforme: true, biblia: false, ebd: false, manual: false, conduta: false, leitura_biblica: false, visitantes_convidados: 0, secoes_sem_ajuda: 2, secoes_com_ajuda: 0, cor_time: null, atividade_extra: 0, total: 29, pontos_jogos: 0 }
       const bFolhas = mocks.supabase.builderDe('folhas_semanais')
       bFolhas.singleData = nova
 
