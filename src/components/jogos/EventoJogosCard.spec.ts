@@ -156,6 +156,18 @@ describe('EventoJogosCard', () => {
     expect(wrapper.emitted('finalizar')).toHaveLength(1)
   })
 
+  it('mantém os botões de ação alinhados à direita no rodapé do card', () => {
+    const wrapper = mount(EventoJogosCard, {
+      props: { evento: EVENTO },
+      global: { stubs },
+    })
+    const rodape = wrapper.findAll('div').find(el => el.classes().includes('justify-end'))
+    expect(rodape).toBeDefined()
+    expect(rodape!.classes()).toContain('items-center')
+    expect(rodape!.text()).toContain('Finalizar jogos')
+    expect(rodape!.find('button[title="Excluir evento"]').exists()).toBe(true)
+  })
+
   it('emite excluir ao clicar no botão de excluir evento', async () => {
     const wrapper = mount(EventoJogosCard, {
       props: { evento: EVENTO },

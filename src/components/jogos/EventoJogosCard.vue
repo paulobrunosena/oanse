@@ -50,7 +50,7 @@ function estiloDoClube(i: JogoIntegrante) {
 
 <template>
   <div class="rounded-lg border bg-[var(--surface-card)] p-4">
-    <div class="flex items-start justify-between gap-3">
+    <div class="flex items-start gap-3">
       <div class="min-w-0">
         <div class="flex items-center gap-2 flex-wrap">
           <span class="font-semibold">{{ evento.nome }}</span>
@@ -68,34 +68,6 @@ function estiloDoClube(i: JogoIntegrante) {
         <p class="text-xs text-surface-500 mt-1">
           {{ evento.cores.length }} cor(es) participando · {{ evento.cores.reduce((n, c) => n + c.oansistas.length, 0) }} oansistas distribuídos
         </p>
-      </div>
-      <div class="flex items-center gap-2 shrink-0">
-        <Button
-          v-if="evento.status === 'em_andamento'"
-          icon="pi pi-flag"
-          label="Finalizar jogos"
-          severity="success"
-          size="small"
-          @click="$emit('finalizar')"
-        />
-        <Button
-          v-else
-          icon="pi pi-replay"
-          label="Reabrir"
-          severity="secondary"
-          text
-          size="small"
-          @click="$emit('reabrir')"
-        />
-        <Button
-          v-if="evento.status === 'em_andamento'"
-          icon="pi pi-trash"
-          severity="danger"
-          text
-          size="small"
-          title="Excluir evento"
-          @click="$emit('excluir')"
-        />
       </div>
     </div>
 
@@ -211,6 +183,35 @@ function estiloDoClube(i: JogoIntegrante) {
       >
         Todas as 4 cores estão participando.
       </p>
+
+      <div class="flex flex-wrap items-center justify-end gap-2">
+        <Button
+          v-if="evento.status === 'em_andamento'"
+          icon="pi pi-flag"
+          label="Finalizar jogos"
+          severity="success"
+          size="small"
+          @click="$emit('finalizar')"
+        />
+        <Button
+          v-else
+          icon="pi pi-replay"
+          label="Reabrir"
+          severity="secondary"
+          text
+          size="small"
+          @click="$emit('reabrir')"
+        />
+        <Button
+          v-if="evento.status === 'em_andamento'"
+          icon="pi pi-trash"
+          severity="danger"
+          text
+          size="small"
+          title="Excluir evento"
+          @click="$emit('excluir')"
+        />
+      </div>
     </div>
   </div>
 </template>

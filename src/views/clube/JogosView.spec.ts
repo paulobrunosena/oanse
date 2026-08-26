@@ -133,6 +133,18 @@ describe('JogosView', () => {
     expect(wrapper.text()).toContain('Todos os clubes já participaram de um evento de jogos neste sábado.')
   })
 
+  it('mantém os três cards do evento como irmãos diretos com espaçamento igual', async () => {
+    mocks.supabase.builderDe('eventos_jogos').data = EVENTOS
+    perfilLiderJogos()
+    const wrapper = montar()
+    await flushPromises()
+
+    const cardEvento = wrapper.findComponent({ name: 'EventoJogosCard' })
+    const pai = cardEvento.element.parentElement
+    expect(pai?.className).toContain('gap-4')
+    expect(pai?.children).toHaveLength(3)
+  })
+
   it('só oferece no card oansistas dos clubes que participam do evento', async () => {
     mocks.supabase.builderDe('eventos_jogos').data = EVENTOS
     mocks.supabase.builderDe('oansistas').data = [

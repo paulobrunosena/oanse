@@ -329,20 +329,21 @@ onMounted(carregarTudo)
           evento, só aparecem os clubes que ainda não jogaram.
         </p>
 
-        <div v-if="evento">
-          <div class="mb-4">
-            <EventoJogosCard
-              :evento="evento"
-              :oansistas="oansistasDoEvento"
-              @adicionar-cor="cor => acaoComAtualizacao(() => adicionarCor(evento!.id, cor), 'Cor adicionada')"
-              @remover-cor="corId => acaoComAtualizacao(() => removerCor(corId), 'Cor removida')"
-              @adicionar-oansista="(corId, oansistaId) => acaoComAtualizacao(() => adicionarOansista(corId, oansistaId))"
-              @remover-oansista="(corId, oansistaId) => acaoComAtualizacao(() => removerOansista(corId, oansistaId))"
-              @finalizar="finalizar"
-              @reabrir="reabrir"
-              @excluir="excluirEventoConfirmado"
-            />
-          </div>
+        <div
+          v-if="evento"
+          class="flex flex-col gap-4"
+        >
+          <EventoJogosCard
+            :evento="evento"
+            :oansistas="oansistasDoEvento"
+            @adicionar-cor="cor => acaoComAtualizacao(() => adicionarCor(evento!.id, cor), 'Cor adicionada')"
+            @remover-cor="corId => acaoComAtualizacao(() => removerCor(corId), 'Cor removida')"
+            @adicionar-oansista="(corId, oansistaId) => acaoComAtualizacao(() => adicionarOansista(corId, oansistaId))"
+            @remover-oansista="(corId, oansistaId) => acaoComAtualizacao(() => removerOansista(corId, oansistaId))"
+            @finalizar="finalizar"
+            @reabrir="reabrir"
+            @excluir="excluirEventoConfirmado"
+          />
 
           <RodadasJogosCard
             v-if="evento.status === 'em_andamento'"
