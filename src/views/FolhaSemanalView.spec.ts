@@ -68,4 +68,20 @@ describe('FolhaSemanalView', () => {
     expect(ausente.exists()).toBe(true)
     expect(ausente.classes()).toContain('bg-[var(--surface-card)]')
   })
+
+  it('empilha o cabeçalho no mobile (título em uma linha; seletor e contador na linha de baixo)', async () => {
+    const store = useAuthStore()
+    store.setUser({ sub: 'l1' })
+
+    const wrapper = mount(FolhaSemanalView, {
+      global: { stubs, plugins: [PrimeVue, ToastService] },
+    })
+    await flushPromises()
+
+    const header = wrapper.findAll('div').find(el => el.classes().includes('sm:flex-row'))
+    expect(header).toBeDefined()
+    expect(header!.classes()).toContain('flex-col')
+    expect(header!.classes()).toContain('sm:justify-between')
+    expect(header!.find('h1')?.text()).toBe('Folha Semanal')
+  })
 })

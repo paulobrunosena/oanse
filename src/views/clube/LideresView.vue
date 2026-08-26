@@ -44,12 +44,13 @@ onMounted(carregar)
       </p>
     </div>
 
-    <DataTable
-      :value="lideres"
-      :loading="carregando"
-      data-key="id"
-      class="w-full"
-    >
+    <div class="overflow-x-auto">
+      <DataTable
+        :value="lideres"
+        :loading="carregando"
+        data-key="id"
+        class="w-full"
+      >
       <Column field="nome" header="Nome" />
       <Column header="Turma">
         <template #body="{ data }">
@@ -69,6 +70,7 @@ onMounted(carregar)
           {{ data.telefone ?? '—' }}
         </template>
       </Column>
-    </DataTable>
+      </DataTable>
+    </div>
   </div>
 </template>

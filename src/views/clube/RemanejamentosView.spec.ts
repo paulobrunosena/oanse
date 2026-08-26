@@ -72,4 +72,19 @@ describe('RemanejamentosView', () => {
       expect(c.classes()).toContain('bg-[var(--surface-card)]')
     }
   })
+
+  it('permite quebra de linha no cabeçalho do card (flex-wrap) para a Tag de substituto não espremer o nome da turma no mobile', async () => {
+    const store = useAuthStore()
+    store.setUser({ sub: 'u1' })
+    await store.loadProfile()
+
+    const wrapper = mount(RemanejamentosView, {
+      global: { stubs, plugins: [PrimeVue, ToastService] },
+    })
+    await flushPromises()
+
+    const cabecalho = wrapper.findAll('div').find(el => el.classes().includes('flex-wrap'))
+    expect(cabecalho).toBeDefined()
+    expect(cabecalho!.classes()).toContain('justify-between')
+  })
 })

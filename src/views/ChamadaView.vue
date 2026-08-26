@@ -174,7 +174,7 @@ onMounted(carregarTudo)
 
 <template>
   <div class="p-4 sm:p-6 max-w-2xl mx-auto w-full">
-    <div class="flex items-center justify-between gap-3 mb-4">
+    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-4">
       <div>
         <h1 class="text-2xl font-bold">
           Chamada
@@ -186,7 +186,7 @@ onMounted(carregarTudo)
           {{ dataFormatada }}
         </p>
       </div>
-      <div class="flex items-center gap-3">
+      <div class="flex flex-wrap items-center gap-3">
         <EncontroSeletor
           :encontros="encontros"
           :encontro="encontro"

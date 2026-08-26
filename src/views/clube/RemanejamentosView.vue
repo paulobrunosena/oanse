@@ -159,8 +159,8 @@ onMounted(carregarTudo)
           :key="t.id"
           class="rounded-lg border bg-[var(--surface-card)] p-4"
         >
-          <div class="flex items-center justify-between gap-3 mb-3">
-            <div class="flex items-center gap-3 min-w-0">
+          <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
+            <div class="flex items-center gap-3 min-w-0 flex-1">
               <Avatar
                 :label="(t.lider_nome ?? '?').charAt(0).toUpperCase()"
                 size="small"
@@ -178,6 +178,7 @@ onMounted(carregarTudo)
               v-if="substitutoNome(t.id)"
               :value="`Substituto: ${substitutoNome(t.id)}`"
               severity="warning"
+              class="shrink-0"
             />
           </div>
 

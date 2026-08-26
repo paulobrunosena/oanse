@@ -172,7 +172,7 @@ async function importarCsv() {
 
 <template>
   <div class="p-4 sm:p-6 max-w-4xl mx-auto w-full">
-    <div class="flex items-center justify-between mb-4">
+    <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
       <div>
         <h1 class="text-2xl font-bold">
           Oansistas
@@ -196,13 +196,14 @@ async function importarCsv() {
       </div>
     </div>
 
-    <DataTable
-      :value="oansistas"
-      :loading="carregando"
-      data-key="id"
-      class="w-full"
-    >
-      <Column field="nome" header="Nome" />
+    <div class="overflow-x-auto">
+      <DataTable
+        :value="oansistas"
+        :loading="carregando"
+        data-key="id"
+        class="w-full"
+      >
+        <Column field="nome" header="Nome" />
       <Column header="Idade">
         <template #body="{ data }">
           {{ idade(data.data_nascimento) }}
@@ -235,7 +236,8 @@ async function importarCsv() {
           </div>
         </template>
       </Column>
-    </DataTable>
+      </DataTable>
+    </div>
 
     <!-- Modal criar/editar -->
     <Dialog
@@ -255,7 +257,7 @@ async function importarCsv() {
             class="w-full"
           />
         </div>
-        <div class="grid grid-cols-2 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div class="flex flex-col gap-1">
             <label class="text-sm font-medium">Data de nascimento *</label>
             <InputText
@@ -275,7 +277,7 @@ async function importarCsv() {
             />
           </div>
         </div>
-        <div class="grid grid-cols-2 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div class="flex flex-col gap-1">
             <label class="text-sm font-medium">Responsável</label>
             <InputText

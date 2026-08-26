@@ -135,7 +135,7 @@ async function alternarAtivo(t: Turma & { lider_nome: string | null }) {
 
 <template>
   <div class="p-4 sm:p-6 max-w-3xl mx-auto w-full">
-    <div class="flex items-center justify-between mb-4">
+    <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
       <div>
         <h1 class="text-2xl font-bold">
           Turmas
@@ -159,13 +159,14 @@ async function alternarAtivo(t: Turma & { lider_nome: string | null }) {
       Sem líderes disponíveis. Cadastre líderes em Usuários (perfil Líder, vinculado ao seu clube).
     </p>
 
-    <DataTable
-      :value="turmas"
-      :loading="carregando"
-      data-key="id"
-      class="w-full"
-    >
-      <Column field="nome" header="Turma" />
+    <div class="overflow-x-auto">
+      <DataTable
+        :value="turmas"
+        :loading="carregando"
+        data-key="id"
+        class="w-full"
+      >
+        <Column field="nome" header="Turma" />
       <Column field="lider_nome" header="Líder">
         <template #body="{ data }">
           {{ data.lider_nome ?? '—' }}
@@ -202,7 +203,8 @@ async function alternarAtivo(t: Turma & { lider_nome: string | null }) {
           </div>
         </template>
       </Column>
-    </DataTable>
+      </DataTable>
+    </div>
 
     <!-- Modal criação -->
     <Dialog
