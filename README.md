@@ -15,7 +15,8 @@ Sistema web para gestão do ministério infantil Oanse de igreja local: matrícu
 |---|---|
 | Diretor Geral | Total: relatórios, clubes, usuários, configurações |
 | Secretária | Estoque de materiais e painel de premiações (tempo real) |
-| Diretor de Clube | Seu clube: líderes, remanejamentos, transferências, jogos |
+| Diretor de Clube | Seu clube: líderes, turmas, remanejamentos, transferências, catálogo de jogos |
+| Líder de Jogos | Módulo de jogos do sábado: eventos, rodadas, catálogo de jogos |
 | Líder | Folha Semanal, Individual e de Visitantes da sua turma |
 
 ## Rodando localmente
@@ -32,8 +33,9 @@ npx supabase start     # aplica migrations + seed automaticamente
 # 3. Copie as chaves locais para o .env
 npx supabase status -o env   # cole os valores no .env (veja .env.example)
 
-# 4. Frontend (no host/WSL2)
-npm run dev
+# 4. Frontend + API (no host/WSL2)
+npm run dev:api      # API local (h3, tsx watch)
+npm run dev          # Vite dev server
 ```
 
 - App: http://localhost:5173
@@ -55,13 +57,13 @@ npx supabase gen types typescript --local > src/types/database.types.ts
 - [docs/01-schema.sql](docs/01-schema.sql) — modelo de dados (DDL, triggers, views)
 - [docs/02-rls-policies.sql](docs/02-rls-policies.sql) — políticas RLS por perfil
 - [docs/03-estrutura.md](docs/03-estrutura.md) — estrutura de diretórios
-- [docs/04-roadmap.md](docs/04-roadmap.md) — roteiro de implementação (4 fases)
+- [docs/04-roadmap.md](docs/04-roadmap.md) — roteiro de implementação (fases + migração Vue)
 - [.agents/checklist.md](.agents/checklist.md) — checklist de tracking do progresso
 
 ## Regras de negócio essenciais
 
 1. Criança ausente na chamada ⇒ pontuação do dia zerada (automático via trigger).
 2. Ranking do sábado calculado a partir da Folha Semanal + pontos dos jogos.
-3. Jogos: Faíscas entre si; Flamas e Tochas juntos; 2-4 times; 1º=100, 2º=70, 3º=50, 4º=40, desclassificado=0.
+3. Jogos: eventos por sábado com clubes + cores (verde/vermelho/amarelo/azul) e oansistas de cada cor; o ranking das cores usa a soma das rodadas (1º=100, 2º=70, 3º=50, 4º=40, desclassificado=0) e a Folha Semanal pontua pela colocação da equipe (jogo_1_lugar..jogo_4_lugar, default 5/4/3/2).
 4. Conclusão de seção/nível na Folha Individual gera pendência automática no painel da Secretária (realtime).
 5. Visitante: 3 visitas + lições da Prova de Ingresso antes da matrícula oficial.
