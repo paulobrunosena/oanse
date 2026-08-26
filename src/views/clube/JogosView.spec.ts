@@ -122,6 +122,17 @@ describe('JogosView', () => {
     expect(header!.find('h1')?.text()).toBe('Jogos do sábado')
   })
 
+  it('usa largura responsiva no dialog de novo evento (w-full max-w-md)', async () => {
+    perfilLiderJogos()
+    const wrapper = montar()
+    await flushPromises()
+
+    const dialog = wrapper.findComponent({ name: 'Dialog' })
+    const classes = dialog.attributes('class') ?? ''
+    expect(classes).toContain('w-full')
+    expect(classes).toContain('max-w-md')
+  })
+
   it('lista os eventos do sábado no seletor e não oferece clubes já usados', async () => {
     mocks.supabase.builderDe('eventos_jogos').data = EVENTOS
     perfilLiderJogos()

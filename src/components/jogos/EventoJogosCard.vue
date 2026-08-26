@@ -164,7 +164,7 @@ function estiloDoClube(i: JogoIntegrante) {
 
       <div
         v-if="coresDisponiveis.length && evento.status === 'em_andamento'"
-        class="flex items-center gap-2"
+        class="flex flex-wrap items-center gap-2"
       >
         <span class="text-sm">Adicionar cor:</span>
         <Button

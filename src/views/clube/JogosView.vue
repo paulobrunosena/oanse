@@ -387,7 +387,7 @@ onMounted(carregarTudo)
       v-model:visible="dialogAberto"
       modal
       header="Novo evento de jogos"
-      :style="{ width: '28rem' }"
+      class="w-full max-w-md"
     >
       <div class="flex flex-col gap-4 pt-2">
         <div class="flex flex-col gap-1">

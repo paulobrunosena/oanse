@@ -188,6 +188,16 @@ describe('EventoJogosCard', () => {
     expect(wrapper.emitted('adicionar-cor')).toEqual([['vermelho']])
   })
 
+  it('permite quebra de linha na área de "Adicionar cor" (flex-wrap) para não estourar o card no mobile', () => {
+    const wrapper = mount(EventoJogosCard, {
+      props: { evento: EVENTO },
+      global: { stubs },
+    })
+    const adicionar = wrapper.findAll('div').find(el => el.classes().includes('flex-wrap') && el.text().includes('Adicionar cor:'))
+    expect(adicionar).toBeDefined()
+    expect(adicionar!.classes()).toContain('flex-wrap')
+  })
+
   it('emite remover-cor quando há mais de 2 cores', async () => {
     const comQuatro = {
       ...EVENTO,
