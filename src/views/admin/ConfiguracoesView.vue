@@ -84,30 +84,32 @@ async function salvarTudo() {
         <span class="font-semibold">Itens de pontuação (Folha Semanal)</span>
       </template>
       <template #content>
-        <DataTable
-          v-if="!carregando"
-          :value="itens"
-          data-key="chave"
-          class="w-full"
-        >
-          <Column field="descricao" header="Item" />
-          <Column field="pontos" header="Pontos">
-            <template #body="{ data }">
-              <InputNumber
-                v-model="(data as any).pontos"
-                :min="0"
-                :max="100"
-                :step="5"
-                show-buttons
-                button-layout="horizontal"
-                increment-button-icon="pi pi-plus"
-                decrement-button-icon="pi pi-minus"
-                :input-style="{ minWidth: '0', width: '5rem', textAlign: 'center' }"
-                class="w-40"
-              />
-            </template>
-          </Column>
-        </DataTable>
+        <div class="overflow-x-auto">
+          <DataTable
+            v-if="!carregando"
+            :value="itens"
+            data-key="chave"
+            class="w-full"
+          >
+            <Column field="descricao" header="Item" />
+            <Column field="pontos" header="Pontos">
+              <template #body="{ data }">
+                <InputNumber
+                  v-model="(data as any).pontos"
+                  :min="0"
+                  :max="100"
+                  :step="5"
+                  show-buttons
+                  button-layout="horizontal"
+                  increment-button-icon="pi pi-plus"
+                  decrement-button-icon="pi pi-minus"
+                  :input-style="{ minWidth: '0', width: '5rem', textAlign: 'center' }"
+                  class="w-full max-w-[10rem]"
+                />
+              </template>
+            </Column>
+          </DataTable>
+        </div>
       </template>
     </Card>
 

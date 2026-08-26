@@ -58,6 +58,19 @@ describe('ConfiguracoesView', () => {
       expect(style).toContain('width: 5rem')
     }
   })
+
+  it('envolve a DataTable em container com rolagem horizontal e limita a largura do InputNumber no mobile', async () => {
+    const wrapper = mount(ConfiguracoesView, {
+      global: { stubs, plugins: [PrimeVue, ToastService] },
+    })
+    await flushPromises()
+
+    const container = wrapper.find('.overflow-x-auto')
+    expect(container.exists()).toBe(true)
+
+    const temClasse = wrapper.findAll('*').some(el => el.classes().includes('max-w-[10rem]'))
+    expect(temClasse).toBe(true)
+  })
 })
 
 describe('InputNumber horizontal', () => {

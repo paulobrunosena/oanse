@@ -169,13 +169,14 @@ async function confirmarExclusao() {
       />
     </div>
 
-    <DataTable
-      :value="usuarios"
-      :loading="carregando"
-      data-key="id"
-      class="w-full"
-    >
-      <Column field="nome" header="Nome" />
+    <div class="overflow-x-auto">
+      <DataTable
+        :value="usuarios"
+        :loading="carregando"
+        data-key="id"
+        class="w-full"
+      >
+        <Column field="nome" header="Nome" />
       <Column field="email" header="E-mail" />
       <Column field="role" header="Perfil">
         <template #body="{ data }">
@@ -218,7 +219,8 @@ async function confirmarExclusao() {
           </div>
         </template>
       </Column>
-    </DataTable>
+      </DataTable>
+    </div>
 
     <!-- Modal criação -->
     <Dialog

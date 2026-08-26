@@ -55,4 +55,15 @@ describe('UsuariosView', () => {
     const opcoes = perfil!.props('options') as { value: string, label: string }[]
     expect(opcoes).toContainEqual({ label: 'Líder de Jogos', value: 'lider_jogos' })
   })
+
+  it('envolve a DataTable em um container com rolagem horizontal (overflow-x-auto) para não estourar a página no mobile', async () => {
+    const wrapper = mount(UsuariosView, {
+      global: { stubs, plugins: [PrimeVue, ToastService] },
+    })
+    await flushPromises()
+
+    const container = wrapper.find('.overflow-x-auto')
+    expect(container.exists()).toBe(true)
+    expect(container.findComponent({ name: 'DataTable' }).exists()).toBe(true)
+  })
 })

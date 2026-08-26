@@ -80,12 +80,13 @@ async function salvar() {
       Faixas de idade e identidade visual de cada clube
     </p>
 
-    <DataTable
-      :value="clubes"
-      :loading="carregando"
-      data-key="id"
-      class="w-full"
-    >
+    <div class="overflow-x-auto">
+      <DataTable
+        :value="clubes"
+        :loading="carregando"
+        data-key="id"
+        class="w-full"
+      >
       <Column field="nome" header="Clube">
         <template #body="{ data }">
           <span class="font-semibold flex items-center gap-2">
@@ -122,7 +123,8 @@ async function salvar() {
           </div>
         </template>
       </Column>
-    </DataTable>
+      </DataTable>
+    </div>
 
     <Dialog
       :visible="editando !== null"
@@ -143,7 +145,7 @@ async function salvar() {
             class="w-full"
           />
         </div>
-        <div class="grid grid-cols-2 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div class="flex flex-col gap-1">
             <label class="text-sm font-medium">Idade mínima *</label>
             <InputNumber
@@ -163,7 +165,7 @@ async function salvar() {
             />
           </div>
         </div>
-        <div class="grid grid-cols-2 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div class="flex flex-col gap-1">
             <label class="text-sm font-medium">Cor</label>
             <InputText
