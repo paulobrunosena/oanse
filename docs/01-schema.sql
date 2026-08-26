@@ -69,7 +69,7 @@ create table premios_movimentacoes (
 
 -- Configuração de pontuação da Folha Semanal (editável pelo Diretor Geral)
 create table itens_pontuacao (
-  chave      text primary key,   -- 'presenca','uniforme','biblia','ebd','manual','conduta','leitura_biblica','visitante','secao_sem_ajuda','secao_com_ajuda'
+  chave      text primary key,   -- 'presenca','uniforme','biblia','ebd','manual','conduta','leitura_biblica','visitante','secao_sem_ajuda','secao_com_ajuda','jogo_1_lugar','jogo_2_lugar','jogo_3_lugar','jogo_4_lugar'
   descricao  text not null,
   pontos     int  not null default 0,
   ativo      boolean not null default true
@@ -244,6 +244,8 @@ create table transferencias (
 -- pontos_jogos, cor_time e posicao_jogos vêm do módulo de jogos e são
 -- recalculados por triggers (qualquer ordem de lançamento); total é calculado
 -- por trigger. Ausente => total = 0 (pontos/cor/posição dos jogos zerados).
+-- pontos_jogos pontua por COLOCAÇÃO da equipe da criança (itens_pontuacao
+-- 'jogo_1_lugar'..'jogo_4_lugar': 5/4/3/2), não pela soma das rodadas.
 
 create table folhas_semanais (
   id                    uuid primary key default uuid_generate_v4(),
@@ -261,7 +263,7 @@ create table folhas_semanais (
   secoes_com_ajuda      smallint not null default 0,      -- seções do manual com ajuda
   cor_time              text,                             -- cor do time nos jogos do sábado (NULL = não participou; vem do módulo de jogos)
   atividade_extra       smallint not null default 0,      -- pontos de atividades extras
-  pontos_jogos          int not null default 0,           -- derivado do módulo de jogos
+  pontos_jogos          int not null default 0,           -- derivado do módulo de jogos: pontos da colocação da equipe (jogo_X_lugar)
   posicao_jogos         smallint,                         -- posição da cor no ranking do evento de jogos (NULL = não participou)
   total                 int not null default 0,           -- calculado por trigger
   registrado_por        uuid not null references profiles(id),
@@ -313,9 +315,12 @@ create table progresso_manual (
 --  - jogo_resultados: colocação/desclassificado de cada cor na rodada
 --
 -- Criação atômica do evento na RPC fn_criar_evento_jogos (valida que o autor é
--- lider_jogos ou diretor_geral). Pontos/cor_time/posicao_jogos são propagados
--- às folhas pelo trigger fn_recalcular_pontos_jogos_encontro (disparado por
--- resultados, integrantes de cor, criação de folha e alternância de presença).
+-- lider_jogos ou diretor_geral). Cor/posição/pontos dos jogos são propagados às
+-- folhas pelo trigger fn_recalcular_pontos_jogos_encontro (disparado por
+-- resultados, integrantes de cor, criação de folha e alternância de presença):
+-- a folha pontua pela COLOCAÇÃO da equipe da criança (itens_pontuacao
+-- 'jogo_1_lugar'..'jogo_4_lugar', default 5/4/3/2) e não pela soma das rodadas,
+-- que segue sendo a base do ranking das cores (jogos_pontos_config).
 -- Ranking das cores via fn_ranking_cores_do_evento.
 
 create table jogos_catalogo (
@@ -663,10 +668,12 @@ $$;
 
 grant execute on function fn_ranking_cores_do_evento(uuid) to authenticated;
 
--- Recalcula pontos_jogos, cor_time e posicao_jogos das folhas do encontro.
--- Soma os pontos de TODAS as rodadas dos eventos do encontro para cada oansista
--- de cor; integrantes de cor sem resultado ficam com 0. cor_time/posicao_jogos
--- são informativos (cor não pontua). Roda por qualquer via de entrada:
+-- Recalcula cor_time e posicao_jogos das folhas do encontro; pontos_jogos é
+-- atribuído pela COLOCAÇÃO da equipe da criança no ranking (itens_pontuacao
+-- 'jogo_1_lugar'..'jogo_4_lugar', default 5/4/3/2); criança de equipe sem
+-- colocação (ex.: além do 4º) fica com 0. O ranking (posicao_jogos) usa a soma
+-- dos pontos das rodadas (jogos_pontos_config). cor_time/posicao_jogos são
+-- informativos (cor não pontua). Roda por qualquer via de entrada:
 -- resultado lançado/alterado/removido, criança entrando/saindo/trocando de cor,
 -- folha criada depois dos jogos e alternância de presença (presente <=> falta).
 -- Só atualiza folhas de crianças PRESENTES (ausente fica zerado — RN 1).
@@ -675,15 +682,18 @@ returns void
 language plpgsql security definer set search_path = public as $$
 begin
   update folhas_semanais f
-     set pontos_jogos  = coalesce(d.pontos, 0),
+     set pontos_jogos  = coalesce(
+                           (select pontos from itens_pontuacao
+                             where chave = 'jogo_' || rk.posicao || '_lugar'
+                               and ativo),
+                           0),
          cor_time      = d.cor,
          posicao_jogos = rk.posicao
     from (
-      select i.oansista_id, c.cor, c.id as cor_id, coalesce(sum(r.pontos), 0) as pontos
+      select i.oansista_id, c.cor, c.id as cor_id
         from evento_jogos_cores_oansistas i
         join evento_jogos_cores c on c.id = i.cor_id
         join eventos_jogos ev on ev.id = c.evento_id
-        left join jogo_resultados r on r.cor_id = c.id
        where ev.encontro_id = p_encontro
        group by i.oansista_id, c.id, c.cor
     ) d
@@ -871,7 +881,11 @@ insert into itens_pontuacao (chave, descricao, pontos) values
   ('leitura_biblica',    'Leitura bíblica',                   10),
   ('visitante',          'Por visitante convidado',            5),
   ('secao_sem_ajuda',    'Por seção do manual sem ajuda',     10),
-  ('secao_com_ajuda',    'Por seção do manual com ajuda',      5);
+  ('secao_com_ajuda',    'Por seção do manual com ajuda',      5),
+  ('jogo_1_lugar',       'Jogos do sábado: 1º lugar',          5),
+  ('jogo_2_lugar',       'Jogos do sábado: 2º lugar',          4),
+  ('jogo_3_lugar',       'Jogos do sábado: 3º lugar',          3),
+  ('jogo_4_lugar',       'Jogos do sábado: 4º lugar',          2);
 
 insert into jogos_pontos_config (colocacao, pontos) values
   (1, 100), (2, 70), (3, 50), (4, 40);

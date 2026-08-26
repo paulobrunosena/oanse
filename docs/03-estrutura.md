@@ -116,7 +116,7 @@ oanse/
 │   │       ├── UsuariosView.vue          # Diretor Geral
 │   │       ├── ClubesView.vue            # Diretor Geral
 │   │       ├── CalendarioView.vue        # sábados sem Oanse (RN 7) — Diretor Geral
-│   │       └── ConfiguracoesView.vue     # itens de pontuação / pontos de jogos
+│   │       └── ConfiguracoesView.vue     # itens de pontuação (Folha Semanal, incl. jogos por colocação jogo_1_lugar..jogo_4_lugar) / pontos de jogos
 │   │   # (planejado) encontro/[id]/, secretaria/, relatorios/
 │   │
 │   ├── components/

@@ -47,7 +47,10 @@ const sujo = computed(() => {
     || form.atividade_extra !== f.atividade_extra
 })
 
-const total = computed(() => previewTotalFolha(props.pontos, form, props.presente))
+const total = computed(() => previewTotalFolha(props.pontos, {
+  ...form,
+  pontos_jogos: props.folha?.pontos_jogos ?? 0,
+}, props.presente))
 
 function salvar() {
   emit('salvar', { ...form })

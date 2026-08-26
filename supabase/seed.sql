@@ -19,7 +19,12 @@ insert into itens_pontuacao (chave, descricao, pontos) values
   ('leitura_biblica',    'Leitura bíblica',                   10),
   ('visitante',          'Por visitante convidado',            5),
   ('secao_sem_ajuda',    'Por seção do manual sem ajuda',     10),
-  ('secao_com_ajuda',    'Por seção do manual com ajuda',      5);
+  ('secao_com_ajuda',    'Por seção do manual com ajuda',      5),
+  ('jogo_1_lugar',       'Jogos do sábado: 1º lugar',          5),
+  ('jogo_2_lugar',       'Jogos do sábado: 2º lugar',          4),
+  ('jogo_3_lugar',       'Jogos do sábado: 3º lugar',          3),
+  ('jogo_4_lugar',       'Jogos do sábado: 4º lugar',          2)
+on conflict (chave) do nothing;
 
 insert into jogos_pontos_config (colocacao, pontos) values
   (1, 100), (2, 70), (3, 50), (4, 40);

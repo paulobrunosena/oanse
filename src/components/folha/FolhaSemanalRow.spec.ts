@@ -144,14 +144,25 @@ describe('FolhaSemanalRow', () => {
   it('exibe cor, posição no ranking e pontos dos jogos quando a criança participou', () => {
     const wrapper = mount(FolhaSemanalRow, {
       props: props({
-        folha: folhaCompleta({ cor_time: 'verde', pontos_jogos: 170, posicao_jogos: 1 }),
+        folha: folhaCompleta({ cor_time: 'verde', pontos_jogos: 4, posicao_jogos: 2 }),
       }),
       global: { stubs },
     })
 
     expect(wrapper.text()).toContain('verde')
-    expect(wrapper.text()).toContain('1º lugar')
-    expect(wrapper.text()).toContain('170 pts nos jogos')
+    expect(wrapper.text()).toContain('2º lugar')
+    expect(wrapper.text()).toContain('4 pts nos jogos')
+  })
+
+  it('inclui os pontos dos jogos no total exibido no cartão', () => {
+    const wrapper = mount(FolhaSemanalRow, {
+      props: props({
+        folha: folhaCompleta({ cor_time: 'verde', pontos_jogos: 5, posicao_jogos: 1 }),
+      }),
+      global: { stubs },
+    })
+
+    expect(wrapper.find('.tag').text()).toContain('15 pts')
   })
 
   it('mostra que a criança não participou dos jogos quando não há cor', () => {
