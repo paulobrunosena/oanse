@@ -47,8 +47,6 @@
   },
   "allowScripts": {
     "@parcel/watcher@2.6.0": true,
-    "esbuild@0.25.12": true,
-    "esbuild@0.21.5": true,
     "esbuild@0.28.2": true
   },
   "engines": {
