@@ -91,7 +91,7 @@
 - [x] Registro de rodada: nome do jogo (pré-preenchido com o último lançado) + colocação das cores; `jogo_resultados` por cor
 - [x] Finalização do evento + ranking das cores do sábado (`fn_ranking_cores_do_evento`) para o anúncio final
 - [x] Teste: pontos 100/70/50/40/0 conforme `jogos_pontos_config` (trigger + espelho `utils/jogos.ts`; smoke test local RLS: evento, rodadas, ranking, propagação)
-- [x] Teste: trigger `fn_propagar_pontos_jogos` atualiza folhas (pontos_jogos + cor_time) — validado via smoke test local
+- [x] Teste: `fn_recalcular_pontos_jogos_encontro` atualiza folhas (pontos_jogos + cor_time + posicao_jogos) — validado via smoke test local
 - [x] Folha Semanal com pontuação de jogos automática: cor, pontos e **posição no ranking dos jogos** (`posicao_jogos`) vêm do módulo de jogos e aparecem na folha assim que o líder marca presença — em qualquer ordem de lançamento (folha antes/depois dos jogos; alternância de presença re-deriva). Cor deixou de ser selecionada à mão (bloco somente leitura). Smoke test local cobre as duas ordens + alternância de presença.
 - [x] Pontuação dos jogos na folha por **colocação da equipe** (migration `0014_folha_pontos_por_colocacao.sql`): itens configuráveis no módulo de configurações (`jogo_1_lugar`..`jogo_4_lugar`, default 5/4/3/2); `fn_recalcular_pontos_jogos_encontro` atribui `pontos_jogos` pela colocação no ranking (e não mais pela soma das rodadas, que segue alimentando o ranking dos jogos via `jogos_pontos_config`). Preview do total do cartão inclui os pontos dos jogos.
 - [x] RLS do módulo: escrita só `lider_jogos`/`diretor_geral` (evento, cores, oansistas, rodadas, resultados); diretor de clube NÃO cria evento (validado no smoke test)

@@ -41,8 +41,11 @@ oanse/
 │   │   ├── 0007_dias_sem_oanse.sql
 │   │   ├── 0008_folha_novos_itens.sql
 │   │   ├── 0009_jogos_clubes.sql
-│   │   ├── 0010_lider_jogos_role.sql   # perfil líder de jogos (enum)
-│   │   └── 0011_jogos_eventos.sql      # eventos de jogos + catálogo + RLS/triggers
+│   │   ├── 0010_lider_jogos_role.sql      # perfil líder de jogos (enum)
+│   │   ├── 0011_jogos_eventos.sql         # eventos de jogos + catálogo + RLS/triggers
+│   │   ├── 0012_multiplos_eventos_jogos.sql # vários eventos por sábado (RPC fn_criar_evento_jogos)
+│   │   ├── 0013_folha_pontos_jogos.sql    # folha: coluna posicao_jogos + recálculo por encontro (cor/posição/pontos nas folhas)
+│   │   └── 0014_folha_pontos_por_colocacao.sql # folha: pontos dos jogos por colocação da equipe (jogo_1_lugar..jogo_4_lugar)
 │   └── seed.sql                  # clubes, itens de pontuação, config de jogos, catálogo, usuários teste
 │
 ├── public/                       # assets estáticos servidos na raiz (/)

@@ -55,12 +55,15 @@
 1. **Eventos de jogos por sábado (Líder de Jogos)** — novo perfil `lider_jogos` (login de teste no seed/login). O líder cadastra cada evento (pode haver vários no mesmo sábado — ex.: Flamas+Tochas e Ursinhos+Faíscas): clubes participantes (só os que ainda não jogaram no sábado), cores — verde/vermelho/amarelo/azul — e oansistas de cada cor; depois só registra o resultado de cada rodada (nome do jogo vindo do catálogo, já pré-preenchido com o último lançado). Criação atômica na RPC `fn_criar_evento_jogos` + trigger anti-duplicação de clube no sábado.
 2. **Catálogo de jogos por clube** (`jogos_catalogo`): CRUD de nomes por clube (Ursinhos/Faíscas/Flamas/Tochas); combo mostra os jogos dos clubes participantes sem duplicar nomes iguais.
 3. **Finalização + ranking das cores**: ao finalizar o evento, o placar das cores do sábado é calculado por `fn_ranking_cores_do_evento` para o anúncio no final da programação.
-4. Trigger `fn_propagar_pontos_jogos` recalcula `pontos_jogos` e `cor_time` das folhas → ranking individual do sábado atualiza.
+4. Trigger `fn_recalcular_pontos_jogos_encontro` propaga `cor_time`, `pontos_jogos` e `posicao_jogos` para as folhas do sábado (qualquer ordem de lançamento); a folha pontua pela **colocação da equipe** nos jogos (`jogo_1_lugar`..`jogo_4_lugar`, migrations 0013/0014) → ranking individual do sábado atualiza.
 5. Ranking consolidado do sábado (por clube e geral) + relatórios de frequência/premiação acumulada.
 6. Polimento: PWA/instalação no celular do líder, modo offline da chamada (fila de sincronização) se houver tempo.
 
 > **Estado (2026-08-25):** itens 1-4 e o ranking consolidado (item 5, parte) estão
-> implementados. Pendentes: relatórios de frequência/premiação acumulada, PWA,
+> implementados. A folha semanal pontua por **colocação da equipe** nos jogos
+> (itens configuráveis `jogo_1_lugar`..`jogo_4_lugar`, default 5/4/3/2 — migrations
+> 0013/0014) e o ranking das cores segue pela soma das rodadas (`jogos_pontos_config`).
+> Pendentes: relatórios de frequência/premiação acumulada, PWA,
 > offline e deploy de produção.
 
 **Entrega:** MVP completo. Produção: Vercel (frontend, variáveis `NUXT_PUBLIC_SUPABASE_*`) + Supabase Cloud (mesmas migrations; revisar chaves e ativar MFA no painel).
