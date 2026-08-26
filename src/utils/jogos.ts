@@ -69,3 +69,8 @@ export function pontosDoResultado(resultado: ResultadoJogo, config: PontosJogosC
   if (resultado.colocacao == null) return 0
   return pontosDaColocacao(resultado.colocacao, config)
 }
+
+/** Rótulo ordinal da posição no ranking dos jogos (ex.: 1 -> '1º lugar'). */
+export function posicaoLabel(posicao: number): string {
+  return `${posicao}º lugar`
+}

@@ -92,6 +92,7 @@
 - [x] Finalização do evento + ranking das cores do sábado (`fn_ranking_cores_do_evento`) para o anúncio final
 - [x] Teste: pontos 100/70/50/40/0 conforme `jogos_pontos_config` (trigger + espelho `utils/jogos.ts`; smoke test local RLS: evento, rodadas, ranking, propagação)
 - [x] Teste: trigger `fn_propagar_pontos_jogos` atualiza folhas (pontos_jogos + cor_time) — validado via smoke test local
+- [x] Folha Semanal com pontuação de jogos automática (migration `0013_folha_pontos_jogos.sql`): cor, pontos e **posição no ranking dos jogos** (`posicao_jogos`) vêm do módulo de jogos e aparecem na folha assim que o líder marca presença — em qualquer ordem de lançamento (folha antes/depois dos jogos; alternância de presença re-deriva). Cor deixou de ser selecionada à mão (bloco somente leitura). Smoke test local cobre as duas ordens + alternância de presença.
 - [x] RLS do módulo: escrita só `lider_jogos`/`diretor_geral` (evento, cores, oansistas, rodadas, resultados); diretor de clube NÃO cria evento (validado no smoke test)
 - [x] Ranking consolidado do sábado (por clube e geral)
 - [x] UX do módulo: busca de criança no evento lista só os clubes participantes (badge do clube nas opções); criança distribuída mostra o nome na cor do clube (chip com fundo suave + botão de remover, removível antes de finalizar); excluir evento dentro do card (não "flutua" fora); refresh após ações não derruba o scroll da página (mantém conteúdo montado)

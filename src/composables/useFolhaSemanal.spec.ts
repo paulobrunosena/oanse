@@ -9,11 +9,11 @@ const ITENS = [
 ]
 
 const FOLHAS = [
-  { id: 'f1', encontro_id: 'e1', oansista_id: 'o1', presenca_id: 'p1', registrado_por: 'u1', uniforme: true, biblia: false, ebd: false, manual: false, conduta: false, leitura_biblica: false, visitantes_convidados: 0, secoes_sem_ajuda: 2, secoes_com_ajuda: 0, cor_time: null, atividade_extra: 0, total: 29, pontos_jogos: 0 },
+  { id: 'f1', encontro_id: 'e1', oansista_id: 'o1', presenca_id: 'p1', registrado_por: 'u1', uniforme: true, biblia: false, ebd: false, manual: false, conduta: false, leitura_biblica: false, visitantes_convidados: 0, secoes_sem_ajuda: 2, secoes_com_ajuda: 0, cor_time: 'verde', atividade_extra: 0, total: 29, pontos_jogos: 0, posicao_jogos: null },
 ]
 
 function form(): FormFolha {
-  return { uniforme: true, biblia: false, ebd: false, manual: false, conduta: false, leitura_biblica: false, visitantes_convidados: 0, secoes_sem_ajuda: 2, secoes_com_ajuda: 0, cor_time: null, atividade_extra: 0 }
+  return { uniforme: true, biblia: false, ebd: false, manual: false, conduta: false, leitura_biblica: false, visitantes_convidados: 0, secoes_sem_ajuda: 2, secoes_com_ajuda: 0, atividade_extra: 0 }
 }
 
 const mocks = vi.hoisted(() => ({ supabase: null as any }))
@@ -91,7 +91,7 @@ describe('useFolhaSemanal', () => {
       const folha = useFolhaSemanal()
       await folha.carregar('e1', ['o1'])
 
-      const nova = { id: 'f2', encontro_id: 'e1', oansista_id: 'o9', presenca_id: 'p9', registrado_por: 'u1', uniforme: true, biblia: false, ebd: false, manual: false, conduta: false, leitura_biblica: false, visitantes_convidados: 0, secoes_sem_ajuda: 2, secoes_com_ajuda: 0, cor_time: null, atividade_extra: 0, total: 29, pontos_jogos: 0 }
+      const nova = { id: 'f2', encontro_id: 'e1', oansista_id: 'o9', presenca_id: 'p9', registrado_por: 'u1', uniforme: true, biblia: false, ebd: false, manual: false, conduta: false, leitura_biblica: false, visitantes_convidados: 0, secoes_sem_ajuda: 2, secoes_com_ajuda: 0, cor_time: null, atividade_extra: 0, total: 29, pontos_jogos: 0, posicao_jogos: null }
       const bFolhas = mocks.supabase.builderDe('folhas_semanais')
       bFolhas.singleData = nova
 

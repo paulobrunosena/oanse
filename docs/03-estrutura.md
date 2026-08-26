@@ -126,7 +126,7 @@ oanse/
 │   │   │   ├── EncontroRetroativo.vue  # backfill de "sábado perdido" (botão + dialog)
 │   │   │   └── EncontroRetroativo.spec.ts
 │   │   └── folha/
-│   │       ├── FolhaSemanalRow.vue  # linha da folha com preview de total (uniformes, bíblia, EBD, manual, conduta, leitura bíblica, visitantes, seções sem/com ajuda, atividade extra, cor do time)
+│   │       ├── FolhaSemanalRow.vue  # linha da folha com preview de total (uniformes, bíblia, EBD, manual, conduta, leitura bíblica, visitantes, seções sem/com ajuda, atividade extra) + bloco informativo dos jogos (cor, posição no ranking e pontos — somente leitura, vindos do módulo de jogos)
 │   │       └── FolhaSemanalRow.spec.ts
 │   │   └── jogos/
 │   │       ├── EventoJogosCard.vue   # evento do sábado: clubes, cores, oansistas por cor (nome na cor do clube, removível/trocável), finalizar/reabrir/excluir

@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { mount } from '@vue/test-utils'
 import { pontosPorChave, type ItensPontuacaoMap } from '../../utils/pontos'
 import FolhaSemanalRow from './FolhaSemanalRow.vue'
+import type { Folha } from '@/composables/useFolhaSemanal'
 
 const PONTOS: ItensPontuacaoMap = pontosPorChave([
   { chave: 'presenca', pontos: 10 },
@@ -34,11 +35,33 @@ const stubs = {
     template: '<input type="number" :style="inputStyle" :value="modelValue" @input="$emit(\'update:modelValue\', Number($event.target.value))" />',
     props: ['modelValue', 'inputStyle'],
   },
-  RadioButton: {
-    name: 'RadioButton',
-    template: '<input type="radio" :checked="modelValue === value" @change="$emit(\'update:modelValue\', value)" />',
-    props: ['modelValue', 'value'],
-  },
+}
+
+function folhaCompleta(sobre: Partial<Folha> = {}): Folha {
+  return {
+    id: 'f1',
+    encontro_id: 'e1',
+    oansista_id: 'o1',
+    presenca_id: 'p1',
+    registrado_por: 'u1',
+    uniforme: false,
+    biblia: false,
+    ebd: false,
+    manual: false,
+    conduta: false,
+    leitura_biblica: false,
+    visitantes_convidados: 0,
+    secoes_sem_ajuda: 0,
+    secoes_com_ajuda: 0,
+    cor_time: null,
+    atividade_extra: 0,
+    pontos_jogos: 0,
+    posicao_jogos: null,
+    total: 10,
+    created_at: '',
+    updated_at: '',
+    ...sobre,
+  }
 }
 
 function props(sobre: Partial<ConstructorParameters<typeof FolhaSemanalRow>[0]> = {}) {
@@ -118,15 +141,26 @@ describe('FolhaSemanalRow', () => {
     expect(wrapper.find('.tag').text()).toContain('20 pts')
   })
 
-  it('exibe os radios de cores dos times e a opção de não participação', () => {
+  it('exibe cor, posição no ranking e pontos dos jogos quando a criança participou', () => {
     const wrapper = mount(FolhaSemanalRow, {
-      props: props({ cores: ['#EF4444', '#3B82F6'] }),
+      props: props({
+        folha: folhaCompleta({ cor_time: 'verde', pontos_jogos: 170, posicao_jogos: 1 }),
+      }),
       global: { stubs },
     })
 
-    const radios = wrapper.findAll('input[type="radio"]')
-    expect(radios).toHaveLength(3)
-    expect(wrapper.text()).toContain('Não participou')
+    expect(wrapper.text()).toContain('verde')
+    expect(wrapper.text()).toContain('1º lugar')
+    expect(wrapper.text()).toContain('170 pts nos jogos')
+  })
+
+  it('mostra que a criança não participou dos jogos quando não há cor', () => {
+    const wrapper = mount(FolhaSemanalRow, {
+      props: props({ folha: folhaCompleta() }),
+      global: { stubs },
+    })
+
+    expect(wrapper.text()).toContain('Não participou dos jogos deste sábado.')
   })
 
   it('habilita o botão salvar quando ainda não há folha persistida', () => {
@@ -138,9 +172,7 @@ describe('FolhaSemanalRow', () => {
 
   it('desabilita o botão salvar quando o formulário está limpo em relação à folha persistida', () => {
     const wrapper = mount(FolhaSemanalRow, {
-      props: props({
-        folha: { uniforme: false, biblia: false, ebd: false, manual: false, conduta: false, leitura_biblica: false, visitantes_convidados: 0, secoes_sem_ajuda: 0, secoes_com_ajuda: 0, cor_time: null, atividade_extra: 0 },
-      }),
+      props: props({ folha: folhaCompleta() }),
       global: { stubs },
     })
 
@@ -154,6 +186,6 @@ describe('FolhaSemanalRow', () => {
 
     const emitido = wrapper.emitted('salvar')
     expect(emitido).toHaveLength(1)
-    expect(emitido![0]![0]).toEqual({ uniforme: false, biblia: false, ebd: false, manual: false, conduta: false, leitura_biblica: false, visitantes_convidados: 0, secoes_sem_ajuda: 0, secoes_com_ajuda: 0, cor_time: null, atividade_extra: 0 })
+    expect(emitido![0]![0]).toEqual({ uniforme: false, biblia: false, ebd: false, manual: false, conduta: false, leitura_biblica: false, visitantes_convidados: 0, secoes_sem_ajuda: 0, secoes_com_ajuda: 0, atividade_extra: 0 })
   })
 })

@@ -270,6 +270,7 @@ export type Database = {
           manual: boolean
           oansista_id: string
           pontos_jogos: number
+          posicao_jogos: number | null
           presenca_id: string
           registrado_por: string
           secoes_com_ajuda: number
@@ -292,6 +293,7 @@ export type Database = {
           manual?: boolean
           oansista_id: string
           pontos_jogos?: number
+          posicao_jogos?: number | null
           presenca_id: string
           registrado_por: string
           secoes_com_ajuda?: number
@@ -314,6 +316,7 @@ export type Database = {
           manual?: boolean
           oansista_id?: string
           pontos_jogos?: number
+          posicao_jogos?: number | null
           presenca_id?: string
           registrado_por?: string
           secoes_com_ajuda?: number
@@ -1317,6 +1320,10 @@ export type Database = {
           posicao: number
           total: number
         }[]
+      }
+      fn_recalcular_pontos_jogos_encontro: {
+        Args: { p_encontro: string }
+        Returns: undefined
       }
       fn_responsavel_pela_turma: {
         Args: { p_encontro_id: string; p_turma_id: string }

@@ -241,7 +241,9 @@ create table transferencias (
 -- ----------------------------------------------------------------------------
 -- FOLHA SEMANAL (pontuação por encontro)
 -- ----------------------------------------------------------------------------
--- pontos_jogos e total são calculados por triggers. Ausente => total = 0.
+-- pontos_jogos, cor_time e posicao_jogos vêm do módulo de jogos e são
+-- recalculados por triggers (qualquer ordem de lançamento); total é calculado
+-- por trigger. Ausente => total = 0 (pontos/cor/posição dos jogos zerados).
 
 create table folhas_semanais (
   id                    uuid primary key default uuid_generate_v4(),
@@ -257,9 +259,10 @@ create table folhas_semanais (
   visitantes_convidados smallint not null default 0,      -- visitantes convidados
   secoes_sem_ajuda      smallint not null default 0,      -- seções do manual sem ajuda (vale mais)
   secoes_com_ajuda      smallint not null default 0,      -- seções do manual com ajuda
-  cor_time              text,                             -- cor do time nos jogos do sábado (NULL = não participou)
+  cor_time              text,                             -- cor do time nos jogos do sábado (NULL = não participou; vem do módulo de jogos)
   atividade_extra       smallint not null default 0,      -- pontos de atividades extras
   pontos_jogos          int not null default 0,           -- derivado do módulo de jogos
+  posicao_jogos         smallint,                         -- posição da cor no ranking do evento de jogos (NULL = não participou)
   total                 int not null default 0,           -- calculado por trigger
   registrado_por        uuid not null references profiles(id),
   created_at            timestamptz not null default now(),
@@ -310,8 +313,10 @@ create table progresso_manual (
 --  - jogo_resultados: colocação/desclassificado de cada cor na rodada
 --
 -- Criação atômica do evento na RPC fn_criar_evento_jogos (valida que o autor é
--- lider_jogos ou diretor_geral). Pontos/cor_time são propagados às folhas pelo
--- trigger fn_propagar_pontos_jogos. Ranking das cores via fn_ranking_cores_do_evento.
+-- lider_jogos ou diretor_geral). Pontos/cor_time/posicao_jogos são propagados
+-- às folhas pelo trigger fn_recalcular_pontos_jogos_encontro (disparado por
+-- resultados, integrantes de cor, criação de folha e alternância de presença).
+-- Ranking das cores via fn_ranking_cores_do_evento.
 
 create table jogos_catalogo (
   id         uuid primary key default uuid_generate_v4(),
@@ -476,6 +481,7 @@ begin
     new.cor_time              := null;
     new.atividade_extra       := 0;
     new.pontos_jogos          := 0;
+    new.posicao_jogos         := null;
     new.total                 := 0;
     return new;
   end if;
@@ -657,59 +663,121 @@ $$;
 
 grant execute on function fn_ranking_cores_do_evento(uuid) to authenticated;
 
--- Recalcula pontos_jogos e cor_time das folhas do encontro (RN 3). Soma os
--- pontos de TODAS as rodadas do evento para cada oansista de cor; integrantes
--- de cor sem resultado ficam com 0. cor_time é informacional (não pontua).
+-- Recalcula pontos_jogos, cor_time e posicao_jogos das folhas do encontro.
+-- Soma os pontos de TODAS as rodadas dos eventos do encontro para cada oansista
+-- de cor; integrantes de cor sem resultado ficam com 0. cor_time/posicao_jogos
+-- são informativos (cor não pontua). Roda por qualquer via de entrada:
+-- resultado lançado/alterado/removido, criança entrando/saindo/trocando de cor,
+-- folha criada depois dos jogos e alternância de presença (presente <=> falta).
+-- Só atualiza folhas de crianças PRESENTES (ausente fica zerado — RN 1).
+create or replace function fn_recalcular_pontos_jogos_encontro(p_encontro uuid)
+returns void
+language plpgsql security definer set search_path = public as $$
+begin
+  update folhas_semanais f
+     set pontos_jogos  = coalesce(d.pontos, 0),
+         cor_time      = d.cor,
+         posicao_jogos = rk.posicao
+    from (
+      select i.oansista_id, c.cor, c.id as cor_id, coalesce(sum(r.pontos), 0) as pontos
+        from evento_jogos_cores_oansistas i
+        join evento_jogos_cores c on c.id = i.cor_id
+        join eventos_jogos ev on ev.id = c.evento_id
+        left join jogo_resultados r on r.cor_id = c.id
+       where ev.encontro_id = p_encontro
+       group by i.oansista_id, c.id, c.cor
+    ) d
+    left join (
+      select t.cor_id, t.posicao
+        from (
+          select c.id as cor_id,
+                 rank() over (partition by ev.id
+                              order by coalesce(sum(r.pontos), 0) desc, c.cor) as posicao
+            from evento_jogos_cores c
+            join eventos_jogos ev on ev.id = c.evento_id
+            left join jogo_resultados r on r.cor_id = c.id
+           where ev.encontro_id = p_encontro
+           group by c.id, c.cor, ev.id
+        ) t
+    ) rk on rk.cor_id = d.cor_id
+   where f.oansista_id = d.oansista_id
+     and f.encontro_id = p_encontro
+     and exists (
+       select 1 from presencas pr where pr.id = f.presenca_id and pr.presente
+     );
+end;
+$$;
+
+-- Disparadores que chamam o recálculo do encontro
 create or replace function fn_propagar_pontos_jogos()
 returns trigger language plpgsql security definer set search_path = public as $$
 declare
-  v_evento   uuid;
   v_encontro uuid;
 begin
   if TG_OP = 'DELETE' then
-    select evento_id into v_evento from jogos where id = old.jogo_id;
+    select ev.encontro_id into v_encontro
+      from jogos j join eventos_jogos ev on ev.id = j.evento_id
+     where j.id = old.jogo_id;
   else
-    select evento_id into v_evento from jogos where id = new.jogo_id;
+    select ev.encontro_id into v_encontro
+      from jogos j join eventos_jogos ev on ev.id = j.evento_id
+     where j.id = new.jogo_id;
   end if;
 
-  select encontro_id into v_encontro from eventos_jogos where id = v_evento;
-
-  update folhas_semanais f
-     set pontos_jogos = coalesce(sub.pontos, 0)
-    from (
-      select distinct i.oansista_id
-        from evento_jogos_cores_oansistas i
-        join evento_jogos_cores c on c.id = i.cor_id
-        join eventos_jogos ev on ev.id = c.evento_id and ev.encontro_id = v_encontro
-    ) participante
-    left join (
-      select i.oansista_id, sum(r.pontos) as pontos
-        from jogo_resultados r
-        join jogos j on j.id = r.jogo_id
-        join eventos_jogos ev on ev.id = j.evento_id and ev.encontro_id = v_encontro
-        join evento_jogos_cores c on c.id = r.cor_id
-        join evento_jogos_cores_oansistas i on i.cor_id = c.id
-       group by i.oansista_id
-    ) sub on sub.oansista_id = participante.oansista_id
-   where f.oansista_id = participante.oansista_id
-     and f.encontro_id = v_encontro;
-
-  update folhas_semanais f
-     set cor_time = c.cor
-    from evento_jogos_cores_oansistas i
-    join evento_jogos_cores c on c.id = i.cor_id
-   where c.evento_id = v_evento
-     and f.oansista_id = i.oansista_id
-     and f.encontro_id = v_encontro;
-
+  if v_encontro is not null then
+    perform fn_recalcular_pontos_jogos_encontro(v_encontro);
+  end if;
   return null;
 end;
 $$;
 
 create trigger trg_propagar_pontos_jogos
-  after insert or update or delete
-  on jogo_resultados
+  after insert or update or delete on jogo_resultados
   for each row execute function fn_propagar_pontos_jogos();
+
+create or replace function fn_propagar_pontos_jogos_integrantes()
+returns trigger language plpgsql security definer set search_path = public as $$
+declare
+  v_encontro uuid;
+  v_cor_id  uuid;
+begin
+  if TG_OP = 'DELETE' then
+    v_cor_id := old.cor_id;
+  else
+    v_cor_id := new.cor_id;
+  end if;
+
+  select ev.encontro_id into v_encontro
+    from evento_jogos_cores c
+    join eventos_jogos ev on ev.id = c.evento_id
+   where c.id = v_cor_id;
+
+  if v_encontro is not null then
+    perform fn_recalcular_pontos_jogos_encontro(v_encontro);
+  end if;
+  return null;
+end;
+$$;
+
+create trigger trg_propagar_pontos_jogos_integrantes
+  after insert or update or delete on evento_jogos_cores_oansistas
+  for each row execute function fn_propagar_pontos_jogos_integrantes();
+
+create or replace function fn_propagar_pontos_jogos_por_folha()
+returns trigger language plpgsql security definer set search_path = public as $$
+begin
+  perform fn_recalcular_pontos_jogos_encontro(new.encontro_id);
+  return null;
+end;
+$$;
+
+create trigger trg_folha_pontos_jogos_inserir
+  after insert on folhas_semanais
+  for each row execute function fn_propagar_pontos_jogos_por_folha();
+
+create trigger trg_folha_pontos_jogos_presenca
+  after update of presenca_id on folhas_semanais
+  for each row execute function fn_propagar_pontos_jogos_por_folha();
 
 -- Conclusão de seção/nível do manual gera pendência para a Secretaria (RN 4)
 create or replace function fn_gerar_pendencia_premio()

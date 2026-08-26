@@ -9,7 +9,7 @@ type ItemPontuacao = Database['public']['Tables']['itens_pontuacao']['Row']
 export type FormFolha = Pick<Folha,
   'uniforme' | 'biblia' | 'ebd' | 'manual' | 'conduta' | 'leitura_biblica'
   | 'visitantes_convidados' | 'secoes_sem_ajuda' | 'secoes_com_ajuda'
-  | 'atividade_extra' | 'cor_time'
+  | 'atividade_extra'
 >
 
 /**

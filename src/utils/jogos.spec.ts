@@ -7,6 +7,7 @@ import {
   jogosDisponiveis,
   pontosDaColocacao,
   pontosDoResultado,
+  posicaoLabel,
 } from './jogos'
 
 const CONFIG = [
@@ -34,6 +35,14 @@ describe('pontosDoResultado (espelho do trigger fn_definir_pontos_resultado)', (
 
   it('colocação fora da configuração vale 0', () => {
     expect(pontosDaColocacao(9, CONFIG)).toBe(0)
+  })
+})
+
+describe('posicaoLabel', () => {
+  it('rotula a posição em formato ordinal', () => {
+    expect(posicaoLabel(1)).toBe('1º lugar')
+    expect(posicaoLabel(2)).toBe('2º lugar')
+    expect(posicaoLabel(4)).toBe('4º lugar')
   })
 })
 

@@ -24,7 +24,6 @@ const { pontos, carregando: carregandoFolhas, carregar: carregarFolhas, folhaDe,
 const turma = ref<{ id: string, nome: string } | null>(null)
 const oansistas = ref<Oansista[]>([])
 const presencas = ref<Presenca[]>([])
-const cores = ref<string[]>([])
 const carregando = ref(true)
 const salvandoId = ref<string | null>(null)
 
@@ -101,25 +100,12 @@ async function carregarPresencas() {
   presencas.value = data ?? []
 }
 
-async function carregarCores() {
-  if (!encontro.value) {
-    cores.value = []
-    return
-  }
-  const { data } = await supabase
-    .from('evento_jogos_cores')
-    .select('cor, eventos_jogos!inner(encontro_id)')
-    .eq('eventos_jogos.encontro_id', encontro.value.id)
-  cores.value = (data ?? []).map(c => c.cor).filter(Boolean)
-}
-
 async function carregarTudo() {
   carregando.value = true
   await carregarEncontro()
   await carregarTurma()
   await carregarOansistas()
   await carregarPresencas()
-  await carregarCores()
   if (encontro.value) {
     await carregarFolhas(encontro.value.id, oansistas.value.map(o => o.id))
   }
@@ -131,7 +117,6 @@ async function aoSelecionarEncontro(id: string) {
   await carregarTurma()
   await carregarOansistas()
   await carregarPresencas()
-  await carregarCores()
   if (encontro.value) {
     await carregarFolhas(encontro.value.id, oansistas.value.map(o => o.id))
   }
@@ -260,7 +245,6 @@ onMounted(carregarTudo)
             :folha="folhaDe(o.id) ?? null"
             :presente="true"
             :pontos="pontos"
-            :cores="cores"
             :salvando="salvandoId === o.id"
             @salvar="form => onSalvar(o, form)"
           />

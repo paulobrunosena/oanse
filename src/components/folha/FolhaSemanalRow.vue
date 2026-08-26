@@ -4,20 +4,18 @@ import Avatar from 'primevue/avatar'
 import Button from 'primevue/button'
 import Checkbox from 'primevue/checkbox'
 import InputNumber from 'primevue/inputnumber'
-import RadioButton from 'primevue/radiobutton'
 import Tag from 'primevue/tag'
-import type { FormFolha } from '@/composables/useFolhaSemanal'
+import type { Folha, FormFolha } from '@/composables/useFolhaSemanal'
 import { previewTotalFolha, type ItensPontuacaoMap } from '@/utils/pontos'
-import { corHex } from '@/utils/jogos'
+import { corHex, posicaoLabel } from '@/utils/jogos'
 
 const props = withDefaults(defineProps<{
   nome: string
-  folha: FormFolha | null
+  folha: Folha | null
   presente: boolean
   pontos: ItensPontuacaoMap
   salvando: boolean
-  cores?: string[]
-}>(), { cores: () => [] })
+}>(), {})
 
 const emit = defineEmits<{ salvar: [form: FormFolha] }>()
 
@@ -32,7 +30,6 @@ const form = reactive<FormFolha>({
   secoes_sem_ajuda: props.folha?.secoes_sem_ajuda ?? 0,
   secoes_com_ajuda: props.folha?.secoes_com_ajuda ?? 0,
   atividade_extra: props.folha?.atividade_extra ?? 0,
-  cor_time: props.folha?.cor_time ?? null,
 })
 
 const sujo = computed(() => {
@@ -48,7 +45,6 @@ const sujo = computed(() => {
     || form.secoes_sem_ajuda !== f.secoes_sem_ajuda
     || form.secoes_com_ajuda !== f.secoes_com_ajuda
     || form.atividade_extra !== f.atividade_extra
-    || form.cor_time !== f.cor_time
 })
 
 const total = computed(() => previewTotalFolha(props.pontos, form, props.presente))
@@ -198,39 +194,32 @@ function salvar() {
         />
       </div>
 
-      <div class="flex flex-col gap-2">
-        <span class="text-sm">Cor do time nos jogos</span>
-        <div class="flex flex-col gap-2">
-          <label
-            v-for="cor in cores"
-            :key="cor"
-            class="flex items-center gap-2"
+      <div class="flex flex-col gap-2 rounded-md border p-3">
+        <span class="text-sm font-semibold">Jogos do sábado</span>
+        <div
+          v-if="folha?.cor_time"
+          class="flex flex-wrap items-center gap-2"
+        >
+          <span
+            class="inline-block h-4 w-4 rounded-full border border-surface-300"
+            :style="{ backgroundColor: corHex(folha.cor_time) }"
+          />
+          <span class="text-sm capitalize">{{ folha.cor_time }}</span>
+          <span
+            v-if="folha.posicao_jogos"
+            class="text-sm font-medium"
           >
-            <RadioButton
-              v-model="form.cor_time"
-              :value="cor"
-            />
-            <span
-              class="inline-block h-4 w-4 rounded-full border border-surface-300"
-              :style="{ backgroundColor: corHex(cor) }"
-            />
-            <span class="text-sm">{{ cor }}</span>
-          </label>
-          <label
-            class="flex items-center gap-2"
-          >
-            <RadioButton
-              v-model="form.cor_time"
-              :value="null"
-            />
-            <span class="text-sm">Não participou</span>
-          </label>
+            {{ posicaoLabel(folha.posicao_jogos) }}
+          </span>
+          <span class="text-sm text-surface-500">
+            {{ folha.pontos_jogos }} pts nos jogos
+          </span>
         </div>
         <span
-          v-if="cores.length === 0"
+          v-else
           class="text-xs text-surface-500"
         >
-          Nenhum jogo lançado neste sábado ainda.
+          Não participou dos jogos deste sábado.
         </span>
       </div>
     </div>
