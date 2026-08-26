@@ -33,6 +33,7 @@ const opcoesRole: { label: string, value: UserRole }[] = [
   { label: 'Diretor Geral', value: 'diretor_geral' },
   { label: 'Secretaria', value: 'secretaria' },
   { label: 'Diretor de Clube', value: 'diretor_clube' },
+  { label: 'Líder de Jogos', value: 'lider_jogos' },
   { label: 'Líder', value: 'lider' },
 ]
 
