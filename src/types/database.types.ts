@@ -256,6 +256,245 @@ export type Database = {
           },
         ]
       }
+      folha_blocos: {
+        Row: {
+          id: string
+          nome: string
+          ordem: number
+          premio_nome: string
+          quantidade: number
+          secao_id: string
+        }
+        Insert: {
+          id?: string
+          nome: string
+          ordem: number
+          premio_nome: string
+          quantidade: number
+          secao_id: string
+        }
+        Update: {
+          id?: string
+          nome?: string
+          ordem?: number
+          premio_nome?: string
+          quantidade?: number
+          secao_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "folha_blocos_secao_id_fkey"
+            columns: ["secao_id"]
+            isOneToOne: false
+            referencedRelation: "folha_secoes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      folha_item_progresso: {
+        Row: {
+          bloco_id: string
+          created_at: string
+          data_conclusao: string
+          id: string
+          item_num: number
+          oansista_id: string
+          registrado_por: string
+        }
+        Insert: {
+          bloco_id: string
+          created_at?: string
+          data_conclusao?: string
+          id?: string
+          item_num: number
+          oansista_id: string
+          registrado_por: string
+        }
+        Update: {
+          bloco_id?: string
+          created_at?: string
+          data_conclusao?: string
+          id?: string
+          item_num?: number
+          oansista_id?: string
+          registrado_por?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "folha_item_progresso_bloco_id_fkey"
+            columns: ["bloco_id"]
+            isOneToOne: false
+            referencedRelation: "folha_blocos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "folha_item_progresso_oansista_id_fkey"
+            columns: ["oansista_id"]
+            isOneToOne: false
+            referencedRelation: "oansistas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "folha_item_progresso_registrado_por_fkey"
+            columns: ["registrado_por"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      folha_manuais: {
+        Row: {
+          clube_id: string
+          created_at: string
+          id: string
+          nome: string
+          ordem: number
+        }
+        Insert: {
+          clube_id: string
+          created_at?: string
+          id?: string
+          nome: string
+          ordem: number
+        }
+        Update: {
+          clube_id?: string
+          created_at?: string
+          id?: string
+          nome?: string
+          ordem?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "folha_manuais_clube_id_fkey"
+            columns: ["clube_id"]
+            isOneToOne: false
+            referencedRelation: "clubes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      folha_observacoes: {
+        Row: {
+          id: string
+          manual_id: string
+          oansista_id: string
+          texto: string | null
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          manual_id: string
+          oansista_id: string
+          texto?: string | null
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          manual_id?: string
+          oansista_id?: string
+          texto?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "folha_observacoes_manual_id_fkey"
+            columns: ["manual_id"]
+            isOneToOne: false
+            referencedRelation: "folha_manuais"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "folha_observacoes_oansista_id_fkey"
+            columns: ["oansista_id"]
+            isOneToOne: false
+            referencedRelation: "oansistas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      folha_premio_progresso: {
+        Row: {
+          bloco_id: string
+          created_at: string
+          data_recebimento: string
+          id: string
+          oansista_id: string
+          registrado_por: string
+        }
+        Insert: {
+          bloco_id: string
+          created_at?: string
+          data_recebimento?: string
+          id?: string
+          oansista_id: string
+          registrado_por: string
+        }
+        Update: {
+          bloco_id?: string
+          created_at?: string
+          data_recebimento?: string
+          id?: string
+          oansista_id?: string
+          registrado_por?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "folha_premio_progresso_bloco_id_fkey"
+            columns: ["bloco_id"]
+            isOneToOne: false
+            referencedRelation: "folha_blocos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "folha_premio_progresso_oansista_id_fkey"
+            columns: ["oansista_id"]
+            isOneToOne: false
+            referencedRelation: "oansistas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "folha_premio_progresso_registrado_por_fkey"
+            columns: ["registrado_por"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      folha_secoes: {
+        Row: {
+          id: string
+          manual_id: string
+          nome: string
+          ordem: number
+          tipo: string
+        }
+        Insert: {
+          id?: string
+          manual_id: string
+          nome: string
+          ordem: number
+          tipo?: string
+        }
+        Update: {
+          id?: string
+          manual_id?: string
+          nome?: string
+          ordem?: number
+          tipo?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "folha_secoes_manual_id_fkey"
+            columns: ["manual_id"]
+            isOneToOne: false
+            referencedRelation: "folha_manuais"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       folhas_semanais: {
         Row: {
           atividade_extra: number
@@ -663,7 +902,6 @@ export type Database = {
           oansista_id: string
           observacao: string | null
           premio_id: string
-          progresso_id: string | null
           status: Database["public"]["Enums"]["pendencia_status"]
         }
         Insert: {
@@ -675,7 +913,6 @@ export type Database = {
           oansista_id: string
           observacao?: string | null
           premio_id: string
-          progresso_id?: string | null
           status?: Database["public"]["Enums"]["pendencia_status"]
         }
         Update: {
@@ -687,7 +924,6 @@ export type Database = {
           oansista_id?: string
           observacao?: string | null
           premio_id?: string
-          progresso_id?: string | null
           status?: Database["public"]["Enums"]["pendencia_status"]
         }
         Relationships: [
@@ -717,13 +953,6 @@ export type Database = {
             columns: ["premio_id"]
             isOneToOne: false
             referencedRelation: "premios"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "premios_pendentes_progresso_id_fkey"
-            columns: ["progresso_id"]
-            isOneToOne: false
-            referencedRelation: "progresso_manual"
             referencedColumns: ["id"]
           },
         ]
@@ -824,54 +1053,6 @@ export type Database = {
             columns: ["clube_id"]
             isOneToOne: false
             referencedRelation: "clubes"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      progresso_manual: {
-        Row: {
-          concluida: boolean
-          created_at: string
-          data_conclusao: string
-          id: string
-          nivel: number
-          oansista_id: string
-          registrado_por: string
-          secao: number
-        }
-        Insert: {
-          concluida?: boolean
-          created_at?: string
-          data_conclusao?: string
-          id?: string
-          nivel: number
-          oansista_id: string
-          registrado_por: string
-          secao: number
-        }
-        Update: {
-          concluida?: boolean
-          created_at?: string
-          data_conclusao?: string
-          id?: string
-          nivel?: number
-          oansista_id?: string
-          registrado_por?: string
-          secao?: number
-        }
-        Relationships: [
-          {
-            foreignKeyName: "progresso_manual_oansista_id_fkey"
-            columns: ["oansista_id"]
-            isOneToOne: false
-            referencedRelation: "oansistas"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "progresso_manual_registrado_por_fkey"
-            columns: ["registrado_por"]
-            isOneToOne: false
-            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -1397,12 +1578,12 @@ export type Tables<
   DefaultSchemaTableNameOrOptions extends
     | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
         DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -1426,11 +1607,11 @@ export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -1451,11 +1632,11 @@ export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -1476,11 +1657,11 @@ export type Enums<
   DefaultSchemaEnumNameOrOptions extends
     | keyof DefaultSchema["Enums"]
     | { schema: keyof DatabaseWithoutInternals },
-  EnumName extends DefaultSchemaEnumNameOrOptions extends {
+  EnumName extends (DefaultSchemaEnumNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaEnumNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -1493,11 +1674,11 @@ export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
     | keyof DefaultSchema["CompositeTypes"]
     | { schema: keyof DatabaseWithoutInternals },
-  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+  CompositeTypeName extends (PublicCompositeTypeNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
-    : never = never,
+    : never) = never,
 > = PublicCompositeTypeNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
