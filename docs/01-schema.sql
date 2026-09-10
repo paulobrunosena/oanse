@@ -273,19 +273,76 @@ create table folhas_semanais (
 );
 
 -- ----------------------------------------------------------------------------
--- FOLHA INDIVIDUAL: progresso de seções/níveis do manual
+-- FOLHA DE PROGRESSO INDIVIDUAL (começa pelo clube Faíscas)
 -- ----------------------------------------------------------------------------
+-- Catálogo em banco: manual > seção > bloco. Cada bloco tem N itens (as
+-- "bolinhas" numeradas 1..quantidade do manual, sem descrição textual) e um
+-- prêmio (premio_nome) ganho ao concluir todos os itens. Manual = Saltador
+-- (Ano 01), Caminhante (Ano 02) e Escalador (Ano 03); seções: Progresso,
+-- Atividades, Crédito-extra, Frequência na igreja, Frequência no clube e
+-- Observações (esta sem itens).
+-- Progresso por oansista: data de conclusão por item, data de recebimento do
+-- prêmio e observações livres por manual. Não há pendência automática de prêmio
+-- (a integração com premios_pendentes será redesenhada na Fase 3).
 
-create table progresso_manual (
+create table folha_manuais (
+  id         uuid primary key default uuid_generate_v4(),
+  clube_id   uuid not null references clubes(id) on delete cascade,
+  nome       text not null,          -- 'Saltador' (Ano 01), 'Caminhante' (Ano 02), 'Escalador' (Ano 03)
+  ordem      int  not null,
+  created_at timestamptz not null default now(),
+  unique (clube_id, nome),
+  unique (clube_id, ordem)
+);
+
+create table folha_secoes (
+  id        uuid primary key default uuid_generate_v4(),
+  manual_id uuid not null references folha_manuais(id) on delete cascade,
+  nome      text not null,           -- Progresso, Atividades, Crédito-extra, Frequência igreja/clube, Observações
+  ordem     int  not null,
+  tipo      text not null default 'itens' check (tipo in ('itens', 'observacoes')),
+  unique (manual_id, ordem),
+  unique (manual_id, nome)
+);
+
+create table folha_blocos (
+  id          uuid primary key default uuid_generate_v4(),
+  secao_id    uuid not null references folha_secoes(id) on delete cascade,
+  nome        text not null,         -- 'Trilha do grau', 'Exercício bíblico 01', 'Atividade 01', ...
+  ordem       int  not null,
+  quantidade  int  not null check (quantidade > 0),
+  premio_nome text not null,         -- 'Botão vermelho 01', 'Distintivo do grau', ...
+  unique (secao_id, ordem)
+);
+
+create table folha_item_progresso (
   id             uuid primary key default uuid_generate_v4(),
   oansista_id    uuid not null references oansistas(id) on delete cascade,
-  nivel          int not null,
-  secao          int not null,
-  concluida      boolean not null default true,
+  bloco_id       uuid not null references folha_blocos(id) on delete cascade,
+  item_num       int  not null check (item_num >= 1),
   data_conclusao date not null default current_date,
   registrado_por uuid not null references profiles(id),
   created_at     timestamptz not null default now(),
-  unique (oansista_id, nivel, secao)
+  unique (oansista_id, bloco_id, item_num)
+);
+
+create table folha_premio_progresso (
+  id               uuid primary key default uuid_generate_v4(),
+  oansista_id      uuid not null references oansistas(id) on delete cascade,
+  bloco_id         uuid not null references folha_blocos(id) on delete cascade,
+  data_recebimento date not null default current_date,
+  registrado_por   uuid not null references profiles(id),
+  created_at       timestamptz not null default now(),
+  unique (oansista_id, bloco_id)
+);
+
+create table folha_observacoes (
+  id          uuid primary key default uuid_generate_v4(),
+  oansista_id uuid not null references oansistas(id) on delete cascade,
+  manual_id   uuid not null references folha_manuais(id) on delete cascade,
+  texto       text,
+  updated_at  timestamptz not null default now(),
+  unique (oansista_id, manual_id)
 );
 
 -- ----------------------------------------------------------------------------
@@ -394,7 +451,6 @@ create table premios_pendentes (
   oansista_id   uuid not null references oansistas(id),
   premio_id     uuid not null references premios(id),
   clube_id      uuid not null references clubes(id),
-  progresso_id  uuid references progresso_manual(id),
   status        pendencia_status not null default 'pendente',
   data_geracao  timestamptz not null default now(),
   data_entrega  timestamptz,
@@ -413,7 +469,13 @@ create index idx_oansistas_turma    on oansistas(turma_id);
 create index idx_presencas_encontro on presencas(encontro_id);
 create index idx_folhas_encontro    on folhas_semanais(encontro_id);
 create index idx_folhas_oansista    on folhas_semanais(oansista_id);
-create index idx_progresso_oansista on progresso_manual(oansista_id);
+create index idx_folha_manuais_clube        on folha_manuais(clube_id);
+create index idx_folha_secoes_manual        on folha_secoes(manual_id);
+create index idx_folha_blocos_secao         on folha_blocos(secao_id);
+create index idx_folha_item_prog_oansista   on folha_item_progresso(oansista_id);
+create index idx_folha_item_prog_bloco      on folha_item_progresso(bloco_id);
+create index idx_folha_premio_prog_oansista on folha_premio_progresso(oansista_id);
+create index idx_folha_observacoes_oansista on folha_observacoes(oansista_id);
 create index idx_jogos_catalogo_clube on jogos_catalogo(clube_id);
 create index idx_evento_jogos_clubes_evento on evento_jogos_clubes(evento_id);
 create index idx_evento_jogos_cores_evento on evento_jogos_cores(evento_id);
@@ -439,6 +501,7 @@ create trigger trg_profiles_updated  before update on profiles  for each row exe
 create trigger trg_oansistas_updated before update on oansistas for each row execute function fn_set_updated_at();
 create trigger trg_folhas_updated     before update on folhas_semanais for each row execute function fn_set_updated_at();
 create trigger trg_eventos_jogos_updated before update on eventos_jogos for each row execute function fn_set_updated_at();
+create trigger trg_folha_observacoes_updated before update on folha_observacoes for each row execute function fn_set_updated_at();
 
 -- Cria profile automaticamente no signup (role/nome vindos dos metadados)
 create or replace function fn_handle_new_user()
@@ -789,35 +852,11 @@ create trigger trg_folha_pontos_jogos_presenca
   after update of presenca_id on folhas_semanais
   for each row execute function fn_propagar_pontos_jogos_por_folha();
 
--- Conclusão de seção/nível do manual gera pendência para a Secretaria (RN 4)
-create or replace function fn_gerar_pendencia_premio()
-returns trigger language plpgsql security definer set search_path = public as $$
-declare
-  v_premio uuid;
-  v_clube  uuid;
-begin
-  select clube_id into v_clube from oansistas where id = new.oansista_id;
-
-  select id into v_premio
-  from premios
-  where ativo and (
-        (tipo in ('botom','premio') and nivel = new.nivel and secao = new.secao)
-     or (tipo = 'manual'  and nivel = new.nivel and secao is null)
-  )
-  order by tipo limit 1;
-
-  if v_premio is not null then
-    insert into premios_pendentes (oansista_id, premio_id, clube_id, progresso_id)
-    values (new.oansista_id, v_premio, v_clube, new.id)
-    on conflict (oansista_id, premio_id) do nothing;
-  end if;
-
-  return new;
-end $$;
-
-create trigger trg_gerar_pendencia_premio
-  after insert on progresso_manual
-  for each row execute function fn_gerar_pendencia_premio();
+-- A conclusão de item/bloco da Folha Individual NÃO gera mais pendência
+-- automática (fn_gerar_pendencia_premio/trg_gerar_pendencia_premio removidos na
+-- migration 0015): o prêmio é registrado no próprio progresso
+-- (folha_premio_progresso). A integração com a Secretaria (premios_pendentes)
+-- será redesenhada na Fase 3 — Painel da Secretaria.
 
 -- ----------------------------------------------------------------------------
 -- VIEWS

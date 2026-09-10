@@ -98,11 +98,15 @@ npx supabase gen types typescript --local > src/types/database.types.ts  # após
 6. Commit com mensagem conventional, em português.
 
 > **Commit obrigatório ao concluir (regra do usuário):** sempre que terminar de
-> criar uma funcionalidade ou corrigir um bug/ajustar uma funcionalidade, **faça o
-> commit imediatamente** (mensagem conventional em português), antes de passar para
-> a próxima tarefa. Separe em commits distintos por mudança lógica (`feat:`, `fix:`,
-> `docs:`, etc.). Não deixe trabalho pronto sem commit. Os comandos git devem rodar
-> no mesmo shell interativo do WSL usado para o npm (ver seção "Comandos").
+> criar uma funcionalidade ou corrigir um bug/ajustar uma funcionalidade — e também
+> **ao concluir cada passo de um plano de implementação** — **registre o progresso**
+> em local persistente (log de progresso na doc da feature, ex. seção "Progresso"
+> de `docs/06-folha-individual.md`, e/ou `.agents/checklist.md`) e **faça o commit
+> imediatamente** (mensagem conventional em português), antes de passar para a
+> próxima tarefa. Não deixe passo concluído sem registro e commit. Separe em
+> commits distintos por mudança lógica (`feat:`, `fix:`, `docs:`, etc.). Os comandos
+> git devem rodar no mesmo shell interativo do WSL usado para o npm (ver seção
+> "Comandos").
 
 ## Registrar mudanças importantes (obrigatório)
 
