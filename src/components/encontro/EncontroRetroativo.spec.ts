@@ -58,11 +58,11 @@ describe('EncontroRetroativo', () => {
       '2026-06-27', '2026-06-20', '2026-06-13', '2026-06-06',
     ].map((data, i) => ({ id: `e${i}`, data, ativo: true }) as never)
     store.diasSemOanse = []
-    vi.useRealTimers()
 
     const wrapper = mount(EncontroRetroativo, {
       global: { stubs, plugins: [PrimeVue, ToastService] },
     })
+    vi.useRealTimers()
 
     expect(wrapper.find('button').attributes('disabled')).toBeDefined()
   })
@@ -73,11 +73,11 @@ describe('EncontroRetroativo', () => {
     const store = useEncontroStore()
     store.encontros = []
     store.diasSemOanse = ['2026-08-08']
-    vi.useRealTimers()
 
     const wrapper = mount(EncontroRetroativo, {
       global: { stubs, plugins: [PrimeVue, ToastService] },
     })
+    vi.useRealTimers()
 
     await wrapper.find('button').trigger('click')
     await wrapper.find('select').setValue('2026-08-01')
