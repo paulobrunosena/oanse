@@ -56,6 +56,14 @@ npx supabase gen types typescript --local > src/types/database.types.ts  # após
 > código. O `.env.test` (gitignored) é uma cópia do `.env` local; sem ele os testes
 > rodam mesmo assim (mockam o Supabase via `vi.mock('@/lib/supabase')`).
 
+> **Docker (pré-requisito do Supabase local):** `npx supabase start`/`db reset`
+> exige o Docker acessível de dentro do WSL. Use o Docker Desktop com **WSL
+> Integration habilitada para o Ubuntu** (Settings > Resources > WSL Integration);
+> sem isso, `/var/run/docker.sock` não existe no Ubuntu e os comandos falham
+> (`failed to connect to the docker API at unix:///var/run/docker.sock`). Ao
+> habilitar via `settings-store.json` (`EnableIntegrationWithDefaultWslDistro`/
+> `IntegratedWslDistros`), reinicie o Docker Desktop (`docker desktop stop/start`).
+
 ## Arquitetura e regras invioláveis
 
 1. **RLS-first.** O frontend usa SOMENTE a chave `anon`. Toda autorização vive nas políticas RLS (`supabase/migrations/0002_rls.sql`). Nunca confie apenas em `src/router/guards.ts` — ele é UX, não segurança.
