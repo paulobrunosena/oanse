@@ -136,8 +136,9 @@ Prêmios por bloco: `Distintivo do grau`, `Botão vermelho 01..04`,
 ## 6. Frontend
 
 1. **`src/utils/folhaIndividual.ts`** (lógica pura + spec): tipos normalizados
-   `ManualFolha`/`SecaoFolha`/`BlocoFolha` (catálogo + progresso por oansista);
-   `blocoConcluido(bloco)`, `itensConcluidos(bloco)`,
+   `ManualFolha`/`SecaoFolha`/`BlocoFolha` (catálogo + progresso por oansista)
+   montados por `normalizarFolhaIndividual(dados)` (ordena por `ordem` e abre os
+   N itens de cada bloco); `blocoConcluido(bloco)`, `itensConcluidos(bloco)`,
    `premioHabilitado(bloco)` (libera a data do prêmio só com o bloco completo).
 2. **`src/composables/useFolhaIndividual.ts`** (+ spec):
    `carregar(clubeId)`, `carregarProgresso(oansistaId)`,
@@ -198,7 +199,7 @@ refactor genérico só vale se as estruturas forem idênticas; senão, o catálo
 - [x] **Passo 1 — Migrations**: `0015_folha_individual.sql` (catálogo + progresso + limpeza do `progresso_manual` legado + grants) e `0016_folha_individual_rls.sql` (RLS). Docs `01`/`02`/`03` atualizados.
 - [x] **Passo 2 — Reset + types**: `npx supabase db reset` sem erros (migrations 0015/0016 aplicadas) e `npx supabase gen types` regenerado (novas tabelas presentes; `progresso_manual` removida).
 - [x] **Passo 3 — Seed**: catálogo do Faísca em `supabase/seed.sql` (3 manuais, 18 seções, 36 blocos, 175 itens; Observações sem blocos) + espelho em `docs/01`; validado com `db reset` e queries (itens por manual: Saltador 51, Caminhante 63, Escalador 61).
-- [ ] **Passo 4 — Lógica pura**: `src/utils/folhaIndividual.ts` + spec.
+- [x] **Passo 4 — Lógica pura**: `src/utils/folhaIndividual.ts` (tipos `ManualFolha`/`SecaoFolha`/`BlocoFolha` + `normalizarFolhaIndividual` + `itensConcluidos`/`blocoConcluido`/`premioHabilitado`) e `folhaIndividual.spec.ts` (9 testes); lint/typecheck/test verdes (187 testes).
 - [ ] **Passo 5 — Composable**: `src/composables/useFolhaIndividual.ts` + spec.
 - [ ] **Passo 6 — UI**: componentes `src/components/folha/*`, `src/views/clube/FolhaIndividualView.vue`, rota e menu.
 - [ ] **Passo 7 — Qualidade**: `npm run lint` + `npm run typecheck` + `npm run test`.

@@ -153,6 +153,7 @@ oanse/
 │   └── utils/
 │       ├── pontos.ts             # espelhos do cálculo p/ preview no form (+ pontos.spec.ts)
 │       ├── jogos.ts              # pontos do placar (100/70/50/40/0), cores pré-definidas, jogosDisponiveis (combo sem duplicar), gerarNomeEvento, corHex (+ jogos.spec.ts)
+│       ├── folhaIndividual.ts    # árvore normalizada da Folha Individual (manuais/seções/blocos + progresso) e regras de conclusão/prêmio (+ folhaIndividual.spec.ts)
 │       ├── data.ts               # formatação de datas + logoClube(slug) (+ data.spec.ts)
 │       └── sabado.ts             # último sábado no fuso local (cópia p/ client, se preciso)
 │
@@ -193,7 +194,7 @@ oanse/
 
 - Framework: **vitest + @vue/test-utils + happy-dom** (vitest puro, sem nuxt). Rodar com `npm run test`.
 - Arquivos `*.spec.ts` ficam **ao lado do código** (mesma pasta).
-- **Lógica pura** (`utils/pontos.ts`, `utils/data.ts`, `server/utils/sabado.ts`): testes de unidade simples com pragma `// @vitest-environment node`.
+- **Lógica pura** (`utils/pontos.ts`, `utils/jogos.ts`, `utils/folhaIndividual.ts`, `utils/data.ts`, `server/utils/sabado.ts`): testes de unidade simples com pragma `// @vitest-environment node`.
 - **Stores**: `setActivePinia(createPinia())` no `beforeEach` + `vi.mock('@/lib/supabase')` (getter reatribuível) + helper `tests/helpers/supabase.ts`.
 - **Composables**: mock de `@/lib/supabase` + `global.fetch` para as rotas `apiFetch`; testa-se a fachada `useX()`.
 - **Componentes**: `mount` com stubs dos componentes PrimeVue (`global: { stubs: { Select: ..., Button: ... } }`).
