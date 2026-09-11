@@ -18,9 +18,6 @@ const emit = defineEmits<{
   'remover-cor': [corId: string]
   'adicionar-oansista': [corId: string, oansistaId: string]
   'remover-oansista': [corId: string, oansistaId: string]
-  'finalizar': []
-  'reabrir': []
-  'excluir': []
 }>()
 
 const oansistaPorCor = ref<Record<string, string>>({})
@@ -183,35 +180,6 @@ function estiloDoClube(i: JogoIntegrante) {
       >
         Todas as 4 cores estão participando.
       </p>
-
-      <div class="flex flex-wrap items-center justify-end gap-2">
-        <Button
-          v-if="evento.status === 'em_andamento'"
-          icon="pi pi-flag"
-          label="Finalizar jogos"
-          severity="success"
-          size="small"
-          @click="$emit('finalizar')"
-        />
-        <Button
-          v-else
-          icon="pi pi-replay"
-          label="Reabrir"
-          severity="secondary"
-          text
-          size="small"
-          @click="$emit('reabrir')"
-        />
-        <Button
-          v-if="evento.status === 'em_andamento'"
-          icon="pi pi-trash"
-          severity="danger"
-          text
-          size="small"
-          title="Excluir evento"
-          @click="$emit('excluir')"
-        />
-      </div>
     </div>
   </div>
 </template>

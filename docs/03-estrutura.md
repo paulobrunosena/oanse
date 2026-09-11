@@ -116,7 +116,7 @@ oanse/
 │   │   │   ├── OansistasView.vue         # Diretor de Clube (CRUD + import CSV)
 │   │   │   ├── RemanejamentosView.vue    # Diretor de Clube
 │   │   │   ├── TransferenciasView.vue    # Diretor de Clube
-│   │   │   ├── JogosView.vue             # Líder de Jogos/Diretor Geral (vários eventos por sábado, rodadas, finalizar, ranking das cores)
+│   │   │   ├── JogosView.vue             # Líder de Jogos/Diretor Geral (stepper PrimeVue em 3 etapas: configuração → rodadas → placar final; vários eventos por sábado)
 │   │   │   ├── JogosCatalogoView.vue     # Líder de Jogos/Diretor Geral/Diretor de Clube (CRUD de nomes de jogos por clube)
 │   │   │   ├── RankingView.vue           # Diretor de Clube/Diretor Geral (ranking do sábado)
 │   │   │   └── FolhaIndividualView.vue   # Diretor de Clube (Folha Individual: manuais/seções/blocos + progresso da criança) — rota /clube/folha-individual
@@ -141,11 +141,11 @@ oanse/
 │   │       ├── FolhaIndividualBloco.vue    # itens numerados (bolinha + InputText date) + linha do prêmio (liberada com o bloco completo) (+ spec.ts)
 │   │       └── FolhaIndividualObservacoes.vue  # textarea de observações por manual (upsert) (+ spec.ts)
 │   │   └── jogos/
-│   │       ├── EventoJogosCard.vue   # evento do sábado: clubes, cores, oansistas por cor (nome na cor do clube, removível/trocável), finalizar/reabrir/excluir
+│   │       ├── EventoJogosCard.vue   # etapa 1 do stepper: clubes, cores, oansistas por cor (nome na cor do clube, removível/trocável)
 │   │       ├── EventoJogosCard.spec.ts
-│   │       ├── RodadasJogosCard.vue  # registro de rodada (jogo + colocações das cores) + lista de rodadas
+│   │       ├── RodadasJogosCard.vue  # etapa 2 do stepper: registro de rodada (jogo + colocações das cores) + lista de rodadas
 │   │       ├── RodadasJogosCard.spec.ts
-│   │       ├── RankingCoresCard.vue  # pódio das cores do sábado (anúncio final)
+│   │       ├── RankingCoresCard.vue  # etapa 3 do stepper: pódio das cores do sábado (anúncio final) — finalizar/reabrir/excluir ficam na view
 │   │       └── RankingCoresCard.spec.ts
 │   │   # (planejado) ui/AppSidebar, PageHeader, DataTable
 │   │   # (planejado) folha/VisitanteCard, VisitaTracker

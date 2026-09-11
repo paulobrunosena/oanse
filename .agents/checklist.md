@@ -97,6 +97,7 @@
 - [x] RLS do módulo: escrita só `lider_jogos`/`diretor_geral` (evento, cores, oansistas, rodadas, resultados); diretor de clube NÃO cria evento (validado no smoke test)
 - [x] Ranking consolidado do sábado (por clube e geral)
 - [x] UX do módulo: busca de criança no evento lista só os clubes participantes (badge do clube nas opções); criança distribuída mostra o nome na cor do clube (chip com fundo suave + botão de remover, removível antes de finalizar); excluir evento dentro do card (não "flutua" fora); refresh após ações não derruba o scroll da página (mantém conteúdo montado)
+- [x] UX: `JogosView` reorganizada em **stepper** (PrimeVue) de 3 etapas — 1) configuração das cores/crianças, 2) registro das rodadas, 3) placar final; seleção de evento e "Novo evento" fora do stepper; ações Finalizar/Reabrir/Excluir centralizadas no último passo; evento finalizado abre direto no placar e a etapa de rodadas orienta a reabrir (2026-09-11)
 - [ ] Relatório de frequência acumulada
 - [ ] Relatório de premiações acumuladas
 - [ ] PWA / instalação no celular do líder

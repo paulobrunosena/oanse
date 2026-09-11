@@ -146,36 +146,13 @@ describe('EventoJogosCard', () => {
     expect(wrapper.find('button[title="Remover Ana desta cor"]').exists()).toBe(false)
   })
 
-  it('emite finalizar ao clicar no botão de finalizar jogos', async () => {
+  it('não renderiza ações de fechamento do evento (finalizar/excluir ficam no stepper)', () => {
     const wrapper = mount(EventoJogosCard, {
       props: { evento: EVENTO },
       global: { stubs },
     })
-    const botao = wrapper.findAll('button').find(b => b.text().includes('Finalizar jogos'))
-    await botao!.trigger('click')
-    expect(wrapper.emitted('finalizar')).toHaveLength(1)
-  })
-
-  it('mantém os botões de ação alinhados à direita no rodapé do card', () => {
-    const wrapper = mount(EventoJogosCard, {
-      props: { evento: EVENTO },
-      global: { stubs },
-    })
-    const rodape = wrapper.findAll('div').find(el => el.classes().includes('justify-end'))
-    expect(rodape).toBeDefined()
-    expect(rodape!.classes()).toContain('items-center')
-    expect(rodape!.text()).toContain('Finalizar jogos')
-    expect(rodape!.find('button[title="Excluir evento"]').exists()).toBe(true)
-  })
-
-  it('emite excluir ao clicar no botão de excluir evento', async () => {
-    const wrapper = mount(EventoJogosCard, {
-      props: { evento: EVENTO },
-      global: { stubs },
-    })
-    const botao = wrapper.findAll('button').find(b => b.attributes('title') === 'Excluir evento')
-    await botao!.trigger('click')
-    expect(wrapper.emitted('excluir')).toHaveLength(1)
+    expect(wrapper.findAll('button').find(b => b.text().includes('Finalizar jogos'))).toBeUndefined()
+    expect(wrapper.findAll('button').find(b => b.attributes('title') === 'Excluir evento')).toBeUndefined()
   })
 
   it('emite adicionar-cor com a cor disponível', async () => {
@@ -217,15 +194,14 @@ describe('EventoJogosCard', () => {
     expect(wrapper.emitted('remover-cor')).toEqual([['cor1']])
   })
 
-  it('mostra estado finalizado com botão de reabrir', async () => {
+  it('mostra estado finalizado sem ações de edição', () => {
     const finalizado = { ...EVENTO, status: 'finalizado' as const }
     const wrapper = mount(EventoJogosCard, {
       props: { evento: finalizado },
       global: { stubs },
     })
     expect(wrapper.text()).toContain('Finalizado')
-    const botaoReabrir = wrapper.findAll('button').find(b => b.text().includes('Reabrir'))
-    await botaoReabrir!.trigger('click')
-    expect(wrapper.emitted('reabrir')).toHaveLength(1)
+    expect(wrapper.findAll('button').find(b => b.text().includes('Reabrir'))).toBeUndefined()
+    expect(wrapper.find('button[title="Remover Ana desta cor"]').exists()).toBe(false)
   })
 })

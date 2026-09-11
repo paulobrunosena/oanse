@@ -6,6 +6,11 @@ import Dialog from 'primevue/dialog'
 import InputText from 'primevue/inputtext'
 import MultiSelect from 'primevue/multiselect'
 import Select from 'primevue/select'
+import Step from 'primevue/step'
+import StepList from 'primevue/steplist'
+import StepPanel from 'primevue/steppanel'
+import StepPanels from 'primevue/steppanels'
+import Stepper from 'primevue/stepper'
 import Tag from 'primevue/tag'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/composables/useAuth'
@@ -42,6 +47,9 @@ const novoNome = ref('')
 const novosClubes = ref<string[]>([])
 const novasCores = ref<string[]>([])
 const salvando = ref(false)
+
+/** Passo atual do stepper: 1 = configuração, 2 = rodadas, 3 = placar final. */
+const passo = ref(1)
 
 const dataFormatada = computed(() => {
   if (!encontro.value) return ''
@@ -87,6 +95,11 @@ const oansistasDoEvento = computed(() => {
 watch(novosClubes, (ids) => {
   const nomes = clubes.value.filter(c => ids.includes(c.id)).map(c => c.nome)
   novoNome.value = gerarNomeEvento(nomes)
+})
+
+/** Ao trocar de evento, começa na configuração (ou no placar, se já finalizado). */
+watch(() => evento.value?.id, () => {
+  passo.value = evento.value?.status === 'finalizado' ? 3 : 1
 })
 
 async function carregarClubesEConfig() {
@@ -329,46 +342,139 @@ onMounted(carregarTudo)
           evento, só aparecem os clubes que ainda não jogaram.
         </p>
 
-        <div
+        <Stepper
           v-if="evento"
-          class="flex flex-col gap-4"
+          v-model:value="passo"
         >
-          <EventoJogosCard
-            :evento="evento"
-            :oansistas="oansistasDoEvento"
-            @adicionar-cor="cor => acaoComAtualizacao(() => adicionarCor(evento!.id, cor), 'Cor adicionada')"
-            @remover-cor="corId => acaoComAtualizacao(() => removerCor(corId), 'Cor removida')"
-            @adicionar-oansista="(corId, oansistaId) => acaoComAtualizacao(() => adicionarOansista(corId, oansistaId))"
-            @remover-oansista="(corId, oansistaId) => acaoComAtualizacao(() => removerOansista(corId, oansistaId))"
-            @finalizar="finalizar"
-            @reabrir="reabrir"
-            @excluir="excluirEventoConfirmado"
-          />
+          <StepList>
+            <Step :value="1">
+              Configuração
+            </Step>
+            <Step :value="2">
+              Rodadas
+            </Step>
+            <Step :value="3">
+              Placar final
+            </Step>
+          </StepList>
+          <StepPanels>
+            <StepPanel :value="1">
+              <div class="flex flex-col gap-4">
+                <EventoJogosCard
+                  :evento="evento"
+                  :oansistas="oansistasDoEvento"
+                  @adicionar-cor="cor => acaoComAtualizacao(() => adicionarCor(evento!.id, cor), 'Cor adicionada')"
+                  @remover-cor="corId => acaoComAtualizacao(() => removerCor(corId), 'Cor removida')"
+                  @adicionar-oansista="(corId, oansistaId) => acaoComAtualizacao(() => adicionarOansista(corId, oansistaId))"
+                  @remover-oansista="(corId, oansistaId) => acaoComAtualizacao(() => removerOansista(corId, oansistaId))"
+                />
 
-          <RodadasJogosCard
-            v-if="evento.status === 'em_andamento'"
-            :rodadas="rodadas"
-            :cores="evento.cores"
-            :opcoes-nomes="opcoesNomes"
-            :pontos-config="pontosConfig"
-            :nome-inicial="ultimoNome"
-            @registrar="registrarRodada"
-            @excluir-rodada="excluirRodadaConfirmada"
-            @lancar-resultado="(jogoId, corId, resultado) => acaoComAtualizacao(() => lancarResultado(jogoId, corId, resultado))"
-            @remover-resultado="(jogoId, corId) => acaoComAtualizacao(() => removerResultado(jogoId, corId))"
-          />
+                <div class="flex justify-end">
+                  <Button
+                    label="Ir para as rodadas"
+                    icon="pi pi-arrow-right"
+                    icon-pos="right"
+                    :disabled="evento.cores.length < 2"
+                    @click="passo = 2"
+                  />
+                </div>
+              </div>
+            </StepPanel>
 
-          <RankingCoresCard
-            :ranking="ranking"
-          />
+            <StepPanel :value="2">
+              <div class="flex flex-col gap-4">
+                <RodadasJogosCard
+                  v-if="evento.status === 'em_andamento'"
+                  :rodadas="rodadas"
+                  :cores="evento.cores"
+                  :opcoes-nomes="opcoesNomes"
+                  :pontos-config="pontosConfig"
+                  :nome-inicial="ultimoNome"
+                  @registrar="registrarRodada"
+                  @excluir-rodada="excluirRodadaConfirmada"
+                  @lancar-resultado="(jogoId, corId, resultado) => acaoComAtualizacao(() => lancarResultado(jogoId, corId, resultado))"
+                  @remover-resultado="(jogoId, corId) => acaoComAtualizacao(() => removerResultado(jogoId, corId))"
+                />
 
-          <p
-            v-if="evento.status === 'finalizado'"
-            class="text-xs text-surface-500 text-center"
-          >
-            Evento finalizado. Para ajustar algo, clique em "Reabrir".
-          </p>
-        </div>
+                <Card
+                  v-else
+                  class="text-center py-4"
+                >
+                  <template #content>
+                    <p class="text-surface-500 text-sm">
+                      Evento finalizado. Para ajustar as rodadas, reabra o evento na etapa "Placar final".
+                    </p>
+                  </template>
+                </Card>
+
+                <div class="flex items-center justify-between gap-2">
+                  <Button
+                    label="Voltar"
+                    icon="pi pi-arrow-left"
+                    severity="secondary"
+                    text
+                    @click="passo = 1"
+                  />
+                  <Button
+                    label="Ver placar final"
+                    icon="pi pi-arrow-right"
+                    icon-pos="right"
+                    @click="passo = 3"
+                  />
+                </div>
+              </div>
+            </StepPanel>
+
+            <StepPanel :value="3">
+              <div class="flex flex-col gap-4">
+                <RankingCoresCard :ranking="ranking" />
+
+                <p
+                  v-if="evento.status === 'finalizado'"
+                  class="text-xs text-surface-500 text-center"
+                >
+                  Evento finalizado. Para ajustar algo, clique em "Reabrir".
+                </p>
+
+                <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                  <Button
+                    label="Voltar"
+                    icon="pi pi-arrow-left"
+                    severity="secondary"
+                    text
+                    @click="passo = 2"
+                  />
+                  <div class="flex flex-wrap items-center gap-2">
+                    <Button
+                      v-if="evento.status === 'em_andamento'"
+                      icon="pi pi-flag"
+                      label="Finalizar jogos"
+                      severity="success"
+                      @click="finalizar"
+                    />
+                    <Button
+                      v-else
+                      icon="pi pi-replay"
+                      label="Reabrir"
+                      severity="secondary"
+                      text
+                      @click="reabrir"
+                    />
+                    <Button
+                      v-if="evento.status === 'em_andamento'"
+                      icon="pi pi-trash"
+                      label="Excluir evento"
+                      severity="danger"
+                      text
+                      title="Excluir evento"
+                      @click="excluirEventoConfirmado"
+                    />
+                  </div>
+                </div>
+              </div>
+            </StepPanel>
+          </StepPanels>
+        </Stepper>
 
         <Card
           v-if="clubesDisponiveis.length === 0"

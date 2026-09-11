@@ -25,7 +25,10 @@ const EVENTOS = [
       { clube_id: 'c3', clubes: { nome: 'Flamas', slug: 'flamas', cor: '#22C55E' } },
       { clube_id: 'c4', clubes: { nome: 'Tochas', slug: 'tochas', cor: '#3B82F6' } },
     ],
-    evento_jogos_cores: [{ id: 'cor1', cor: 'verde', evento_jogos_cores_oansistas: [] }],
+    evento_jogos_cores: [
+      { id: 'cor1', cor: 'verde', evento_jogos_cores_oansistas: [] },
+      { id: 'cor2', cor: 'azul', evento_jogos_cores_oansistas: [] },
+    ],
   },
   {
     id: 'ev2',
@@ -37,7 +40,10 @@ const EVENTOS = [
       { clube_id: 'c1', clubes: { nome: 'Ursinhos', slug: 'ursinhos', cor: '#EF4444' } },
       { clube_id: 'c2', clubes: { nome: 'Faíscas', slug: 'faiscas', cor: '#EAB308' } },
     ],
-    evento_jogos_cores: [{ id: 'cor2', cor: 'vermelho', evento_jogos_cores_oansistas: [] }],
+    evento_jogos_cores: [
+      { id: 'cor3', cor: 'vermelho', evento_jogos_cores_oansistas: [] },
+      { id: 'cor4', cor: 'amarelo', evento_jogos_cores_oansistas: [] },
+    ],
   },
 ]
 
@@ -60,8 +66,22 @@ const stubs = {
   EventoJogosCard: { name: 'EventoJogosCard', props: ['evento', 'oansistas'], template: '<div />' },
   RodadasJogosCard: { name: 'RodadasJogosCard', template: '<div />' },
   RankingCoresCard: { name: 'RankingCoresCard', template: '<div />' },
+  Stepper: {
+    name: 'Stepper',
+    props: ['value'],
+    emits: ['update:value'],
+    template: '<div class="stepper-stub"><slot /></div>',
+  },
+  StepList: { name: 'StepList', template: '<div><slot /></div>' },
+  Step: { name: 'Step', props: ['value'], template: '<div class="step-stub"><slot /></div>' },
+  StepPanels: { name: 'StepPanels', template: '<div><slot /></div>' },
+  StepPanel: { name: 'StepPanel', props: ['value'], template: '<div class="panel-stub"><slot /></div>' },
   Card: { name: 'Card', template: '<div><slot name="content" /></div>' },
-  Button: { name: 'Button', props: ['label'], template: '<button>{{ label }}</button>' },
+  Button: {
+    name: 'Button',
+    props: ['label', 'disabled'],
+    template: '<button :disabled="disabled">{{ label }}</button>',
+  },
   Dialog: { name: 'Dialog', template: '<div />' },
   MultiSelect: { name: 'MultiSelect', template: '<div />' },
   InputText: { name: 'InputText', template: '<input />' },
@@ -144,16 +164,62 @@ describe('JogosView', () => {
     expect(wrapper.text()).toContain('Todos os clubes já participaram de um evento de jogos neste sábado.')
   })
 
-  it('mantém os três cards do evento como irmãos diretos com espaçamento igual', async () => {
+  it('organiza o evento em um stepper com configuração, rodadas e placar final', async () => {
     mocks.supabase.builderDe('eventos_jogos').data = EVENTOS
     perfilLiderJogos()
     const wrapper = montar()
     await flushPromises()
 
-    const cardEvento = wrapper.findComponent({ name: 'EventoJogosCard' })
-    const pai = cardEvento.element.parentElement
-    expect(pai?.className).toContain('gap-4')
-    expect(pai?.children).toHaveLength(3)
+    const stepper = wrapper.findComponent({ name: 'Stepper' })
+    expect(stepper.exists()).toBe(true)
+    expect(stepper.props('value')).toBe(1)
+
+    const paineis = wrapper.findAllComponents({ name: 'StepPanel' })
+    expect(paineis).toHaveLength(3)
+    expect(paineis[0]!.findComponent({ name: 'EventoJogosCard' }).exists()).toBe(true)
+    expect(paineis[1]!.findComponent({ name: 'RodadasJogosCard' }).exists()).toBe(true)
+    expect(paineis[2]!.findComponent({ name: 'RankingCoresCard' }).exists()).toBe(true)
+  })
+
+  it('navega entre as etapas pelos botões do stepper', async () => {
+    mocks.supabase.builderDe('eventos_jogos').data = EVENTOS
+    perfilLiderJogos()
+    const wrapper = montar()
+    await flushPromises()
+
+    const valorDoPasso = () => wrapper.findComponent({ name: 'Stepper' }).props('value')
+    const botao = (texto: string) => wrapper.findAll('button').find(b => b.text().includes(texto))!
+    const voltar = () => wrapper.findAll('button').filter(b => b.text().trim() === 'Voltar')
+
+    await botao('Ir para as rodadas').trigger('click')
+    expect(valorDoPasso()).toBe(2)
+
+    await botao('Ver placar final').trigger('click')
+    expect(valorDoPasso()).toBe(3)
+
+    await voltar().at(1)!.trigger('click')
+    expect(valorDoPasso()).toBe(2)
+
+    await voltar().at(0)!.trigger('click')
+    expect(valorDoPasso()).toBe(1)
+  })
+
+  it('abre o evento finalizado direto no placar final', async () => {
+    mocks.supabase.builderDe('eventos_jogos').data = [{ ...EVENTOS[0], status: 'finalizado' }]
+    perfilLiderJogos()
+    const wrapper = montar()
+    await flushPromises()
+
+    expect(wrapper.findComponent({ name: 'Stepper' }).props('value')).toBe(3)
+  })
+
+  it('avisa no passo das rodadas que o evento finalizado precisa ser reaberto', async () => {
+    mocks.supabase.builderDe('eventos_jogos').data = [{ ...EVENTOS[0], status: 'finalizado' }]
+    perfilLiderJogos()
+    const wrapper = montar()
+    await flushPromises()
+
+    expect(wrapper.text()).toContain('reabra o evento na etapa "Placar final"')
   })
 
   it('só oferece no card oansistas dos clubes que participam do evento', async () => {
@@ -172,7 +238,7 @@ describe('JogosView', () => {
     expect(nomes).toEqual(['o1', 'o2'])
   })
 
-  it('exclui o evento via emit do card', async () => {
+  it('exclui o evento pelo botão do placar final', async () => {
     mocks.supabase.builderDe('eventos_jogos').data = EVENTOS
     perfilLiderJogos()
     const confirmMock = vi.fn(() => true)
@@ -180,11 +246,31 @@ describe('JogosView', () => {
     const wrapper = montar()
     await flushPromises()
 
-    wrapper.findComponent({ name: 'EventoJogosCard' }).vm.$emit('excluir')
+    const botaoExcluir = wrapper.findAll('button').find(b => b.attributes('title') === 'Excluir evento')
+    expect(botaoExcluir).toBeDefined()
+    await botaoExcluir!.trigger('click')
     await flushPromises()
 
     expect(confirmMock).toHaveBeenCalledWith('Excluir o evento "Jogos dos Flamas e Tochas"? Rodadas, pontos e cores serão removidos.')
     expect(mocks.supabase.builderDe('eventos_jogos').delete).toHaveBeenCalled()
+    vi.unstubAllGlobals()
+  })
+
+  it('finaliza o evento pelo botão do placar final', async () => {
+    mocks.supabase.builderDe('eventos_jogos').data = EVENTOS
+    perfilLiderJogos()
+    const confirmMock = vi.fn(() => true)
+    vi.stubGlobal('confirm', confirmMock)
+    const wrapper = montar()
+    await flushPromises()
+
+    const botaoFinalizar = wrapper.findAll('button').find(b => b.text().includes('Finalizar jogos'))
+    expect(botaoFinalizar).toBeDefined()
+    await botaoFinalizar!.trigger('click')
+    await flushPromises()
+
+    expect(confirmMock).toHaveBeenCalledWith('Finalizar os jogos do sábado? O placar das cores será fixado para o anúncio.')
+    expect(mocks.supabase.builderDe('eventos_jogos').update).toHaveBeenCalledWith({ status: 'finalizado' })
     vi.unstubAllGlobals()
   })
 })
