@@ -139,7 +139,8 @@ Prêmios por bloco: `Distintivo do grau`, `Botão vermelho 01..04`,
    `ManualFolha`/`SecaoFolha`/`BlocoFolha` (catálogo + progresso por oansista)
    montados por `normalizarFolhaIndividual(dados)` (ordena por `ordem` e abre os
    N itens de cada bloco); `blocoConcluido(bloco)`, `itensConcluidos(bloco)`,
-   `premioHabilitado(bloco)` (libera a data do prêmio só com o bloco completo).
+   `premioHabilitado(bloco)` (libera a data do prêmio só com o bloco completo) e
+   `rotuloItem(nomeBloco, itemNum)` (rótulo da bolinha, ex.: "Grau 1").
 2. **`src/composables/useFolhaIndividual.ts`** (+ spec):
    `carregar(clubeId)`, `carregarProgresso(oansistaId)`,
    `salvarItem(oansistaId, blocoId, itemNum, data|null, registradoPor)`,
@@ -205,6 +206,6 @@ refactor genérico só vale se as estruturas forem idênticas; senão, o catálo
 - [x] **Passo 3 — Seed**: catálogo do Faísca em `supabase/seed.sql` (3 manuais, 18 seções, 36 blocos, 175 itens; Observações sem blocos) + espelho em `docs/01`; validado com `db reset` e queries (itens por manual: Saltador 51, Caminhante 63, Escalador 61).
 - [x] **Passo 4 — Lógica pura**: `src/utils/folhaIndividual.ts` (tipos `ManualFolha`/`SecaoFolha`/`BlocoFolha` + `normalizarFolhaIndividual` + `itensConcluidos`/`blocoConcluido`/`premioHabilitado`) e `folhaIndividual.spec.ts` (9 testes); lint/typecheck/test verdes (187 testes).
 - [x] **Passo 5 — Composable**: `useFolhaIndividual.ts` (catálogo em cascata `folha_manuais`→`folha_secoes`→`folha_blocos`, progresso do oansista em `itens`/`premios`/`observacoes` e árvore derivada `folha`; `salvarItem`/`salvarPremio` com upsert por unique e delete quando `data|null`; `salvarObservacao` com upsert por `(oansista, manual)`) e `useFolhaIndividual.spec.ts` (17 testes).
-- [ ] **Passo 6 — UI**: componentes `src/components/folha/*`, `src/views/clube/FolhaIndividualView.vue`, rota e menu.
-- [ ] **Passo 7 — Qualidade**: `npm run lint` + `npm run typecheck` + `npm run test`.
-- [ ] **Passo 8 — Docs finais + checklist**: `.agents/checklist.md` e ajustes finais.
+- [x] **Passo 6 — UI**: componentes `FolhaIndividualSeletor.vue`, `FolhaIndividualManual.vue`, `FolhaIndividualBloco.vue` (bolinha numerada + `InputText type=date`; prêmio liberado com o bloco completo) e `FolhaIndividualObservacoes.vue` (+ specs); `FolhaIndividualView.vue` com `Tabs` por manual (Saltador/Caminhante/Escalador), seleção de criança do clube e escrita dos progressos com `registrado_por`; rota `/clube/folha-individual` (`diretor_geral`/`diretor_clube`) e item "Folha Individual" no grupo "Clube" de `AppMenu.vue`.
+- [x] **Passo 7 — Qualidade**: `npm run lint`, `npm run typecheck` e `npm run test` verdes (236 testes, 39 arquivos).
+- [x] **Passo 8 — Docs finais + checklist**: `docs/03-estrutura.md` e `.agents/checklist.md` atualizados.

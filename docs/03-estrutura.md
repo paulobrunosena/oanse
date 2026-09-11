@@ -118,7 +118,8 @@ oanse/
 │   │   │   ├── TransferenciasView.vue    # Diretor de Clube
 │   │   │   ├── JogosView.vue             # Líder de Jogos/Diretor Geral (vários eventos por sábado, rodadas, finalizar, ranking das cores)
 │   │   │   ├── JogosCatalogoView.vue     # Líder de Jogos/Diretor Geral/Diretor de Clube (CRUD de nomes de jogos por clube)
-│   │   │   └── RankingView.vue           # Diretor de Clube/Diretor Geral (ranking do sábado)
+│   │   │   ├── RankingView.vue           # Diretor de Clube/Diretor Geral (ranking do sábado)
+│   │   │   └── FolhaIndividualView.vue   # Diretor de Clube (Folha Individual: manuais/seções/blocos + progresso da criança) — rota /clube/folha-individual
 │   │   └── admin/
 │   │       ├── UsuariosView.vue          # Diretor Geral
 │   │       ├── ClubesView.vue            # Diretor Geral
@@ -134,7 +135,11 @@ oanse/
 │   │   │   └── EncontroRetroativo.spec.ts
 │   │   └── folha/
 │   │       ├── FolhaSemanalRow.vue  # linha da folha com preview de total (uniformes, bíblia, EBD, manual, conduta, leitura bíblica, visitantes, seções sem/com ajuda, atividade extra) + bloco informativo dos jogos (cor, posição no ranking e pontos — somente leitura, vindos do módulo de jogos)
-│   │       └── FolhaSemanalRow.spec.ts
+│   │       ├── FolhaSemanalRow.spec.ts
+│   │       ├── FolhaIndividualSeletor.vue  # seletor de oansista do clube (Select com busca) (+ spec.ts)
+│   │       ├── FolhaIndividualManual.vue   # seções/blocos de um manual + seção de observações (+ spec.ts)
+│   │       ├── FolhaIndividualBloco.vue    # itens numerados (bolinha + InputText date) + linha do prêmio (liberada com o bloco completo) (+ spec.ts)
+│   │       └── FolhaIndividualObservacoes.vue  # textarea de observações por manual (upsert) (+ spec.ts)
 │   │   └── jogos/
 │   │       ├── EventoJogosCard.vue   # evento do sábado: clubes, cores, oansistas por cor (nome na cor do clube, removível/trocável), finalizar/reabrir/excluir
 │   │       ├── EventoJogosCard.spec.ts
@@ -143,7 +148,7 @@ oanse/
 │   │       ├── RankingCoresCard.vue  # pódio das cores do sábado (anúncio final)
 │   │       └── RankingCoresCard.spec.ts
 │   │   # (planejado) ui/AppSidebar, PageHeader, DataTable
-│   │   # (planejado) folha/FolhaIndividualForm, VisitanteCard, VisitaTracker
+│   │   # (planejado) folha/VisitanteCard, VisitaTracker
 │   │   # (planejado) premiacoes/
 │   │
 │   ├── types/
@@ -154,7 +159,7 @@ oanse/
 │   └── utils/
 │       ├── pontos.ts             # espelhos do cálculo p/ preview no form (+ pontos.spec.ts)
 │       ├── jogos.ts              # pontos do placar (100/70/50/40/0), cores pré-definidas, jogosDisponiveis (combo sem duplicar), gerarNomeEvento, corHex (+ jogos.spec.ts)
-│       ├── folhaIndividual.ts    # árvore normalizada da Folha Individual (manuais/seções/blocos + progresso) e regras de conclusão/prêmio (+ folhaIndividual.spec.ts)
+│       ├── folhaIndividual.ts    # árvore normalizada da Folha Individual (manuais/seções/blocos + progresso), regras de conclusão/prêmio e rotuloItem (+ folhaIndividual.spec.ts)
 │       ├── data.ts               # formatação de datas + logoClube(slug) (+ data.spec.ts)
 │       └── sabado.ts             # último sábado no fuso local (cópia p/ client, se preciso)
 │

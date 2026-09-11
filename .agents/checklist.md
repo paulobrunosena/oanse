@@ -64,8 +64,8 @@
 - [x] Teste: substituto enxerga/edita a turma remanejada (RLS)
 - [x] Clube > Transferências: transferência permanente — Diretor de Clube
 - [x] `server/api/transferencias.post.ts` (transação: update + histórico)
-- [ ] Folha Individual: progresso de seções/níveis do manual
-- [ ] Teste: conclusão de seção gera pendência em `premios_pendentes`
+- [x] Folha Individual do Faíscas: manuais/seções/blocos com itens numerados (data de conclusão), prêmio recebido e observações por manual — Diretor de Clube; rota `/clube/folha-individual` (`docs/06-folha-individual.md`)
+- [x] Teste: conclusão do bloco libera o prêmio (`blocoConcluido`/`premioHabilitado` + specs de utils/componentes) — decisão do `docs/06` substituiu a geração de pendência em `premios_pendentes` (premiação registra apenas "prêmio recebido + data")
 - [ ] Folha de Visitantes: cadastro + 3 visitas
 - [ ] Folha de Visitantes: lições da Prova de Ingresso
 - [ ] Ação "matricular": converte visitante em oansista
