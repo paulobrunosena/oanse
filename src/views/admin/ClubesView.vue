@@ -135,52 +135,55 @@ async function salvar() {
     >
       <form
         v-if="editando"
-        class="flex flex-col gap-4"
+        class="flex w-full min-w-0 flex-col gap-4"
         @submit.prevent="salvar"
       >
-        <div class="flex flex-col gap-1">
+        <div class="flex min-w-0 flex-col gap-1">
           <label class="text-sm font-medium">Nome *</label>
           <InputText
             v-model="form.nome"
             class="w-full"
           />
         </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div class="flex flex-col gap-1">
+        <div class="grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-2">
+          <div class="flex min-w-0 flex-col gap-1">
             <label class="text-sm font-medium">Idade mínima *</label>
             <InputNumber
               v-model="form.idade_min"
               :min="2"
               :max="17"
-              class="w-full"
+              :input-style="{ minWidth: '0', width: '100%' }"
+              class="w-full min-w-0"
             />
           </div>
-          <div class="flex flex-col gap-1">
+          <div class="flex min-w-0 flex-col gap-1">
             <label class="text-sm font-medium">Idade máxima *</label>
             <InputNumber
               v-model="form.idade_max"
               :min="2"
               :max="17"
-              class="w-full"
+              :input-style="{ minWidth: '0', width: '100%' }"
+              class="w-full min-w-0"
             />
           </div>
         </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div class="flex flex-col gap-1">
+        <div class="grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-2">
+          <div class="flex min-w-0 flex-col gap-1">
             <label class="text-sm font-medium">Cor</label>
             <InputText
               v-model="form.cor"
               type="color"
-              class="w-full"
+              class="w-full min-w-0"
             />
           </div>
-          <div class="flex flex-col gap-1">
+          <div class="flex min-w-0 flex-col gap-1">
             <label class="text-sm font-medium">Ordem de exibição</label>
             <InputNumber
               v-model="form.ordem"
               :min="1"
               :max="10"
-              class="w-full"
+              :input-style="{ minWidth: '0', width: '100%' }"
+              class="w-full min-w-0"
             />
           </div>
         </div>

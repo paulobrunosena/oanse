@@ -30,7 +30,7 @@ const stubs = {
     template: '<div class="dt"><div v-for="(row, i) in value" :key="i"><slot /></div></div>',
   },
   Dialog: { name: 'Dialog', template: '<div><slot /></div>' },
-  InputNumber: { name: 'InputNumber', template: '<div />' },
+  InputNumber: { name: 'InputNumber', props: ['inputStyle'], template: '<div />' },
   InputText: { name: 'InputText', template: '<input />' },
 }
 
@@ -62,6 +62,33 @@ describe('ClubesView', () => {
     expect(grids).toHaveLength(2)
     for (const g of grids) {
       expect(g.classes()).toContain('grid-cols-1')
+    }
+  })
+
+  it('aplica min-w-0 e input-style nos campos do dialog para evitar scroll horizontal', async () => {
+    const wrapper = mount(ClubesView, {
+      global: { stubs, plugins: [PrimeVue, ToastService] },
+    })
+    await flushPromises()
+
+    await wrapper.find('button[aria-label="Editar"]').trigger('click')
+    await flushPromises()
+
+    expect(wrapper.find('form').classes()).toContain('min-w-0')
+
+    const grids = wrapper.findAll('div').filter(el => el.classes().includes('sm:grid-cols-2'))
+    for (const g of grids) {
+      expect(g.classes()).toContain('min-w-0')
+      for (const filho of g.findAll(':scope > div')) {
+        expect(filho.classes()).toContain('min-w-0')
+      }
+    }
+
+    const inputs = wrapper.findAllComponents({ name: 'InputNumber' })
+    expect(inputs).toHaveLength(3)
+    for (const input of inputs) {
+      expect(input.props('inputStyle')).toEqual({ minWidth: '0', width: '100%' })
+      expect(input.classes()).toContain('min-w-0')
     }
   })
 })
