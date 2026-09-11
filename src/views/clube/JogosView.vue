@@ -51,6 +51,9 @@ const salvando = ref(false)
 /** Passo atual do stepper: 1 = configuração, 2 = rodadas, 3 = placar final. */
 const passo = ref(1)
 
+/** Card externo do stepper — os cards internos não têm borda própria. */
+const classesPainel = 'rounded-lg border p-4 sm:p-6'
+
 const dataFormatada = computed(() => {
   if (!encontro.value) return ''
   return new Date(`${encontro.value.data}T00:00:00`).toLocaleDateString('pt-BR', {
@@ -358,7 +361,10 @@ onMounted(carregarTudo)
             </Step>
           </StepList>
           <StepPanels>
-            <StepPanel :value="1">
+            <StepPanel
+              :value="1"
+              :class="classesPainel"
+            >
               <div class="flex flex-col gap-4">
                 <EventoJogosCard
                   :evento="evento"
@@ -369,7 +375,7 @@ onMounted(carregarTudo)
                   @remover-oansista="(corId, oansistaId) => acaoComAtualizacao(() => removerOansista(corId, oansistaId))"
                 />
 
-                <div class="flex justify-end">
+                <div class="flex justify-end border-t border-surface-200 pt-4">
                   <Button
                     label="Ir para as rodadas"
                     icon="pi pi-arrow-right"
@@ -381,7 +387,10 @@ onMounted(carregarTudo)
               </div>
             </StepPanel>
 
-            <StepPanel :value="2">
+            <StepPanel
+              :value="2"
+              :class="classesPainel"
+            >
               <div class="flex flex-col gap-4">
                 <RodadasJogosCard
                   v-if="evento.status === 'em_andamento'"
@@ -407,12 +416,11 @@ onMounted(carregarTudo)
                   </template>
                 </Card>
 
-                <div class="flex items-center justify-between gap-2">
+                <div class="flex flex-wrap items-center justify-between gap-2 border-t border-surface-200 pt-4">
                   <Button
                     label="Voltar"
                     icon="pi pi-arrow-left"
                     severity="secondary"
-                    text
                     @click="passo = 1"
                   />
                   <Button
@@ -425,7 +433,10 @@ onMounted(carregarTudo)
               </div>
             </StepPanel>
 
-            <StepPanel :value="3">
+            <StepPanel
+              :value="3"
+              :class="classesPainel"
+            >
               <div class="flex flex-col gap-4">
                 <RankingCoresCard :ranking="ranking" />
 
@@ -436,12 +447,11 @@ onMounted(carregarTudo)
                   Evento finalizado. Para ajustar algo, clique em "Reabrir".
                 </p>
 
-                <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                <div class="flex flex-col gap-2 border-t border-surface-200 pt-4 sm:flex-row sm:items-center sm:justify-between">
                   <Button
                     label="Voltar"
                     icon="pi pi-arrow-left"
                     severity="secondary"
-                    text
                     @click="passo = 2"
                   />
                   <div class="flex flex-wrap items-center gap-2">

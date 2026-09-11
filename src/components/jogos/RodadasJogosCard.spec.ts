@@ -39,6 +39,17 @@ const stubs = {
 }
 
 describe('RodadasJogosCard', () => {
+  it('não duplica a borda do painel do stepper (header e lista com divisores)', () => {
+    const wrapper = mount(RodadasJogosCard, {
+      props: { rodadas: RODADAS, cores: CORES, opcoesNomes: ['maratona'], nomeInicial: '' },
+      global: { stubs },
+    })
+    expect(wrapper.classes()).not.toContain('border')
+    expect(wrapper.classes()).not.toContain('rounded-lg')
+    expect(wrapper.findAll('.border-b')).toHaveLength(1)
+    expect(wrapper.findAll('.border-t')).toHaveLength(1)
+  })
+
   it('pré-preenche o jogo com o último lançado (nomeInicial)', () => {
     const wrapper = mount(RodadasJogosCard, {
       props: { rodadas: RODADAS, cores: CORES, opcoesNomes: ['maratona', 'bonanza'], nomeInicial: 'maratona' },

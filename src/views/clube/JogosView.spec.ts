@@ -181,6 +181,28 @@ describe('JogosView', () => {
     expect(paineis[2]!.findComponent({ name: 'RankingCoresCard' }).exists()).toBe(true)
   })
 
+  it('usa o painel do stepper como card externo e o botão Voltar cinza (secondary)', async () => {
+    mocks.supabase.builderDe('eventos_jogos').data = EVENTOS
+    perfilLiderJogos()
+    const wrapper = montar()
+    await flushPromises()
+
+    for (const painel of wrapper.findAllComponents({ name: 'StepPanel' })) {
+      const classes = painel.attributes('class') ?? ''
+      expect(classes).toContain('rounded-lg')
+      expect(classes).toContain('border')
+      expect(classes).toContain('p-4')
+      expect(classes).toContain('sm:p-6')
+    }
+
+    const voltar = wrapper.findAll('button').filter(b => b.text().trim() === 'Voltar')
+    expect(voltar).toHaveLength(2)
+    for (const botao of voltar) {
+      expect(botao.attributes('severity')).toBe('secondary')
+      expect(botao.attributes('text')).toBeUndefined()
+    }
+  })
+
   it('navega entre as etapas pelos botões do stepper', async () => {
     mocks.supabase.builderDe('eventos_jogos').data = EVENTOS
     perfilLiderJogos()

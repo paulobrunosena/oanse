@@ -15,8 +15,8 @@ const ordenado = computed(() =>
 </script>
 
 <template>
-  <div class="rounded-lg border bg-[var(--surface-card)] p-4">
-    <div class="flex items-center gap-2">
+  <div>
+    <div class="flex items-center gap-2 border-b border-surface-200 pb-4">
       <i class="pi pi-trophy text-primary" />
       <span class="font-semibold">Ranking das cores — placar final do sábado</span>
     </div>

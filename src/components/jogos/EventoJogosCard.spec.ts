@@ -54,6 +54,16 @@ describe('EventoJogosCard', () => {
     expect(wrapper.text()).toContain('Ana')
   })
 
+  it('não duplica a borda do painel do stepper (header com divisor)', () => {
+    const wrapper = mount(EventoJogosCard, {
+      props: { evento: EVENTO },
+      global: { stubs },
+    })
+    expect(wrapper.classes()).not.toContain('border')
+    expect(wrapper.classes()).not.toContain('rounded-lg')
+    expect(wrapper.find('.border-b').exists()).toBe(true)
+  })
+
   it('mostra o clube como badge nas opções de busca de criança', () => {
     const comCoresVazias = {
       ...EVENTO,

@@ -46,8 +46,8 @@ function estiloDoClube(i: JogoIntegrante) {
 </script>
 
 <template>
-  <div class="rounded-lg border bg-[var(--surface-card)] p-4">
-    <div class="flex items-start gap-3">
+  <div>
+    <div class="flex items-start gap-3 border-b border-surface-200 pb-4">
       <div class="min-w-0">
         <div class="flex items-center gap-2 flex-wrap">
           <span class="font-semibold">{{ evento.nome }}</span>

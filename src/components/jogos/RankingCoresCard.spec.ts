@@ -18,6 +18,16 @@ const stubs = {
 }
 
 describe('RankingCoresCard', () => {
+  it('não duplica a borda do painel do stepper (header com divisor)', () => {
+    const wrapper = mount(RankingCoresCard, {
+      props: { ranking: RANKING },
+      global: { stubs },
+    })
+    expect(wrapper.classes()).not.toContain('border')
+    expect(wrapper.classes()).not.toContain('rounded-lg')
+    expect(wrapper.find('.border-b').exists()).toBe(true)
+  })
+
   it('ordena as cores pela posição e mostra os pontos', () => {
     const wrapper = mount(RankingCoresCard, {
       props: { ranking: RANKING },

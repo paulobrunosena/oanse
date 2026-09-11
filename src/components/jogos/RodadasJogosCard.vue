@@ -89,8 +89,8 @@ function aoDefinirPlacar(rodada: RodadaJogo, corId: string, valor: string) {
 </script>
 
 <template>
-  <div class="rounded-lg border bg-[var(--surface-card)] p-4">
-    <div class="flex items-center justify-between gap-3">
+  <div>
+    <div class="flex items-center justify-between gap-3 border-b border-surface-200 pb-4">
       <span class="font-semibold">Registrar resultado da rodada</span>
       <Tag severity="info">
         {{ rodadas.length }} rodada(s) lançada(s)
@@ -148,7 +148,7 @@ function aoDefinirPlacar(rodada: RodadaJogo, corId: string, valor: string) {
 
     <div
       v-if="rodadas.length"
-      class="mt-6 flex flex-col gap-3"
+      class="mt-6 flex flex-col gap-3 border-t border-surface-200 pt-4"
     >
       <span class="text-sm font-semibold">Rodadas lançadas</span>
       <div
