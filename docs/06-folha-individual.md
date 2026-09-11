@@ -142,9 +142,13 @@ Prêmios por bloco: `Distintivo do grau`, `Botão vermelho 01..04`,
    `premioHabilitado(bloco)` (libera a data do prêmio só com o bloco completo).
 2. **`src/composables/useFolhaIndividual.ts`** (+ spec):
    `carregar(clubeId)`, `carregarProgresso(oansistaId)`,
-   `salvarItem(oansistaId, blocoId, itemNum, data|null)`,
-   `salvarPremio(oansistaId, blocoId, data|null)`,
+   `salvarItem(oansistaId, blocoId, itemNum, data|null, registradoPor)`,
+   `salvarPremio(oansistaId, blocoId, data|null, registradoPor)`,
    `salvarObservacao(oansistaId, manualId, texto)` (upsert por `unique`).
+   O `registradoPor` é passado pela view (padrão dos demais composables, ex.
+   `useFolhaSemanal.salvar`), pois as tabelas de progresso exigem `registrado_por`.
+   Expõe `folha` (árvore `ManualFolha[]` normalizada), `carregando` e
+   `carregandoProgresso`; `data|null` null remove o registro (delete).
 3. **Componentes** em `src/components/folha/`:
    - `FolhaIndividualBloco.vue` (+ spec): itens numerados (descrição derivada do
      nome do bloco, ex. "Grau 1"/"Exercício 1"/"Atividade 1") + `InputText
@@ -200,7 +204,7 @@ refactor genérico só vale se as estruturas forem idênticas; senão, o catálo
 - [x] **Passo 2 — Reset + types**: `npx supabase db reset` sem erros (migrations 0015/0016 aplicadas) e `npx supabase gen types` regenerado (novas tabelas presentes; `progresso_manual` removida).
 - [x] **Passo 3 — Seed**: catálogo do Faísca em `supabase/seed.sql` (3 manuais, 18 seções, 36 blocos, 175 itens; Observações sem blocos) + espelho em `docs/01`; validado com `db reset` e queries (itens por manual: Saltador 51, Caminhante 63, Escalador 61).
 - [x] **Passo 4 — Lógica pura**: `src/utils/folhaIndividual.ts` (tipos `ManualFolha`/`SecaoFolha`/`BlocoFolha` + `normalizarFolhaIndividual` + `itensConcluidos`/`blocoConcluido`/`premioHabilitado`) e `folhaIndividual.spec.ts` (9 testes); lint/typecheck/test verdes (187 testes).
-- [ ] **Passo 5 — Composable**: `src/composables/useFolhaIndividual.ts` + spec.
+- [x] **Passo 5 — Composable**: `useFolhaIndividual.ts` (catálogo em cascata `folha_manuais`→`folha_secoes`→`folha_blocos`, progresso do oansista em `itens`/`premios`/`observacoes` e árvore derivada `folha`; `salvarItem`/`salvarPremio` com upsert por unique e delete quando `data|null`; `salvarObservacao` com upsert por `(oansista, manual)`) e `useFolhaIndividual.spec.ts` (17 testes).
 - [ ] **Passo 6 — UI**: componentes `src/components/folha/*`, `src/views/clube/FolhaIndividualView.vue`, rota e menu.
 - [ ] **Passo 7 — Qualidade**: `npm run lint` + `npm run typecheck` + `npm run test`.
 - [ ] **Passo 8 — Docs finais + checklist**: `.agents/checklist.md` e ajustes finais.

@@ -82,12 +82,13 @@ oanse/
 │   │   ├── useRole.ts            # fachada sobre stores/role
 │   │   ├── useEncontro.ts        # fachada sobre stores/encontro
 │   │   ├── useFolhaSemanal.ts    # itens de pontuação + folhas + salvar (+ spec.ts)
+│   │   ├── useFolhaIndividual.ts # catálogo da Folha Individual (clube) + progresso do oansista (itens/prêmios/observações) + upsert/delete por unique (+ spec.ts)
 │   │   ├── useRemanejamentos.ts  # substituição temporária de turma (+ spec.ts)
 │   │   ├── useTransferencias.ts  # transferência permanente (RPC 0006) (+ spec.ts)
 │   │   ├── useJogos.ts           # eventos de jogos do sábado: criação, cores, oansistas, rodadas, resultados, finalizar, ranking + catálogo (+ spec.ts)
 │   │   ├── useRanking.ts         # ranking do sábado via RPC fn_ranking_do_encontro + geral (+ spec.ts)
 │   │   └── useToast.ts           # fachada do Toast do PrimeVue (api tipo Nuxt UI)
-│   │   # (planejado) useTurma, useFolhaIndividual, useVisitantes,
+│   │   # (planejado) useTurma, useVisitantes,
 │   │   # usePendencias (realtime)
 │   │
 │   ├── router/
