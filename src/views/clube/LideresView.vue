@@ -1,8 +1,5 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import Column from 'primevue/column'
-import DataTable from 'primevue/datatable'
-import Tag from 'primevue/tag'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/composables/useAuth'
 import type { Database } from '@/types/database.types'

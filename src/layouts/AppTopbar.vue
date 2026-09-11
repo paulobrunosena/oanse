@@ -2,8 +2,6 @@
 import { useLayout } from './composables/layout'
 import { useAuth } from '@/composables/useAuth'
 import { useRole } from '@/composables/useRole'
-import Avatar from 'primevue/avatar'
-import Button from 'primevue/button'
 
 const { toggleMenu, toggleDarkMode, isDarkTheme } = useLayout()
 const { profile, logout } = useAuth()

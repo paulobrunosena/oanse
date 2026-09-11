@@ -1,10 +1,5 @@
 <script setup lang="ts">
 import { computed, reactive } from 'vue'
-import Avatar from 'primevue/avatar'
-import Button from 'primevue/button'
-import Checkbox from 'primevue/checkbox'
-import InputNumber from 'primevue/inputnumber'
-import Tag from 'primevue/tag'
 import type { Folha, FormFolha } from '@/composables/useFolhaSemanal'
 import { previewTotalFolha, type ItensPontuacaoMap } from '@/utils/pontos'
 import { corHex, posicaoLabel } from '@/utils/jogos'

@@ -1,8 +1,5 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import Button from 'primevue/button'
-import Dialog from 'primevue/dialog'
-import Select from 'primevue/select'
 import { useEncontro } from '@/composables/useEncontro'
 import { useToast } from '@/composables/useToast'
 import { formatarDataCurta } from '@/utils/data'

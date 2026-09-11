@@ -1,13 +1,5 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref } from 'vue'
-import Button from 'primevue/button'
-import Column from 'primevue/column'
-import DataTable from 'primevue/datatable'
-import Dialog from 'primevue/dialog'
-import ToggleSwitch from 'primevue/toggleswitch'
-import InputText from 'primevue/inputtext'
-import Select from 'primevue/select'
-import Tag from 'primevue/tag'
 import { supabase } from '@/lib/supabase'
 import { apiFetch } from '@/lib/api'
 import { useToast } from '@/composables/useToast'

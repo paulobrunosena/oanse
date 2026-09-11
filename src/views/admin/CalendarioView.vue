@@ -1,10 +1,5 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref } from 'vue'
-import Button from 'primevue/button'
-import Card from 'primevue/card'
-import Column from 'primevue/column'
-import DataTable from 'primevue/datatable'
-import InputText from 'primevue/inputtext'
 import { supabase } from '@/lib/supabase'
 import { useToast } from '@/composables/useToast'
 import { formatarDataCurta } from '@/utils/data'

@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import Tag from 'primevue/tag'
 import type { RankingCor } from '@/composables/useJogos'
 import { corHex } from '@/utils/jogos'
 

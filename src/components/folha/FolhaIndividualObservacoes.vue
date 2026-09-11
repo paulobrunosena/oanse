@@ -1,7 +1,5 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import Button from 'primevue/button'
-import Textarea from 'primevue/textarea'
 
 const props = defineProps<{
   texto: string

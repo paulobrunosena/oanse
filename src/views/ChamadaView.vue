@@ -1,9 +1,5 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
-import Avatar from 'primevue/avatar'
-import Card from 'primevue/card'
-import ToggleSwitch from 'primevue/toggleswitch'
-import Tag from 'primevue/tag'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/composables/useAuth'
 import { useEncontro } from '@/composables/useEncontro'

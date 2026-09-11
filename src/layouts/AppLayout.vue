@@ -4,7 +4,6 @@ import { useLayout } from './composables/layout'
 import AppFooter from './AppFooter.vue'
 import AppSidebar from './AppSidebar.vue'
 import AppTopbar from './AppTopbar.vue'
-import Toast from 'primevue/toast'
 
 const { layoutConfig, layoutState, hideMobileMenu } = useLayout()
 

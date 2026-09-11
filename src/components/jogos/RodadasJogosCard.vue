@@ -1,8 +1,5 @@
 <script setup lang="ts">
 import { computed, reactive, ref, watch } from 'vue'
-import Button from 'primevue/button'
-import Select from 'primevue/select'
-import Tag from 'primevue/tag'
 import type { EventoCor, RodadaJogo } from '@/composables/useJogos'
 import { corHex, pontosDaColocacao, type PontosJogosConfig } from '@/utils/jogos'
 

@@ -1,8 +1,5 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import Button from 'primevue/button'
-import Select from 'primevue/select'
-import Tag from 'primevue/tag'
 import type { EventoCor, EventoJogo, JogoIntegrante, OansistaOpcao } from '@/composables/useJogos'
 import { CORES_PREDEFINIDAS, corHex } from '@/utils/jogos'
 

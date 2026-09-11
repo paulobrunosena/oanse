@@ -1,10 +1,5 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
-import Button from 'primevue/button'
-import Card from 'primevue/card'
-import InputText from 'primevue/inputtext'
-import Select from 'primevue/select'
-import Tag from 'primevue/tag'
 import { useAuth } from '@/composables/useAuth'
 import { useTransferencias, type OansistaTransferencia } from '@/composables/useTransferencias'
 import { useToast } from '@/composables/useToast'

@@ -11,8 +11,8 @@ oanse/
 ├── AGENTS.md                     # instruções para agentes de IA
 ├── README.md
 ├── eslint.config.mjs             # flat config (ts + vue)
-├── vite.config.ts                # plugin-vue + tailwindcss + alias @/src + proxy /api -> :8787
-├── vitest.config.ts              # happy-dom + alias @ (vitest puro, sem nuxt)
+├── vite.config.ts                # plugin-vue + tailwindcss + auto-import PrimeVue (unplugin-vue-components + PrimeVueResolver) + alias @/src + proxy /api -> :8787
+├── vitest.config.ts              # happy-dom + alias @ + mesmo auto-import PrimeVue (dts off)
 ├── vercel.json                   # rewrite /api/* -> /api/index (function única h3)
 ├── package.json
 ├── tsconfig.json                 # app (src + tests) — vue-tsc
@@ -61,7 +61,8 @@ oanse/
 │
 ├── src/
 │   ├── main.ts                   # createApp + pinia + router + PrimeVue(Aura) + ToastService + CSS (tailwind + layout)
-│   ├── App.vue                   # <router-view /> + <Toast />
+│   ├── App.vue                   # <router-view /> + <Toast /> + <ConfirmDialog />
+│   ├── components.d.ts           # tipos globais gerados (auto-import dos componentes PrimeVue via unplugin-vue-components)
 │   ├── assets/
 │   │   ├── tailwind.css          # Tailwind v4 + plugin tailwindcss-primeui (tokens PrimeVue) + dark variant
 │   │   ├── styles.scss           # primeicons + SCSS do shell do layout

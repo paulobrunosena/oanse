@@ -1,9 +1,5 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
-import Button from 'primevue/button'
-import Card from 'primevue/card'
-import InputText from 'primevue/inputtext'
-import Select from 'primevue/select'
 import { useConfirm } from 'primevue/useconfirm'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/composables/useAuth'

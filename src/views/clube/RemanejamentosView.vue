@@ -1,10 +1,5 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref } from 'vue'
-import Avatar from 'primevue/avatar'
-import Button from 'primevue/button'
-import Card from 'primevue/card'
-import Select from 'primevue/select'
-import Tag from 'primevue/tag'
 import { useAuth } from '@/composables/useAuth'
 import { useEncontro } from '@/composables/useEncontro'
 import { useRemanejamentos, type TurmaRemanejamento } from '@/composables/useRemanejamentos'

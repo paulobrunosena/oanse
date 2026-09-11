@@ -1,7 +1,5 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import InputText from 'primevue/inputtext'
-import Tag from 'primevue/tag'
 import {
   blocoConcluido,
   itensConcluidos,

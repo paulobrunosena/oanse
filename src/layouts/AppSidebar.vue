@@ -5,8 +5,6 @@ import { useLayout } from './composables/layout'
 import { useAuth } from '@/composables/useAuth'
 import { useRole } from '@/composables/useRole'
 import AppMenu from './AppMenu.vue'
-import Avatar from 'primevue/avatar'
-import Button from 'primevue/button'
 
 const { layoutState, isDesktop, hasOpenOverlay } = useLayout()
 const { profile, logout } = useAuth()

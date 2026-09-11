@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import Select from 'primevue/select'
 import type { Encontro } from '@/composables/useEncontro'
 import { formatarDataCurta } from '@/utils/data'
 

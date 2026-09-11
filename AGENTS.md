@@ -80,6 +80,7 @@ npx supabase gen types typescript --local > src/types/database.types.ts  # após
 - Estilo: **Tailwind CSS v4** (plugin `@tailwindcss/vite` + `tailwindcss-primeui`, que mapeia os tokens `--p-*` do PrimeVue para utilitárias como `text-surface-500`/`bg-primary-50`). CSS em `src/assets/tailwind.css`. Não adicione cores hardcoded no template; use as utilitárias ou o tema PrimeVue.
 - App shell: o layout autenticado é baseado no **template Sakai** do PrimeVue (`src/layouts/`: AppLayout/AppSidebar/AppTopbar/AppMenu/AppMenuItem/AppFooter + `composables/layout.ts` + SCSS em `src/assets/layout/`). Ao alterar o shell, mantenha essa estrutura.
 - Componentes: `src/components/` agrupados por domínio (`folha/`, `jogos/`, `premiacoes/`, `ranking/`).
+- **Auto-import de componentes PrimeVue**: `Button`, `Card`, `DataTable` etc. **não** precisam de `import` nos arquivos `.vue` — o `unplugin-vue-components` + `@primevue/auto-import-resolver` (configurados em `vite.config.ts` e `vitest.config.ts`) os registra automaticamente a partir do template. Os tipos globais ficam em `src/components.d.ts` (gerado — regenerado a cada build/dev). Serviços/composables **continuam com import explícito** (`primevue/config`, `toastservice`, `confirmationservice`, `useToast`, `useConfirm`).
 - Estado/lógica de dados: stores em `src/stores/` (`useXStore`) e composables em `src/composables/` (`useX.ts`).
 - Telas: `src/views/` espelhando as rotas (`admin/`, `clube/`).
 - Commits em português, conventional commits: `feat:`, `fix:`, `chore:`, `docs:`, `refactor:`.

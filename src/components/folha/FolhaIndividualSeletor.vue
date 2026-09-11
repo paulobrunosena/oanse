@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import Select from 'primevue/select'
 
 const props = defineProps<{
   oansistas: { id: string, nome: string }[]
