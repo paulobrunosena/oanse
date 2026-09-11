@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { flushPromises, mount } from '@vue/test-utils'
+import { h } from 'vue'
 import { createPinia, setActivePinia } from 'pinia'
 import PrimeVue from 'primevue/config'
 import ToastService from 'primevue/toastservice'
@@ -23,11 +24,29 @@ const stubs = {
     emits: ['click'],
     template: '<button @click="$emit(\'click\')">{{ label }}</button>',
   },
-  Column: { name: 'Column', template: '<div><slot name="body" :data="{}" /></div>' },
+  ColorPicker: {
+    name: 'ColorPicker',
+    props: ['modelValue', 'format'],
+    emits: ['update:modelValue'],
+    template: '<div class="colorpicker" />',
+  },
+  Column: {
+    name: 'Column',
+    props: ['data'],
+    template: '<div><slot name="body" :data="data" /></div>',
+  },
   DataTable: {
     name: 'DataTable',
     props: ['value'],
-    template: '<div class="dt"><div v-for="(row, i) in value" :key="i"><slot /></div></div>',
+    render(this: any) {
+      const colunas = this.$slots.default?.() ?? []
+      const linhas = (this.value ?? []).flatMap((row: Record<string, unknown>, i: number) =>
+        colunas.map((col: any, j: number) =>
+          h(col.type, { ...col.props, data: row, key: `${i}-${j}` }, col.children),
+        ),
+      )
+      return h('div', { class: 'dt' }, linhas)
+    },
   },
   Dialog: { name: 'Dialog', template: '<div><slot /></div>' },
   InputNumber: { name: 'InputNumber', props: ['inputStyle'], template: '<div />' },
@@ -90,5 +109,41 @@ describe('ClubesView', () => {
       expect(input.props('inputStyle')).toEqual({ minWidth: '0', width: '100%' })
       expect(input.classes()).toContain('min-w-0')
     }
+  })
+
+  it('usa o ColorPicker do PrimeVue para escolher a cor (sem input nativo type=color)', async () => {
+    const wrapper = mount(ClubesView, {
+      global: { stubs, plugins: [PrimeVue, ToastService] },
+    })
+    await flushPromises()
+
+    await wrapper.find('button[aria-label="Editar"]').trigger('click')
+    await flushPromises()
+
+    expect(wrapper.find('input[type="color"]').exists()).toBe(false)
+
+    const picker = wrapper.findComponent({ name: 'ColorPicker' })
+    expect(picker.exists()).toBe(true)
+    expect(picker.props('format')).toBe('hex')
+    expect(picker.props('modelValue')).toBe('EF4444')
+  })
+
+  it('salva a cor no formato #RRGGBB a partir do hex sem # do ColorPicker', async () => {
+    const wrapper = mount(ClubesView, {
+      global: { stubs, plugins: [PrimeVue, ToastService] },
+    })
+    await flushPromises()
+
+    await wrapper.find('button[aria-label="Editar"]').trigger('click')
+    await flushPromises()
+
+    wrapper.findComponent({ name: 'ColorPicker' }).vm.$emit('update:modelValue', '22c55e')
+    await flushPromises()
+
+    await wrapper.find('form').trigger('submit')
+    await flushPromises()
+
+    const atualizacao = mocks.supabase.builderDe('clubes').update.mock.calls[0]![0]
+    expect(atualizacao).toMatchObject({ cor: '#22C55E' })
   })
 })

@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { onMounted, reactive, ref } from 'vue'
+import { computed, onMounted, reactive, ref } from 'vue'
 import Button from 'primevue/button'
+import ColorPicker from 'primevue/colorpicker'
 import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'
 import Dialog from 'primevue/dialog'
@@ -30,6 +31,11 @@ onMounted(carregar)
 const editando = ref<Clube | null>(null)
 const salvando = ref(false)
 const form = reactive({ nome: '', idade_min: 4, idade_max: 5, cor: '#8B5CF6', ordem: 1 })
+
+const corSelecionada = computed({
+  get: () => (form.cor ?? '').replace('#', ''),
+  set: (valor: string) => { form.cor = `#${valor.toUpperCase()}` },
+})
 
 function abrirEdicao(c: Clube) {
   editando.value = c
@@ -170,9 +176,9 @@ async function salvar() {
         <div class="grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-2">
           <div class="flex min-w-0 flex-col gap-1">
             <label class="text-sm font-medium">Cor</label>
-            <InputText
-              v-model="form.cor"
-              type="color"
+            <ColorPicker
+              v-model="corSelecionada"
+              format="hex"
               class="w-full min-w-0"
             />
           </div>
