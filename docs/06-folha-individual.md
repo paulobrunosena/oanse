@@ -197,7 +197,7 @@ refactor genérico só vale se as estruturas forem idênticas; senão, o catálo
 
 - [x] **Passo 1 — Migrations**: `0015_folha_individual.sql` (catálogo + progresso + limpeza do `progresso_manual` legado + grants) e `0016_folha_individual_rls.sql` (RLS). Docs `01`/`02`/`03` atualizados.
 - [x] **Passo 2 — Reset + types**: `npx supabase db reset` sem erros (migrations 0015/0016 aplicadas) e `npx supabase gen types` regenerado (novas tabelas presentes; `progresso_manual` removida).
-- [ ] **Passo 3 — Seed**: catálogo do Faísca (3 manuais × 12 blocos = 36 blocos) em `supabase/seed.sql` (e espelho em `docs/01`).
+- [x] **Passo 3 — Seed**: catálogo do Faísca em `supabase/seed.sql` (3 manuais, 18 seções, 36 blocos, 175 itens; Observações sem blocos) + espelho em `docs/01`; validado com `db reset` e queries (itens por manual: Saltador 51, Caminhante 63, Escalador 61).
 - [ ] **Passo 4 — Lógica pura**: `src/utils/folhaIndividual.ts` + spec.
 - [ ] **Passo 5 — Composable**: `src/composables/useFolhaIndividual.ts` + spec.
 - [ ] **Passo 6 — UI**: componentes `src/components/folha/*`, `src/views/clube/FolhaIndividualView.vue`, rota e menu.

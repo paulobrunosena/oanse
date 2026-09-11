@@ -67,6 +67,89 @@ insert into jogos_catalogo (clube_id, nome) values
   ((select id from clubes where slug = 'tochas'),   'revezamento com bola de basquete');
 
 -- ============================================================================
+-- Catálogo da Folha de Progresso Individual — clube Faíscas (docs/06)
+-- 3 manuais (Saltador/Caminhante/Escalador) × 12 blocos = 36 blocos.
+-- A seção Observações não tem itens (tipo = 'observacoes').
+-- ============================================================================
+do $$
+declare
+  v_clube  uuid;
+  v_manual uuid;
+  v_secao  uuid;
+  r        record;
+begin
+  select id into v_clube from clubes where slug = 'faiscas';
+
+  insert into folha_manuais (clube_id, nome, ordem) values
+    (v_clube, 'Saltador',   1),
+    (v_clube, 'Caminhante', 2),
+    (v_clube, 'Escalador',  3);
+
+  insert into folha_secoes (manual_id, nome, ordem, tipo)
+  select m.id, s.nome, s.ordem, s.tipo
+  from folha_manuais m
+  cross join (values
+    ('Progresso',            1, 'itens'),
+    ('Atividades',           2, 'itens'),
+    ('Crédito-extra',        3, 'itens'),
+    ('Frequência na igreja', 4, 'itens'),
+    ('Frequência no clube',  5, 'itens'),
+    ('Observações',          6, 'observacoes')
+  ) as s(nome, ordem, tipo)
+  where m.clube_id = v_clube;
+
+  for r in
+    select *
+    from (values
+      -- Saltador (Ano 01)
+      ('Saltador',   'Progresso',             'Trilha do grau',      1,  6, 'Distintivo do grau'),
+      ('Saltador',   'Progresso',             'Exercício bíblico 01', 2,  4, 'Botão vermelho 01'),
+      ('Saltador',   'Progresso',             'Exercício bíblico 02', 3,  4, 'Botão vermelho 02'),
+      ('Saltador',   'Progresso',             'Exercício bíblico 03', 4,  9, 'Botão vermelho 03'),
+      ('Saltador',   'Progresso',             'Exercício bíblico 04', 5,  6, 'Botão vermelho 04'),
+      ('Saltador',   'Atividades',            'Atividade 01',         1,  1, 'Botão verde 01'),
+      ('Saltador',   'Atividades',            'Atividade 02',         2,  2, 'Botão verde 02'),
+      ('Saltador',   'Atividades',            'Atividade 03',         3,  4, 'Botão verde 03'),
+      ('Saltador',   'Atividades',            'Atividade 04',         4,  2, 'Botão verde 04'),
+      ('Saltador',   'Crédito-extra',         'Crédito extra',        1,  7, 'Botão crédito extra'),
+      ('Saltador',   'Frequência na igreja',  'Frequência na igreja', 1,  2, 'Botão azul'),
+      ('Saltador',   'Frequência no clube',   'Frequência no clube',  1,  4, 'Botão amarelo'),
+      -- Caminhante (Ano 02)
+      ('Caminhante', 'Progresso',             'Trilha do grau',      1,  6, 'Distintivo do grau'),
+      ('Caminhante', 'Progresso',             'Exercício bíblico 01', 2,  6, 'Botão vermelho 01'),
+      ('Caminhante', 'Progresso',             'Exercício bíblico 02', 3,  6, 'Botão vermelho 02'),
+      ('Caminhante', 'Progresso',             'Exercício bíblico 03', 4, 10, 'Botão vermelho 03'),
+      ('Caminhante', 'Progresso',             'Exercício bíblico 04', 5,  8, 'Botão vermelho 04'),
+      ('Caminhante', 'Atividades',            'Atividade 01',         1,  2, 'Botão verde 01'),
+      ('Caminhante', 'Atividades',            'Atividade 02',         2,  3, 'Botão verde 02'),
+      ('Caminhante', 'Atividades',            'Atividade 03',         3,  5, 'Botão verde 03'),
+      ('Caminhante', 'Atividades',            'Atividade 04',         4,  4, 'Botão verde 04'),
+      ('Caminhante', 'Crédito-extra',         'Crédito extra',        1,  7, 'Botão crédito extra'),
+      ('Caminhante', 'Frequência na igreja',  'Frequência na igreja', 1,  2, 'Botão azul'),
+      ('Caminhante', 'Frequência no clube',   'Frequência no clube',  1,  4, 'Botão amarelo'),
+      -- Escalador (Ano 03)
+      ('Escalador',  'Progresso',             'Trilha do grau',      1,  6, 'Distintivo do grau'),
+      ('Escalador',  'Progresso',             'Exercício bíblico 01', 2,  6, 'Botão vermelho 01'),
+      ('Escalador',  'Progresso',             'Exercício bíblico 02', 3,  8, 'Botão vermelho 02'),
+      ('Escalador',  'Progresso',             'Exercício bíblico 03', 4,  7, 'Botão vermelho 03'),
+      ('Escalador',  'Progresso',             'Exercício bíblico 04', 5,  7, 'Botão vermelho 04'),
+      ('Escalador',  'Atividades',            'Atividade 01',         1,  2, 'Botão verde 01'),
+      ('Escalador',  'Atividades',            'Atividade 02',         2,  3, 'Botão verde 02'),
+      ('Escalador',  'Atividades',            'Atividade 03',         3,  5, 'Botão verde 03'),
+      ('Escalador',  'Atividades',            'Atividade 04',         4,  4, 'Botão verde 04'),
+      ('Escalador',  'Crédito-extra',         'Crédito extra',        1,  7, 'Botão crédito extra'),
+      ('Escalador',  'Frequência na igreja',  'Frequência na igreja', 1,  2, 'Botão azul'),
+      ('Escalador',  'Frequência no clube',   'Frequência no clube',  1,  4, 'Botão amarelo')
+    ) as t(manual, secao, bloco, bloco_ordem, quantidade, premio_nome)
+  loop
+    select id into v_manual from folha_manuais where clube_id = v_clube and nome = r.manual;
+    select id into v_secao  from folha_secoes  where manual_id = v_manual and nome = r.secao;
+    insert into folha_blocos (secao_id, nome, ordem, quantidade, premio_nome)
+    values (v_secao, r.bloco, r.bloco_ordem, r.quantidade, r.premio_nome);
+  end loop;
+end $$;
+
+-- ============================================================================
 -- Usuários de teste (senha: oanse123). O trigger on_auth_user_created cria o
 -- profile a partir dos metadados; depois vinculamos o clube onde aplicável.
 -- ============================================================================
