@@ -24,12 +24,6 @@ const stubs = {
     emits: ['click'],
     template: '<button @click="$emit(\'click\')">{{ label }}</button>',
   },
-  ColorPicker: {
-    name: 'ColorPicker',
-    props: ['modelValue', 'format'],
-    emits: ['update:modelValue'],
-    template: '<div class="colorpicker" />',
-  },
   Column: {
     name: 'Column',
     props: ['data'],
@@ -49,8 +43,25 @@ const stubs = {
     },
   },
   Dialog: { name: 'Dialog', template: '<div><slot /></div>' },
+  InputColor: {
+    name: 'InputColor',
+    props: ['modelValue', 'format'],
+    emits: ['update:modelValue'],
+    template: '<div class="inputcolor"><slot /></div>',
+  },
+  InputColorArea: { name: 'InputColorArea', template: '<div><slot /></div>' },
+  InputColorAreaBackground: { name: 'InputColorAreaBackground', template: '<div />' },
+  InputColorAreaHandle: { name: 'InputColorAreaHandle', template: '<div />' },
+  InputColorInput: { name: 'InputColorInput', props: ['channel'], template: '<input />' },
+  InputColorSlider: { name: 'InputColorSlider', template: '<div><slot /></div>' },
+  InputColorSliderHandle: { name: 'InputColorSliderHandle', template: '<div />' },
+  InputColorSliderTrack: { name: 'InputColorSliderTrack', template: '<div />' },
+  InputColorSwatch: { name: 'InputColorSwatch', template: '<div><slot /></div>' },
+  InputColorSwatchBackground: { name: 'InputColorSwatchBackground', template: '<div />' },
+  InputColorTransparencyGrid: { name: 'InputColorTransparencyGrid', template: '<div />' },
   InputNumber: { name: 'InputNumber', props: ['inputStyle'], template: '<div />' },
   InputText: { name: 'InputText', template: '<input />' },
+  Popover: { name: 'Popover', template: '<div><slot /></div>' },
 }
 
 describe('ClubesView', () => {
@@ -111,7 +122,22 @@ describe('ClubesView', () => {
     }
   })
 
-  it('usa o ColorPicker do PrimeVue para escolher a cor (sem input nativo type=color)', async () => {
+  it('mostra a Ordem de exibição antes da Cor no dialog', async () => {
+    const wrapper = mount(ClubesView, {
+      global: { stubs, plugins: [PrimeVue, ToastService] },
+    })
+    await flushPromises()
+
+    await wrapper.find('button[aria-label="Editar"]').trigger('click')
+    await flushPromises()
+
+    const labels = wrapper.findAll('label').map(label => label.text())
+    expect(labels).toContain('Ordem de exibição')
+    expect(labels).toContain('Cor')
+    expect(labels.indexOf('Ordem de exibição')).toBeLessThan(labels.indexOf('Cor'))
+  })
+
+  it('usa o InputColor do PrimeVue para escolher a cor (sem input nativo type=color)', async () => {
     const wrapper = mount(ClubesView, {
       global: { stubs, plugins: [PrimeVue, ToastService] },
     })
@@ -122,13 +148,13 @@ describe('ClubesView', () => {
 
     expect(wrapper.find('input[type="color"]').exists()).toBe(false)
 
-    const picker = wrapper.findComponent({ name: 'ColorPicker' })
-    expect(picker.exists()).toBe(true)
-    expect(picker.props('format')).toBe('hex')
-    expect(picker.props('modelValue')).toBe('EF4444')
+    const inputColor = wrapper.findComponent({ name: 'InputColor' })
+    expect(inputColor.exists()).toBe(true)
+    expect(inputColor.props('format')).toBe('hex')
+    expect(inputColor.props('modelValue')).toBe('#EF4444')
   })
 
-  it('salva a cor no formato #RRGGBB a partir do hex sem # do ColorPicker', async () => {
+  it('salva a cor em #RRGGBB a partir do valor do InputColor', async () => {
     const wrapper = mount(ClubesView, {
       global: { stubs, plugins: [PrimeVue, ToastService] },
     })
@@ -137,7 +163,7 @@ describe('ClubesView', () => {
     await wrapper.find('button[aria-label="Editar"]').trigger('click')
     await flushPromises()
 
-    wrapper.findComponent({ name: 'ColorPicker' }).vm.$emit('update:modelValue', '22c55e')
+    wrapper.findComponent({ name: 'InputColor' }).vm.$emit('update:modelValue', '#22c55e')
     await flushPromises()
 
     await wrapper.find('form').trigger('submit')

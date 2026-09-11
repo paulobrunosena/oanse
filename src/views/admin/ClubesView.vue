@@ -1,12 +1,23 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref } from 'vue'
 import Button from 'primevue/button'
-import ColorPicker from 'primevue/colorpicker'
 import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'
 import Dialog from 'primevue/dialog'
+import InputColor from 'primevue/inputcolor'
+import InputColorArea from 'primevue/inputcolorarea'
+import InputColorAreaBackground from 'primevue/inputcolorareabackground'
+import InputColorAreaHandle from 'primevue/inputcolorareahandle'
+import InputColorInput from 'primevue/inputcolorinput'
+import InputColorSlider from 'primevue/inputcolorslider'
+import InputColorSliderHandle from 'primevue/inputcolorsliderhandle'
+import InputColorSliderTrack from 'primevue/inputcolorslidertrack'
+import InputColorSwatch from 'primevue/inputcolorswatch'
+import InputColorSwatchBackground from 'primevue/inputcolorswatchbackground'
+import InputColorTransparencyGrid from 'primevue/inputcolortransparencygrid'
 import InputNumber from 'primevue/inputnumber'
 import InputText from 'primevue/inputtext'
+import Popover from 'primevue/popover'
 import { supabase } from '@/lib/supabase'
 import { useToast } from '@/composables/useToast'
 import { logoClube } from '@/utils/data'
@@ -33,9 +44,15 @@ const salvando = ref(false)
 const form = reactive({ nome: '', idade_min: 4, idade_max: 5, cor: '#8B5CF6', ordem: 1 })
 
 const corSelecionada = computed({
-  get: () => (form.cor ?? '').replace('#', ''),
-  set: (valor: string) => { form.cor = `#${valor.toUpperCase()}` },
+  get: () => form.cor ?? '#8B5CF6',
+  set: (valor: string) => { form.cor = valor.toUpperCase() },
 })
+
+const corPopover = ref()
+
+function toggleCor(event: Event) {
+  corPopover.value?.toggle(event)
+}
 
 function abrirEdicao(c: Clube) {
   editando.value = c
@@ -175,14 +192,6 @@ async function salvar() {
         </div>
         <div class="grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-2">
           <div class="flex min-w-0 flex-col gap-1">
-            <label class="text-sm font-medium">Cor</label>
-            <ColorPicker
-              v-model="corSelecionada"
-              format="hex"
-              class="w-full min-w-0"
-            />
-          </div>
-          <div class="flex min-w-0 flex-col gap-1">
             <label class="text-sm font-medium">Ordem de exibição</label>
             <InputNumber
               v-model="form.ordem"
@@ -191,6 +200,42 @@ async function salvar() {
               :input-style="{ minWidth: '0', width: '100%' }"
               class="w-full min-w-0"
             />
+          </div>
+          <div class="flex min-w-0 flex-col gap-1">
+            <label class="text-sm font-medium">Cor</label>
+            <InputColor
+              v-model="corSelecionada"
+              format="hex"
+            >
+              <InputColorSwatch
+                class="cursor-pointer"
+                tabindex="0"
+                aria-label="Escolher cor"
+                @click="toggleCor"
+                @keydown.enter.prevent="toggleCor"
+                @keydown.space.prevent="toggleCor"
+              >
+                <InputColorTransparencyGrid />
+                <InputColorSwatchBackground />
+              </InputColorSwatch>
+              <Popover ref="corPopover">
+                <div class="w-72 space-y-3 p-3">
+                  <InputColorArea>
+                    <InputColorAreaBackground />
+                    <InputColorAreaHandle />
+                  </InputColorArea>
+                  <InputColorSlider>
+                    <InputColorTransparencyGrid />
+                    <InputColorSliderTrack />
+                    <InputColorSliderHandle />
+                  </InputColorSlider>
+                  <InputColorInput
+                    channel="hex"
+                    class="w-full"
+                  />
+                </div>
+              </Popover>
+            </InputColor>
           </div>
         </div>
         <div class="flex justify-end gap-2">
