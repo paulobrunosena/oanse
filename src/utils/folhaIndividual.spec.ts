@@ -5,6 +5,7 @@ import {
   itensConcluidos,
   normalizarFolhaIndividual,
   premioHabilitado,
+  rotuloItem,
   type BlocoFolha,
   type BlocoFolhaRow,
   type ItemProgressoFolhaRow,
@@ -219,5 +220,21 @@ describe('premioHabilitado', () => {
 
     expect(premioHabilitado(parcial)).toBe(false)
     expect(premioHabilitado(completo)).toBe(true)
+  })
+})
+
+describe('rotuloItem', () => {
+  it('remove o sufixo numérico do bloco e concatena o número do item', () => {
+    expect(rotuloItem('Exercício bíblico 01', 3)).toBe('Exercício bíblico 3')
+    expect(rotuloItem('Atividade 02', 1)).toBe('Atividade 1')
+  })
+
+  it('encurta "Trilha do grau" para "Grau"', () => {
+    expect(rotuloItem('Trilha do grau', 2)).toBe('Grau 2')
+  })
+
+  it('mantém o nome do bloco quando não há sufixo numérico', () => {
+    expect(rotuloItem('Crédito extra', 5)).toBe('Crédito extra 5')
+    expect(rotuloItem('Frequência na igreja', 1)).toBe('Frequência na igreja 1')
   })
 })

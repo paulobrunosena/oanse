@@ -39,6 +39,7 @@ const model = computed<MenuItem[]>(() => {
         { label: 'Turmas', icon: 'pi pi-fw pi-users', to: '/clube/turmas' },
         { label: 'Líderes', icon: 'pi pi-fw pi-id-card', to: '/clube/lideres' },
         { label: 'Oansistas', icon: 'pi pi-fw pi-heart', to: '/clube/oansistas' },
+        { label: 'Folha Individual', icon: 'pi pi-fw pi-list-check', to: '/clube/folha-individual' },
         { label: 'Remanejamentos', icon: 'pi pi-fw pi-arrows-h', to: '/clube/remanejamentos' },
         { label: 'Transferências', icon: 'pi pi-fw pi-arrow-right-arrow-left', to: '/clube/transferencias' },
         { label: 'Ranking', icon: 'pi pi-fw pi-trophy', to: '/clube/ranking' },
