@@ -22,6 +22,11 @@ vi.mock('@/lib/supabase', () => ({
   get supabase() { return mocks.supabase },
 }))
 
+const confirmacao = vi.hoisted(() => ({ require: vi.fn() }))
+vi.mock('primevue/useconfirm', () => ({
+  useConfirm: () => confirmacao,
+}))
+
 const stubs = {
   Card: { name: 'Card', template: '<div><slot name="title" /><slot name="content" /></div>' },
   Button: {
@@ -40,6 +45,7 @@ const stubs = {
 
 describe('JogosCatalogoView', () => {
   beforeEach(() => {
+    confirmacao.require.mockReset()
     setActivePinia(createPinia())
     mocks.supabase = clienteSupabase({
       clubes: () => builder(CLUBES),
@@ -73,5 +79,35 @@ describe('JogosCatalogoView', () => {
 
     expect(wrapper.text()).toContain('bonanza')
     expect(wrapper.text()).not.toContain('maratona')
+  })
+
+  it('pede confirmação pelo ConfirmDialog e exclui o jogo ao aceitar', async () => {
+    const store = useAuthStore()
+    store.setUser({ sub: 'l1' })
+    store.profile = { id: 'l1', nome: 'Líder de Jogos', role: 'lider_jogos', clube_id: null, ativo: true } as never
+
+    const wrapper = mount(JogosCatalogoView, {
+      global: { stubs, plugins: [PrimeVue, ToastService] },
+    })
+    await flushPromises()
+
+    const botaoExcluir = wrapper.findAll('button').find(b => b.attributes('title') === 'Excluir')
+    expect(botaoExcluir).toBeDefined()
+    await botaoExcluir!.trigger('click')
+    await flushPromises()
+
+    expect(confirmacao.require).toHaveBeenCalledWith(expect.objectContaining({
+      header: 'Excluir jogo',
+      message: 'Excluir o jogo "maratona" do catálogo?',
+      acceptLabel: 'Excluir',
+      rejectLabel: 'Cancelar',
+    }))
+    expect(mocks.supabase.builderDe('jogos_catalogo').delete).not.toHaveBeenCalled()
+
+    const opcoes = confirmacao.require.mock.calls[0]![0] as { accept: () => Promise<void> }
+    await opcoes.accept()
+    await flushPromises()
+
+    expect(mocks.supabase.builderDe('jogos_catalogo').delete).toHaveBeenCalled()
   })
 })

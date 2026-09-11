@@ -4,6 +4,7 @@ import Button from 'primevue/button'
 import Card from 'primevue/card'
 import InputText from 'primevue/inputtext'
 import Select from 'primevue/select'
+import { useConfirm } from 'primevue/useconfirm'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/composables/useAuth'
 import { useJogos } from '@/composables/useJogos'
@@ -14,6 +15,7 @@ import type { Database } from '@/types/database.types'
 type Clube = Database['public']['Tables']['clubes']['Row']
 
 const toast = useToast()
+const confirm = useConfirm()
 const { profile } = useAuth()
 const { isDiretorClube } = useRole()
 const { catalogo, carregarCatalogo, criarCatalogoItem, atualizarCatalogoItem, excluirCatalogoItem } = useJogos()
@@ -91,20 +93,30 @@ async function salvarEdicao(id: string) {
   }
 }
 
-async function excluir(id: string, nome: string) {
-  if (!window.confirm(`Excluir o jogo "${nome}" do catálogo?`)) return
-  try {
-    await excluirCatalogoItem(id)
-    await carregarCatalogo()
-    toast.add({ title: 'Jogo excluído', color: 'info' })
-  }
-  catch (e) {
-    toast.add({
-      title: 'Erro ao excluir',
-      description: (e as { message?: string })?.message ?? 'Tente novamente',
-      color: 'error',
-    })
-  }
+function excluir(id: string, nome: string) {
+  confirm.require({
+    header: 'Excluir jogo',
+    message: `Excluir o jogo "${nome}" do catálogo?`,
+    icon: 'pi pi-exclamation-triangle',
+    acceptLabel: 'Excluir',
+    rejectLabel: 'Cancelar',
+    acceptProps: { severity: 'danger' },
+    rejectProps: { severity: 'secondary', text: true },
+    accept: async () => {
+      try {
+        await excluirCatalogoItem(id)
+        await carregarCatalogo()
+        toast.add({ title: 'Jogo excluído', color: 'info' })
+      }
+      catch (e) {
+        toast.add({
+          title: 'Erro ao excluir',
+          description: (e as { message?: string })?.message ?? 'Tente novamente',
+          color: 'error',
+        })
+      }
+    },
+  })
 }
 
 onMounted(carregarTudo)

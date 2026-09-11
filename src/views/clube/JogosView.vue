@@ -12,6 +12,7 @@ import StepPanel from 'primevue/steppanel'
 import StepPanels from 'primevue/steppanels'
 import Stepper from 'primevue/stepper'
 import Tag from 'primevue/tag'
+import { useConfirm } from 'primevue/useconfirm'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/composables/useAuth'
 import { useEncontro } from '@/composables/useEncontro'
@@ -27,6 +28,7 @@ import type { Database } from '@/types/database.types'
 type Clube = Database['public']['Tables']['clubes']['Row']
 
 const toast = useToast()
+const confirm = useConfirm()
 const { user } = useAuth()
 const { encontro, encontros, carregando: carregandoEncontro, carregar: carregarEncontro, selecionar } = useEncontro()
 const {
@@ -180,21 +182,32 @@ async function confirmarCriarEvento() {
   }
 }
 
-async function excluirEventoConfirmado() {
+function excluirEventoConfirmado() {
   if (!evento.value) return
-  if (!window.confirm(`Excluir o evento "${evento.value.nome}"? Rodadas, pontos e cores serão removidos.`)) return
-  try {
-    await excluirEvento(evento.value.id)
-    toast.add({ title: 'Evento excluído', color: 'info' })
-    await carregarJogosDoEncontro()
-  }
-  catch (e) {
-    toast.add({
-      title: 'Erro ao excluir evento',
-      description: (e as { message?: string })?.message ?? 'Tente novamente',
-      color: 'error',
-    })
-  }
+  const id = evento.value.id
+  confirm.require({
+    header: 'Excluir evento',
+    message: `Excluir o evento "${evento.value.nome}"? Rodadas, pontos e cores serão removidos.`,
+    icon: 'pi pi-exclamation-triangle',
+    acceptLabel: 'Excluir',
+    rejectLabel: 'Cancelar',
+    acceptProps: { severity: 'danger' },
+    rejectProps: { severity: 'secondary', text: true },
+    accept: async () => {
+      try {
+        await excluirEvento(id)
+        toast.add({ title: 'Evento excluído', color: 'info' })
+        await carregarJogosDoEncontro()
+      }
+      catch (e) {
+        toast.add({
+          title: 'Erro ao excluir evento',
+          description: (e as { message?: string })?.message ?? 'Tente novamente',
+          color: 'error',
+        })
+      }
+    },
+  })
 }
 
 async function acaoComAtualizacao(acao: () => Promise<unknown>, mensagemSucesso?: string) {
@@ -231,15 +244,32 @@ async function registrarRodada(registro: RodadaRegistro) {
   }
 }
 
-async function excluirRodadaConfirmada(jogoId: string) {
-  if (!window.confirm('Excluir esta rodada? Os pontos dela serão removidos.')) return
-  await acaoComAtualizacao(() => excluirRodada(jogoId), 'Rodada excluída')
+function excluirRodadaConfirmada(jogoId: string) {
+  confirm.require({
+    header: 'Excluir rodada',
+    message: 'Excluir esta rodada? Os pontos dela serão removidos.',
+    icon: 'pi pi-exclamation-triangle',
+    acceptLabel: 'Excluir',
+    rejectLabel: 'Cancelar',
+    acceptProps: { severity: 'danger' },
+    rejectProps: { severity: 'secondary', text: true },
+    accept: () => acaoComAtualizacao(() => excluirRodada(jogoId), 'Rodada excluída'),
+  })
 }
 
-async function finalizar() {
+function finalizar() {
   if (!evento.value) return
-  if (!window.confirm('Finalizar os jogos do sábado? O placar das cores será fixado para o anúncio.')) return
-  await acaoComAtualizacao(() => finalizarEvento(evento.value!.id), 'Jogos finalizados')
+  const id = evento.value.id
+  confirm.require({
+    header: 'Finalizar jogos',
+    message: 'Finalizar os jogos do sábado? O placar das cores será fixado para o anúncio.',
+    icon: 'pi pi-flag',
+    acceptLabel: 'Finalizar',
+    rejectLabel: 'Cancelar',
+    acceptProps: { severity: 'success' },
+    rejectProps: { severity: 'secondary', text: true },
+    accept: () => acaoComAtualizacao(() => finalizarEvento(id), 'Jogos finalizados'),
+  })
 }
 
 async function reabrir() {

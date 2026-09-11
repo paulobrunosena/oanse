@@ -52,6 +52,11 @@ vi.mock('@/lib/supabase', () => ({
   get supabase() { return mocks.supabase },
 }))
 
+const confirmacao = vi.hoisted(() => ({ require: vi.fn() }))
+vi.mock('primevue/useconfirm', () => ({
+  useConfirm: () => confirmacao,
+}))
+
 vi.mock('@/lib/api', () => ({
   apiFetch: async () => ({
     encontro: { id: 'e1', data: '2026-08-24', ativo: true },
@@ -102,6 +107,7 @@ function montar() {
 
 describe('JogosView', () => {
   beforeEach(() => {
+    confirmacao.require.mockReset()
     setActivePinia(createPinia())
     mocks.supabase = clienteSupabase({
       clubes: () => builder(CLUBES),
@@ -260,11 +266,9 @@ describe('JogosView', () => {
     expect(nomes).toEqual(['o1', 'o2'])
   })
 
-  it('exclui o evento pelo botão do placar final', async () => {
+  it('pede confirmação pelo ConfirmDialog e exclui o evento ao aceitar', async () => {
     mocks.supabase.builderDe('eventos_jogos').data = EVENTOS
     perfilLiderJogos()
-    const confirmMock = vi.fn(() => true)
-    vi.stubGlobal('confirm', confirmMock)
     const wrapper = montar()
     await flushPromises()
 
@@ -273,16 +277,24 @@ describe('JogosView', () => {
     await botaoExcluir!.trigger('click')
     await flushPromises()
 
-    expect(confirmMock).toHaveBeenCalledWith('Excluir o evento "Jogos dos Flamas e Tochas"? Rodadas, pontos e cores serão removidos.')
+    expect(confirmacao.require).toHaveBeenCalledWith(expect.objectContaining({
+      header: 'Excluir evento',
+      message: 'Excluir o evento "Jogos dos Flamas e Tochas"? Rodadas, pontos e cores serão removidos.',
+      acceptLabel: 'Excluir',
+      rejectLabel: 'Cancelar',
+    }))
+    expect(mocks.supabase.builderDe('eventos_jogos').delete).not.toHaveBeenCalled()
+
+    const opcoes = confirmacao.require.mock.calls[0]![0] as { accept: () => Promise<void> }
+    await opcoes.accept()
+    await flushPromises()
+
     expect(mocks.supabase.builderDe('eventos_jogos').delete).toHaveBeenCalled()
-    vi.unstubAllGlobals()
   })
 
-  it('finaliza o evento pelo botão do placar final', async () => {
+  it('pede confirmação pelo ConfirmDialog e finaliza o evento ao aceitar', async () => {
     mocks.supabase.builderDe('eventos_jogos').data = EVENTOS
     perfilLiderJogos()
-    const confirmMock = vi.fn(() => true)
-    vi.stubGlobal('confirm', confirmMock)
     const wrapper = montar()
     await flushPromises()
 
@@ -291,8 +303,17 @@ describe('JogosView', () => {
     await botaoFinalizar!.trigger('click')
     await flushPromises()
 
-    expect(confirmMock).toHaveBeenCalledWith('Finalizar os jogos do sábado? O placar das cores será fixado para o anúncio.')
+    expect(confirmacao.require).toHaveBeenCalledWith(expect.objectContaining({
+      header: 'Finalizar jogos',
+      message: 'Finalizar os jogos do sábado? O placar das cores será fixado para o anúncio.',
+      acceptLabel: 'Finalizar',
+    }))
+    expect(mocks.supabase.builderDe('eventos_jogos').update).not.toHaveBeenCalled()
+
+    const opcoes = confirmacao.require.mock.calls[0]![0] as { accept: () => Promise<void> }
+    await opcoes.accept()
+    await flushPromises()
+
     expect(mocks.supabase.builderDe('eventos_jogos').update).toHaveBeenCalledWith({ status: 'finalizado' })
-    vi.unstubAllGlobals()
   })
 })
