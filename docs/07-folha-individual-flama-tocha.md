@@ -128,9 +128,9 @@ Nome dos blocos:
 
 > Registrar aqui a cada passo concluído (regra do AGENTS.md: registrar + commitar).
 
-- [ ] **Passo 1 — Seed Faíscas**: consolidar Frequência (1 seção, 2 blocos) em `supabase/seed.sql` + espelho `docs/01`.
-- [ ] **Passo 2 — Seed Flama**: catálogo Sabiá/Águia (24 blocos) em `supabase/seed.sql` + espelho `docs/01`.
-- [ ] **Passo 3 — Seed Tocha**: catálogo Carneiro/Leão (24 blocos) em `supabase/seed.sql` + espelho `docs/01`.
-- [ ] **Passo 4 — rotuloItem**: reconhecer "Prova do Grau" + spec.
-- [ ] **Passo 5 — Qualidade**: `db reset` + `lint` + `typecheck` + `test` verdes.
-- [ ] **Passo 6 — Docs + checklist**: `docs/03`, `docs/06`, `.agents/checklist.md`.
+- [x] **Passo 1 — Seed Faíscas**: consolidar Frequência (1 seção, 2 blocos) em `supabase/seed.sql` + espelho `docs/01`.
+- [x] **Passo 2 — Seed Flama**: catálogo Sabiá/Águia (24 blocos) em `supabase/seed.sql` + espelho `docs/01`.
+- [x] **Passo 3 — Seed Tocha**: catálogo Carneiro/Leão (24 blocos) em `supabase/seed.sql` + espelho `docs/01`.
+- [x] **Passo 4 — rotuloItem**: reconhecer "Prova do Grau" + spec.
+- [x] **Passo 5 — Qualidade**: `db reset` + `lint` + `typecheck` + `test` verdes (275 testes).
+- [x] **Passo 6 — Docs + checklist**: `docs/03`, `docs/06`, `.agents/checklist.md`.

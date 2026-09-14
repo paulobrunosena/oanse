@@ -65,6 +65,7 @@
 - [x] Clube > Transferências: transferência permanente — Diretor de Clube
 - [x] `server/api/transferencias.post.ts` (transação: update + histórico)
 - [x] Folha Individual do Faíscas: manuais/seções/blocos com itens numerados (data de conclusão), prêmio recebido e observações por manual — Diretor de Clube; rota `/clube/folha-individual` (`docs/06-folha-individual.md`)
+- [x] Folha Individual do Flamas e Tochas: catálogos Sabiá/Águia e Carneiro/Leão (24 blocos cada) via seed; seção Frequência consolidada (1 seção, blocos Igreja/Clube) no Faíscas/Flamas/Tochas; `rotuloItem` reconhece "Prova do Grau" (`docs/07-folha-individual-flama-tocha.md`)
 - [x] Teste: conclusão do bloco libera o prêmio (`blocoConcluido`/`premioHabilitado` + specs de utils/componentes) — decisão do `docs/06` substituiu a geração de pendência em `premios_pendentes` (premiação registra apenas "prêmio recebido + data")
 - [x] Folha de Visitantes: cadastro + 3 visitas
 - [x] Folha de Visitantes: lições da Prova de Ingresso

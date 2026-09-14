@@ -9,8 +9,8 @@
 ```
 Clube (Faíscas)
  └─ Manual (3)        → Saltador (Ano 01) | Caminhante (Ano 02) | Escalador (Ano 03)
-     └─ Seção (6)     → Progresso, Atividades, Crédito-extra,
-                         Frequência na igreja, Frequência no clube, Observações
+     └─ Seção (5)     → Progresso, Atividades, Crédito-extra,
+                         Frequência (Igreja/Clube), Observações
          └─ Bloco      → ex.: "Exercício bíblico 01"  (tem um PRÊMIO + N itens)
              └─ Item   → bolinha numerada (1..N) + data de conclusão
 ```
@@ -133,6 +133,10 @@ Prêmios por bloco: `Distintivo do grau`, `Botão vermelho 01..04`,
 `Botão verde 01..04`, `Botão crédito extra`, `Botão azul`, `Botão amarelo`
 (total: 3 manuais × 12 blocos = 36 blocos).
 
+> Atualizado em docs/07: a Frequência virou **1 seção** (`Frequência`) com 2
+> blocos (`Frequência à Igreja`, `Frequência ao Clube`) para ficar consistente
+> com Flamas e Tochas.
+
 ## 6. Frontend
 
 1. **`src/utils/folhaIndividual.ts`** (lógica pura + spec): tipos normalizados
@@ -203,7 +207,7 @@ refactor genérico só vale se as estruturas forem idênticas; senão, o catálo
 
 - [x] **Passo 1 — Migrations**: `0015_folha_individual.sql` (catálogo + progresso + limpeza do `progresso_manual` legado + grants) e `0016_folha_individual_rls.sql` (RLS). Docs `01`/`02`/`03` atualizados.
 - [x] **Passo 2 — Reset + types**: `npx supabase db reset` sem erros (migrations 0015/0016 aplicadas) e `npx supabase gen types` regenerado (novas tabelas presentes; `progresso_manual` removida).
-- [x] **Passo 3 — Seed**: catálogo do Faísca em `supabase/seed.sql` (3 manuais, 18 seções, 36 blocos, 175 itens; Observações sem blocos) + espelho em `docs/01`; validado com `db reset` e queries (itens por manual: Saltador 51, Caminhante 63, Escalador 61).
+- [x] **Passo 3 — Seed**: catálogo do Faísca em `supabase/seed.sql` (3 manuais, 18 seções, 36 blocos, 175 itens; Observações sem blocos) + espelho em `docs/01`; validado com `db reset` e queries (itens por manual: Saltador 51, Caminhante 63, Escalador 61). Atualizado em docs/07: Frequência consolidada (15 seções, mesmos 36 blocos).
 - [x] **Passo 4 — Lógica pura**: `src/utils/folhaIndividual.ts` (tipos `ManualFolha`/`SecaoFolha`/`BlocoFolha` + `normalizarFolhaIndividual` + `itensConcluidos`/`blocoConcluido`/`premioHabilitado`) e `folhaIndividual.spec.ts` (9 testes); lint/typecheck/test verdes (187 testes).
 - [x] **Passo 5 — Composable**: `useFolhaIndividual.ts` (catálogo em cascata `folha_manuais`→`folha_secoes`→`folha_blocos`, progresso do oansista em `itens`/`premios`/`observacoes` e árvore derivada `folha`; `salvarItem`/`salvarPremio` com upsert por unique e delete quando `data|null`; `salvarObservacao` com upsert por `(oansista, manual)`) e `useFolhaIndividual.spec.ts` (17 testes).
 - [x] **Passo 6 — UI**: componentes `FolhaIndividualSeletor.vue`, `FolhaIndividualManual.vue`, `FolhaIndividualBloco.vue` (bolinha numerada + `InputText type=date`; prêmio liberado com o bloco completo) e `FolhaIndividualObservacoes.vue` (+ specs); `FolhaIndividualView.vue` com `Tabs` por manual (Saltador/Caminhante/Escalador), seleção de criança do clube e escrita dos progressos com `registrado_por`; rota `/clube/folha-individual` (`diretor_geral`/`diretor_clube`) e item "Folha Individual" no grupo "Clube" de `AppMenu.vue`.

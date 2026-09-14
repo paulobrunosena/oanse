@@ -273,13 +273,14 @@ create table folhas_semanais (
 );
 
 -- ----------------------------------------------------------------------------
--- FOLHA DE PROGRESSO INDIVIDUAL (começa pelo clube Faíscas)
+-- FOLHA DE PROGRESSO INDIVIDUAL (Faíscas, Flamas e Tochas)
 -- ----------------------------------------------------------------------------
 -- Catálogo em banco: manual > seção > bloco. Cada bloco tem N itens (as
 -- "bolinhas" numeradas 1..quantidade do manual, sem descrição textual) e um
--- prêmio (premio_nome) ganho ao concluir todos os itens. Manual = Saltador
--- (Ano 01), Caminhante (Ano 02) e Escalador (Ano 03); seções: Progresso,
--- Atividades, Crédito-extra, Frequência na igreja, Frequência no clube e
+-- prêmio (premio_nome) ganho ao concluir todos os itens. Manuais: Faíscas =
+-- Saltador (Ano 01)/Caminhante (Ano 02)/Escalador (Ano 03); Flamas = Sabiá
+-- (Ano 01)/Águia (Ano 02); Tochas = Carneiro (Ano 01)/Leão (Ano 02). Seções:
+-- Progresso, Atividades, Crédito-extra, Frequência (blocos Igreja/Clube) e
 -- Observações (esta sem itens).
 -- Progresso por oansista: data de conclusão por item, data de recebimento do
 -- prêmio e observações livres por manual. Não há pendência automática de prêmio
@@ -288,7 +289,7 @@ create table folhas_semanais (
 create table folha_manuais (
   id         uuid primary key default uuid_generate_v4(),
   clube_id   uuid not null references clubes(id) on delete cascade,
-  nome       text not null,          -- 'Saltador' (Ano 01), 'Caminhante' (Ano 02), 'Escalador' (Ano 03)
+  nome       text not null,          -- ex.: 'Saltador' (Faíscas), 'Sabiá' (Flamas), 'Carneiro' (Tochas)
   ordem      int  not null,
   created_at timestamptz not null default now(),
   unique (clube_id, nome),
@@ -298,7 +299,7 @@ create table folha_manuais (
 create table folha_secoes (
   id        uuid primary key default uuid_generate_v4(),
   manual_id uuid not null references folha_manuais(id) on delete cascade,
-  nome      text not null,           -- Progresso, Atividades, Crédito-extra, Frequência igreja/clube, Observações
+  nome      text not null,           -- Progresso, Atividades, Crédito-extra, Frequência, Observações
   ordem     int  not null,
   tipo      text not null default 'itens' check (tipo in ('itens', 'observacoes')),
   unique (manual_id, ordem),
@@ -308,7 +309,7 @@ create table folha_secoes (
 create table folha_blocos (
   id          uuid primary key default uuid_generate_v4(),
   secao_id    uuid not null references folha_secoes(id) on delete cascade,
-  nome        text not null,         -- 'Trilha do grau', 'Exercício bíblico 01', 'Atividade 01', ...
+  nome        text not null,         -- 'Trilha do grau'/'Prova do Grau', 'Exercício bíblico 01', 'Atividade Missões', ...
   ordem       int  not null,
   quantidade  int  not null check (quantidade > 0),
   premio_nome text not null,         -- 'Botão vermelho 01', 'Distintivo do grau', ...

@@ -92,9 +92,8 @@ begin
     ('Progresso',            1, 'itens'),
     ('Atividades',           2, 'itens'),
     ('Crédito-extra',        3, 'itens'),
-    ('Frequência na igreja', 4, 'itens'),
-    ('Frequência no clube',  5, 'itens'),
-    ('Observações',          6, 'observacoes')
+    ('Frequência',           4, 'itens'),
+    ('Observações',          5, 'observacoes')
   ) as s(nome, ordem, tipo)
   where m.clube_id = v_clube;
 
@@ -112,8 +111,8 @@ begin
       ('Saltador',   'Atividades',            'Atividade 03',         3,  4, 'Botão verde 03'),
       ('Saltador',   'Atividades',            'Atividade 04',         4,  2, 'Botão verde 04'),
       ('Saltador',   'Crédito-extra',         'Crédito extra',        1,  7, 'Botão crédito extra'),
-      ('Saltador',   'Frequência na igreja',  'Frequência na igreja', 1,  2, 'Botão azul'),
-      ('Saltador',   'Frequência no clube',   'Frequência no clube',  1,  4, 'Botão amarelo'),
+      ('Saltador',   'Frequência',            'Frequência à Igreja',  1,  2, 'Botão azul'),
+      ('Saltador',   'Frequência',            'Frequência ao Clube',  2,  4, 'Botão amarelo'),
       -- Caminhante (Ano 02)
       ('Caminhante', 'Progresso',             'Trilha do grau',      1,  6, 'Distintivo do grau'),
       ('Caminhante', 'Progresso',             'Exercício bíblico 01', 2,  6, 'Botão vermelho 01'),
@@ -125,8 +124,8 @@ begin
       ('Caminhante', 'Atividades',            'Atividade 03',         3,  5, 'Botão verde 03'),
       ('Caminhante', 'Atividades',            'Atividade 04',         4,  4, 'Botão verde 04'),
       ('Caminhante', 'Crédito-extra',         'Crédito extra',        1,  7, 'Botão crédito extra'),
-      ('Caminhante', 'Frequência na igreja',  'Frequência na igreja', 1,  2, 'Botão azul'),
-      ('Caminhante', 'Frequência no clube',   'Frequência no clube',  1,  4, 'Botão amarelo'),
+      ('Caminhante', 'Frequência',            'Frequência à Igreja',  1,  2, 'Botão azul'),
+      ('Caminhante', 'Frequência',            'Frequência ao Clube',  2,  4, 'Botão amarelo'),
       -- Escalador (Ano 03)
       ('Escalador',  'Progresso',             'Trilha do grau',      1,  6, 'Distintivo do grau'),
       ('Escalador',  'Progresso',             'Exercício bíblico 01', 2,  6, 'Botão vermelho 01'),
@@ -138,8 +137,142 @@ begin
       ('Escalador',  'Atividades',            'Atividade 03',         3,  5, 'Botão verde 03'),
       ('Escalador',  'Atividades',            'Atividade 04',         4,  4, 'Botão verde 04'),
       ('Escalador',  'Crédito-extra',         'Crédito extra',        1,  7, 'Botão crédito extra'),
-      ('Escalador',  'Frequência na igreja',  'Frequência na igreja', 1,  2, 'Botão azul'),
-      ('Escalador',  'Frequência no clube',   'Frequência no clube',  1,  4, 'Botão amarelo')
+      ('Escalador',  'Frequência',            'Frequência à Igreja',  1,  2, 'Botão azul'),
+      ('Escalador',  'Frequência',            'Frequência ao Clube',  2,  4, 'Botão amarelo')
+    ) as t(manual, secao, bloco, bloco_ordem, quantidade, premio_nome)
+  loop
+    select id into v_manual from folha_manuais where clube_id = v_clube and nome = r.manual;
+    select id into v_secao  from folha_secoes  where manual_id = v_manual and nome = r.secao;
+    insert into folha_blocos (secao_id, nome, ordem, quantidade, premio_nome)
+    values (v_secao, r.bloco, r.bloco_ordem, r.quantidade, r.premio_nome);
+  end loop;
+end $$;
+
+-- ============================================================================
+-- Catálogo da Folha de Progresso Individual — clube Flamas (docs/07)
+-- 2 manuais (Sabiá/Águia) × 12 blocos = 24 blocos.
+-- ============================================================================
+do $$
+declare
+  v_clube  uuid;
+  v_manual uuid;
+  v_secao  uuid;
+  r        record;
+begin
+  select id into v_clube from clubes where slug = 'flamas';
+
+  insert into folha_manuais (clube_id, nome, ordem) values
+    (v_clube, 'Sabiá', 1),
+    (v_clube, 'Águia', 2);
+
+  insert into folha_secoes (manual_id, nome, ordem, tipo)
+  select m.id, s.nome, s.ordem, s.tipo
+  from folha_manuais m
+  cross join (values
+    ('Progresso',            1, 'itens'),
+    ('Atividades',           2, 'itens'),
+    ('Crédito-extra',        3, 'itens'),
+    ('Frequência',           4, 'itens'),
+    ('Observações',          5, 'observacoes')
+  ) as s(nome, ordem, tipo)
+  where m.clube_id = v_clube;
+
+  for r in
+    select *
+    from (values
+      -- Sabiá (Ano 01)
+      ('Sabiá', 'Progresso',       'Prova do Grau',            1,  9, 'Distintivo do grau'),
+      ('Sabiá', 'Progresso',       'Exercício Bíblico 01',     2,  9, 'Botão vermelho 01'),
+      ('Sabiá', 'Progresso',       'Exercício Bíblico 02',     3,  9, 'Botão vermelho 02'),
+      ('Sabiá', 'Progresso',       'Exercício Bíblico 03',     4,  9, 'Botão vermelho 03'),
+      ('Sabiá', 'Progresso',       'Exercício Bíblico 04',     5,  9, 'Botão vermelho 04'),
+      ('Sabiá', 'Atividades',      'Atividade Missões',        1,  4, 'Botão verde 01'),
+      ('Sabiá', 'Atividades',      'Atividade Patriotismo',    2,  2, 'Botão verde 02'),
+      ('Sabiá', 'Atividades',      'Atividade Meio Ambiente',  3,  4, 'Botão verde 03'),
+      ('Sabiá', 'Atividades',      'Atividade Serviços',       4,  3, 'Botão verde 04'),
+      ('Sabiá', 'Crédito-extra',   'Crédito extra',            1,  7, 'Botão crédito extra'),
+      ('Sabiá', 'Frequência',      'Frequência à Igreja',      1,  2, 'Botão azul'),
+      ('Sabiá', 'Frequência',      'Frequência ao Clube',      2,  4, 'Botão amarelo'),
+      -- Águia (Ano 02)
+      ('Águia', 'Progresso',       'Prova do Grau',            1,  9, 'Distintivo do grau'),
+      ('Águia', 'Progresso',       'Exercício Bíblico 01',     2, 10, 'Botão vermelho 01'),
+      ('Águia', 'Progresso',       'Exercício Bíblico 02',     3,  9, 'Botão vermelho 02'),
+      ('Águia', 'Progresso',       'Exercício Bíblico 03',     4, 11, 'Botão vermelho 03'),
+      ('Águia', 'Progresso',       'Exercício Bíblico 04',     5, 11, 'Botão vermelho 04'),
+      ('Águia', 'Atividades',      'Atividade Missões',        1,  4, 'Botão verde 01'),
+      ('Águia', 'Atividades',      'Atividade Patriotismo',    2,  2, 'Botão verde 02'),
+      ('Águia', 'Atividades',      'Atividade Meio Ambiente',  3,  4, 'Botão verde 03'),
+      ('Águia', 'Atividades',      'Atividade Serviços',       4,  3, 'Botão verde 04'),
+      ('Águia', 'Crédito-extra',   'Crédito extra',            1,  7, 'Botão crédito extra'),
+      ('Águia', 'Frequência',      'Frequência à Igreja',      1,  2, 'Botão azul'),
+      ('Águia', 'Frequência',      'Frequência ao Clube',      2,  4, 'Botão amarelo')
+    ) as t(manual, secao, bloco, bloco_ordem, quantidade, premio_nome)
+  loop
+    select id into v_manual from folha_manuais where clube_id = v_clube and nome = r.manual;
+    select id into v_secao  from folha_secoes  where manual_id = v_manual and nome = r.secao;
+    insert into folha_blocos (secao_id, nome, ordem, quantidade, premio_nome)
+    values (v_secao, r.bloco, r.bloco_ordem, r.quantidade, r.premio_nome);
+  end loop;
+end $$;
+
+-- ============================================================================
+-- Catálogo da Folha de Progresso Individual — clube Tochas (docs/07)
+-- 2 manuais (Carneiro/Leão) × 12 blocos = 24 blocos.
+-- ============================================================================
+do $$
+declare
+  v_clube  uuid;
+  v_manual uuid;
+  v_secao  uuid;
+  r        record;
+begin
+  select id into v_clube from clubes where slug = 'tochas';
+
+  insert into folha_manuais (clube_id, nome, ordem) values
+    (v_clube, 'Carneiro', 1),
+    (v_clube, 'Leão',    2);
+
+  insert into folha_secoes (manual_id, nome, ordem, tipo)
+  select m.id, s.nome, s.ordem, s.tipo
+  from folha_manuais m
+  cross join (values
+    ('Progresso',            1, 'itens'),
+    ('Atividades',           2, 'itens'),
+    ('Crédito-extra',        3, 'itens'),
+    ('Frequência',           4, 'itens'),
+    ('Observações',          5, 'observacoes')
+  ) as s(nome, ordem, tipo)
+  where m.clube_id = v_clube;
+
+  for r in
+    select *
+    from (values
+      -- Carneiro (Ano 01)
+      ('Carneiro', 'Progresso',       'Prova do Grau',            1, 12, 'Distintivo do grau'),
+      ('Carneiro', 'Progresso',       'Exercício Bíblico 01',     2, 11, 'Botão vermelho 01'),
+      ('Carneiro', 'Progresso',       'Exercício Bíblico 02',     3, 11, 'Botão vermelho 02'),
+      ('Carneiro', 'Progresso',       'Exercício Bíblico 03',     4, 12, 'Botão vermelho 03'),
+      ('Carneiro', 'Progresso',       'Exercício Bíblico 04',     5, 11, 'Botão vermelho 04'),
+      ('Carneiro', 'Atividades',      'Atividade Missões',        1,  4, 'Botão verde 01'),
+      ('Carneiro', 'Atividades',      'Atividade Patriotismo',    2,  3, 'Botão verde 02'),
+      ('Carneiro', 'Atividades',      'Atividade Meio Ambiente',  3,  4, 'Botão verde 03'),
+      ('Carneiro', 'Atividades',      'Atividade Serviços',       4,  3, 'Botão verde 04'),
+      ('Carneiro', 'Crédito-extra',   'Crédito extra',            1,  7, 'Botão crédito extra'),
+      ('Carneiro', 'Frequência',      'Frequência à Igreja',      1,  2, 'Botão azul'),
+      ('Carneiro', 'Frequência',      'Frequência ao Clube',      2,  4, 'Botão amarelo'),
+      -- Leão (Ano 02)
+      ('Leão', 'Progresso',       'Prova do Grau',            1, 11, 'Distintivo do grau'),
+      ('Leão', 'Progresso',       'Exercício Bíblico 01',     2, 13, 'Botão vermelho 01'),
+      ('Leão', 'Progresso',       'Exercício Bíblico 02',     3, 11, 'Botão vermelho 02'),
+      ('Leão', 'Progresso',       'Exercício Bíblico 03',     4, 11, 'Botão vermelho 03'),
+      ('Leão', 'Progresso',       'Exercício Bíblico 04',     5, 13, 'Botão vermelho 04'),
+      ('Leão', 'Atividades',      'Atividade Missões',        1,  4, 'Botão verde 01'),
+      ('Leão', 'Atividades',      'Atividade Patriotismo',    2,  3, 'Botão verde 02'),
+      ('Leão', 'Atividades',      'Atividade Meio Ambiente',  3,  4, 'Botão verde 03'),
+      ('Leão', 'Atividades',      'Atividade Serviços',       4,  3, 'Botão verde 04'),
+      ('Leão', 'Crédito-extra',   'Crédito extra',            1,  7, 'Botão crédito extra'),
+      ('Leão', 'Frequência',      'Frequência à Igreja',      1,  2, 'Botão azul'),
+      ('Leão', 'Frequência',      'Frequência ao Clube',      2,  4, 'Botão amarelo')
     ) as t(manual, secao, bloco, bloco_ordem, quantidade, premio_nome)
   loop
     select id into v_manual from folha_manuais where clube_id = v_clube and nome = r.manual;
