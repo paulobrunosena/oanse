@@ -158,11 +158,14 @@ Prêmios por bloco: `Distintivo do grau`, `Botão vermelho 01..04`,
    - `FolhaIndividualBloco.vue` (+ spec): itens numerados (descrição derivada do
      nome do bloco, ex. "Grau 1"/"Exercício 1"/"Atividade 1") + `InputText
      type=date`, e linha do prêmio (nome + data, habilitada ao concluir o bloco).
-   - `FolhaIndividualManual.vue`: agrupa seções/blocos de um manual +
-     `FolhaIndividualObservacoes.vue` (textarea).
+   - `FolhaIndividualManual.vue`: agrupa as seções de um manual em um
+     `Accordion` (PrimeVue, `multiple`, primeira seção aberta por padrão) com a
+     contagem de itens concluídos por seção no cabeçalho (`concluídos/total`,
+     ex. "Progresso 12/24") + `FolhaIndividualObservacoes.vue` (textarea).
    - `FolhaIndividualSeletor.vue`: seletor de oansista do clube.
 4. **`src/views/clube/FolhaIndividualView.vue`**: seleção de oansista +
-   `Tabs`/`Accordion` por manual (Saltador/Caminhante/Escalador).
+   `Tabs` por manual (Saltador/Caminhante/Escalador); dentro de cada manual, as
+   seções ficam em `Accordion` (via `FolhaIndividualManual`).
 5. **Rota + menu**:
    - `router/index.ts`: `/clube/folha-individual` →
      `meta.roles: ['diretor_geral', 'diretor_clube', 'lider']`. O Diretor (geral
@@ -217,3 +220,4 @@ refactor genérico só vale se as estruturas forem idênticas; senão, o catálo
 - [x] **Passo 7 — Qualidade**: `npm run lint`, `npm run typecheck` e `npm run test` verdes (236 testes, 39 arquivos).
 - [x] **Passo 8 — Docs finais + checklist**: `docs/03-estrutura.md` e `.agents/checklist.md` atualizados.
 - [x] **Passo 9 — Acesso do Líder**: rota `meta.roles` ganha `lider`; `AppMenu.vue` mostra "Folha Individual" no grupo "Líder"; `FolhaIndividualView.vue` escopa os oansistas por `turma_id` para líder (turma titular via `turmas.lider_id = user.sub`), mantendo o escopo por clube para diretores. RLS já autoriza `fn_lider_da_turma` (sem migration). 2 specs novos (líder com/sem turma); 277 testes verdes.
+- [x] **Passo 10 — Accordion por seção**: `FolhaIndividualManual.vue` troca as seções empilhadas por `Accordion` (`multiple`, primeira seção aberta) com contagem de itens concluídos no cabeçalho (`secaoItensConcluidos`/`secaoTotalItens` em `utils/folhaIndividual.ts`). 4 specs de utils + 3 specs do componente; 284 testes verdes.

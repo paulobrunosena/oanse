@@ -129,6 +129,16 @@ export function itensConcluidos(bloco: BlocoFolha): number {
   return bloco.itens.filter(item => item.data_conclusao != null).length
 }
 
+/** Total de itens concluídos em todos os blocos de uma seção. */
+export function secaoItensConcluidos(secao: SecaoFolha): number {
+  return secao.blocos.reduce((total, bloco) => total + itensConcluidos(bloco), 0)
+}
+
+/** Total de itens (abertos + concluídos) em todos os blocos de uma seção. */
+export function secaoTotalItens(secao: SecaoFolha): number {
+  return secao.blocos.reduce((total, bloco) => total + bloco.quantidade, 0)
+}
+
 /** Bloco concluído = todos os N itens com data de conclusão. */
 export function blocoConcluido(bloco: BlocoFolha): boolean {
   return bloco.quantidade > 0 && itensConcluidos(bloco) === bloco.quantidade

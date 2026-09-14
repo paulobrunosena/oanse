@@ -6,12 +6,15 @@ import {
   normalizarFolhaIndividual,
   premioHabilitado,
   rotuloItem,
+  secaoItensConcluidos,
+  secaoTotalItens,
   type BlocoFolha,
   type BlocoFolhaRow,
   type ItemProgressoFolhaRow,
   type ManualFolhaRow,
   type ObservacaoFolhaRow,
   type PremioProgressoFolhaRow,
+  type SecaoFolha,
   type SecaoFolhaRow,
 } from './folhaIndividual'
 
@@ -199,6 +202,60 @@ describe('blocoConcluido', () => {
   it('vale para bloco de 1 item', () => {
     expect(blocoConcluido(blocoFolha({ quantidade: 1, itens: [{ item_num: 1, data_conclusao: '2026-09-01' }] }))).toBe(true)
     expect(blocoConcluido(blocoFolha({ quantidade: 1, itens: [] }))).toBe(false)
+  })
+})
+
+describe('secaoItensConcluidos', () => {
+  it('soma os itens concluídos de todos os blocos da seção', () => {
+    const secao: SecaoFolha = {
+      id: 's1',
+      nome: 'Progresso',
+      ordem: 1,
+      tipo: 'itens',
+      blocos: [
+        blocoFolha({
+          itens: [
+            { item_num: 1, data_conclusao: '2026-09-01' },
+            { item_num: 2, data_conclusao: null },
+          ],
+        }),
+        blocoFolha({
+          quantidade: 3,
+          itens: [
+            { item_num: 1, data_conclusao: '2026-09-01' },
+            { item_num: 2, data_conclusao: '2026-09-02' },
+            { item_num: 3, data_conclusao: null },
+          ],
+        }),
+      ],
+    }
+    expect(secaoItensConcluidos(secao)).toBe(3)
+  })
+
+  it('retorna 0 em seção de observações (sem blocos)', () => {
+    const secao: SecaoFolha = { id: 's2', nome: 'Observações', ordem: 2, tipo: 'observacoes', blocos: [] }
+    expect(secaoItensConcluidos(secao)).toBe(0)
+  })
+})
+
+describe('secaoTotalItens', () => {
+  it('soma a quantidade de itens de todos os blocos da seção', () => {
+    const secao: SecaoFolha = {
+      id: 's1',
+      nome: 'Progresso',
+      ordem: 1,
+      tipo: 'itens',
+      blocos: [
+        blocoFolha({ quantidade: 2 }),
+        blocoFolha({ quantidade: 3 }),
+      ],
+    }
+    expect(secaoTotalItens(secao)).toBe(5)
+  })
+
+  it('retorna 0 em seção de observações (sem blocos)', () => {
+    const secao: SecaoFolha = { id: 's2', nome: 'Observações', ordem: 2, tipo: 'observacoes', blocos: [] }
+    expect(secaoTotalItens(secao)).toBe(0)
   })
 })
 

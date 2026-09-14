@@ -27,6 +27,24 @@ const MANUAL: ManualFolha = {
 }
 
 const stubs = {
+  Accordion: {
+    name: 'Accordion',
+    props: { value: [String, Array], multiple: Boolean },
+    template: '<div class="accordion"><slot /></div>',
+  },
+  AccordionPanel: {
+    name: 'AccordionPanel',
+    props: ['value'],
+    template: '<div class="panel" :data-value="value"><slot /></div>',
+  },
+  AccordionHeader: {
+    name: 'AccordionHeader',
+    template: '<div class="header"><slot /></div>',
+  },
+  AccordionContent: {
+    name: 'AccordionContent',
+    template: '<div class="content"><slot /></div>',
+  },
   FolhaIndividualBloco: {
     name: 'FolhaIndividualBloco',
     props: ['bloco', 'salvandoItem', 'salvandoPremio'],
@@ -112,5 +130,42 @@ describe('FolhaIndividualManual', () => {
     const blocos = wrapper.findAll('.bloco')
     expect(blocos[0]!.findComponent({ name: 'FolhaIndividualBloco' }).props('salvandoPremio')).toBe(true)
     expect(blocos[1]!.findComponent({ name: 'FolhaIndividualBloco' }).props('salvandoPremio')).toBe(false)
+  })
+
+  it('inicia com a primeira seção aberta e permite abrir várias ao mesmo tempo', () => {
+    const wrapper = mount(FolhaIndividualManual, { props: props(), global: { stubs } })
+
+    const accordion = wrapper.findComponent({ name: 'Accordion' })
+    expect(accordion.props('value')).toEqual(['s1'])
+    expect(accordion.props('multiple')).toBe(true)
+  })
+
+  it('mostra a contagem de itens concluídos no cabeçalho das seções de itens', () => {
+    const wrapper = mount(FolhaIndividualManual, { props: props(), global: { stubs } })
+
+    const contagens = wrapper.findAll('.secao-contagem')
+    expect(contagens).toHaveLength(1)
+    expect(contagens[0]!.text()).toBe('0/2')
+  })
+
+  it('reflete os itens concluídos na contagem do cabeçalho', () => {
+    const manual: ManualFolha = {
+      ...MANUAL,
+      secoes: [
+        {
+          id: 's1',
+          nome: 'Progresso',
+          ordem: 1,
+          tipo: 'itens',
+          blocos: [
+            { ...bloco('b1', 'Grau'), itens: [{ item_num: 1, data_conclusao: '2026-09-01' }] },
+            { ...bloco('b2', 'Atividades'), itens: [{ item_num: 1, data_conclusao: null }] },
+          ],
+        },
+      ],
+    }
+    const wrapper = mount(FolhaIndividualManual, { props: props({ manual }), global: { stubs } })
+
+    expect(wrapper.find('.secao-contagem').text()).toBe('1/2')
   })
 })

@@ -1,7 +1,8 @@
 <script setup lang="ts">
+import { ref } from 'vue'
 import FolhaIndividualBloco from './FolhaIndividualBloco.vue'
 import FolhaIndividualObservacoes from './FolhaIndividualObservacoes.vue'
-import type { ManualFolha } from '@/utils/folhaIndividual'
+import { secaoItensConcluidos, secaoTotalItens, type ManualFolha } from '@/utils/folhaIndividual'
 
 const props = defineProps<{
   manual: ManualFolha
@@ -16,6 +17,9 @@ const emit = defineEmits<{
   'salvar-observacao': [manualId: string, texto: string]
 }>()
 
+/** Seções abertas; inicia com a primeira seção do manual expandida. */
+const abertas = ref<string[]>(props.manual.secoes.length ? [props.manual.secoes[0]!.id] : [])
+
 /** Número do item em salvamento dentro do bloco (chave `blocoId:itemNum`). */
 function itemSalvandoEm(blocoId: string): number | null {
   const prefixo = `${blocoId}:`
@@ -25,37 +29,52 @@ function itemSalvandoEm(blocoId: string): number | null {
 </script>
 
 <template>
-  <div class="flex flex-col gap-6">
-    <section
+  <Accordion
+    v-model:value="abertas"
+    multiple
+    class="flex flex-col gap-3"
+  >
+    <AccordionPanel
       v-for="secao in manual.secoes"
       :key="secao.id"
-      class="flex flex-col gap-3"
+      :value="secao.id"
     >
-      <h3 class="text-xs font-semibold uppercase tracking-wide text-surface-500">
-        {{ secao.nome }}
-      </h3>
+      <AccordionHeader>
+        <span class="flex items-center gap-2">
+          <span>{{ secao.nome }}</span>
+          <span
+            v-if="secao.tipo === 'itens'"
+            class="secao-contagem text-xs text-surface-500"
+          >
+            {{ secaoItensConcluidos(secao) }}/{{ secaoTotalItens(secao) }}
+          </span>
+        </span>
+      </AccordionHeader>
+      <AccordionContent>
+        <div class="flex flex-col gap-3">
+          <FolhaIndividualObservacoes
+            v-if="secao.tipo === 'observacoes'"
+            :texto="manual.observacoes"
+            :salvando="salvandoObservacao"
+            @salvar="texto => emit('salvar-observacao', manual.id, texto)"
+          />
 
-      <FolhaIndividualObservacoes
-        v-if="secao.tipo === 'observacoes'"
-        :texto="manual.observacoes"
-        :salvando="salvandoObservacao"
-        @salvar="texto => emit('salvar-observacao', manual.id, texto)"
-      />
-
-      <div
-        v-else
-        class="grid grid-cols-1 gap-3 lg:grid-cols-2"
-      >
-        <FolhaIndividualBloco
-          v-for="bloco in secao.blocos"
-          :key="bloco.id"
-          :bloco="bloco"
-          :salvando-item="itemSalvandoEm(bloco.id)"
-          :salvando-premio="salvandoPremio === bloco.id"
-          @salvar-item="(itemNum, data) => emit('salvar-item', bloco.id, itemNum, data)"
-          @salvar-premio="data => emit('salvar-premio', bloco.id, data)"
-        />
-      </div>
-    </section>
-  </div>
+          <div
+            v-else
+            class="grid grid-cols-1 gap-3 lg:grid-cols-2"
+          >
+            <FolhaIndividualBloco
+              v-for="bloco in secao.blocos"
+              :key="bloco.id"
+              :bloco="bloco"
+              :salvando-item="itemSalvandoEm(bloco.id)"
+              :salvando-premio="salvandoPremio === bloco.id"
+              @salvar-item="(itemNum, data) => emit('salvar-item', bloco.id, itemNum, data)"
+              @salvar-premio="data => emit('salvar-premio', bloco.id, data)"
+            />
+          </div>
+        </div>
+      </AccordionContent>
+    </AccordionPanel>
+  </Accordion>
 </template>
