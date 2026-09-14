@@ -1465,6 +1465,29 @@ export type Database = {
       fn_diretor_da_turma: { Args: { p_turma_id: string }; Returns: boolean }
       fn_diretor_do_clube: { Args: { p_clube_id: string }; Returns: boolean }
       fn_lider_da_turma: { Args: { p_turma_id: string }; Returns: boolean }
+      fn_matricular_visitante: {
+        Args: { p_turma_id?: string; p_visitante_id: string }
+        Returns: {
+          clube_id: string
+          contato: string | null
+          created_at: string
+          data_matricula: string
+          data_nascimento: string
+          id: string
+          nome: string
+          observacoes: string | null
+          responsavel: string | null
+          status: Database["public"]["Enums"]["status_oansista"]
+          turma_id: string | null
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "oansistas"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       fn_perfil: {
         Args: never
         Returns: {

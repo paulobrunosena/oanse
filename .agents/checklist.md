@@ -66,9 +66,9 @@
 - [x] `server/api/transferencias.post.ts` (transação: update + histórico)
 - [x] Folha Individual do Faíscas: manuais/seções/blocos com itens numerados (data de conclusão), prêmio recebido e observações por manual — Diretor de Clube; rota `/clube/folha-individual` (`docs/06-folha-individual.md`)
 - [x] Teste: conclusão do bloco libera o prêmio (`blocoConcluido`/`premioHabilitado` + specs de utils/componentes) — decisão do `docs/06` substituiu a geração de pendência em `premios_pendentes` (premiação registra apenas "prêmio recebido + data")
-- [ ] Folha de Visitantes: cadastro + 3 visitas
-- [ ] Folha de Visitantes: lições da Prova de Ingresso
-- [ ] Ação "matricular": converte visitante em oansista
+- [x] Folha de Visitantes: cadastro + 3 visitas
+- [x] Folha de Visitantes: lições da Prova de Ingresso
+- [x] Ação "matricular": converte visitante em oansista (RPC `fn_matricular_visitante`, migration 0017; autorização diretor_geral/diretor_clube validada dentro da função — smoke test local: diretor matricula OK, líder bloqueado)
 - [x] Ranking do sábado por clube (pódio via `fn_ranking_do_encontro` + `RankingView`)
 - [ ] E2E: fluxo completo de um sábado simulado
 

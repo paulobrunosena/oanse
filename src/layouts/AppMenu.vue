@@ -40,6 +40,7 @@ const model = computed<MenuItem[]>(() => {
         { label: 'Líderes', icon: 'pi pi-fw pi-id-card', to: '/clube/lideres' },
         { label: 'Oansistas', icon: 'pi pi-fw pi-heart', to: '/clube/oansistas' },
         { label: 'Folha Individual', icon: 'pi pi-fw pi-list-check', to: '/clube/folha-individual' },
+        { label: 'Visitantes', icon: 'pi pi-fw pi-user-plus', to: '/clube/visitantes' },
         { label: 'Remanejamentos', icon: 'pi pi-fw pi-arrows-h', to: '/clube/remanejamentos' },
         { label: 'Transferências', icon: 'pi pi-fw pi-arrow-right-arrow-left', to: '/clube/transferencias' },
         { label: 'Ranking', icon: 'pi pi-fw pi-trophy', to: '/clube/ranking' },
@@ -63,6 +64,7 @@ const model = computed<MenuItem[]>(() => {
       items: [
         { label: 'Chamada', icon: 'pi pi-fw pi-check-square', to: '/chamada' },
         { label: 'Folha Semanal', icon: 'pi pi-fw pi-book', to: '/folha-semanal' },
+        { label: 'Visitantes', icon: 'pi pi-fw pi-user-plus', to: '/clube/visitantes' },
       ],
     })
   }

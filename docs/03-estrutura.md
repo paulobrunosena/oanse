@@ -48,7 +48,8 @@ oanse/
 │   │   ├── 0013_folha_pontos_jogos.sql    # folha: coluna posicao_jogos + recálculo por encontro (cor/posição/pontos nas folhas)
 │   │   ├── 0014_folha_pontos_por_colocacao.sql # folha: pontos dos jogos por colocação da equipe (jogo_1_lugar..jogo_4_lugar)
 │   │   ├── 0015_folha_individual.sql      # catálogo (manuais/seções/blocos) + progresso + limpeza do progresso_manual legado
-│   │   └── 0016_folha_individual_rls.sql  # RLS das tabelas da Folha Individual
+│   │   ├── 0016_folha_individual_rls.sql  # RLS das tabelas da Folha Individual
+│   │   └── 0017_matricular_visitante.sql  # RPC fn_matricular_visitante (converte visitante em oansista)
 │   └── seed.sql                  # clubes, itens de pontuação, config de jogos, catálogo, usuários teste
 │
 ├── public/                       # assets estáticos servidos na raiz (/)
@@ -86,10 +87,11 @@ oanse/
 │   │   ├── useFolhaIndividual.ts # catálogo da Folha Individual (clube) + progresso do oansista (itens/prêmios/observações) + upsert/delete por unique (+ spec.ts)
 │   │   ├── useRemanejamentos.ts  # substituição temporária de turma (+ spec.ts)
 │   │   ├── useTransferencias.ts  # transferência permanente (RPC 0006) (+ spec.ts)
+│   │   ├── useVisitantes.ts      # Folha de Visitantes: cadastro, 3 visitas, lições da Prova de Ingresso e matrícula (RPC 0017) (+ spec.ts)
 │   │   ├── useJogos.ts           # eventos de jogos do sábado: criação, cores, oansistas, rodadas, resultados, finalizar, ranking + catálogo (+ spec.ts)
 │   │   ├── useRanking.ts         # ranking do sábado via RPC fn_ranking_do_encontro + geral (+ spec.ts)
 │   │   └── useToast.ts           # fachada do Toast do PrimeVue (api tipo Nuxt UI)
-│   │   # (planejado) useTurma, useVisitantes,
+│   │   # (planejado) useTurma,
 │   │   # usePendencias (realtime)
 │   │
 │   ├── router/
@@ -120,7 +122,8 @@ oanse/
 │   │   │   ├── JogosView.vue             # Líder de Jogos/Diretor Geral (stepper PrimeVue em 3 etapas: configuração → rodadas → placar final; vários eventos por sábado)
 │   │   │   ├── JogosCatalogoView.vue     # Líder de Jogos/Diretor Geral/Diretor de Clube (CRUD de nomes de jogos por clube)
 │   │   │   ├── RankingView.vue           # Diretor de Clube/Diretor Geral (ranking do sábado)
-│   │   │   └── FolhaIndividualView.vue   # Diretor de Clube (Folha Individual: manuais/seções/blocos + progresso da criança) — rota /clube/folha-individual
+│   │   │   ├── FolhaIndividualView.vue   # Diretor de Clube (Folha Individual: manuais/seções/blocos + progresso da criança) — rota /clube/folha-individual
+│   │   │   └── VisitantesView.vue        # Diretor de Clube/Líder (Folha de Visitantes: cadastro, 3 visitas, prova de ingresso e matrícula) — rota /clube/visitantes
 │   │   └── admin/
 │   │       ├── UsuariosView.vue          # Diretor Geral
 │   │       ├── ClubesView.vue            # Diretor Geral
@@ -140,7 +143,9 @@ oanse/
 │   │       ├── FolhaIndividualSeletor.vue  # seletor de oansista do clube (Select com busca) (+ spec.ts)
 │   │       ├── FolhaIndividualManual.vue   # seções/blocos de um manual + seção de observações (+ spec.ts)
 │   │       ├── FolhaIndividualBloco.vue    # itens numerados (bolinha + InputText date) + linha do prêmio (liberada com o bloco completo) (+ spec.ts)
-│   │       └── FolhaIndividualObservacoes.vue  # textarea de observações por manual (upsert) (+ spec.ts)
+│   │       ├── FolhaIndividualObservacoes.vue  # textarea de observações por manual (upsert) (+ spec.ts)
+│   │       ├── VisitaTracker.vue       # acompanhamento das 3 visitas (data + presente) (+ spec.ts)
+│   │       └── ProvaIngressoCard.vue   # lições da Prova de Ingresso (10 lições numeradas) (+ spec.ts)
 │   │   └── jogos/
 │   │       ├── EventoJogosCard.vue   # etapa 1 do stepper: clubes, cores, oansistas por cor (nome na cor do clube, removível/trocável)
 │   │       ├── EventoJogosCard.spec.ts
@@ -149,7 +154,7 @@ oanse/
 │   │       ├── RankingCoresCard.vue  # etapa 3 do stepper: pódio das cores do sábado (anúncio final) — finalizar/reabrir/excluir ficam na view
 │   │       └── RankingCoresCard.spec.ts
 │   │   # (planejado) ui/AppSidebar, PageHeader, DataTable
-│   │   # (planejado) folha/VisitanteCard, VisitaTracker
+│   │   # (planejado) folha/VisitanteCard
 │   │   # (planejado) premiacoes/
 │   │
 │   ├── types/

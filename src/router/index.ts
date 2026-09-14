@@ -25,6 +25,7 @@ const rotas: RouteRecordRaw[] = [
       { path: 'clube/lideres', name: 'clube-lideres', component: () => import('@/views/clube/LideresView.vue'), meta: { roles: ['diretor_geral', 'diretor_clube'] } },
       { path: 'clube/oansistas', name: 'clube-oansistas', component: () => import('@/views/clube/OansistasView.vue'), meta: { roles: ['diretor_geral', 'diretor_clube'] } },
       { path: 'clube/folha-individual', name: 'clube-folha-individual', component: () => import('@/views/clube/FolhaIndividualView.vue'), meta: { roles: ['diretor_geral', 'diretor_clube'] } },
+      { path: 'clube/visitantes', name: 'clube-visitantes', component: () => import('@/views/clube/VisitantesView.vue'), meta: { roles: ['diretor_geral', 'diretor_clube', 'lider'] } },
       { path: 'clube/remanejamentos', name: 'clube-remanejamentos', component: () => import('@/views/clube/RemanejamentosView.vue'), meta: { roles: ['diretor_clube'] } },
       { path: 'clube/transferencias', name: 'clube-transferencias', component: () => import('@/views/clube/TransferenciasView.vue'), meta: { roles: ['diretor_clube'] } },
       { path: 'clube/jogos', name: 'clube-jogos', component: () => import('@/views/clube/JogosView.vue'), meta: { roles: ['diretor_geral', 'lider_jogos'] } },
