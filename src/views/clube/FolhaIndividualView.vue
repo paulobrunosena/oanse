@@ -23,6 +23,7 @@ const salvandoObservacao = ref(false)
 const carregandoInicial = ref(true)
 
 const clubeId = computed(() => profile.value?.clube_id ?? null)
+const isLider = computed(() => profile.value?.role === 'lider')
 
 watch(folha, (manuais) => {
   if (!manuais.length) {
@@ -36,9 +37,30 @@ function mensagem(e: unknown): string {
   return (e as { message?: string })?.message ?? 'Tente novamente'
 }
 
+async function carregarTurmaDoLider(): Promise<string | null> {
+  if (!user.value?.sub) return null
+  const { data } = await supabase
+    .from('turmas')
+    .select('id')
+    .eq('lider_id', user.value.sub)
+    .eq('ativo', true)
+    .maybeSingle()
+  return data?.id ?? null
+}
+
 async function carregarOansistas() {
-  if (!clubeId.value) {
-    oansistas.value = []
+  oansistas.value = []
+  if (!clubeId.value) return
+  if (isLider.value) {
+    const turmaId = await carregarTurmaDoLider()
+    if (!turmaId) return
+    const { data } = await supabase
+      .from('oansistas')
+      .select('id, nome')
+      .eq('turma_id', turmaId)
+      .eq('status', 'ativo')
+      .order('nome')
+    oansistas.value = data ?? []
     return
   }
   const { data } = await supabase
@@ -164,7 +186,7 @@ onMounted(carregarTudo)
     >
       <template #content>
         <p class="text-surface-500">
-          Nenhuma criança ativa neste clube.
+          {{ isLider ? 'Nenhuma criança ativa na sua turma.' : 'Nenhuma criança ativa neste clube.' }}
         </p>
       </template>
     </Card>

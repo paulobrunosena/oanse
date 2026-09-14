@@ -165,9 +165,12 @@ Prêmios por bloco: `Distintivo do grau`, `Botão vermelho 01..04`,
    `Tabs`/`Accordion` por manual (Saltador/Caminhante/Escalador).
 5. **Rota + menu**:
    - `router/index.ts`: `/clube/folha-individual` →
-     `meta.roles: ['diretor_geral', 'diretor_clube']` (v1 para o Diretor de
-     Clube; entrada do Líder depois, reusando composable/view com escopo por turma).
-   - `AppMenu.vue`: item "Folha Individual" no grupo "Clube".
+     `meta.roles: ['diretor_geral', 'diretor_clube', 'lider']`. O Diretor (geral
+     ou de clube) vê todas as crianças ativas do clube; o **Líder** vê apenas as
+     crianças da sua turma (escopo por `turma_id`, usando a turma titular em
+     `turmas.lider_id = user.sub`).
+   - `AppMenu.vue`: item "Folha Individual" nos grupos "Clube" (Diretor) e
+     "Líder".
 
 ## 7. Tipos
 
@@ -213,3 +216,4 @@ refactor genérico só vale se as estruturas forem idênticas; senão, o catálo
 - [x] **Passo 6 — UI**: componentes `FolhaIndividualSeletor.vue`, `FolhaIndividualManual.vue`, `FolhaIndividualBloco.vue` (bolinha numerada + `InputText type=date`; prêmio liberado com o bloco completo) e `FolhaIndividualObservacoes.vue` (+ specs); `FolhaIndividualView.vue` com `Tabs` por manual (Saltador/Caminhante/Escalador), seleção de criança do clube e escrita dos progressos com `registrado_por`; rota `/clube/folha-individual` (`diretor_geral`/`diretor_clube`) e item "Folha Individual" no grupo "Clube" de `AppMenu.vue`.
 - [x] **Passo 7 — Qualidade**: `npm run lint`, `npm run typecheck` e `npm run test` verdes (236 testes, 39 arquivos).
 - [x] **Passo 8 — Docs finais + checklist**: `docs/03-estrutura.md` e `.agents/checklist.md` atualizados.
+- [x] **Passo 9 — Acesso do Líder**: rota `meta.roles` ganha `lider`; `AppMenu.vue` mostra "Folha Individual" no grupo "Líder"; `FolhaIndividualView.vue` escopa os oansistas por `turma_id` para líder (turma titular via `turmas.lider_id = user.sub`), mantendo o escopo por clube para diretores. RLS já autoriza `fn_lider_da_turma` (sem migration). 2 specs novos (líder com/sem turma); 277 testes verdes.

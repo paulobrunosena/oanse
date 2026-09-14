@@ -64,6 +64,7 @@ const model = computed<MenuItem[]>(() => {
       items: [
         { label: 'Chamada', icon: 'pi pi-fw pi-check-square', to: '/chamada' },
         { label: 'Folha Semanal', icon: 'pi pi-fw pi-book', to: '/folha-semanal' },
+        { label: 'Folha Individual', icon: 'pi pi-fw pi-list-check', to: '/clube/folha-individual' },
         { label: 'Visitantes', icon: 'pi pi-fw pi-user-plus', to: '/clube/visitantes' },
       ],
     })

@@ -140,6 +140,51 @@ describe('FolhaIndividualView', () => {
     expect(wrapper.text()).toContain('Nenhuma criança ativa neste clube')
   })
 
+  it('líder carrega apenas os oansistas da sua turma', async () => {
+    const store = useAuthStore()
+    store.setUser({ sub: 'u1' })
+    store.profile = { ...PERFIL, role: 'lider' } as unknown as Profile
+
+    mocks.supabase = clienteSupabase({
+      turmas: () => builder({ id: 't1' }),
+      oansistas: () => builder(OANSISTAS),
+      folha_manuais: () => builder(MANUAIS),
+      folha_secoes: () => builder(SECOES),
+      folha_blocos: () => builder(BLOCOS),
+      folha_item_progresso: () => builder([]),
+      folha_premio_progresso: () => builder([]),
+      folha_observacoes: () => builder([]),
+    })
+
+    const wrapper = mount(FolhaIndividualView, { global: { stubs } })
+    await flushPromises()
+
+    expect(mocks.supabase.builderDe('turmas').eq).toHaveBeenCalledWith('lider_id', 'u1')
+    expect(mocks.supabase.builderDe('oansistas').eq).toHaveBeenCalledWith('turma_id', 't1')
+    expect(mocks.supabase.builderDe('oansistas').eq).not.toHaveBeenCalledWith('clube_id', 'c1')
+    expect(wrapper.findAll('.manual')).toHaveLength(2)
+  })
+
+  it('líder sem turma vê o aviso de turma vazia', async () => {
+    const store = useAuthStore()
+    store.setUser({ sub: 'u1' })
+    store.profile = { ...PERFIL, role: 'lider' } as unknown as Profile
+
+    mocks.supabase = clienteSupabase({
+      turmas: () => builder(null),
+      oansistas: () => builder([]),
+      folha_manuais: () => builder(MANUAIS),
+      folha_secoes: () => builder(SECOES),
+      folha_blocos: () => builder(BLOCOS),
+    })
+
+    const wrapper = mount(FolhaIndividualView, { global: { stubs } })
+    await flushPromises()
+
+    expect(wrapper.text()).toContain('Nenhuma criança ativa na sua turma.')
+    expect(mocks.supabase.builderDe('oansistas').eq).not.toHaveBeenCalledWith('clube_id', 'c1')
+  })
+
   it('encaminha salvar-item para o composable com o registrante', async () => {
     const bItens = builder<unknown>([])
     bItens.singleData = ITEM_PROGRESSO
