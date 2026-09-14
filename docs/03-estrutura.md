@@ -24,7 +24,8 @@ oanse/
 │   ├── 03-estrutura.md           # este arquivo
 │   ├── 04-roadmap.md             # roteiro em fases
 │   ├── 05-migracao-vue-primevue.md # plano + estado da migração Nuxt → Vue + PrimeVue
-│   └── 06-folha-individual.md    # plano + progresso da Folha Individual (clube Faíscas)
+│   ├── 06-folha-individual.md    # plano + progresso da Folha Individual (clube Faíscas)
+│   └── 07-folha-individual-flama-tocha.md # plano da Folha Individual (Flama e Tocha)
 │
 ├── .agents/checklist.md          # progresso de implementação (marcar [x])
 │
