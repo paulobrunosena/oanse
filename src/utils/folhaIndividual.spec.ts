@@ -233,8 +233,12 @@ describe('rotuloItem', () => {
     expect(rotuloItem('Trilha do grau', 2)).toBe('Grau 2')
   })
 
+  it('encurta "Prova do Grau" para "Grau"', () => {
+    expect(rotuloItem('Prova do Grau', 1)).toBe('Grau 1')
+  })
+
   it('mantém o nome do bloco quando não há sufixo numérico', () => {
     expect(rotuloItem('Crédito extra', 5)).toBe('Crédito extra 5')
-    expect(rotuloItem('Frequência na igreja', 1)).toBe('Frequência na igreja 1')
+    expect(rotuloItem('Frequência à Igreja', 1)).toBe('Frequência à Igreja 1')
   })
 })

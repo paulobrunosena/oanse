@@ -145,10 +145,10 @@ export function premioHabilitado(bloco: BlocoFolha): boolean {
 /**
  * Rótulo curto do item derivado do nome do bloco (ex.: "Exercício bíblico 3").
  * O sufixo numérico do bloco ("Exercício bíblico 01") vira o número do item e
- * "Trilha do grau" é encurtado para "Grau" (nomes das bolinhas do manual).
+ * "Trilha do grau"/"Prova do Grau" são encurtados para "Grau" (nomes das bolinhas do manual).
  */
 export function rotuloItem(nomeBloco: string, itemNum: number): string {
   const semSufixo = nomeBloco.replace(/\s*\d+\s*$/, '').trim() || nomeBloco.trim()
-  const base = /^trilha\s+do\s+grau$/i.test(semSufixo) ? 'Grau' : semSufixo
+  const base = /^(trilha|prova)\s+do\s+grau$/i.test(semSufixo) ? 'Grau' : semSufixo
   return `${base} ${itemNum}`
 }
