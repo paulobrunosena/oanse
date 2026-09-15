@@ -1,6 +1,6 @@
 import { createError, defineEventHandler, getRouterParam, readBody } from 'h3'
-import { supabaseAdmin } from '../../lib/supabaseAdmin'
-import { getUsuarioDoRequest } from '../../lib/auth'
+import { supabaseAdmin } from '../../../lib/supabaseAdmin'
+import { getUsuarioDoRequest } from '../../../lib/auth'
 
 /**
  * POST /api/premios/:id/entregar — entrega de um prêmio pendente (Secretaria).

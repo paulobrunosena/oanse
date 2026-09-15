@@ -1,5 +1,5 @@
 import { createError, defineEventHandler, readBody } from 'h3'
-import type { Database } from '../types/database.types'
+import type { Database } from '../../types/database.types'
 import { validarDataRetroativa } from '../../utils/sabado'
 import { supabaseAdmin } from '../../lib/supabaseAdmin'
 import { getUsuarioDoRequest } from '../../lib/auth'
