@@ -1,6 +1,6 @@
 // @vitest-environment node
 import { describe, expect, it } from 'vitest'
-import { formatarDataCurta, logoClube } from './data'
+import { formatarDataCurta, formatarDataHora, logoClube } from './data'
 
 describe('formatarDataCurta', () => {
   it('formata data ISO como DD/MM/AAAA', () => {
@@ -13,6 +13,12 @@ describe('formatarDataCurta', () => {
 
   it('preserva o dia mesmo no último dia do ano', () => {
     expect(formatarDataCurta('2025-12-31')).toBe('31/12/2025')
+  })
+})
+
+describe('formatarDataHora', () => {
+  it('formata timestamp como DD/MM/AAAA HH:mm', () => {
+    expect(formatarDataHora('2026-09-15T10:30:00')).toBe('15/09/2026 10:30')
   })
 })
 

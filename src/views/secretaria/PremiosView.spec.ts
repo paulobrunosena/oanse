@@ -12,6 +12,14 @@ const PREMIOS = [
   { id: 'p2', nome: 'Distintivo do grau', tipo: 'premio', descricao: 'Grau', estoque: 1, estoque_min: 3, ativo: true },
 ]
 
+const MOVIMENTACOES = [
+  {
+    id: 'm1', tipo: 'saida', quantidade: 1, observacao: null,
+    created_at: '2026-09-15T10:30:00', premio_id: 'p2',
+    premios: { nome: 'Distintivo do grau' }, profiles: { nome: 'Secretária' },
+  },
+]
+
 const mocks = vi.hoisted(() => ({ supabase: null as any }))
 vi.mock('@/lib/supabase', () => ({
   get supabase() { return mocks.supabase },
@@ -20,6 +28,11 @@ vi.mock('@/lib/supabase', () => ({
 const confirmacao = vi.hoisted(() => ({ require: vi.fn() }))
 vi.mock('primevue/useconfirm', () => ({
   useConfirm: () => confirmacao,
+}))
+
+const api = vi.hoisted(() => ({ apiFetch: vi.fn((_path?: string, _opts?: unknown) => Promise.resolve({})) }))
+vi.mock('@/lib/api', () => ({
+  apiFetch: api.apiFetch,
 }))
 
 const stubs = {
@@ -62,8 +75,13 @@ const stubs = {
 describe('PremiosView', () => {
   beforeEach(() => {
     confirmacao.require.mockReset()
+    api.apiFetch.mockReset()
+    api.apiFetch.mockResolvedValue({})
     setActivePinia(createPinia())
-    mocks.supabase = clienteSupabase({ premios: () => builder(PREMIOS) })
+    mocks.supabase = clienteSupabase({
+      premios: () => builder(PREMIOS),
+      premios_movimentacoes: () => builder(MOVIMENTACOES),
+    })
   })
 
   async function montar() {
@@ -90,6 +108,13 @@ describe('PremiosView', () => {
     expect(tags[0]!.text()).toBe('mínimo')
   })
 
+  it('mostra um alerta com os itens abaixo do estoque mínimo', async () => {
+    const wrapper = await montar()
+
+    expect(wrapper.text()).toContain('1 item abaixo do estoque mínimo')
+    expect(wrapper.text()).toContain('Distintivo do grau')
+  })
+
   it('abre o dialog em modo criação ao clicar em "Novo prêmio"', async () => {
     const wrapper = await montar()
 
@@ -107,5 +132,32 @@ describe('PremiosView', () => {
     await flushPromises()
 
     expect(wrapper.find('.dialog-header').text()).toBe('Editar prêmio')
+  })
+
+  it('abre o histórico de movimentações ao clicar no botão de estoque', async () => {
+    const wrapper = await montar()
+
+    await wrapper.find('button[aria-label="Movimentações"]').trigger('click')
+    await flushPromises()
+
+    expect(mocks.supabase.builderDe('premios_movimentacoes').eq).toHaveBeenCalledWith('premio_id', 'p1')
+    expect(wrapper.text()).toContain('Histórico')
+    expect(wrapper.text()).toContain('Secretária')
+  })
+
+  it('registra uma movimentação via API', async () => {
+    const wrapper = await montar()
+
+    await wrapper.find('button[aria-label="Movimentações"]').trigger('click')
+    await flushPromises()
+
+    await wrapper.findAll('form')[1]!.trigger('submit')
+    await flushPromises()
+
+    expect(api.apiFetch).toHaveBeenCalledTimes(1)
+    const [url, opts] = api.apiFetch.mock.calls[0] as unknown as [string, { method: string, body: Record<string, unknown> }]
+    expect(url).toBe('/api/premios/p1/movimentacoes')
+    expect(opts.method).toBe('POST')
+    expect(opts.body).toMatchObject({ tipo: 'entrada', quantidade: 1 })
   })
 })
