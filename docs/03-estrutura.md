@@ -183,7 +183,7 @@ oanse/
 │
 ├── server/                       # API h3 (NUNCA expor service_role no client)
 │   ├── index.ts                  # servidor local (tsx) — porta PORT (default 8787)
-│   ├── router.ts                 # createApiApp(): monta as rotas /api/**
+│   ├── router.ts                 # createApiApp(): monta as rotas /api/** (+ router.spec.ts)
 │   ├── lib/
 │   │   ├── supabaseAdmin.ts      # client com service_role (server-only)
 │   │   └── auth.ts               # getUsuarioDoRequest(): lê Bearer token e valida JWT
@@ -226,4 +226,5 @@ oanse/
 - **Composables**: mock de `@/lib/supabase` + `global.fetch` para as rotas `apiFetch`; testa-se a fachada `useX()`.
 - **Componentes**: `mount` com stubs dos componentes PrimeVue (`global: { stubs: { Select: ..., Button: ... } }`).
 - **Rotas server (`server/api`)** exigem o stack Supabase (h3 + service_role) → testes de integração, planejados; a lógica pura extraída (ex.: `sabado.ts`) já é coberta por unidade.
+- **Montagem das rotas** (`server/router.spec.ts`): `toPlainHandler(createApiApp())` com mocks de `./lib/supabaseAdmin` e `./lib/auth` (`vi.hoisted`) verifica que cada rota está registrada e chama a RPC certa com os argumentos certos — pega rota não montada, RPC/args errados e import com profundidade relativa incorreta (ex.: `premios/[id]` exige `../../../lib/...`).
 - `.env.test` (gitignored) é a fonte de variáveis do ambiente de teste; sem ele os testes rodam mesmo assim (mockam o Supabase).

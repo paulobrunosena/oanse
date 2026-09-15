@@ -95,6 +95,7 @@ npx supabase gen types typescript --local > src/types/database.types.ts  # após
 - **Composables**: mock de `@/lib/supabase` (getter reatribuível por teste) + `global.fetch` para as rotas `apiFetch`; teste a fachada (`useX()`).
 - **Componentes**: `mount` de `@vue/test-utils` com stubs dos componentes PrimeVue (`global: { stubs: { Select: ..., Button: ... } }`).
 - **Rotas `server/api`**: NÃO testáveis em unidade (h3 + Supabase real); extraia a lógica pura para `server/utils/*` e teste a função. Testes de integração das rotas ficam planejados (exigem stack Supabase local).
+- **Montagem das rotas (`server/router.spec.ts`)**: teste o wiring do `createApiApp()` com `toPlainHandler` (h3) mockando `./lib/supabaseAdmin` e `./lib/auth` via `vi.hoisted`. Isso garante que toda rota está registrada no router e chama a RPC correta com os parâmetros certos — pega regressões como rota não montada, nome/args de RPC errados e **import com profundidade relativa errada** (ex.: `server/api/premios/[id]` precisa de `../../../lib/...`, não `../../lib/...`, senão o h3 quebra no boot e o Vite devolve 502).
 - **Mock de reatividade do Vue**: arrays de `ref([])` são proxies — compare com `toContainEqual`/`toEqual`, não `toContain`.
 
 ## Checklist de fim de tarefa
