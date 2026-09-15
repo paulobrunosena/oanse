@@ -286,8 +286,9 @@ create table folhas_semanais (
 -- Progresso, Atividades, Crédito-extra, Frequência (blocos Igreja/Clube) e
 -- Observações (esta sem itens).
 -- Progresso por oansista: data de conclusão por item, data de recebimento do
--- prêmio e observações livres por manual. Não há pendência automática de prêmio
--- (a integração com premios_pendentes será redesenhada na Fase 3).
+-- prêmio e observações livres por manual. Concluir todos os itens de um bloco
+-- gera pendência de premiação para a Secretaria (trigger `trg_folha_item_pendencia`
+-- → `premios_pendentes`); a entrega registra a data na folha (fn_entregar_premio).
 
 create table folha_manuais (
   id         uuid primary key default uuid_generate_v4(),
@@ -456,6 +457,7 @@ create table premios_pendentes (
   oansista_id   uuid not null references oansistas(id),
   premio_id     uuid not null references premios(id),
   clube_id      uuid not null references clubes(id),
+  bloco_id      uuid references folha_blocos(id),  -- bloco que originou a pendência (Fase 3)
   status        pendencia_status not null default 'pendente',
   data_geracao  timestamptz not null default now(),
   data_entrega  timestamptz,
@@ -857,11 +859,14 @@ create trigger trg_folha_pontos_jogos_presenca
   after update of presenca_id on folhas_semanais
   for each row execute function fn_propagar_pontos_jogos_por_folha();
 
--- A conclusão de item/bloco da Folha Individual NÃO gera mais pendência
--- automática (fn_gerar_pendencia_premio/trg_gerar_pendencia_premio removidos na
--- migration 0015): o prêmio é registrado no próprio progresso
--- (folha_premio_progresso). A integração com a Secretaria (premios_pendentes)
--- será redesenhada na Fase 3 — Painel da Secretaria.
+-- Conclusão de item/bloco da Folha Individual gera pendência automática de
+-- premiação (Fase 3): trigger `trg_folha_item_pendencia` (em
+-- folha_item_progresso) chama `fn_recalcular_pendencia_premio` — bloco completo
+-- insere em `premios_pendentes`; desmarcar item cancela a pendência ainda aberta.
+-- A entrega é transacional via `fn_entregar_premio` (status→entregue + baixa de
+-- estoque + movimentação + data na folha), chamada pelo server/api com
+-- service_role. (O legado fn_gerar_pendencia_premio/trg_gerar_pendencia_premio
+-- foi removido na migration 0015.)
 
 -- ----------------------------------------------------------------------------
 -- VIEWS

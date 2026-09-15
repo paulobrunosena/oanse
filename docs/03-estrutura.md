@@ -51,7 +51,8 @@ oanse/
 │   │   ├── 0015_folha_individual.sql      # catálogo (manuais/seções/blocos) + progresso + limpeza do progresso_manual legado
 │   │   ├── 0016_folha_individual_rls.sql  # RLS das tabelas da Folha Individual
 │   │   ├── 0017_matricular_visitante.sql  # RPC fn_matricular_visitante (converte visitante em oansista)
-│   │   └── 0018_folha_premio_vincular.sql # folha_blocos.premio_id → premios + índice único premios(nome)
+│   │   ├── 0018_folha_premio_vincular.sql # folha_blocos.premio_id → premios + índice único premios(nome)
+│   │   └── 0019_folha_premio_pendencia.sql # pendência por bloco (trigger) + entrega transacional (fn_entregar_premio)
 │   └── seed.sql                  # clubes, itens de pontuação, config de jogos, catálogo, catálogo de prêmios, usuários teste
 │
 ├── public/                       # assets estáticos servidos na raiz (/)
@@ -94,9 +95,9 @@ oanse/
 │   │   ├── useJogos.ts           # eventos de jogos do sábado: criação, cores, oansistas, rodadas, resultados, finalizar, ranking + catálogo (+ spec.ts)
 │   │   ├── useRanking.ts         # ranking do sábado via RPC fn_ranking_do_encontro + geral (+ spec.ts)
 │   │   ├── usePremios.ts         # catálogo de prêmios da Secretaria (CRUD) (+ spec.ts)
+│   │   ├── usePendencias.ts      # pendências de premiação (leitura + Realtime) (+ spec.ts)
 │   │   └── useToast.ts           # fachada do Toast do PrimeVue (api tipo Nuxt UI)
-│   │   # (planejado) useTurma,
-│   │   # usePendencias (realtime)
+│   │   # (planejado) useTurma
 │   │
 │   ├── router/
 │   │   ├── index.ts              # createRouter + rotas (meta.roles por rota)
@@ -134,7 +135,8 @@ oanse/
 │   │       ├── CalendarioView.vue        # sábados sem Oanse (RN 7) — Diretor Geral
 │   │       └── ConfiguracoesView.vue     # itens de pontuação (Folha Semanal, incl. jogos por colocação jogo_1_lugar..jogo_4_lugar) / pontos de jogos
 │   │   └── secretaria/
-│   │       └── PremiosView.vue           # Secretaria/Diretor Geral (CRUD do catálogo de prêmios + saldo/estoque mínimo) — rota /secretaria/premios
+│   │       ├── PremiosView.vue          # Secretaria/Diretor Geral (CRUD do catálogo de prêmios + saldo/estoque mínimo) — rota /secretaria/premios
+│   │       └── PendenciasView.vue       # Secretaria/Diretor Geral (painel de pendências Realtime + entregar) — rota /secretaria/pendencias
 │   │   # (planejado) encontro/[id]/, relatorios/
 │   │
 │   ├── components/
@@ -188,7 +190,9 @@ oanse/
 │   │   └── usuarios/
 │   │       ├── index.ts          # GET lista + POST cria usuário (service_role)
 │   │       └── [id].ts           # DELETE exclui usuário (service_role)
-│   │   # (planejado) remanejamentos.post.ts, premios/[id]/entregar.post.ts
+│   │   └── premios/[id]/
+│   │       └── entregar.post.ts  # entrega de prêmio pendente (RPC fn_entregar_premio, service_role)
+│   │   # (planejado) remanejamentos.post.ts
 │   ├── types/database.types.ts   # cópia dos tipos p/ o servidor
 │   └── utils/sabado.ts           # último sábado no fuso local (puro; sabado.spec.ts)
 │

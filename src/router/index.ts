@@ -22,6 +22,7 @@ const rotas: RouteRecordRaw[] = [
       { path: 'admin/configuracoes', name: 'admin-configuracoes', component: () => import('@/views/admin/ConfiguracoesView.vue'), meta: { roles: ['diretor_geral'] } },
       { path: 'admin/calendario', name: 'admin-calendario', component: () => import('@/views/admin/CalendarioView.vue'), meta: { roles: ['diretor_geral'] } },
       { path: 'secretaria/premios', name: 'secretaria-premios', component: () => import('@/views/secretaria/PremiosView.vue'), meta: { roles: ['diretor_geral', 'secretaria'] } },
+      { path: 'secretaria/pendencias', name: 'secretaria-pendencias', component: () => import('@/views/secretaria/PendenciasView.vue'), meta: { roles: ['diretor_geral', 'secretaria'] } },
       { path: 'clube/turmas', name: 'clube-turmas', component: () => import('@/views/clube/TurmasView.vue'), meta: { roles: ['diretor_geral', 'diretor_clube'] } },
       { path: 'clube/lideres', name: 'clube-lideres', component: () => import('@/views/clube/LideresView.vue'), meta: { roles: ['diretor_geral', 'diretor_clube'] } },
       { path: 'clube/oansistas', name: 'clube-oansistas', component: () => import('@/views/clube/OansistasView.vue'), meta: { roles: ['diretor_geral', 'diretor_clube'] } },

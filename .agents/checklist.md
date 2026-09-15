@@ -89,10 +89,10 @@
 - [x] Catálogo de prêmios (CRUD `premios`) + migration `folha_blocos.premio_id` + seed do catálogo
 - [ ] Movimentações de estoque (entrada/saída)
 - [ ] Alerta de estoque mínimo
-- [ ] Trigger `fn_gerar_pendencia_premio` (conclusão de bloco → pendência; desmarcar item cancela)
-- [ ] Painel de pendências com Realtime (`premios_pendentes`)
+- [x] Trigger `trg_folha_item_pendencia`/`fn_recalcular_pendencia_premio` (conclusão de bloco → pendência; desmarcar item cancela)
+- [x] Painel de pendências com Realtime (`premios_pendentes`)
 - [ ] Filtros por clube/status + notificação visual/sonora
-- [ ] `server/api/premios/[id]/entregar.post.ts` (entrega + baixa estoque, transacional)
+- [x] `server/api/premios/[id]/entregar.post.ts` + `fn_entregar_premio` (entrega + baixa estoque, transacional)
 - [ ] Folha individual: prêmio só-leitura com status (aguardando/entregue)
 - [ ] Teste: entrega não duplica e dá baixa no estoque
 - [ ] Relatório de premiações por período — Diretor Geral

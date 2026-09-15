@@ -904,6 +904,7 @@ export type Database = {
       }
       premios_pendentes: {
         Row: {
+          bloco_id: string | null
           clube_id: string
           data_entrega: string | null
           data_geracao: string
@@ -915,6 +916,7 @@ export type Database = {
           status: Database["public"]["Enums"]["pendencia_status"]
         }
         Insert: {
+          bloco_id?: string | null
           clube_id: string
           data_entrega?: string | null
           data_geracao?: string
@@ -926,6 +928,7 @@ export type Database = {
           status?: Database["public"]["Enums"]["pendencia_status"]
         }
         Update: {
+          bloco_id?: string | null
           clube_id?: string
           data_entrega?: string | null
           data_geracao?: string
@@ -937,6 +940,13 @@ export type Database = {
           status?: Database["public"]["Enums"]["pendencia_status"]
         }
         Relationships: [
+          {
+            foreignKeyName: "premios_pendentes_bloco_id_fkey"
+            columns: ["bloco_id"]
+            isOneToOne: false
+            referencedRelation: "folha_blocos"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "premios_pendentes_clube_id_fkey"
             columns: ["clube_id"]
@@ -1474,6 +1484,31 @@ export type Database = {
       }
       fn_diretor_da_turma: { Args: { p_turma_id: string }; Returns: boolean }
       fn_diretor_do_clube: { Args: { p_clube_id: string }; Returns: boolean }
+      fn_entregar_premio: {
+        Args: {
+          p_autorizado_por: string
+          p_observacao?: string
+          p_pendencia_id: string
+        }
+        Returns: {
+          bloco_id: string | null
+          clube_id: string
+          data_entrega: string | null
+          data_geracao: string
+          entregue_por: string | null
+          id: string
+          oansista_id: string
+          observacao: string | null
+          premio_id: string
+          status: Database["public"]["Enums"]["pendencia_status"]
+        }
+        SetofOptions: {
+          from: "*"
+          to: "premios_pendentes"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       fn_lider_da_turma: { Args: { p_turma_id: string }; Returns: boolean }
       fn_matricular_visitante: {
         Args: { p_turma_id?: string; p_visitante_id: string }
@@ -1534,6 +1569,10 @@ export type Database = {
           posicao: number
           total: number
         }[]
+      }
+      fn_recalcular_pendencia_premio: {
+        Args: { p_bloco_id: string; p_oansista_id: string }
+        Returns: undefined
       }
       fn_recalcular_pontos_jogos_encontro: {
         Args: { p_encontro: string }
