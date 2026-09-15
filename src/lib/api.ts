@@ -49,7 +49,7 @@ export async function apiFetch<T = unknown>(path: string, options: ApiOptions = 
   const corpo = await res.json().catch(() => null) as { statusMessage?: string } | null
 
   if (!res.ok) {
-    throw new ApiError(res.status, corpo?.statusMessage)
+    throw new ApiError(res.status, corpo?.statusMessage ?? (res.statusText || undefined))
   }
 
   return corpo as T
