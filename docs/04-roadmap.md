@@ -48,6 +48,16 @@
 
 **Entrega:** Secretária deixa de receber pedidos por papel/WhatsApp.
 
+> **Estado (2026-09-15):** fluxo redesenhado em relação ao plano original — a
+> conclusão de bloco da Folha Individual **gera** a pendência (trigger
+> `trg_folha_item_pendencia` → `premios_pendentes`), e a entrega pela Secretaria
+> (painel Realtime + `fn_entregar_premio`) grava a data na folha (prêmio
+> só-leitura "Aguardando entrega" → "Entregue em DD/MM"). Implementados:
+> catálogo de prêmios (CRUD), trigger de pendência, painel Realtime, entrega
+> transacional e relatório por período (migrations 0018/0019). **Pendentes
+> (polimento):** UI de movimentações de estoque (entrada/saída manual), alerta de
+> estoque mínimo e filtros/notificação (clube/sonora) no painel de pendências.
+
 ## Fase 4 — Módulo de Jogos e Ranking Geral (1-2 semanas)
 
 **Meta:** o Líder de Jogos cadastra o evento uma vez por sábado e registra só os resultados das rodadas; pontos alimentam o ranking do sábado automaticamente.

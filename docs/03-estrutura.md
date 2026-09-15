@@ -165,7 +165,6 @@ oanse/
 │   │       └── RankingCoresCard.spec.ts
 │   │   # (planejado) ui/AppSidebar, PageHeader, DataTable
 │   │   # (planejado) folha/VisitanteCard
-│   │   # (planejado) premiacoes/
 │   │
 │   ├── types/
 │   │   ├── database.types.ts     # gerado: npx supabase gen types typescript --local
