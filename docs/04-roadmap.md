@@ -54,9 +54,11 @@
 > (painel Realtime + `fn_entregar_premio`) grava a data na folha (prêmio
 > só-leitura "Aguardando entrega" → "Entregue em DD/MM"). Implementados:
 > catálogo de prêmios (CRUD), trigger de pendência, painel Realtime, entrega
-> transacional e relatório por período (migrations 0018/0019). **Pendentes
-> (polimento):** UI de movimentações de estoque (entrada/saída manual), alerta de
-> estoque mínimo e filtros/notificação (clube/sonora) no painel de pendências.
+> transacional e relatório por período (migrations 0018/0019). **Polimento
+> concluído:** movimentações manuais de estoque (entrada/saída via
+> `fn_movimentar_estoque` + histórico no catálogo), alerta de estoque mínimo e
+> filtros por clube/status + notificação visual/sonora no painel de pendências
+> (migration 0020).
 
 ## Fase 4 — Módulo de Jogos e Ranking Geral (1-2 semanas)
 
