@@ -41,7 +41,7 @@ describe('FolhaIndividualBloco', () => {
   it('abre uma linha por item com o rótulo derivado do bloco', () => {
     const wrapper = mount(FolhaIndividualBloco, { props: props(), global: { stubs } })
 
-    expect(wrapper.findAll('input[type="date"]')).toHaveLength(3)
+    expect(wrapper.findAll('input[type="date"]')).toHaveLength(2)
     expect(wrapper.text()).toContain('Exercício bíblico 1')
     expect(wrapper.text()).toContain('Exercício bíblico 2')
   })
@@ -120,13 +120,12 @@ describe('FolhaIndividualBloco', () => {
   it('mantém o prêmio bloqueado enquanto o bloco não está completo', () => {
     const wrapper = mount(FolhaIndividualBloco, { props: props(), global: { stubs } })
 
-    const premio = wrapper.findAll('input[type="date"]')[2]!
-    expect(premio.attributes('disabled')).toBeDefined()
     expect(wrapper.text()).toContain('Conclua todos os itens para liberar o prêmio.')
     expect(wrapper.text()).toContain('Botão vermelho 01')
+    expect(wrapper.text()).not.toContain('Aguardando entrega')
   })
 
-  it('libera o prêmio com o bloco completo e emite salvar-premio', async () => {
+  it('mostra "Aguardando entrega" com o bloco completo e sem data de recebimento', () => {
     const wrapper = mount(FolhaIndividualBloco, {
       props: props({
         bloco: bloco({
@@ -139,18 +138,33 @@ describe('FolhaIndividualBloco', () => {
       global: { stubs },
     })
 
-    const premio = wrapper.findAll('input[type="date"]')[2]!
-    expect(premio.attributes('disabled')).toBeUndefined()
+    expect(wrapper.text()).toContain('Aguardando entrega')
     expect(wrapper.text()).not.toContain('Conclua todos os itens para liberar o prêmio.')
-
-    await premio.setValue('2026-09-10')
-    expect(wrapper.emitted('salvar-premio')?.[0]).toEqual(['2026-09-10'])
+    expect(wrapper.find('input[type="date"]').exists()).toBe(true)
   })
 
-  it('bloqueia o prêmio durante o salvamento', () => {
+  it('mostra "Entregue em" com a data de recebimento registrada pela secretaria', () => {
     const wrapper = mount(FolhaIndividualBloco, {
       props: props({
-        salvandoPremio: true,
+        bloco: bloco({
+          itens: [
+            { item_num: 1, data_conclusao: '2026-09-01' },
+            { item_num: 2, data_conclusao: '2026-09-02' },
+          ],
+          premioData: '2026-09-10',
+        }),
+      }),
+      global: { stubs },
+    })
+
+    expect(wrapper.text()).toContain('Entregue em')
+    expect(wrapper.text()).toContain('10/09/2026')
+    expect(wrapper.text()).not.toContain('Aguardando entrega')
+  })
+
+  it('não emite salvar-premio (prêmio é somente leitura)', () => {
+    const wrapper = mount(FolhaIndividualBloco, {
+      props: props({
         bloco: bloco({
           itens: [
             { item_num: 1, data_conclusao: '2026-09-01' },
@@ -161,6 +175,6 @@ describe('FolhaIndividualBloco', () => {
       global: { stubs },
     })
 
-    expect(wrapper.findAll('input[type="date"]')[2]!.attributes('disabled')).toBeDefined()
+    expect(wrapper.emitted('salvar-premio')).toBeUndefined()
   })
 })

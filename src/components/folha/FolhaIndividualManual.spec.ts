@@ -47,12 +47,11 @@ const stubs = {
   },
   FolhaIndividualBloco: {
     name: 'FolhaIndividualBloco',
-    props: ['bloco', 'salvandoItem', 'salvandoPremio'],
-    emits: ['salvar-item', 'salvar-premio'],
+    props: ['bloco', 'salvandoItem'],
+    emits: ['salvar-item'],
     template: `<div class="bloco" :data-id="bloco.id">
       <span class="salvando">{{ salvandoItem }}</span>
       <button class="item" @click="$emit('salvar-item', 1, '2026-09-05')" />
-      <button class="premio" @click="$emit('salvar-premio', '2026-09-10')" />
     </div>`,
   },
   FolhaIndividualObservacoes: {
@@ -92,14 +91,12 @@ describe('FolhaIndividualManual', () => {
     expect(wrapper.find('.obs').exists()).toBe(true)
   })
 
-  it('repassa o bloco correto em salvar-item e salvar-premio', async () => {
+  it('repassa o bloco correto em salvar-item', async () => {
     const wrapper = mount(FolhaIndividualManual, { props: props(), global: { stubs } })
 
     await wrapper.findAll('.bloco')[1]!.find('.item').trigger('click')
-    await wrapper.findAll('.bloco')[0]!.find('.premio').trigger('click')
 
     expect(wrapper.emitted('salvar-item')?.[0]).toEqual(['b2', 1, '2026-09-05'])
-    expect(wrapper.emitted('salvar-premio')?.[0]).toEqual(['b1', '2026-09-10'])
   })
 
   it('repassa o manual em salvar-observacao', async () => {
@@ -119,17 +116,6 @@ describe('FolhaIndividualManual', () => {
     const blocos = wrapper.findAll('.bloco')
     expect(blocos[0]!.find('.salvando').text()).toBe('')
     expect(blocos[1]!.find('.salvando').text()).toBe('3')
-  })
-
-  it('repassa salvandoPremio apenas para o bloco correspondente', () => {
-    const wrapper = mount(FolhaIndividualManual, {
-      props: props({ salvandoPremio: 'b1' }),
-      global: { stubs },
-    })
-
-    const blocos = wrapper.findAll('.bloco')
-    expect(blocos[0]!.findComponent({ name: 'FolhaIndividualBloco' }).props('salvandoPremio')).toBe(true)
-    expect(blocos[1]!.findComponent({ name: 'FolhaIndividualBloco' }).props('salvandoPremio')).toBe(false)
   })
 
   it('inicia com a primeira seção aberta e permite abrir várias ao mesmo tempo', () => {

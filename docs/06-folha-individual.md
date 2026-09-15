@@ -17,8 +17,9 @@ Clube (Faíscas)
 
 - Cada **item** é apenas uma "bolinha com número" no manual → guardamos a
   quantidade por bloco e numeramos de 1 a N. Não há descrição textual.
-- Cada **bloco** tem um prêmio (descrição fixa + data de recebimento) ganho ao
-  concluir todos os itens.
+- Cada **bloco** tem um prêmio (descrição fixa) ganho ao concluir todos os
+  itens. A data de recebimento é registrada pela Secretaria na entrega (Fase 3)
+  e aparece na folha como só-leitura.
 - **Observações** = textarea livre por (oansista, manual) — não tem itens.
 
 ## 2. Decisões tomadas
@@ -27,7 +28,7 @@ Clube (Faíscas)
 |---|---|
 | Descrição dos itens | Genérica (bolinha numerada); **não** há texto por item |
 | Estrutura (manuais/seções/blocos) | No banco (migrations + seed) |
-| Premiação | Registrar só "prêmio recebido + data"; **sem** gerar `premios_pendentes` |
+| Premiação | Ao concluir o bloco, um trigger gera pendência para a Secretaria (`premios_pendentes`); a data de recebimento é preenchida na folha **pela entrega** (`fn_entregar_premio`) e fica só-leitura ("Aguardando entrega" → "Entregue em DD/MM") |
 | Tabela legada `progresso_manual` | **Remover** + drop `trg_gerar_pendencia_premio`/`fn_gerar_pendencia_premio` e coluna `premios_pendentes.progresso_id` |
 
 ## 3. Modelo de dados — migration `0015_folha_individual.sql`
@@ -53,6 +54,7 @@ create table folha_blocos (
   nome text not null, ordem int not null,
   quantidade int not null check (quantidade > 0),
   premio_nome text not null,              -- "Botão vermelho 01", "Distintivo do grau", etc.
+  premio_id uuid references premios(id),  -- vínculo com o catálogo da Secretaria (Fase 3)
   unique (secao_id, ordem)
 );
 ```
@@ -148,16 +150,18 @@ Prêmios por bloco: `Distintivo do grau`, `Botão vermelho 01..04`,
 2. **`src/composables/useFolhaIndividual.ts`** (+ spec):
    `carregar(clubeId)`, `carregarProgresso(oansistaId)`,
    `salvarItem(oansistaId, blocoId, itemNum, data|null, registradoPor)`,
-   `salvarPremio(oansistaId, blocoId, data|null, registradoPor)`,
    `salvarObservacao(oansistaId, manualId, texto)` (upsert por `unique`).
    O `registradoPor` é passado pela view (padrão dos demais composables, ex.
    `useFolhaSemanal.salvar`), pois as tabelas de progresso exigem `registrado_por`.
    Expõe `folha` (árvore `ManualFolha[]` normalizada), `carregando` e
-   `carregandoProgresso`; `data|null` null remove o registro (delete).
+   `carregandoProgresso`; `data|null` null remove o registro (delete). O prêmio
+   **não** é mais salvo pelo cliente (`salvarPremio` removido): a data vem da
+   entrega da Secretaria (`fn_entregar_premio`) e é só-leitura na folha.
 3. **Componentes** em `src/components/folha/`:
    - `FolhaIndividualBloco.vue` (+ spec): itens numerados (descrição derivada do
-     nome do bloco, ex. "Grau 1"/"Exercício 1"/"Atividade 1") + `InputText
-     type=date`, e linha do prêmio (nome + data, habilitada ao concluir o bloco).
+      nome do bloco, ex. "Grau 1"/"Exercício 1"/"Atividade 1") + `InputText
+      type=date`, e linha do prêmio só-leitura com status ("Aguardando entrega"
+      quando o bloco está completo sem data; "Entregue em DD/MM" com a data).
    - `FolhaIndividualManual.vue`: agrupa as seções de um manual em um
      `Accordion` (PrimeVue, `multiple`, primeira seção aberta por padrão) com a
      contagem de itens concluídos por seção no cabeçalho (`concluídos/total`,
@@ -221,3 +225,4 @@ refactor genérico só vale se as estruturas forem idênticas; senão, o catálo
 - [x] **Passo 8 — Docs finais + checklist**: `docs/03-estrutura.md` e `.agents/checklist.md` atualizados.
 - [x] **Passo 9 — Acesso do Líder**: rota `meta.roles` ganha `lider`; `AppMenu.vue` mostra "Folha Individual" no grupo "Líder"; `FolhaIndividualView.vue` escopa os oansistas por `turma_id` para líder (turma titular via `turmas.lider_id = user.sub`), mantendo o escopo por clube para diretores. RLS já autoriza `fn_lider_da_turma` (sem migration). 2 specs novos (líder com/sem turma); 277 testes verdes.
 - [x] **Passo 10 — Accordion por seção**: `FolhaIndividualManual.vue` troca as seções empilhadas por `Accordion` (`multiple`, primeira seção aberta) com contagem de itens concluídos no cabeçalho (`secaoItensConcluidos`/`secaoTotalItens` em `utils/folhaIndividual.ts`). 4 specs de utils + 3 specs do componente; 284 testes verdes.
+- [x] **Passo 11 — Prêmio só-leitura (Fase 3)**: `FolhaIndividualBloco.vue` troca o `InputText type=date` do prêmio por um status só-leitura ("Aguardando entrega" com bloco completo sem data; "Entregue em DD/MM" com a data vinda da Secretaria); removidos `salvarPremio` do composable e a emissão `salvar-premio`/`salvando-premio` da view/manual. Specs ajustados (301 testes verdes).

@@ -143,45 +143,6 @@ export function useFolhaIndividual() {
     else itens.value.push(data)
   }
 
-  /** `dataRecebimento` null remove o prêmio; caso contrário faz upsert do registro. */
-  async function salvarPremio(
-    oansistaId: string,
-    blocoId: string,
-    dataRecebimento: string | null,
-    registradoPor: string,
-  ): Promise<void> {
-    if (!dataRecebimento) {
-      const { error } = await supabase
-        .from('folha_premio_progresso')
-        .delete()
-        .eq('oansista_id', oansistaId)
-        .eq('bloco_id', blocoId)
-      if (error) throw error
-      premios.value = premios.value.filter(p => p.bloco_id !== blocoId)
-      return
-    }
-
-    const { data, error } = await supabase
-      .from('folha_premio_progresso')
-      .upsert(
-        {
-          oansista_id: oansistaId,
-          bloco_id: blocoId,
-          data_recebimento: dataRecebimento,
-          registrado_por: registradoPor,
-        },
-        { onConflict: 'oansista_id,bloco_id' },
-      )
-      .select()
-      .single()
-    if (error) throw error
-    if (!data) throw new Error('Falha ao salvar o prêmio da folha')
-
-    const indice = premios.value.findIndex(p => p.bloco_id === blocoId)
-    if (indice >= 0) premios.value[indice] = data
-    else premios.value.push(data)
-  }
-
   async function salvarObservacao(oansistaId: string, manualId: string, texto: string): Promise<void> {
     const { data, error } = await supabase
       .from('folha_observacoes')
@@ -212,7 +173,6 @@ export function useFolhaIndividual() {
     carregar,
     carregarProgresso,
     salvarItem,
-    salvarPremio,
     salvarObservacao,
   }
 }

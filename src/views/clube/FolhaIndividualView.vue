@@ -11,14 +11,13 @@ const toast = useToast()
 const { user, profile } = useAuth()
 const {
   folha, carregando, carregandoProgresso,
-  carregar, carregarProgresso, salvarItem, salvarPremio, salvarObservacao,
+  carregar, carregarProgresso, salvarItem, salvarObservacao,
 } = useFolhaIndividual()
 
 const oansistas = ref<{ id: string, nome: string }[]>([])
 const oansistaId = ref<string | null>(null)
 const abaAtiva = ref<string>('')
 const salvandoItem = ref<string | null>(null)
-const salvandoPremio = ref<string | null>(null)
 const salvandoObservacao = ref(false)
 const carregandoInicial = ref(true)
 
@@ -97,20 +96,6 @@ async function onSalvarItem(blocoId: string, itemNum: number, data: string | nul
   }
   finally {
     salvandoItem.value = null
-  }
-}
-
-async function onSalvarPremio(blocoId: string, data: string | null) {
-  if (!oansistaId.value || !user.value?.sub) return
-  salvandoPremio.value = blocoId
-  try {
-    await salvarPremio(oansistaId.value, blocoId, data, user.value.sub)
-  }
-  catch (e) {
-    toast.add({ title: 'Erro ao salvar prêmio da folha', description: mensagem(e), color: 'error' })
-  }
-  finally {
-    salvandoPremio.value = null
   }
 }
 
@@ -213,10 +198,8 @@ onMounted(carregarTudo)
           <FolhaIndividualManual
             :manual="manual"
             :salvando-item="salvandoItem"
-            :salvando-premio="salvandoPremio"
             :salvando-observacao="salvandoObservacao"
             @salvar-item="onSalvarItem"
-            @salvar-premio="onSalvarPremio"
             @salvar-observacao="onSalvarObservacao"
           />
         </TabPanel>

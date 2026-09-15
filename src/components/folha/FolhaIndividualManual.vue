@@ -7,13 +7,11 @@ import { secaoItensConcluidos, secaoTotalItens, type ManualFolha } from '@/utils
 const props = defineProps<{
   manual: ManualFolha
   salvandoItem?: string | null
-  salvandoPremio?: string | null
   salvandoObservacao?: boolean
 }>()
 
 const emit = defineEmits<{
   'salvar-item': [blocoId: string, itemNum: number, data: string | null]
-  'salvar-premio': [blocoId: string, data: string | null]
   'salvar-observacao': [manualId: string, texto: string]
 }>()
 
@@ -68,9 +66,7 @@ function itemSalvandoEm(blocoId: string): number | null {
               :key="bloco.id"
               :bloco="bloco"
               :salvando-item="itemSalvandoEm(bloco.id)"
-              :salvando-premio="salvandoPremio === bloco.id"
               @salvar-item="(itemNum, data) => emit('salvar-item', bloco.id, itemNum, data)"
-              @salvar-premio="data => emit('salvar-premio', bloco.id, data)"
             />
           </div>
         </div>

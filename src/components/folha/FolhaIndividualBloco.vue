@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import { formatarDataCurta } from '@/utils/data'
 import {
   blocoConcluido,
   itensConcluidos,
@@ -11,23 +12,23 @@ import {
 const props = defineProps<{
   bloco: BlocoFolha
   salvandoItem?: number | null
-  salvandoPremio?: boolean
 }>()
 
 const emit = defineEmits<{
   'salvar-item': [itemNum: number, data: string | null]
-  'salvar-premio': [data: string | null]
 }>()
 
 const concluido = computed(() => blocoConcluido(props.bloco))
 const habilitadoPremio = computed(() => premioHabilitado(props.bloco))
 
+/** Status do prêmio: incompleto → aguardando → entregue (data via secretaria). */
+const statusPremio = computed<'incompleto' | 'aguardando' | 'entregue'>(() => {
+  if (!habilitadoPremio.value) return 'incompleto'
+  return props.bloco.premioData ? 'entregue' : 'aguardando'
+})
+
 function aoMudarItem(itemNum: number, valor: string) {
   emit('salvar-item', itemNum, valor || null)
-}
-
-function aoMudarPremio(valor: string) {
-  emit('salvar-premio', valor || null)
 }
 </script>
 
@@ -72,22 +73,29 @@ function aoMudarPremio(valor: string) {
 
     <div class="mt-3 flex flex-wrap items-center justify-between gap-2 border-t pt-3">
       <span class="flex min-w-0 items-center gap-2">
-        <i :class="habilitadoPremio ? 'pi pi-gift text-amber-500' : 'pi pi-lock text-surface-400'" />
+        <i :class="statusPremio === 'entregue'
+          ? 'pi pi-check-circle text-green-500'
+          : statusPremio === 'aguardando'
+            ? 'pi pi-gift text-amber-500'
+            : 'pi pi-lock text-surface-400'" />
         <span class="truncate text-sm">{{ bloco.premio_nome }}</span>
       </span>
-      <InputText
-        type="date"
-        size="small"
-        class="w-40 shrink-0"
-        :aria-label="`Data de recebimento do prêmio ${bloco.premio_nome}`"
-        :model-value="bloco.premioData ?? ''"
-        :disabled="!habilitadoPremio || salvandoPremio"
-        @update:model-value="valor => aoMudarPremio(valor as string)"
-      />
+      <span
+        v-if="statusPremio === 'aguardando'"
+        class="text-xs font-medium text-amber-600"
+      >
+        Aguardando entrega
+      </span>
+      <span
+        v-else-if="statusPremio === 'entregue'"
+        class="text-xs font-medium text-green-600"
+      >
+        Entregue em {{ bloco.premioData ? formatarDataCurta(bloco.premioData) : '' }}
+      </span>
     </div>
 
     <p
-      v-if="!habilitadoPremio"
+      v-if="statusPremio === 'incompleto'"
       class="mt-1 text-xs text-surface-500"
     >
       Conclua todos os itens para liberar o prêmio.

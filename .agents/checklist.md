@@ -93,7 +93,7 @@
 - [x] Painel de pendências com Realtime (`premios_pendentes`)
 - [ ] Filtros por clube/status + notificação visual/sonora
 - [x] `server/api/premios/[id]/entregar.post.ts` + `fn_entregar_premio` (entrega + baixa estoque, transacional)
-- [ ] Folha individual: prêmio só-leitura com status (aguardando/entregue)
+- [x] Folha individual: prêmio só-leitura com status (aguardando/entregue)
 - [ ] Teste: entrega não duplica e dá baixa no estoque
 - [ ] Relatório de premiações por período — Diretor Geral
 

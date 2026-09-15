@@ -216,47 +216,6 @@ describe('useFolhaIndividual', () => {
     })
   })
 
-  describe('salvarPremio', () => {
-    it('faz upsert do prêmio e atualiza o estado local', async () => {
-      const api = useFolhaIndividual()
-      await api.carregar('c1')
-      await api.carregarProgresso('o1')
-
-      const bPremios = mocks.supabase.builderDe('folha_premio_progresso')
-      bPremios.singleData = { ...PREMIOS[0], data_recebimento: '2026-09-10' }
-
-      await api.salvarPremio('o1', 'b1', '2026-09-10', 'u1')
-
-      expect(bPremios.upsert).toHaveBeenCalledWith(
-        { oansista_id: 'o1', bloco_id: 'b1', data_recebimento: '2026-09-10', registrado_por: 'u1' },
-        { onConflict: 'oansista_id,bloco_id' },
-      )
-      expect(api.folha.value[0].secoes[0].blocos[0].premioData).toBe('2026-09-10')
-    })
-
-    it('remove o prêmio quando a data é null', async () => {
-      const api = useFolhaIndividual()
-      await api.carregar('c1')
-      await api.carregarProgresso('o1')
-
-      const bPremios = mocks.supabase.builderDe('folha_premio_progresso')
-      await api.salvarPremio('o1', 'b1', null, 'u1')
-
-      expect(bPremios.delete).toHaveBeenCalled()
-      expect(bPremios.eq).toHaveBeenCalledWith('oansista_id', 'o1')
-      expect(bPremios.eq).toHaveBeenCalledWith('bloco_id', 'b1')
-      expect(bPremios.upsert).not.toHaveBeenCalled()
-      expect(api.folha.value[0].secoes[0].blocos[0].premioData).toBeNull()
-    })
-
-    it('propaga erro ao salvar', async () => {
-      const api = useFolhaIndividual()
-      mocks.supabase.builderDe('folha_premio_progresso').error = new Error('falha no prêmio')
-
-      await expect(api.salvarPremio('o1', 'b1', '2026-09-10', 'u1')).rejects.toThrow('falha no prêmio')
-    })
-  })
-
   describe('salvarObservacao', () => {
     it('faz upsert por (oansista, manual) e atualiza a árvore', async () => {
       const api = useFolhaIndividual()

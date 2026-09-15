@@ -30,11 +30,6 @@ const ITEM_PROGRESSO = {
   data_conclusao: '2026-09-05', registrado_por: 'u1', created_at: '2026-09-05T00:00:00Z',
 }
 
-const PREMIO_PROGRESSO = {
-  id: 'pp1', oansista_id: 'o1', bloco_id: 'b1',
-  data_recebimento: '2026-09-10', registrado_por: 'u1', created_at: '2026-09-10T00:00:00Z',
-}
-
 const OBSERVACAO = {
   id: 'ob1', oansista_id: 'o1', manual_id: 'm1', texto: 'texto',
   updated_at: '2026-09-10T00:00:00Z',
@@ -58,12 +53,11 @@ const stubs = {
   FolhaIndividualSeletor: { name: 'FolhaIndividualSeletor', template: '<div class="seletor" />' },
   FolhaIndividualManual: {
     name: 'FolhaIndividualManual',
-    props: ['manual', 'salvandoItem', 'salvandoPremio', 'salvandoObservacao'],
-    emits: ['salvar-item', 'salvar-premio', 'salvar-observacao'],
+    props: ['manual', 'salvandoItem', 'salvandoObservacao'],
+    emits: ['salvar-item', 'salvar-observacao'],
     template: `<div class="manual" :data-id="manual.id">
       <span class="manual-nome">{{ manual.nome }}</span>
       <button class="btn-item" @click="$emit('salvar-item', 'b1', 1, '2026-09-05')" />
-      <button class="btn-premio" @click="$emit('salvar-premio', 'b1', '2026-09-10')" />
       <button class="btn-obs" @click="$emit('salvar-observacao', 'm1', 'texto')" />
     </div>`,
   },
@@ -210,33 +204,6 @@ describe('FolhaIndividualView', () => {
         registrado_por: 'u1',
       },
       { onConflict: 'oansista_id,bloco_id,item_num' },
-    )
-  })
-
-  it('encaminha salvar-premio para o composable com o registrante', async () => {
-    const bPremios = builder<unknown>([])
-    bPremios.singleData = PREMIO_PROGRESSO
-    mocks.supabase = clienteSupabase({
-      oansistas: () => builder(OANSISTAS),
-      folha_manuais: () => builder(MANUAIS),
-      folha_secoes: () => builder(SECOES),
-      folha_blocos: () => builder(BLOCOS),
-      folha_premio_progresso: () => bPremios,
-    })
-
-    const wrapper = montar()
-    await flushPromises()
-    await wrapper.find('.btn-premio').trigger('click')
-    await flushPromises()
-
-    expect(bPremios.upsert).toHaveBeenCalledWith(
-      {
-        oansista_id: 'o1',
-        bloco_id: 'b1',
-        data_recebimento: '2026-09-10',
-        registrado_por: 'u1',
-      },
-      { onConflict: 'oansista_id,bloco_id' },
     )
   })
 
