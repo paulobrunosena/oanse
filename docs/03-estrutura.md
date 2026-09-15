@@ -72,7 +72,8 @@ oanse/
 │   │
 │   ├── lib/
 │   │   ├── supabase.ts           # client anon (browser) — SÓ anon key
-│   │   └── api.ts                # apiFetch() — wrapper fetch + Bearer token + ApiError
+│   │   ├── api.ts                # apiFetch() — wrapper fetch + Bearer token + ApiError
+│   │   └── theme.ts              # preset PrimeVue (aura-compat + tabs com inkbar deslizante) (+ theme.spec.ts)
 │   │
 │   ├── stores/                   # estado global (Pinia)
 │   │   ├── auth.ts               # user + profile + loadProfile + logout (+ auth.spec.ts)

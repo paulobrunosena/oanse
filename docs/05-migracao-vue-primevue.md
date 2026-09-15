@@ -52,6 +52,13 @@ eslint 10 (flat config) + vue-tsc 3 (typecheck)
 > configurada em `app.use(PrimeVue, { license: '<chave>' })` — sem a chave,
 > apenas um aviso no console é exibido.
 
+> **Tabs com inkbar deslizante:** o preset `aura-compat` mantém o visual antigo
+> do `TabView` (borda inferior estática em cada tab). Para usar o visual novo do
+> `Tabs` (linha que desliza até a tab ativa), `src/lib/theme.ts` sobrescreve os
+> tokens `tabs.tab` (`borderWidth: 0`, `margin: 0`, bordas transparentes) e
+> `tabs.activeBar` (`bottom: 0`), mantendo o restante do `aura-compat` (fonte
+> 14px). `src/main.ts` passa esse preset para `app.use(PrimeVue, ...)`.
+
 > Deploy: **SPA estático** (perde-se SSR — aceitável para sistema interno de
 > administração). Backend das rotas admin via **Vercel Functions** (`api/**`).
 > O Nuxt hoje já é quase tudo client-side; a perda de SSR não afeta a UX.

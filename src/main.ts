@@ -1,9 +1,9 @@
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import PrimeVue from 'primevue/config'
-import Aura from '@primeuix/themes/aura-compat'
 import ConfirmationService from 'primevue/confirmationservice'
 import ToastService from 'primevue/toastservice'
+import { primevuePreset } from '@/lib/theme'
 import '@/assets/tailwind.css'
 import '@/assets/styles.scss'
 import App from './App.vue'
@@ -21,7 +21,7 @@ app.use(router)
 app.use(PrimeVue, {
   license: import.meta.env.VITE_PRIMEUI_LICENSE_KEY || '',
   theme: {
-    preset: Aura,
+    preset: primevuePreset,
     options: { darkModeSelector: '.app-dark' },
   },
 })
