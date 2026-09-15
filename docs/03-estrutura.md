@@ -15,8 +15,8 @@ oanse/
 ├── vitest.config.ts              # happy-dom + alias @ + mesmo auto-import PrimeVue (dts off)
 ├── vercel.json                   # rewrite /api/* -> /api/index (function única h3)
 ├── package.json
-├── tsconfig.json                 # app (src + tests) — vue-tsc
-├── tsconfig.node.json            # server/ + api/ + vite/vitest config (node types)
+├── tsconfig.json                 # app (src + tests) — vue-tsc (npm run typecheck)
+├── tsconfig.node.json            # server/ + api/ + vite/vitest config (tsc -p, incluso no typecheck)
 │
 ├── docs/                         # planejamento e decisões de arquitetura
 │   ├── 01-schema.sql             # DDL, triggers, views + regras de negócio (RN 1..7)

@@ -22,7 +22,7 @@ npm run dev                    # Vite dev server (localhost:5173), com proxy /ap
 npm run dev:api                # servidor local da API (h3, tsx watch) — necessário em dev
 npm run start:api              # sobe a API uma vez
 npm run lint                   # ESLint (rodar antes de todo commit)
-npm run typecheck              # vue-tsc (rodar antes de todo commit)
+npm run typecheck              # vue-tsc (src) + tsc -p tsconfig.node.json (server/api/vite) — rodar antes de todo commit
 npm run test                   # vitest (unit + stores + componentes + composables)
 npm run test:watch             # vitest em modo watch
 npx supabase db reset          # recria banco local (migrations + seed)
