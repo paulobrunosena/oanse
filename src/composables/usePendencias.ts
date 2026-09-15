@@ -48,12 +48,13 @@ export function usePendencias() {
   const pendencias = ref<Pendencia[]>([])
   const carregando = ref(false)
 
-  async function carregar(status?: PendenciaStatus) {
+  async function carregar(status?: PendenciaStatus, clubeId?: string) {
     carregando.value = true
     let query = supabase
       .from('premios_pendentes')
       .select('id, status, data_geracao, data_entrega, oansistas(nome), premios(nome, tipo), clubes(nome)')
     if (status) query = query.eq('status', status)
+    if (clubeId) query = query.eq('clube_id', clubeId)
     query = query.order('data_geracao', { ascending: false })
     const { data, error } = await query
     if (error) throw error
@@ -61,13 +62,16 @@ export function usePendencias() {
     carregando.value = false
   }
 
-  function inscrever() {
+  function inscrever(aoChegar?: (payload: { eventType: string, new: Record<string, unknown> }) => void) {
     const canal = supabase
       .channel('pendencias-realtime')
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'premios_pendentes' },
-        () => { carregar() },
+        (payload: { eventType: string, new: Record<string, unknown> }) => {
+          aoChegar?.(payload)
+          carregar()
+        },
       )
       .subscribe()
     return () => supabase.removeChannel(canal)

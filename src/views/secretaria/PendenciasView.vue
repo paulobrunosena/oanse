@@ -1,16 +1,21 @@
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useConfirm } from 'primevue/useconfirm'
+import { supabase } from '@/lib/supabase'
 import { apiFetch } from '@/lib/api'
 import { useToast } from '@/composables/useToast'
 import { usePendencias, type Pendencia, type PendenciaStatus } from '@/composables/usePendencias'
+import { tocarSomAlerta } from '@/utils/alerta'
 
 const toast = useToast()
 const confirm = useConfirm()
 const { pendencias, carregando, carregar, inscrever } = usePendencias()
 
 const filtroStatus = ref<PendenciaStatus | ''>('pendente')
+const filtroClube = ref<string | ''>('')
 const entregando = ref<string | null>(null)
+
+const clubes = ref<{ id: string, nome: string }[]>([])
 
 const opcoesStatus: { label: string, value: PendenciaStatus | '' }[] = [
   { label: 'Pendentes', value: 'pendente' },
@@ -31,9 +36,15 @@ const severidadeStatus: Record<PendenciaStatus, 'info' | 'success' | 'warn'> = {
   cancelada: 'warn',
 }
 
+async function carregarClubes() {
+  const { data, error } = await supabase.from('clubes').select('id, nome').order('nome')
+  if (error) return
+  clubes.value = (data ?? []) as { id: string, nome: string }[]
+}
+
 async function atualizar() {
   try {
-    await carregar(filtroStatus.value || undefined)
+    await carregar(filtroStatus.value || undefined, filtroClube.value || undefined)
   }
   catch (e) {
     toast.add({
@@ -45,6 +56,16 @@ async function atualizar() {
 }
 
 watch(filtroStatus, atualizar)
+watch(filtroClube, atualizar)
+
+function notificarNovaPendencia() {
+  tocarSomAlerta()
+  toast.add({
+    title: 'Nova pendência de premiação',
+    description: 'Um prêmio acabou de entrar na fila de entrega.',
+    color: 'info',
+  })
+}
 
 function pedirEntrega(p: Pendencia) {
   confirm.require({
@@ -79,8 +100,13 @@ function pedirEntrega(p: Pendencia) {
 let cancelarRealtime: (() => Promise<unknown>) | null = null
 
 onMounted(async () => {
+  await carregarClubes()
   await atualizar()
-  cancelarRealtime = inscrever()
+  cancelarRealtime = inscrever((payload) => {
+    if (payload.eventType === 'INSERT' && payload.new?.status === 'pendente') {
+      notificarNovaPendencia()
+    }
+  })
 })
 
 onBeforeUnmount(() => {
@@ -90,7 +116,7 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="p-4 sm:p-6 max-w-4xl mx-auto w-full">
-    <div class="mb-4 flex items-start justify-between gap-3">
+    <div class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
       <div>
         <h1 class="text-2xl font-bold">
           Pendências de premiação
@@ -99,13 +125,22 @@ onBeforeUnmount(() => {
           Prêmios a entregar, gerados automaticamente ao concluir um bloco da Folha Individual
         </p>
       </div>
-      <Select
-        v-model="filtroStatus"
-        :options="opcoesStatus"
-        option-label="label"
-        option-value="value"
-        class="w-44"
-      />
+      <div class="flex flex-wrap gap-2">
+        <Select
+          v-model="filtroClube"
+          :options="[{ label: 'Todos os clubes', value: '' }, ...clubes.map(c => ({ label: c.nome, value: c.id }))]"
+          option-label="label"
+          option-value="value"
+          class="w-44"
+        />
+        <Select
+          v-model="filtroStatus"
+          :options="opcoesStatus"
+          option-label="label"
+          option-value="value"
+          class="w-44"
+        />
+      </div>
     </div>
 
     <div class="overflow-x-auto">

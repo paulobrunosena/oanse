@@ -17,6 +17,11 @@ const LINHA = {
   clubes: { nome: 'Faíscas' },
 }
 
+const CLUBES = [
+  { id: 'c1', nome: 'Ursinhos' },
+  { id: 'c2', nome: 'Faíscas' },
+]
+
 const mocks = vi.hoisted(() => ({ supabase: null as any }))
 vi.mock('@/lib/supabase', () => ({
   get supabase() { return mocks.supabase },
@@ -30,6 +35,11 @@ vi.mock('primevue/useconfirm', () => ({
 const api = vi.hoisted(() => ({ apiFetch: vi.fn(() => Promise.resolve({})) }))
 vi.mock('@/lib/api', () => ({
   apiFetch: api.apiFetch,
+}))
+
+const alerta = vi.hoisted(() => ({ tocarSomAlerta: vi.fn() }))
+vi.mock('@/utils/alerta', () => ({
+  tocarSomAlerta: alerta.tocarSomAlerta,
 }))
 
 const stubs = {
@@ -63,7 +73,7 @@ const stubs = {
 
 describe('PendenciasView', () => {
   const canal = {
-    on: vi.fn(() => canal),
+    on: vi.fn((_event: string, _filter: object, _cb: (payload: { eventType: string, new: Record<string, unknown> }) => void) => canal),
     subscribe: vi.fn(() => canal),
   }
 
@@ -71,8 +81,14 @@ describe('PendenciasView', () => {
     confirmacao.require.mockReset()
     api.apiFetch.mockReset()
     api.apiFetch.mockResolvedValue({})
+    alerta.tocarSomAlerta.mockClear()
+    canal.on.mockClear()
+    canal.subscribe.mockClear()
     setActivePinia(createPinia())
-    mocks.supabase = clienteSupabase({ premios_pendentes: () => builder([LINHA]) })
+    mocks.supabase = clienteSupabase({
+      premios_pendentes: () => builder([LINHA]),
+      clubes: () => builder(CLUBES),
+    })
     mocks.supabase.channel = vi.fn(() => canal)
     mocks.supabase.removeChannel = vi.fn(() => Promise.resolve())
   })
@@ -83,6 +99,10 @@ describe('PendenciasView', () => {
     })
     await flushPromises()
     return wrapper
+  }
+
+  function handlerRealtime() {
+    return canal.on.mock.calls[0]![2]
   }
 
   it('lista as pendências com oansista, prêmio e clube', async () => {
@@ -98,6 +118,30 @@ describe('PendenciasView', () => {
     await montar()
 
     expect(mocks.supabase.builderDe('premios_pendentes').eq).toHaveBeenCalledWith('status', 'pendente')
+  })
+
+  it('carrega os clubes para o filtro', async () => {
+    await montar()
+
+    expect(mocks.supabase.from).toHaveBeenCalledWith('clubes')
+  })
+
+  it('notifica (som) quando chega uma nova pendência', async () => {
+    await montar()
+
+    handlerRealtime()({ eventType: 'INSERT', new: { status: 'pendente' } })
+    await flushPromises()
+
+    expect(alerta.tocarSomAlerta).toHaveBeenCalledTimes(1)
+  })
+
+  it('não notifica em atualizações de status', async () => {
+    await montar()
+
+    handlerRealtime()({ eventType: 'UPDATE', new: { status: 'entregue' } })
+    await flushPromises()
+
+    expect(alerta.tocarSomAlerta).not.toHaveBeenCalled()
   })
 
   it('entrega o prêmio via API ao confirmar', async () => {

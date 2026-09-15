@@ -40,7 +40,7 @@ describe('normalizarPendencia', () => {
 
 describe('usePendencias', () => {
   const canal = {
-    on: vi.fn(() => canal),
+    on: vi.fn((_event: string, _filter: object, _cb: (p: unknown) => void) => canal),
     subscribe: vi.fn(() => canal),
   }
 
@@ -75,6 +75,14 @@ describe('usePendencias', () => {
     expect(mocks.supabase.builderDe('premios_pendentes').eq).not.toHaveBeenCalled()
   })
 
+  it('aplica o filtro de clube quando informado', async () => {
+    const { carregar } = usePendencias()
+    await carregar('pendente', 'c2')
+
+    expect(mocks.supabase.builderDe('premios_pendentes').eq).toHaveBeenCalledWith('status', 'pendente')
+    expect(mocks.supabase.builderDe('premios_pendentes').eq).toHaveBeenCalledWith('clube_id', 'c2')
+  })
+
   it('inscreve no canal de tempo real e devolve função de cancelamento', () => {
     const { inscrever } = usePendencias()
     const cancelar = inscrever()
@@ -89,5 +97,17 @@ describe('usePendencias', () => {
 
     cancelar()
     expect(mocks.supabase.removeChannel).toHaveBeenCalledWith(canal)
+  })
+
+  it('repassa o payload do realtime ao callback informado', () => {
+    const { inscrever } = usePendencias()
+    const aoChegar = vi.fn()
+    inscrever(aoChegar)
+
+    const handler = canal.on.mock.calls[0]![2]
+    const payload = { eventType: 'INSERT', new: { status: 'pendente' } }
+    handler(payload)
+
+    expect(aoChegar).toHaveBeenCalledWith(payload)
   })
 })
