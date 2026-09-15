@@ -67,6 +67,26 @@ insert into jogos_catalogo (clube_id, nome) values
   ((select id from clubes where slug = 'tochas'),   'revezamento com bola de basquete');
 
 -- ============================================================================
+-- Catálogo de prêmios/materiais da Secretaria (Fase 3).
+-- Os blocos da Folha Individual são vinculados a esses prêmios por nome
+-- (folha_blocos.premio_id), permitindo pendência de entrega e baixa de estoque.
+-- ============================================================================
+insert into premios (nome, tipo, descricao) values
+  ('Distintivo do grau',  'premio', 'Distintivo entregue ao concluir a trilha/prova do grau'),
+  ('Botão vermelho 01',   'botom',  'Exercício bíblico 01'),
+  ('Botão vermelho 02',   'botom',  'Exercício bíblico 02'),
+  ('Botão vermelho 03',   'botom',  'Exercício bíblico 03'),
+  ('Botão vermelho 04',   'botom',  'Exercício bíblico 04'),
+  ('Botão verde 01',      'botom',  'Atividade 01'),
+  ('Botão verde 02',      'botom',  'Atividade 02'),
+  ('Botão verde 03',      'botom',  'Atividade 03'),
+  ('Botão verde 04',      'botom',  'Atividade 04'),
+  ('Botão crédito extra', 'botom',  'Crédito extra'),
+  ('Botão azul',          'botom',  'Frequência à Igreja'),
+  ('Botão amarelo',       'botom',  'Frequência ao Clube')
+on conflict (nome) do nothing;
+
+-- ============================================================================
 -- Catálogo da Folha de Progresso Individual — clube Faíscas (docs/06)
 -- 3 manuais (Saltador/Caminhante/Escalador) × 12 blocos = 36 blocos.
 -- A seção Observações não tem itens (tipo = 'observacoes').
@@ -281,6 +301,13 @@ begin
     values (v_secao, r.bloco, r.bloco_ordem, r.quantidade, r.premio_nome);
   end loop;
 end $$;
+
+-- Vincula cada bloco ao prêmio do catálogo da Secretaria (por nome).
+update folha_blocos b
+set premio_id = p.id
+from premios p
+where p.nome = b.premio_nome
+  and b.premio_id is null;
 
 -- ============================================================================
 -- Usuários de teste (senha: oanse123). O trigger on_auth_user_created cria o

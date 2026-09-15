@@ -77,12 +77,23 @@
 
 ## Fase 3 — Painel da Secretaria
 
-- [ ] Catálogo de prêmios (CRUD `premios`)
+> **Decisão de fluxo (2026-09-15):** a folha individual (docs/06) removeu o
+> gatilho que gerava `premios_pendentes`. Novo desenho acordado: **pendência
+> automática + entrega pela secretaria**. Ao completar todos os itens de um bloco
+> da Folha Individual, um trigger gera a pendência (`premios_pendentes`); a
+> secretaria entrega pelo painel Realtime (status→`entregue` + baixa no estoque +
+> movimentação + data na folha via `server/api/premios/[id]/entregar.post.ts`).
+> A folha mostra o prêmio como só-leitura ("Aguardando entrega" → "Entregue em
+> DD/MM"). Requer vínculo `folha_blocos.premio_id → premios.id` (migration nova).
+
+- [x] Catálogo de prêmios (CRUD `premios`) + migration `folha_blocos.premio_id` + seed do catálogo
 - [ ] Movimentações de estoque (entrada/saída)
 - [ ] Alerta de estoque mínimo
+- [ ] Trigger `fn_gerar_pendencia_premio` (conclusão de bloco → pendência; desmarcar item cancela)
 - [ ] Painel de pendências com Realtime (`premios_pendentes`)
 - [ ] Filtros por clube/status + notificação visual/sonora
 - [ ] `server/api/premios/[id]/entregar.post.ts` (entrega + baixa estoque, transacional)
+- [ ] Folha individual: prêmio só-leitura com status (aguardando/entregue)
 - [ ] Teste: entrega não duplica e dá baixa no estoque
 - [ ] Relatório de premiações por período — Diretor Geral
 

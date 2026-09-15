@@ -50,8 +50,9 @@ oanse/
 │   │   ├── 0014_folha_pontos_por_colocacao.sql # folha: pontos dos jogos por colocação da equipe (jogo_1_lugar..jogo_4_lugar)
 │   │   ├── 0015_folha_individual.sql      # catálogo (manuais/seções/blocos) + progresso + limpeza do progresso_manual legado
 │   │   ├── 0016_folha_individual_rls.sql  # RLS das tabelas da Folha Individual
-│   │   └── 0017_matricular_visitante.sql  # RPC fn_matricular_visitante (converte visitante em oansista)
-│   └── seed.sql                  # clubes, itens de pontuação, config de jogos, catálogo, usuários teste
+│   │   ├── 0017_matricular_visitante.sql  # RPC fn_matricular_visitante (converte visitante em oansista)
+│   │   └── 0018_folha_premio_vincular.sql # folha_blocos.premio_id → premios + índice único premios(nome)
+│   └── seed.sql                  # clubes, itens de pontuação, config de jogos, catálogo, catálogo de prêmios, usuários teste
 │
 ├── public/                       # assets estáticos servidos na raiz (/)
 │   └── logos/
@@ -92,6 +93,7 @@ oanse/
 │   │   ├── useVisitantes.ts      # Folha de Visitantes: cadastro, 3 visitas, lições da Prova de Ingresso e matrícula (RPC 0017) (+ spec.ts)
 │   │   ├── useJogos.ts           # eventos de jogos do sábado: criação, cores, oansistas, rodadas, resultados, finalizar, ranking + catálogo (+ spec.ts)
 │   │   ├── useRanking.ts         # ranking do sábado via RPC fn_ranking_do_encontro + geral (+ spec.ts)
+│   │   ├── usePremios.ts         # catálogo de prêmios da Secretaria (CRUD) (+ spec.ts)
 │   │   └── useToast.ts           # fachada do Toast do PrimeVue (api tipo Nuxt UI)
 │   │   # (planejado) useTurma,
 │   │   # usePendencias (realtime)
@@ -131,7 +133,9 @@ oanse/
 │   │       ├── ClubesView.vue            # Diretor Geral
 │   │       ├── CalendarioView.vue        # sábados sem Oanse (RN 7) — Diretor Geral
 │   │       └── ConfiguracoesView.vue     # itens de pontuação (Folha Semanal, incl. jogos por colocação jogo_1_lugar..jogo_4_lugar) / pontos de jogos
-│   │   # (planejado) encontro/[id]/, secretaria/, relatorios/
+│   │   └── secretaria/
+│   │       └── PremiosView.vue           # Secretaria/Diretor Geral (CRUD do catálogo de prêmios + saldo/estoque mínimo) — rota /secretaria/premios
+│   │   # (planejado) encontro/[id]/, relatorios/
 │   │
 │   ├── components/
 │   │   ├── encontro/

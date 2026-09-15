@@ -27,7 +27,7 @@ function secaoRow(over: Partial<SecaoFolhaRow> & { id: string, manual_id: string
 }
 
 function blocoRow(over: Partial<BlocoFolhaRow> & { id: string, secao_id: string }): BlocoFolhaRow {
-  return { nome: 'Bloco', ordem: 1, quantidade: 1, premio_nome: 'Prêmio', ...over }
+  return { nome: 'Bloco', ordem: 1, quantidade: 1, premio_nome: 'Prêmio', premio_id: null, ...over }
 }
 
 function itemRow(over: Partial<ItemProgressoFolhaRow> & { bloco_id: string, item_num: number }): ItemProgressoFolhaRow {

@@ -261,6 +261,7 @@ export type Database = {
           id: string
           nome: string
           ordem: number
+          premio_id: string | null
           premio_nome: string
           quantidade: number
           secao_id: string
@@ -269,6 +270,7 @@ export type Database = {
           id?: string
           nome: string
           ordem: number
+          premio_id?: string | null
           premio_nome: string
           quantidade: number
           secao_id: string
@@ -277,11 +279,19 @@ export type Database = {
           id?: string
           nome?: string
           ordem?: number
+          premio_id?: string | null
           premio_nome?: string
           quantidade?: number
           secao_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "folha_blocos_premio_id_fkey"
+            columns: ["premio_id"]
+            isOneToOne: false
+            referencedRelation: "premios"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "folha_blocos_secao_id_fkey"
             columns: ["secao_id"]

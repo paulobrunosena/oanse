@@ -3,7 +3,7 @@ import { computed } from 'vue'
 import { useRole } from '@/composables/useRole'
 import AppMenuItem, { type MenuItem } from './AppMenuItem.vue'
 
-const { isDiretorGeral, isDiretorClube, isLiderJogos, isLider } = useRole()
+const { isDiretorGeral, isDiretorClube, isLiderJogos, isLider, isSecretaria } = useRole()
 
 const model = computed<MenuItem[]>(() => {
   const itens: MenuItem[] = [
@@ -44,6 +44,15 @@ const model = computed<MenuItem[]>(() => {
         { label: 'Remanejamentos', icon: 'pi pi-fw pi-arrows-h', to: '/clube/remanejamentos' },
         { label: 'Transferências', icon: 'pi pi-fw pi-arrow-right-arrow-left', to: '/clube/transferencias' },
         { label: 'Ranking', icon: 'pi pi-fw pi-trophy', to: '/clube/ranking' },
+      ],
+    })
+  }
+
+  if (isSecretaria.value || isDiretorGeral.value) {
+    itens.push({
+      label: 'Secretaria',
+      items: [
+        { label: 'Catálogo de prêmios', icon: 'pi pi-fw pi-gift', to: '/secretaria/premios' },
       ],
     })
   }

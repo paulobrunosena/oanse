@@ -57,6 +57,9 @@ create table premios (
   unique (tipo, nivel, secao)
 );
 
+-- nome é a chave de integração com folha_blocos.premio_id (Fase 3)
+create unique index idx_premios_nome on premios(nome);
+
 create table premios_movimentacoes (
   id          uuid primary key default uuid_generate_v4(),
   premio_id   uuid not null references premios(id) on delete cascade,
@@ -313,6 +316,7 @@ create table folha_blocos (
   ordem       int  not null,
   quantidade  int  not null check (quantidade > 0),
   premio_nome text not null,         -- 'Botão vermelho 01', 'Distintivo do grau', ...
+  premio_id   uuid references premios(id),  -- vínculo com o catálogo da Secretaria (Fase 3)
   unique (secao_id, ordem)
 );
 
