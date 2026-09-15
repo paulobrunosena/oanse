@@ -54,6 +54,7 @@ const model = computed<MenuItem[]>(() => {
       items: [
         { label: 'Catálogo de prêmios', icon: 'pi pi-fw pi-gift', to: '/secretaria/premios' },
         { label: 'Pendências de premiação', icon: 'pi pi-fw pi-bell', to: '/secretaria/pendencias' },
+        { label: 'Relatório de premiações', icon: 'pi pi-fw pi-chart-bar', to: '/secretaria/relatorio-premiacoes' },
       ],
     })
   }

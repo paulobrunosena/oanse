@@ -96,6 +96,7 @@ oanse/
 │   │   ├── useRanking.ts         # ranking do sábado via RPC fn_ranking_do_encontro + geral (+ spec.ts)
 │   │   ├── usePremios.ts         # catálogo de prêmios da Secretaria (CRUD) (+ spec.ts)
 │   │   ├── usePendencias.ts      # pendências de premiação (leitura + Realtime) (+ spec.ts)
+│   │   ├── useRelatorioPremiacoes.ts # relatório de premiações por período (+ spec.ts)
 │   │   └── useToast.ts           # fachada do Toast do PrimeVue (api tipo Nuxt UI)
 │   │   # (planejado) useTurma
 │   │
@@ -136,8 +137,9 @@ oanse/
 │   │       └── ConfiguracoesView.vue     # itens de pontuação (Folha Semanal, incl. jogos por colocação jogo_1_lugar..jogo_4_lugar) / pontos de jogos
 │   │   └── secretaria/
 │   │       ├── PremiosView.vue          # Secretaria/Diretor Geral (CRUD do catálogo de prêmios + saldo/estoque mínimo) — rota /secretaria/premios
-│   │       └── PendenciasView.vue       # Secretaria/Diretor Geral (painel de pendências Realtime + entregar) — rota /secretaria/pendencias
-│   │   # (planejado) encontro/[id]/, relatorios/
+│   │       ├── PendenciasView.vue       # Secretaria/Diretor Geral (painel de pendências Realtime + entregar) — rota /secretaria/pendencias
+│   │       └── RelatorioPremiacoesView.vue # Secretaria/Diretor Geral (premiações entregues por período) — rota /secretaria/relatorio-premiacoes
+│   │   # (planejado) encontro/[id]/
 │   │
 │   ├── components/
 │   │   ├── encontro/

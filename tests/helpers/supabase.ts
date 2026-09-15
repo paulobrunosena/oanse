@@ -26,6 +26,8 @@ export function builder<T = unknown>(data: T | null, error: unknown = null) {
     not: vi.fn(() => b),
     order: vi.fn(() => b),
     limit: vi.fn(() => b),
+    gte: vi.fn(() => b),
+    lte: vi.fn(() => b),
     update: vi.fn(() => b),
     insert: vi.fn(() => b),
     upsert: vi.fn(() => b),

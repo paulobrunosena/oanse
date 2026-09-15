@@ -95,7 +95,7 @@
 - [x] `server/api/premios/[id]/entregar.post.ts` + `fn_entregar_premio` (entrega + baixa estoque, transacional)
 - [x] Folha individual: prêmio só-leitura com status (aguardando/entregue)
 - [ ] Teste: entrega não duplica e dá baixa no estoque
-- [ ] Relatório de premiações por período — Diretor Geral
+- [x] Relatório de premiações por período — Diretor Geral
 
 ## Fase 4 — Módulo de Jogos e Ranking Geral
 
