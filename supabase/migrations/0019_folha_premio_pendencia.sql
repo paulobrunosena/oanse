@@ -50,7 +50,14 @@ begin
   if v_concluidos >= v_quantidade then
     insert into premios_pendentes (oansista_id, premio_id, clube_id, bloco_id)
     values (p_oansista_id, v_premio_id, v_clube_id, p_bloco_id)
-    on conflict (oansista_id, premio_id) do nothing;
+    on conflict (oansista_id, premio_id) do update
+      set status = 'pendente',
+          bloco_id = excluded.bloco_id,
+          clube_id = excluded.clube_id,
+          data_geracao = now(),
+          data_entrega = null,
+          entregue_por = null
+      where premios_pendentes.status = 'cancelada';
   else
     update premios_pendentes
        set status = 'cancelada'
