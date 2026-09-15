@@ -66,7 +66,7 @@ create table premios_movimentacoes (
   tipo        text not null check (tipo in ('entrada', 'saida')),
   quantidade  int  not null check (quantidade > 0),
   observacao  text,
-  feito_por   uuid not null references auth.users(id),
+  feito_por   uuid not null references profiles(id) on delete cascade,
   created_at  timestamptz not null default now()
 );
 
@@ -867,6 +867,13 @@ create trigger trg_folha_pontos_jogos_presenca
 -- estoque + movimentação + data na folha), chamada pelo server/api com
 -- service_role. (O legado fn_gerar_pendencia_premio/trg_gerar_pendencia_premio
 -- foi removido na migration 0015.)
+
+-- Movimentação manual de estoque (Fase 3, polimento): `fn_movimentar_estoque`
+-- registra entrada/saída de forma transacional (valida autorização — apenas
+-- diretor_geral/secretaria —, quantidade > 0 e saldo suficiente na saída;
+-- atualiza `premios.estoque` e grava `premios_movimentacoes`). Chamada pelo
+-- server/api com service_role (migration 0020). O alerta de estoque mínimo
+-- (estoque <= estoque_min) é derivado no painel da Secretaria.
 
 -- ----------------------------------------------------------------------------
 -- VIEWS

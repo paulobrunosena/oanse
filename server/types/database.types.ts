@@ -894,6 +894,13 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "premios_movimentacoes_feito_por_fkey"
+            columns: ["feito_por"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "premios_movimentacoes_premio_id_fkey"
             columns: ["premio_id"]
             isOneToOne: false
@@ -1529,6 +1536,30 @@ export type Database = {
         SetofOptions: {
           from: "*"
           to: "oansistas"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      fn_movimentar_estoque: {
+        Args: {
+          p_autorizado_por: string
+          p_observacao?: string
+          p_premio_id: string
+          p_quantidade: number
+          p_tipo: string
+        }
+        Returns: {
+          created_at: string
+          feito_por: string
+          id: string
+          observacao: string | null
+          premio_id: string
+          quantidade: number
+          tipo: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "premios_movimentacoes"
           isOneToOne: true
           isSetofReturn: false
         }
