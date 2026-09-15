@@ -30,7 +30,7 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 401, statusMessage: 'Não autenticado' })
   }
 
-  const body = await readBody<RetroBody>(event).catch(() => ({}))
+  const body = await readBody<RetroBody>(event).catch(() => ({} as RetroBody))
   const data = body?.data ?? ''
 
   const validacao = validarDataRetroativa(data)
