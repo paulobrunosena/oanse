@@ -75,8 +75,10 @@
 > implementados. A folha semanal pontua por **colocação da equipe** nos jogos
 > (itens configuráveis `jogo_1_lugar`..`jogo_4_lugar`, default 5/4/3/2 — migrations
 > 0013/0014) e o ranking das cores segue pela soma das rodadas (`jogos_pontos_config`).
-> Pendentes: relatórios de frequência/premiação acumulada, PWA,
-> offline e deploy de produção.
+> **Relatório de frequência acumulada (2026-09-16):** implementado via RPC
+> `fn_frequencia_acumulada` (migration 0021) com escopo por perfil e tela
+> `/secretaria/relatorio-frequencia`. Pendentes: relatório de premiações
+> acumuladas, PWA, offline e deploy de produção.
 
 **Entrega:** MVP completo. Produção: Vercel (frontend, variáveis `NUXT_PUBLIC_SUPABASE_*`) + Supabase Cloud (mesmas migrations; revisar chaves e ativar MFA no painel).
 

@@ -1537,6 +1537,18 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      fn_frequencia_acumulada: {
+        Args: { p_ate: string; p_de: string }
+        Returns: {
+          clube_nome: string
+          faltas: number
+          oansista_id: string
+          oansista_nome: string
+          presencas: number
+          total_encontros: number
+          turma_nome: string
+        }[]
+      }
       fn_lider_da_turma: { Args: { p_turma_id: string }; Returns: boolean }
       fn_matricular_visitante: {
         Args: { p_turma_id?: string; p_visitante_id: string }

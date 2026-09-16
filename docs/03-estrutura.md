@@ -57,7 +57,8 @@ oanse/
 │   │   ├── 0020_estoque_movimentacoes.sql # movimentação manual de estoque (fn_movimentar_estoque) + FK feito_por → profiles
 │   │   ├── 0021_seguranca_autorizacao.sql # signup sem papel do cliente, `ativo` na autorização, checagens NULL-safe, EXECUTE restrito (RPCs server-only + anon fora) e gate nos rankings
 │   │   ├── 0022_integridade_dados.sql    # recálculo zera quem saiu do evento, exclusões recalculam pós-cascata, total sempre recalculado, teto de item_num, entrega com lock/estoque verificado e RPC fn_registrar_rodada
-│   │   └── 0023_indices.sql              # remove índices redundantes (prefixo de UNIQUE), cobre FKs sem índice e o composto do painel de pendências
+│   │   ├── 0023_indices.sql              # remove índices redundantes (prefixo de UNIQUE), cobre FKs sem índice e o composto do painel de pendências
+│   │   └── 0024_frequencia_acumulada.sql # RPC fn_frequencia_acumulada (relatório de frequência por período, escopo por perfil)
 │   └── seed.sql                  # clubes, itens de pontuação, config de jogos, catálogo, catálogo de prêmios, usuários teste
 │
 ├── public/                       # assets estáticos servidos na raiz (/)
@@ -103,6 +104,7 @@ oanse/
 │   │   ├── useEstoque.ts         # movimentações de estoque (entrada/saída) + histórico (+ spec.ts)
 │   │   ├── usePendencias.ts      # pendências de premiação (leitura + filtros + Realtime) (+ spec.ts)
 │   │   ├── useRelatorioPremiacoes.ts # relatório de premiações por período (+ spec.ts)
+│   │   ├── useRelatorioFrequencia.ts # relatório de frequência acumulada via RPC fn_frequencia_acumulada + percentual (+ spec.ts)
 │   │   └── useToast.ts           # fachada do Toast do PrimeVue (api tipo Nuxt UI)
 │   │   # (planejado) useTurma
 │   │
@@ -144,7 +146,8 @@ oanse/
 │   │   └── secretaria/
 │   │       ├── PremiosView.vue          # Secretaria/Diretor Geral (CRUD do catálogo de prêmios + alerta de estoque mínimo + movimentações de estoque) — rota /secretaria/premios
 │   │       ├── PendenciasView.vue       # Secretaria/Diretor Geral (painel de pendências Realtime + filtros clube/status + notificação visual/sonora + entregar) — rota /secretaria/pendencias
-│   │       └── RelatorioPremiacoesView.vue # Secretaria/Diretor Geral (premiações entregues por período) — rota /secretaria/relatorio-premiacoes
+│   │       ├── RelatorioPremiacoesView.vue # Secretaria/Diretor Geral (premiações entregues por período) — rota /secretaria/relatorio-premiacoes
+│   │       └── RelatorioFrequenciaView.vue # Secretaria/Diretor Geral (presenças/faltas acumuladas por oansista) — rota /secretaria/relatorio-frequencia
 │   │   # (planejado) encontro/[id]/
 │   │
 │   ├── components/
