@@ -21,7 +21,7 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: 'ID da pendência ausente' })
   }
 
-  const body = await readBody<{ observacao?: string }>(event)
+  const body = (await readBody<{ observacao?: string }>(event)) ?? {}
 
   const admin = supabaseAdmin()
 

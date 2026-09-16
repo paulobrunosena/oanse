@@ -71,6 +71,21 @@ describe('rotas de premios (server/router.ts)', () => {
     })
   })
 
+  it('aceita entrega sem body (observacao é opcional)', async () => {
+    const res = await handler({
+      method: 'POST',
+      path: '/api/premios/pend1/entregar',
+      headers: { 'content-type': 'application/json', authorization: 'Bearer token' },
+    })
+
+    expect(res.status).toBe(200)
+    expect(mocks.rpc).toHaveBeenCalledWith('fn_entregar_premio', {
+      p_pendencia_id: 'pend1',
+      p_autorizado_por: 'sec-1',
+      p_observacao: undefined,
+    })
+  })
+
   it('normaliza observacao vazia para undefined na movimentação', async () => {
     const res = await post('/api/premios/p1/movimentacoes', {
       tipo: 'saida',
