@@ -4,6 +4,7 @@ import { useAuth } from '@/composables/useAuth'
 import { useEncontro } from '@/composables/useEncontro'
 import { useRemanejamentos, type TurmaRemanejamento } from '@/composables/useRemanejamentos'
 import { useToast } from '@/composables/useToast'
+import ActionButton from '@/components/ActionButton.vue'
 
 const { profile } = useAuth()
 const { user } = useAuth()
@@ -195,12 +196,11 @@ onMounted(carregarTudo)
               :loading="processandoId === t.id"
               @click="aplicar(t)"
             />
-            <Button
+            <ActionButton
               v-if="remanejamentoDe(t.id)"
               icon="pi pi-trash"
+              label="Remover remanejamento"
               severity="danger"
-              text
-              aria-label="Remover remanejamento"
               @click="removerRemanejamento(t)"
             />
           </div>

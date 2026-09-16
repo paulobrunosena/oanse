@@ -5,6 +5,7 @@ import { useToast } from '@/composables/useToast'
 import { usePremios, type Premio, type PremioForm, type PremioTipo } from '@/composables/usePremios'
 import { useEstoque, type TipoMovimentacao } from '@/composables/useEstoque'
 import { formatarDataHora } from '@/utils/data'
+import ActionButton from '@/components/ActionButton.vue'
 
 const toast = useToast()
 const confirm = useConfirm()
@@ -256,29 +257,20 @@ onMounted(carregar)
         <Column header="" style="width: 140px">
           <template #body="{ data }">
             <div class="flex justify-end">
-              <Button
+              <ActionButton
                 icon="pi pi-box"
-                text
-                rounded
-                size="small"
-                aria-label="Movimentações"
+                label="Movimentações"
                 @click="abrirMovimentacoes(data)"
               />
-              <Button
+              <ActionButton
                 icon="pi pi-pencil"
-                text
-                rounded
-                size="small"
-                aria-label="Editar"
+                label="Editar"
                 @click="abrirEdicao(data)"
               />
-              <Button
+              <ActionButton
                 icon="pi pi-trash"
-                text
-                rounded
-                size="small"
+                label="Excluir"
                 severity="danger"
-                aria-label="Excluir"
                 @click="pedirExclusao(data)"
               />
             </div>

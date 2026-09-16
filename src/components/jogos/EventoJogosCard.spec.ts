@@ -1,5 +1,6 @@
-import { describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it } from 'vitest'
 import { mount } from '@vue/test-utils'
+import { createPinia, setActivePinia } from 'pinia'
 import EventoJogosCard from './EventoJogosCard.vue'
 import type { EventoJogo } from '@/composables/useJogos'
 
@@ -41,6 +42,10 @@ const stubs = {
 }
 
 describe('EventoJogosCard', () => {
+  beforeEach(() => {
+    setActivePinia(createPinia())
+  })
+
   it('renderiza nome, clubes e cores participantes', () => {
     const wrapper = mount(EventoJogosCard, {
       props: { evento: EVENTO, oansistas: [{ id: 'o2', nome: 'Beto', clube_id: 'c1', clube: { nome: 'Flamas', cor: '#22C55E' } }] },
@@ -199,7 +204,7 @@ describe('EventoJogosCard', () => {
       props: { evento: comQuatro },
       global: { stubs },
     })
-    const botoesRemover = wrapper.findAll('button').filter(b => b.attributes('title') === 'Remover cor')
+    const botoesRemover = wrapper.findAll('button').filter(b => b.attributes('aria-label') === 'Remover cor')
     await botoesRemover[0]!.trigger('click')
     expect(wrapper.emitted('remover-cor')).toEqual([['cor1']])
   })

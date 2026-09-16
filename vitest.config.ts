@@ -23,6 +23,7 @@ export default defineConfig({
     globals: false,
     clearMocks: true,
     restoreMocks: true,
+    setupFiles: ['tests/setup.ts'],
     include: ['src/**/*.spec.ts', 'server/**/*.spec.ts', 'tests/**/*.spec.ts'],
     exclude: ['node_modules/**', 'dist/**'],
   },

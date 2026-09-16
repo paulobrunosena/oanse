@@ -2,6 +2,7 @@
 import { computed, reactive, ref, watch } from 'vue'
 import type { EventoCor, RodadaJogo } from '@/composables/useJogos'
 import { corHex, pontosDaColocacao, type PontosJogosConfig } from '@/utils/jogos'
+import ActionButton from '@/components/ActionButton.vue'
 
 export interface RodadaResultadoInput {
   cor_id: string
@@ -188,12 +189,11 @@ function aoDefinirPlacar(rodada: RodadaJogo, corId: string, valor: string) {
                 @update:model-value="valor => aoDefinirPlacar(rodada, cor.id, valor as string)"
               />
             </div>
-            <Button
+            <ActionButton
               icon="pi pi-trash"
+              label="Excluir rodada"
               severity="danger"
-              text
-              size="small"
-              title="Excluir rodada"
+              :rounded="false"
               @click="$emit('excluir-rodada', rodada.id)"
             />
           </div>

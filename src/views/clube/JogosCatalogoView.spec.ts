@@ -91,7 +91,7 @@ describe('JogosCatalogoView', () => {
     })
     await flushPromises()
 
-    const botaoExcluir = wrapper.findAll('button').find(b => b.attributes('title') === 'Excluir')
+    const botaoExcluir = wrapper.findAll('button').find(b => b.attributes('aria-label') === 'Excluir')
     expect(botaoExcluir).toBeDefined()
     await botaoExcluir!.trigger('click')
     await flushPromises()

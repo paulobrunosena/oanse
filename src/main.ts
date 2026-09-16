@@ -3,6 +3,7 @@ import { createPinia } from 'pinia'
 import PrimeVue from 'primevue/config'
 import ConfirmationService from 'primevue/confirmationservice'
 import ToastService from 'primevue/toastservice'
+import Tooltip from 'primevue/tooltip'
 import { primevuePreset } from '@/lib/theme'
 import '@/assets/tailwind.css'
 import '@/assets/styles.scss'
@@ -27,6 +28,7 @@ app.use(PrimeVue, {
 })
 app.use(ToastService)
 app.use(ConfirmationService)
+app.directive('tooltip', Tooltip)
 
 // Aguarda a primeira navegação (guards de sessão/perfil) antes de montar —
 // evita o flash de shell vazio/rota errada na abertura.

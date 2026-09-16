@@ -6,6 +6,7 @@ import { useAuth } from '@/composables/useAuth'
 import { useJogos } from '@/composables/useJogos'
 import { useRole } from '@/composables/useRole'
 import { useToast } from '@/composables/useToast'
+import ActionButton from '@/components/ActionButton.vue'
 import type { Database } from '@/types/database.types'
 
 type Clube = Database['public']['Tables']['clubes']['Row']
@@ -192,18 +193,18 @@ onMounted(carregarTudo)
                   @keyup.enter="salvarEdicao(item.id)"
                 />
                 <div class="flex items-center gap-1 shrink-0">
-                  <Button
+                  <ActionButton
                     icon="pi pi-check"
+                    label="Salvar"
                     severity="success"
-                    text
-                    size="small"
+                    :rounded="false"
                     @click="salvarEdicao(item.id)"
                   />
-                  <Button
+                  <ActionButton
                     icon="pi pi-times"
+                    label="Cancelar"
                     severity="secondary"
-                    text
-                    size="small"
+                    :rounded="false"
                     @click="editandoId = null"
                   />
                 </div>
@@ -211,20 +212,18 @@ onMounted(carregarTudo)
               <template v-else>
                 <span class="truncate text-sm">{{ item.nome }}</span>
                 <div class="flex items-center gap-1 shrink-0">
-                  <Button
+                  <ActionButton
                     icon="pi pi-pencil"
+                    label="Editar"
                     severity="secondary"
-                    text
-                    size="small"
-                    title="Editar"
+                    :rounded="false"
                     @click="iniciarEdicao(item.id, item.nome)"
                   />
-                  <Button
+                  <ActionButton
                     icon="pi pi-trash"
+                    label="Excluir"
                     severity="danger"
-                    text
-                    size="small"
-                    title="Excluir"
+                    :rounded="false"
                     @click="excluir(item.id, item.nome)"
                   />
                 </div>

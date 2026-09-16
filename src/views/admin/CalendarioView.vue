@@ -3,6 +3,7 @@ import { onMounted, reactive, ref } from 'vue'
 import { supabase } from '@/lib/supabase'
 import { useToast } from '@/composables/useToast'
 import { formatarDataCurta } from '@/utils/data'
+import ActionButton from '@/components/ActionButton.vue'
 import type { Database } from '@/types/database.types'
 
 type DiaSemOanse = Database['public']['Tables']['dias_sem_oanse']['Row']
@@ -139,13 +140,10 @@ async function excluir(row: DiaSemOanse) {
       <Column header="" style="width: 70px">
         <template #body="{ data }">
           <div class="flex justify-end">
-            <Button
+            <ActionButton
               icon="pi pi-trash"
-              text
-              rounded
+              label="Excluir"
               severity="danger"
-              size="small"
-              aria-label="Excluir"
               @click="excluir(data)"
             />
           </div>

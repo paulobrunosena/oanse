@@ -88,7 +88,8 @@ oanse/
 │   ├── stores/                   # estado global (Pinia)
 │   │   ├── auth.ts               # user + profile + loadProfile + logout (+ auth.spec.ts)
 │   │   ├── role.ts               # isDiretorGeral, roleLabel, hasAny (+ role.spec.ts)
-│   │   └── encontro.ts           # sábado corrente + histórico + RN 7 + sábados faltantes/retro (+ encontro.spec.ts)
+│   │   ├── encontro.ts           # sábado corrente + histórico + RN 7 + sábados faltantes/retro (+ encontro.spec.ts)
+│   │   └── preferencias.ts       # rotulosAcoes (mostrar texto nos botões de ação) persistido em localStorage (+ preferencias.spec.ts)
 │   │   # (planejado) folha, remanejamento, transferência como stores se forem globais
 │   │
 │   ├── composables/
@@ -154,6 +155,7 @@ oanse/
 │   │   # (planejado) encontro/[id]/
 │   │
 │   ├── components/
+│   │   ├── ActionButton.vue      # botão de ação só-ícone com tooltip (v-tooltip) + rótulo condicional pela pref. rotulosAcoes + aria-label (+ ActionButton.spec.ts)
 │   │   ├── encontro/
 │   │   │   ├── EncontroSeletor.vue     # seletor de sábado (histórico) — Chamada/Folha
 │   │   │   ├── EncontroSeletor.spec.ts

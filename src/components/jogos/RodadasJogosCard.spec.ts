@@ -1,5 +1,6 @@
-import { describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it } from 'vitest'
 import { mount } from '@vue/test-utils'
+import { createPinia, setActivePinia } from 'pinia'
 import RodadasJogosCard from './RodadasJogosCard.vue'
 import type { EventoCor, RodadaJogo } from '@/composables/useJogos'
 
@@ -39,6 +40,10 @@ const stubs = {
 }
 
 describe('RodadasJogosCard', () => {
+  beforeEach(() => {
+    setActivePinia(createPinia())
+  })
+
   it('não duplica a borda do painel do stepper (header e lista com divisores)', () => {
     const wrapper = mount(RodadasJogosCard, {
       props: { rodadas: RODADAS, cores: CORES, opcoesNomes: ['maratona'], nomeInicial: '' },
@@ -84,7 +89,7 @@ describe('RodadasJogosCard', () => {
       props: { rodadas: RODADAS, cores: CORES, opcoesNomes: ['maratona'], nomeInicial: '' },
       global: { stubs },
     })
-    const excluir = wrapper.findAll('button').find(b => b.attributes('title') === 'Excluir rodada')
+    const excluir = wrapper.findAll('button').find(b => b.attributes('aria-label') === 'Excluir rodada')
     await excluir!.trigger('click')
     expect(wrapper.emitted('excluir-rodada')).toEqual([['j1']])
   })

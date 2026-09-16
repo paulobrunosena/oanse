@@ -1,11 +1,17 @@
 <script setup lang="ts">
+import { storeToRefs } from 'pinia'
 import { useLayout } from './composables/layout'
 import { useAuth } from '@/composables/useAuth'
 import { useRole } from '@/composables/useRole'
+import { usePreferenciasStore } from '@/stores/preferencias'
+import ActionButton from '@/components/ActionButton.vue'
 
 const { toggleMenu, toggleDarkMode, isDarkTheme } = useLayout()
 const { profile, logout } = useAuth()
 const { roleLabel } = useRole()
+
+const preferencias = usePreferenciasStore()
+const { rotulosAcoes } = storeToRefs(preferencias)
 </script>
 
 <template>
@@ -14,6 +20,7 @@ const { roleLabel } = useRole()
       <button
         class="layout-menu-button layout-topbar-action"
         aria-label="Alternar menu"
+        v-tooltip="'Alternar menu'"
         @click="toggleMenu"
       >
         <i class="pi pi-bars" />
@@ -35,7 +42,19 @@ const { roleLabel } = useRole()
         <button
           type="button"
           class="layout-topbar-action"
+          :class="{ 'layout-topbar-action-highlight': rotulosAcoes }"
+          :aria-label="rotulosAcoes ? 'Ocultar texto nas ações' : 'Mostrar texto nas ações'"
+          v-tooltip="rotulosAcoes ? 'Ocultar texto nas ações' : 'Mostrar texto nas ações'"
+          @click="preferencias.alternarRotulosAcoes()"
+        >
+          <i class="pi pi-tag" />
+        </button>
+
+        <button
+          type="button"
+          class="layout-topbar-action"
           :aria-label="isDarkTheme ? 'Modo claro' : 'Modo escuro'"
+          v-tooltip="isDarkTheme ? 'Modo claro' : 'Modo escuro'"
           @click="toggleDarkMode"
         >
           <i :class="['pi', isDarkTheme ? 'pi-sun' : 'pi-moon']" />
@@ -53,12 +72,9 @@ const { roleLabel } = useRole()
               <span class="text-sm font-semibold text-surface-900 dark:text-surface-0">{{ profile?.nome }}</span>
               <span class="text-xs text-surface-500 dark:text-surface-400">{{ roleLabel }}</span>
             </div>
-            <Button
+            <ActionButton
               icon="pi pi-sign-out"
-              text
-              rounded
-              size="small"
-              aria-label="Sair"
+              label="Sair"
               @click="logout"
             />
           </div>

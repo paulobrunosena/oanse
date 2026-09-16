@@ -3,6 +3,7 @@ import { computed, onMounted, reactive, ref } from 'vue'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/composables/useAuth'
 import { useToast } from '@/composables/useToast'
+import ActionButton from '@/components/ActionButton.vue'
 import type { Database } from '@/types/database.types'
 
 type Turma = Database['public']['Tables']['turmas']['Row']
@@ -186,20 +187,14 @@ async function alternarAtivo(t: Turma & { lider_nome: string | null }) {
       <Column header="" style="width: 100px">
         <template #body="{ data }">
           <div class="flex gap-1 justify-end">
-            <Button
+            <ActionButton
               icon="pi pi-pencil"
-              text
-              rounded
-              size="small"
-              aria-label="Editar"
+              label="Editar"
               @click="abrirEdicao(data)"
             />
-            <Button
+            <ActionButton
               :icon="data.ativo ? 'pi pi-circle-off' : 'pi pi-check-circle'"
-              text
-              rounded
-              size="small"
-              :aria-label="data.ativo ? 'Desativar' : 'Ativar'"
+              :label="data.ativo ? 'Desativar' : 'Ativar'"
               @click="alternarAtivo(data)"
             />
           </div>

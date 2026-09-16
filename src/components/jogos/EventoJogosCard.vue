@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue'
 import type { EventoCor, EventoJogo, JogoIntegrante, OansistaOpcao } from '@/composables/useJogos'
 import { CORES_PREDEFINIDAS, corHex } from '@/utils/jogos'
+import ActionButton from '@/components/ActionButton.vue'
 
 const props = withDefaults(defineProps<{
   evento: EventoJogo
@@ -85,12 +86,11 @@ function estiloDoClube(i: JogoIntegrante) {
               {{ cor.oansistas.length }} criança(s)
             </Tag>
           </div>
-          <Button
+          <ActionButton
             icon="pi pi-times"
+            label="Remover cor"
             severity="danger"
-            text
-            size="small"
-            title="Remover cor"
+            :rounded="false"
             :disabled="evento.cores.length <= 2 || evento.status === 'finalizado'"
             @click="$emit('remover-cor', cor.id)"
           />
@@ -112,6 +112,7 @@ function estiloDoClube(i: JogoIntegrante) {
                   type="button"
                   class="pi pi-times cursor-pointer text-[10px] hover:opacity-70"
                   :title="`Remover ${i.nome} desta cor`"
+                  :aria-label="`Remover ${i.nome} desta cor`"
                   @click="$emit('remover-oansista', cor.id, i.oansista_id)"
                 />
               </span>

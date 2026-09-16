@@ -3,6 +3,7 @@ import { onMounted, reactive, ref } from 'vue'
 import { supabase } from '@/lib/supabase'
 import { apiFetch } from '@/lib/api'
 import { useToast } from '@/composables/useToast'
+import ActionButton from '@/components/ActionButton.vue'
 import type { UserRole } from '@/composables/useAuth'
 
 type Usuario = {
@@ -199,21 +200,15 @@ async function confirmarExclusao() {
       <Column header="" style="width: 90px">
         <template #body="{ data }">
           <div class="flex gap-1 justify-end">
-            <Button
+            <ActionButton
               icon="pi pi-pencil"
-              text
-              rounded
-              size="small"
-              aria-label="Editar"
+              label="Editar"
               @click="abrirEdicao(data)"
             />
-            <Button
+            <ActionButton
               icon="pi pi-trash"
-              text
-              rounded
+              label="Excluir"
               severity="danger"
-              size="small"
-              aria-label="Excluir"
               @click="excluindo = data"
             />
           </div>

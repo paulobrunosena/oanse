@@ -7,6 +7,7 @@ import { useRole } from '@/composables/useRole'
 import { useToast } from '@/composables/useToast'
 import { useTransferenciaClube } from '@/composables/useTransferenciaClube'
 import { avaliarIdadeClube, clubeParaProgredir, idadeEmAnos, type ClubeFaixa } from '@/utils/idade'
+import ActionButton from '@/components/ActionButton.vue'
 import type { Database } from '@/types/database.types'
 
 type Oansista = Database['public']['Tables']['oansistas']['Row']
@@ -457,41 +458,29 @@ const STATUS_TAG: Record<Oansista['status'], { label: string, severity: string }
       <Column header="" style="width: 110px">
         <template #body="{ data }">
           <div class="flex justify-end gap-1">
-            <Button
+            <ActionButton
               v-if="podeTransferir && data.status === 'ativo' && clubeParaProgredir(clubes, data.data_nascimento, data.clube_id)"
               icon="pi pi-angle-double-right"
-              text
-              rounded
-              size="small"
+              label="Progredir de clube"
               :loading="progredindoId === data.id"
-              aria-label="Progredir de clube"
               @click="confirmarProgredir(data)"
             />
-            <Button
+            <ActionButton
               v-if="podeTransferir && data.status === 'ativo'"
               icon="pi pi-arrow-right"
-              text
-              rounded
-              size="small"
-              aria-label="Mudar de clube"
+              label="Mudar de clube"
               @click="abrirTransferir(data)"
             />
-            <Button
+            <ActionButton
               v-if="podeTransferir && data.status === 'transferido'"
               icon="pi pi-undo"
-              text
-              rounded
-              size="small"
+              label="Cancelar transferência"
               :loading="cancelandoTransferencia"
-              aria-label="Cancelar transferência"
               @click="cancelarTransferencia(data)"
             />
-            <Button
+            <ActionButton
               icon="pi pi-pencil"
-              text
-              rounded
-              size="small"
-              aria-label="Editar"
+              label="Editar"
               @click="abrirEdicao(data)"
             />
           </div>

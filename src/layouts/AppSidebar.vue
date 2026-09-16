@@ -5,6 +5,7 @@ import { useLayout } from './composables/layout'
 import { useAuth } from '@/composables/useAuth'
 import { useRole } from '@/composables/useRole'
 import AppMenu from './AppMenu.vue'
+import ActionButton from '@/components/ActionButton.vue'
 
 const { layoutState, isDesktop, hasOpenOverlay } = useLayout()
 const { profile, logout } = useAuth()
@@ -85,13 +86,10 @@ onBeforeUnmount(() => {
           <span class="truncate text-sm font-semibold text-surface-900 dark:text-surface-0">{{ profile?.nome }}</span>
           <span class="text-xs text-surface-500 dark:text-surface-400">{{ roleLabel }}</span>
         </div>
-        <Button
+        <ActionButton
           icon="pi pi-sign-out"
-          text
-          rounded
-          size="small"
+          label="Sair"
           class="ml-auto"
-          aria-label="Sair"
           @click="logout"
         />
       </div>

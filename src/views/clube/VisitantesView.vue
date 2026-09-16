@@ -8,6 +8,7 @@ import { useVisitantes, type StatusVisitante } from '@/composables/useVisitantes
 import { avaliarIdadeClube } from '@/utils/idade'
 import VisitaTracker from '@/components/folha/VisitaTracker.vue'
 import ProvaIngressoCard from '@/components/folha/ProvaIngressoCard.vue'
+import ActionButton from '@/components/ActionButton.vue'
 import type { Database } from '@/types/database.types'
 
 type VisitanteRow = Database['public']['Tables']['visitantes']['Row']
@@ -369,12 +370,9 @@ onMounted(() => {
           <Column header="" style="width: 70px">
             <template #body="{ data }">
               <div class="flex justify-end">
-                <Button
+                <ActionButton
                   icon="pi pi-eye"
-                  text
-                  rounded
-                  size="small"
-                  aria-label="Ver detalhes"
+                  label="Ver detalhes"
                   @click="abrirDetalhe(data)"
                 />
               </div>
@@ -467,7 +465,7 @@ onMounted(() => {
           </div>
           <div class="flex items-center gap-2">
             <Tag :severity="STATUS_SEVERITY[visitanteSel.status]" :value="STATUS_LABEL[visitanteSel.status]" />
-            <Button icon="pi pi-pencil" text rounded size="small" aria-label="Editar" @click="abrirEdicao(visitanteSel)" />
+            <ActionButton icon="pi pi-pencil" label="Editar" @click="abrirEdicao(visitanteSel)" />
           </div>
         </div>
 
