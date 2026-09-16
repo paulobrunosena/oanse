@@ -105,6 +105,12 @@ const form = reactive({
   status: 'em_visitas' as StatusVisitante,
 })
 
+const statusTravado = computed(() => {
+  if (!editandoId.value) return false
+  const v = visitantes.value.find(x => x.id === editandoId.value)
+  return !!v && (v.status === 'matriculado' || v.oansista_origem_id != null)
+})
+
 function abrirCriar() {
   editandoId.value = null
   Object.assign(form, { nome: '', data_nascimento: '', responsavel: '', contato: '', indicado_por: null, status: 'em_visitas' })
@@ -370,7 +376,11 @@ onMounted(() => {
             option-label="label"
             option-value="value"
             class="w-full"
+            :disabled="statusTravado"
           />
+          <small v-if="statusTravado" class="text-surface-500">
+            A situação de um visitante matriculado (ou em transferência) não pode ser alterada.
+          </small>
         </div>
         <div class="flex justify-end gap-2">
           <Button label="Cancelar" text @click="formModal = false" />

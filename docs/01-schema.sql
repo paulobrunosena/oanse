@@ -1076,6 +1076,35 @@ create trigger trg_validar_licao_prova
   before insert or update of licao on prova_ingresso_licoes
   for each row execute function fn_validar_licao_prova();
 
+-- Congela a situação de visitantes já matriculados (migration 0023).
+-- RN 8: uma vez matriculado (status 'matriculado'), o registro vira histórico e
+-- a situação NÃO é mais editável. Também protege o visitante vindo de
+-- transferência de clube (oansista_origem_id preenchido): a situação só evolui
+-- para 'matriculado' via fn_matricular_visitante (security definer), nunca por
+-- UPDATE manual via RLS/anon. Atualizações que repetem o mesmo status são
+-- inofensivas (permitem editar nome/contato sem tocar na situação).
+create or replace function fn_travar_status_visitante()
+returns trigger language plpgsql security definer set search_path = public as $$
+begin
+  if new.status is not distinct from old.status then
+    return new;
+  end if;
+
+  if old.status = 'matriculado' then
+    raise exception 'A situação de um visitante matriculado não pode ser alterada';
+  end if;
+
+  if old.oansista_origem_id is not null and new.status <> 'matriculado' then
+    raise exception 'A situação de um visitante em transferência só muda para Matriculado';
+  end if;
+
+  return new;
+end $$;
+
+create trigger trg_travar_status_visitante
+  before update of status on visitantes
+  for each row execute function fn_travar_status_visitante();
+
 -- ----------------------------------------------------------------------------
 -- VIEWS
 -- ----------------------------------------------------------------------------

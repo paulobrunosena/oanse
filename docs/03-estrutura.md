@@ -59,7 +59,8 @@ oanse/
 │   │   ├── 0022_integridade_dados.sql    # recálculo zera quem saiu do evento, exclusões recalculam pós-cascata, total sempre recalculado, teto de item_num, entrega com lock/estoque verificado e RPC fn_registrar_rodada
 │   │   ├── 0023_indices.sql              # remove índices redundantes (prefixo de UNIQUE), cobre FKs sem índice e o composto do painel de pendências
 │   │   ├── 0024_frequencia_acumulada.sql # RPC fn_frequencia_acumulada (relatório de frequência por período, escopo por perfil)
-│   │   └── 0025_visitantes_licoes_clube.sql # qtd_licoes por clube, vínculos visitante<->oansista, transferências_clube + RPCs matricular/transferir/cancelar (RN 8/9)
+│   │   ├── 0025_visitantes_licoes_clube.sql # qtd_licoes por clube, vínculos visitante<->oansista, transferências_clube + RPCs matricular/transferir/cancelar (RN 8/9)
+│   │   └── 0026_travar_status_visitante.sql # congela a situação de visitantes matriculados/em transferência (trigger)
 │   └── seed.sql                  # clubes, itens de pontuação, config de jogos, catálogo, catálogo de prêmios, usuários teste
 │
 ├── public/                       # assets estáticos servidos na raiz (/)

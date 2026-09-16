@@ -26,9 +26,9 @@ vi.mock('@/lib/supabase', () => ({
 const stubs = {
   Button: {
     name: 'Button',
-    props: ['label', 'icon', 'disabled'],
+    props: ['label', 'icon', 'disabled', 'ariaLabel'],
     emits: ['click'],
-    template: '<button :disabled="disabled" @click="$emit(\'click\')"><slot />{{ label }}</button>',
+    template: '<button :disabled="disabled" :aria-label="ariaLabel" @click="$emit(\'click\')"><slot />{{ label }}</button>',
   },
   Checkbox: {
     name: 'Checkbox',
@@ -62,8 +62,8 @@ const stubs = {
   InputText: { name: 'InputText', template: '<input />' },
   Select: {
     name: 'Select',
-    props: ['options', 'optionLabel', 'optionValue'],
-    template: '<select class="sel"><option v-for="o in options" :key="o[optionValue]" :value="o[optionValue]">{{ o[optionLabel] }}</option></select>',
+    props: ['options', 'optionLabel', 'optionValue', 'disabled'],
+    template: '<select class="sel" :disabled="disabled"><option v-for="o in options" :key="o[optionValue]" :value="o[optionValue]">{{ o[optionLabel] }}</option></select>',
   },
   Tag: { name: 'Tag', props: ['value', 'severity'], template: '<span class="tag">{{ value }}</span>' },
   Tabs: { name: 'Tabs', template: '<div><slot /></div>' },
@@ -141,5 +141,38 @@ describe('VisitantesView', () => {
 
     const tags = wrapper.findAll('span.tag').map(t => t.text())
     expect(tags).toContain('Transferência')
+  })
+
+  it('desabilita o seletor de situação ao editar um visitante matriculado', async () => {
+    const wrapper = await montar()
+
+    await wrapper.find('input.cb').setValue(true)
+    await flushPromises()
+
+    const olhos = wrapper.findAll('button[aria-label="Ver detalhes"]')
+    await olhos[2]!.trigger('click')
+    await flushPromises()
+
+    const editar = wrapper.findAll('button[aria-label="Editar"]')[0]
+    await editar!.trigger('click')
+    await flushPromises()
+
+    const selects = wrapper.findAll('select.sel')
+    expect(selects[1]!.attributes('disabled')).toBeDefined()
+  })
+
+  it('mantém o seletor de situação habilitado ao editar um visitante em visitas', async () => {
+    const wrapper = await montar()
+
+    const olhos = wrapper.findAll('button[aria-label="Ver detalhes"]')
+    await olhos[0]!.trigger('click')
+    await flushPromises()
+
+    const editar = wrapper.findAll('button[aria-label="Editar"]')[0]
+    await editar!.trigger('click')
+    await flushPromises()
+
+    const selects = wrapper.findAll('select.sel')
+    expect(selects[1]!.attributes('disabled')).toBeUndefined()
   })
 })
