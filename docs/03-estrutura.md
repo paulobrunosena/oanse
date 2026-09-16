@@ -20,7 +20,7 @@ oanse/
 ├── tsconfig.node.json            # server/ + api/ + vite/vitest config (tsc -p, incluso no typecheck)
 │
 ├── docs/                         # planejamento e decisões de arquitetura
-│   ├── 01-schema.sql             # DDL, triggers, views + regras de negócio (RN 1..7)
+│   ├── 01-schema.sql             # DDL, triggers, views + regras de negócio (RN 1..9)
 │   ├── 02-rls-policies.sql       # políticas RLS por perfil (documentação viva)
 │   ├── 03-estrutura.md           # este arquivo
 │   ├── 04-roadmap.md             # roteiro em fases
@@ -58,7 +58,8 @@ oanse/
 │   │   ├── 0021_seguranca_autorizacao.sql # signup sem papel do cliente, `ativo` na autorização, checagens NULL-safe, EXECUTE restrito (RPCs server-only + anon fora) e gate nos rankings
 │   │   ├── 0022_integridade_dados.sql    # recálculo zera quem saiu do evento, exclusões recalculam pós-cascata, total sempre recalculado, teto de item_num, entrega com lock/estoque verificado e RPC fn_registrar_rodada
 │   │   ├── 0023_indices.sql              # remove índices redundantes (prefixo de UNIQUE), cobre FKs sem índice e o composto do painel de pendências
-│   │   └── 0024_frequencia_acumulada.sql # RPC fn_frequencia_acumulada (relatório de frequência por período, escopo por perfil)
+│   │   ├── 0024_frequencia_acumulada.sql # RPC fn_frequencia_acumulada (relatório de frequência por período, escopo por perfil)
+│   │   └── 0025_visitantes_licoes_clube.sql # qtd_licoes por clube, vínculos visitante<->oansista, transferências_clube + RPCs matricular/transferir/cancelar (RN 8/9)
 │   └── seed.sql                  # clubes, itens de pontuação, config de jogos, catálogo, catálogo de prêmios, usuários teste
 │
 ├── public/                       # assets estáticos servidos na raiz (/)
@@ -97,7 +98,8 @@ oanse/
 │   │   ├── useFolhaIndividual.ts # catálogo da Folha Individual (clube) + progresso do oansista (itens/prêmios/observações) + upsert/delete por unique (+ spec.ts)
 │   │   ├── useRemanejamentos.ts  # substituição temporária de turma (+ spec.ts)
 │   │   ├── useTransferencias.ts  # transferência permanente (RPC 0006) (+ spec.ts)
-│   │   ├── useVisitantes.ts      # Folha de Visitantes: cadastro, 3 visitas, lições da Prova de Ingresso e matrícula (RPC 0017) (+ spec.ts)
+│   │   ├── useVisitantes.ts      # Folha de Visitantes: cadastro, 3 visitas, lições da Prova de Ingresso (por clube via qtd_licoes) e matrícula (RPC 0017/0022) (+ spec.ts)
+│   │   ├── useTransferenciaClube.ts # transferência de clube / mudança de faixa etária (RPC 0022) (+ spec.ts)
 │   │   ├── useJogos.ts           # eventos de jogos do sábado: criação, cores, oansistas, rodadas, resultados, finalizar, ranking + catálogo (+ spec.ts)
 │   │   ├── useRanking.ts         # ranking do sábado via RPC fn_ranking_do_encontro + geral (+ spec.ts)
 │   │   ├── usePremios.ts         # catálogo de prêmios da Secretaria (CRUD) (+ spec.ts)
@@ -130,14 +132,14 @@ oanse/
 │   │   ├── clube/
 │   │   │   ├── TurmasView.vue            # Diretor de Clube
 │   │   │   ├── LideresView.vue           # Diretor de Clube (catálogo da equipe)
-│   │   │   ├── OansistasView.vue         # Diretor de Clube (CRUD + import CSV)
+│   │   │   ├── OansistasView.vue         # Diretor de Clube (CRUD + import CSV + mudança de clube/faixa etária — transferir/cancelar)
 │   │   │   ├── RemanejamentosView.vue    # Diretor de Clube
 │   │   │   ├── TransferenciasView.vue    # Diretor de Clube
 │   │   │   ├── JogosView.vue             # Líder de Jogos/Diretor Geral (stepper PrimeVue em 3 etapas: configuração → rodadas → placar final; vários eventos por sábado)
 │   │   │   ├── JogosCatalogoView.vue     # Líder de Jogos/Diretor Geral/Diretor de Clube (CRUD de nomes de jogos por clube)
 │   │   │   ├── RankingView.vue           # Diretor de Clube/Diretor Geral (ranking do sábado)
 │   │   │   ├── FolhaIndividualView.vue   # Diretor de Clube (Folha Individual: manuais/seções/blocos + progresso da criança) — rota /clube/folha-individual
-│   │   │   └── VisitantesView.vue        # Diretor de Clube/Líder (Folha de Visitantes: cadastro, 3 visitas, prova de ingresso e matrícula) — rota /clube/visitantes
+│   │   │   └── VisitantesView.vue        # Diretor de Clube/Líder (Folha de Visitantes: cadastro, 3 visitas, prova de ingresso por clube e matrícula; oculta matriculados; marca transferências) — rota /clube/visitantes
 │   │   └── admin/
 │   │       ├── UsuariosView.vue          # Diretor Geral
 │   │       ├── ClubesView.vue            # Diretor Geral
@@ -164,7 +166,7 @@ oanse/
 │   │       ├── FolhaIndividualBloco.vue    # itens numerados (bolinha + InputText date) + linha do prêmio (liberada com o bloco completo) (+ spec.ts)
 │   │       ├── FolhaIndividualObservacoes.vue  # textarea de observações por manual (upsert) (+ spec.ts)
 │   │       ├── VisitaTracker.vue       # acompanhamento das 3 visitas (data + presente) (+ spec.ts)
-│   │       └── ProvaIngressoCard.vue   # lições da Prova de Ingresso (10 lições numeradas) (+ spec.ts)
+│   │       └── ProvaIngressoCard.vue   # lições da Prova de Ingresso (quantidade por clube via prop totalLicoes) (+ spec.ts)
 │   │   └── jogos/
 │   │       ├── EventoJogosCard.vue   # etapa 1 do stepper: clubes, cores, oansistas por cor (nome na cor do clube, removível/trocável)
 │   │       ├── EventoJogosCard.spec.ts

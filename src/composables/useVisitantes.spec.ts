@@ -18,6 +18,7 @@ const LICOES = [
 
 const OANSISTAS = [{ id: 'o1', nome: 'Carlos' }]
 const TURMAS = [{ id: 't1', nome: 'Turma 1' }]
+const CLUBES = [{ id: 'c1', nome: 'Flamas', qtd_licoes: 8 }]
 
 function cliente() {
   return clienteSupabase({
@@ -26,6 +27,7 @@ function cliente() {
     prova_ingresso_licoes: () => builder([...LICOES]),
     oansistas: () => builder([...OANSISTAS]),
     turmas: () => builder([...TURMAS]),
+    clubes: () => builder([...CLUBES]),
   })
 }
 
@@ -63,6 +65,27 @@ describe('useVisitantes', () => {
       expect(api.visitasPorVisitante.value.get('v2')).toBeUndefined()
       expect(api.licoesPorVisitante.value.get('v2')).toHaveLength(1)
       expect(api.licoesPorVisitante.value.get('v1')).toBeUndefined()
+    })
+
+    it('expõe o número de lições da Prova de Ingresso do clube carregado', async () => {
+      const api = useVisitantes()
+      await api.carregar('c1')
+
+      expect(mocks.supabase.builderDe('clubes').order).toHaveBeenCalledWith('ordem')
+      expect(api.qtdLicoesAtual.value).toBe(8)
+    })
+
+    it('usa 8 como padrão quando o clube não é encontrado', async () => {
+      mocks.supabase = clienteSupabase({
+        visitantes: () => builder([]),
+        oansistas: () => builder(OANSISTAS),
+        turmas: () => builder(TURMAS),
+        clubes: () => builder([]),
+      })
+      const api = useVisitantes()
+      await api.carregar('c-desconhecido')
+
+      expect(api.qtdLicoesAtual.value).toBe(8)
     })
 
     it('não busca visitas nem lições quando não há visitantes', async () => {

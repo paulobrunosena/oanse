@@ -31,7 +31,7 @@ onMounted(carregar)
 
 const editando = ref<Clube | null>(null)
 const salvando = ref(false)
-const form = reactive({ nome: '', idade_min: 4, idade_max: 5, cor: '#8B5CF6', ordem: 1 })
+const form = reactive({ nome: '', idade_min: 4, idade_max: 5, cor: '#8B5CF6', ordem: 1, qtd_licoes: 8 })
 
 const corSelecionada = computed({
   get: () => form.cor ?? '#8B5CF6',
@@ -52,6 +52,7 @@ function abrirEdicao(c: Clube) {
     idade_max: c.idade_max,
     cor: c.cor,
     ordem: c.ordem,
+    qtd_licoes: c.qtd_licoes,
   })
 }
 
@@ -70,6 +71,7 @@ async function salvar() {
       idade_max: form.idade_max,
       cor: form.cor,
       ordem: form.ordem,
+      qtd_licoes: form.qtd_licoes,
     })
     .eq('id', editando.value.id)
   salvando.value = false
@@ -119,6 +121,11 @@ async function salvar() {
       <Column field="idade" header="Idade">
         <template #body="{ data }">
           {{ data.idade_min }} a {{ data.idade_max }} anos
+        </template>
+      </Column>
+      <Column header="Lições">
+        <template #body="{ data }">
+          {{ data.qtd_licoes }}
         </template>
       </Column>
       <Column field="slug" header="Slug" />
@@ -192,6 +199,17 @@ async function salvar() {
             />
           </div>
           <div class="flex min-w-0 flex-col gap-1">
+            <label class="text-sm font-medium">Lições da Prova de Ingresso</label>
+            <InputNumber
+              v-model="form.qtd_licoes"
+              :min="1"
+              :max="10"
+              :input-style="{ minWidth: '0', width: '100%' }"
+              class="w-full min-w-0"
+            />
+          </div>
+        </div>
+          <div class="flex min-w-0 flex-col gap-1">
             <label class="text-sm font-medium">Cor</label>
             <InputColor
               v-model="corSelecionada"
@@ -227,7 +245,6 @@ async function salvar() {
               </Popover>
             </InputColor>
           </div>
-        </div>
         <div class="flex justify-end gap-2">
           <Button
             label="Cancelar"

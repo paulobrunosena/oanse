@@ -35,6 +35,15 @@ describe('ProvaIngressoCard', () => {
     expect(wrapper.text()).toContain('Lição 10')
   })
 
+  it('respeita o total de lições informado pelo clube', () => {
+    const wrapper = mount(ProvaIngressoCard, { props: { licoes: [], totalLicoes: 2 }, global: { stubs } })
+
+    expect(wrapper.findAll('input[type="date"]')).toHaveLength(2)
+    expect(wrapper.text()).toContain('Lição 1')
+    expect(wrapper.text()).toContain('Lição 2')
+    expect(wrapper.text()).not.toContain('Lição 3')
+  })
+
   it('marca a bolinha da lição concluída e preenche a data', () => {
     const wrapper = mount(ProvaIngressoCard, {
       props: { licoes: [licao()] },

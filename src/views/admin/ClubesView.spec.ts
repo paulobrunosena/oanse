@@ -8,8 +8,8 @@ import ClubesView from './ClubesView.vue'
 import { builder, clienteSupabase } from '../../../tests/helpers/supabase'
 
 const CLUBES = [
-  { id: 'c1', nome: 'Ursinhos', slug: 'ursinhos', cor: '#EF4444', idade_min: 4, idade_max: 5, ordem: 1 },
-  { id: 'c2', nome: 'Faíscas', slug: 'faiscas', cor: '#EAB308', idade_min: 6, idade_max: 7, ordem: 2 },
+  { id: 'c1', nome: 'Ursinhos', slug: 'ursinhos', cor: '#EF4444', idade_min: 4, idade_max: 5, ordem: 1, qtd_licoes: 2 },
+  { id: 'c2', nome: 'Faíscas', slug: 'faiscas', cor: '#EAB308', idade_min: 6, idade_max: 7, ordem: 2, qtd_licoes: 6 },
 ]
 
 const mocks = vi.hoisted(() => ({ supabase: null as any }))
@@ -115,7 +115,7 @@ describe('ClubesView', () => {
     }
 
     const inputs = wrapper.findAllComponents({ name: 'InputNumber' })
-    expect(inputs).toHaveLength(3)
+    expect(inputs).toHaveLength(4)
     for (const input of inputs) {
       expect(input.props('inputStyle')).toEqual({ minWidth: '0', width: '100%' })
       expect(input.classes()).toContain('min-w-0')
@@ -171,5 +171,24 @@ describe('ClubesView', () => {
 
     const atualizacao = mocks.supabase.builderDe('clubes').update.mock.calls[0]![0]
     expect(atualizacao).toMatchObject({ cor: '#22C55E' })
+  })
+
+  it('oferece o campo de lições da Prova de Ingresso e salva o qtd_licoes', async () => {
+    const wrapper = mount(ClubesView, {
+      global: { stubs, plugins: [PrimeVue, ToastService] },
+    })
+    await flushPromises()
+
+    await wrapper.find('button[aria-label="Editar"]').trigger('click')
+    await flushPromises()
+
+    const labels = wrapper.findAll('label').map(label => label.text())
+    expect(labels).toContain('Lições da Prova de Ingresso')
+
+    await wrapper.find('form').trigger('submit')
+    await flushPromises()
+
+    const atualizacao = mocks.supabase.builderDe('clubes').update.mock.calls[0]![0]
+    expect(atualizacao).toMatchObject({ qtd_licoes: 2 })
   })
 })

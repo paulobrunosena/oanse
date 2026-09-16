@@ -14,13 +14,20 @@ const toast = useToast()
 const { user, profile } = useAuth()
 const { isDiretorGeral, isDiretorClube } = useRole()
 const {
-  visitantes, oansistas, turmas, carregando,
+  visitantes, oansistas, turmas, carregando, qtdLicoesAtual,
   visitasPorVisitante, licoesPorVisitante,
   carregar, salvarVisitante, salvarVisita, salvarLicao, matricular,
 } = useVisitantes()
 
 const clubeId = computed(() => profile.value?.clube_id ?? null)
 const podeMatricular = computed(() => isDiretorGeral.value || isDiretorClube.value)
+
+const mostrarMatriculados = ref(false)
+const visitantesVisiveis = computed(() =>
+  mostrarMatriculados.value
+    ? visitantes.value
+    : visitantes.value.filter(v => v.status !== 'matriculado'),
+)
 
 const STATUS_LABEL: Record<StatusVisitante, string> = {
   em_visitas: 'Em visitas',
@@ -36,10 +43,12 @@ const STATUS_SEVERITY: Record<StatusVisitante, string> = {
   desistente: 'secondary',
 }
 
-const statusOpcoes = (Object.keys(STATUS_LABEL) as StatusVisitante[]).map(s => ({
-  label: STATUS_LABEL[s],
-  value: s,
-}))
+const statusOpcoes = (Object.keys(STATUS_LABEL) as StatusVisitante[])
+  .filter(s => s !== 'matriculado')
+  .map(s => ({
+    label: STATUS_LABEL[s],
+    value: s,
+  }))
 
 function mensagem(e: unknown): string {
   return (e as { message?: string })?.message ?? 'Tente novamente'
@@ -57,6 +66,30 @@ function visitasFeitas(id: string): number {
 function nomeIndicado(indicadoPor: string | null): string {
   if (!indicadoPor) return '—'
   return oansistas.value.find(o => o.id === indicadoPor)?.nome ?? '—'
+}
+
+function ehTransferencia(v: VisitanteRow): boolean {
+  return v.oansista_origem_id != null
+}
+
+function visitasPresentes(id: string): number {
+  return visitasPorVisitante.value.get(id)?.filter(v => v.presente).length ?? 0
+}
+
+function licoesConcluidas(id: string): number {
+  return licoesPorVisitante.value.get(id)
+    ?.filter(l => l.concluida && l.licao <= qtdLicoesAtual.value).length ?? 0
+}
+
+function motivoBloqueioMatricula(v: VisitanteRow): string | null {
+  if (v.status === 'matriculado') return 'Já matriculado'
+  if (!ehTransferencia(v) && visitasPresentes(v.id) < 3) {
+    return 'Conclua as 3 visitas antes de matricular'
+  }
+  if (licoesConcluidas(v.id) < qtdLicoesAtual.value) {
+    return `Conclua as ${qtdLicoesAtual.value} lições da Prova de Ingresso`
+  }
+  return null
 }
 
 // ---- Cadastro / edição ----
@@ -208,12 +241,22 @@ onMounted(() => {
           Cadastro, acompanhamento das visitas e prova de ingresso
         </p>
       </div>
-      <Button
-        icon="pi pi-plus"
-        label="Novo visitante"
-        :disabled="!clubeId"
-        @click="abrirCriar"
-      />
+      <div class="flex items-center gap-3">
+        <div class="flex items-center gap-2">
+          <Checkbox
+            v-model="mostrarMatriculados"
+            :binary="true"
+            input-id="mostrar-matriculados"
+          />
+          <label class="text-sm" for="mostrar-matriculados">Mostrar matriculados</label>
+        </div>
+        <Button
+          icon="pi pi-plus"
+          label="Novo visitante"
+          :disabled="!clubeId"
+          @click="abrirCriar"
+        />
+      </div>
     </div>
 
     <Card v-if="!clubeId" class="text-center py-6">
@@ -227,7 +270,7 @@ onMounted(() => {
     <template v-else>
       <div class="overflow-x-auto">
         <DataTable
-          :value="visitantes"
+          :value="visitantesVisiveis"
           :loading="carregando"
           data-key="id"
           class="w-full"
@@ -240,10 +283,17 @@ onMounted(() => {
           </Column>
           <Column header="Situação">
             <template #body="{ data }">
-              <Tag
-                :severity="STATUS_SEVERITY[data.status as StatusVisitante]"
-                :value="STATUS_LABEL[data.status as StatusVisitante]"
-              />
+              <div class="flex flex-wrap items-center gap-1">
+                <Tag
+                  :severity="STATUS_SEVERITY[data.status as StatusVisitante]"
+                  :value="STATUS_LABEL[data.status as StatusVisitante]"
+                />
+                <Tag
+                  v-if="ehTransferencia(data)"
+                  severity="warn"
+                  value="Transferência"
+                />
+              </div>
             </template>
           </Column>
           <Column header="Responsável">
@@ -367,6 +417,7 @@ onMounted(() => {
               <ProvaIngressoCard
                 :licoes="licoesDoVisitante"
                 :salvando="salvandoLicao"
+                :total-licoes="qtdLicoesAtual"
                 @salvar-licao="onSalvarLicao"
               />
             </TabPanel>
@@ -375,16 +426,24 @@ onMounted(() => {
       </div>
 
       <template #footer>
-        <div class="flex justify-between gap-2">
-          <Button
-            v-if="podeMatricular"
-            label="Matricular"
-            icon="pi pi-user-plus"
-            :disabled="visitanteSel?.status === 'matriculado'"
-            @click="abrirMatricular"
-          />
-          <span v-else />
-          <Button label="Fechar" text @click="detalheModal = false" />
+        <div class="flex flex-col gap-2">
+          <p
+            v-if="visitanteSel && podeMatricular && motivoBloqueioMatricula(visitanteSel)"
+            class="text-sm text-surface-500"
+          >
+            {{ motivoBloqueioMatricula(visitanteSel) }}
+          </p>
+          <div class="flex justify-between gap-2">
+            <Button
+              v-if="podeMatricular"
+              label="Matricular"
+              icon="pi pi-user-plus"
+              :disabled="visitanteSel ? motivoBloqueioMatricula(visitanteSel) !== null : true"
+              @click="abrirMatricular"
+            />
+            <span v-else />
+            <Button label="Fechar" text @click="detalheModal = false" />
+          </div>
         </div>
       </template>
     </Dialog>

@@ -5,6 +5,7 @@ import type { Database } from '@/types/database.types'
 type VisitanteRow = Database['public']['Tables']['visitantes']['Row']
 type VisitaRow = Database['public']['Tables']['visitas']['Row']
 type LicaoRow = Database['public']['Tables']['prova_ingresso_licoes']['Row']
+type ClubeRow = Database['public']['Tables']['clubes']['Row']
 
 export type StatusVisitante = VisitanteRow['status']
 
@@ -39,7 +40,13 @@ export function useVisitantes() {
   const licoes = ref<LicaoRow[]>([])
   const oansistas = ref<OansistaOpcao[]>([])
   const turmas = ref<TurmaOpcao[]>([])
+  const clubes = ref<Pick<ClubeRow, 'id' | 'nome' | 'qtd_licoes'>[]>([])
+  const clubeIdAtual = ref<string | null>(null)
   const carregando = ref(false)
+
+  const qtdLicoesAtual = computed(() =>
+    clubes.value.find(c => c.id === clubeIdAtual.value)?.qtd_licoes ?? 8,
+  )
 
   const visitasPorVisitante = computed<Map<string, VisitaRow[]>>(() => {
     const mapa = new Map<string, VisitaRow[]>()
@@ -63,21 +70,25 @@ export function useVisitantes() {
 
   async function carregar(clubeId: string) {
     carregando.value = true
+    clubeIdAtual.value = clubeId
     visitantes.value = []
     visitas.value = []
     licoes.value = []
     try {
-      const [rVisitantes, rOansistas, rTurmas] = await Promise.all([
+      const [rVisitantes, rOansistas, rTurmas, rClubes] = await Promise.all([
         supabase.from('visitantes').select('*').eq('clube_id', clubeId).order('nome'),
         supabase.from('oansistas').select('id, nome').eq('clube_id', clubeId).eq('status', 'ativo').order('nome'),
         supabase.from('turmas').select('id, nome').eq('clube_id', clubeId).eq('ativo', true).order('nome'),
+        supabase.from('clubes').select('id, nome, qtd_licoes').order('ordem'),
       ])
       if (rVisitantes.error) throw rVisitantes.error
       if (rOansistas.error) throw rOansistas.error
       if (rTurmas.error) throw rTurmas.error
+      if (rClubes.error) throw rClubes.error
       visitantes.value = rVisitantes.data ?? []
       oansistas.value = rOansistas.data ?? []
       turmas.value = rTurmas.data ?? []
+      clubes.value = rClubes.data ?? []
 
       const ids = visitantes.value.map(v => v.id)
       if (!ids.length) return
@@ -199,6 +210,8 @@ export function useVisitantes() {
     licoes,
     oansistas,
     turmas,
+    clubes,
+    qtdLicoesAtual,
     carregando,
     visitasPorVisitante,
     licoesPorVisitante,

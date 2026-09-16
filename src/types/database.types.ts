@@ -43,6 +43,7 @@ export type Database = {
           idade_min: number
           nome: string
           ordem: number
+          qtd_licoes: number
           slug: string
         }
         Insert: {
@@ -53,6 +54,7 @@ export type Database = {
           idade_min: number
           nome: string
           ordem: number
+          qtd_licoes?: number
           slug: string
         }
         Update: {
@@ -63,6 +65,7 @@ export type Database = {
           idade_min?: number
           nome?: string
           ordem?: number
+          qtd_licoes?: number
           slug?: string
         }
         Relationships: []
@@ -779,6 +782,7 @@ export type Database = {
           status: Database["public"]["Enums"]["status_oansista"]
           turma_id: string | null
           updated_at: string
+          visitante_origem_id: string | null
         }
         Insert: {
           clube_id: string
@@ -793,6 +797,7 @@ export type Database = {
           status?: Database["public"]["Enums"]["status_oansista"]
           turma_id?: string | null
           updated_at?: string
+          visitante_origem_id?: string | null
         }
         Update: {
           clube_id?: string
@@ -807,6 +812,7 @@ export type Database = {
           status?: Database["public"]["Enums"]["status_oansista"]
           turma_id?: string | null
           updated_at?: string
+          visitante_origem_id?: string | null
         }
         Relationships: [
           {
@@ -821,6 +827,13 @@ export type Database = {
             columns: ["turma_id"]
             isOneToOne: false
             referencedRelation: "turmas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "oansistas_visitante_origem_id_fkey"
+            columns: ["visitante_origem_id"]
+            isOneToOne: false
+            referencedRelation: "visitantes"
             referencedColumns: ["id"]
           },
         ]
@@ -1284,6 +1297,84 @@ export type Database = {
           },
         ]
       }
+      transferencias_clube: {
+        Row: {
+          autorizado_por: string
+          clube_destino_id: string
+          clube_origem_id: string
+          created_at: string
+          data: string
+          id: string
+          motivo: string | null
+          oansista_id: string
+          revertida: boolean
+          revertida_em: string | null
+          turma_origem_id: string | null
+        }
+        Insert: {
+          autorizado_por: string
+          clube_destino_id: string
+          clube_origem_id: string
+          created_at?: string
+          data?: string
+          id?: string
+          motivo?: string | null
+          oansista_id: string
+          revertida?: boolean
+          revertida_em?: string | null
+          turma_origem_id?: string | null
+        }
+        Update: {
+          autorizado_por?: string
+          clube_destino_id?: string
+          clube_origem_id?: string
+          created_at?: string
+          data?: string
+          id?: string
+          motivo?: string | null
+          oansista_id?: string
+          revertida?: boolean
+          revertida_em?: string | null
+          turma_origem_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "transferencias_clube_autorizado_por_fkey"
+            columns: ["autorizado_por"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transferencias_clube_clube_destino_id_fkey"
+            columns: ["clube_destino_id"]
+            isOneToOne: false
+            referencedRelation: "clubes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transferencias_clube_clube_origem_id_fkey"
+            columns: ["clube_origem_id"]
+            isOneToOne: false
+            referencedRelation: "clubes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transferencias_clube_oansista_id_fkey"
+            columns: ["oansista_id"]
+            isOneToOne: false
+            referencedRelation: "oansistas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transferencias_clube_turma_origem_id_fkey"
+            columns: ["turma_origem_id"]
+            isOneToOne: false
+            referencedRelation: "turmas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       turmas: {
         Row: {
           ativo: boolean
@@ -1336,6 +1427,7 @@ export type Database = {
           id: string
           indicado_por: string | null
           nome: string
+          oansista_origem_id: string | null
           responsavel: string | null
           status: Database["public"]["Enums"]["status_visitante"]
           updated_at: string
@@ -1349,6 +1441,7 @@ export type Database = {
           id?: string
           indicado_por?: string | null
           nome: string
+          oansista_origem_id?: string | null
           responsavel?: string | null
           status?: Database["public"]["Enums"]["status_visitante"]
           updated_at?: string
@@ -1362,6 +1455,7 @@ export type Database = {
           id?: string
           indicado_por?: string | null
           nome?: string
+          oansista_origem_id?: string | null
           responsavel?: string | null
           status?: Database["public"]["Enums"]["status_visitante"]
           updated_at?: string
@@ -1377,6 +1471,13 @@ export type Database = {
           {
             foreignKeyName: "visitantes_indicado_por_fkey"
             columns: ["indicado_por"]
+            isOneToOne: false
+            referencedRelation: "oansistas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "visitantes_oansista_origem_id_fkey"
+            columns: ["oansista_origem_id"]
             isOneToOne: false
             referencedRelation: "oansistas"
             referencedColumns: ["id"]
@@ -1464,6 +1565,30 @@ export type Database = {
       }
     }
     Functions: {
+      fn_cancelar_transferencia_clube: {
+        Args: { p_autorizado_por?: string; p_oansista_id: string }
+        Returns: {
+          clube_id: string
+          contato: string | null
+          created_at: string
+          data_matricula: string
+          data_nascimento: string
+          id: string
+          nome: string
+          observacoes: string | null
+          responsavel: string | null
+          status: Database["public"]["Enums"]["status_oansista"]
+          turma_id: string | null
+          updated_at: string
+          visitante_origem_id: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "oansistas"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       fn_clube_id: { Args: never; Returns: string }
       fn_criar_evento_jogos: {
         Args: {
@@ -1565,6 +1690,7 @@ export type Database = {
           status: Database["public"]["Enums"]["status_oansista"]
           turma_id: string | null
           updated_at: string
+          visitante_origem_id: string | null
         }
         SetofOptions: {
           from: "*"
@@ -1676,6 +1802,33 @@ export type Database = {
         Returns: Database["public"]["Enums"]["user_role"]
       }
       fn_substituto_da_turma: { Args: { p_turma_id: string }; Returns: boolean }
+      fn_transferir_clube: {
+        Args: {
+          p_autorizado_por?: string
+          p_clube_destino_id: string
+          p_motivo?: string
+          p_oansista_id: string
+        }
+        Returns: {
+          autorizado_por: string
+          clube_destino_id: string
+          clube_origem_id: string
+          created_at: string
+          data: string
+          id: string
+          motivo: string | null
+          oansista_id: string
+          revertida: boolean
+          revertida_em: string | null
+          turma_origem_id: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "transferencias_clube"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       fn_transferir_oansista: {
         Args: {
           p_autorizado_por?: string

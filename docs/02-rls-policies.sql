@@ -484,13 +484,19 @@ revoke execute on function fn_transferir_oansista(uuid, uuid, text, uuid) from p
 grant execute on function fn_transferir_oansista(uuid, uuid, text, uuid) to service_role;
 
 -- ----------------------------------------------------------------------------
--- MATRÍCULA DE VISITANTE (Folha de Visitantes — Fase 2)
---  Converte um visitante em oansista (cria o registro herdando os dados do
---  visitante e marca o visitante como 'matriculado') numa única transação.
---  RPC SECURITY DEFINER (migration 0017) chamada diretamente pelo cliente
---  (anon + JWT), como as RPCs do módulo de jogos; a autorização é validada
---  DENTRO da função (diretor_geral ou diretor do clube do visitante). A turma
---  (opcional) deve pertencer ao mesmo clube do visitante.
+-- MATRÍCULA DE VISITANTE (Folha de Visitantes — Fase 2/3)
+--  Converte um visitante em oansista numa única transação. RPC SECURITY DEFINER
+--  (migration 0017, reforçada na 0022) chamada diretamente pelo cliente; a
+--  autorização é validada DENTRO da função (diretor_geral ou diretor do clube
+--  do visitante). A turma (opcional) deve pertencer ao mesmo clube do visitante.
+--
+--  RN 8 (matrícula):
+--   * visitante novo exige as 3 visitas (presente) e todas as qtd_licoes do
+--     clube concluídas;
+--   * transferência de clube (visitante.oansista_origem_id preenchido) exige
+--     apenas as lições — reativa o oansista no clube destino;
+--   * vínculo oansistas.visitante_origem_id impede re-matrícula mesmo que a
+--     situação do visitante seja adulterada.
 -- ----------------------------------------------------------------------------
 create or replace function fn_matricular_visitante(
   p_visitante_id uuid,
@@ -503,6 +509,9 @@ set search_path = public
 as $$
 declare
   v_visitante visitantes%rowtype;
+  v_clube     clubes%rowtype;
+  v_visitas   int;
+  v_licoes    int;
   v_oansista  oansistas;
 begin
   select * into v_visitante from visitantes where id = p_visitante_id;
@@ -514,8 +523,14 @@ begin
     raise exception 'Visitante já está matriculado';
   end if;
 
+  -- Autorização: Diretor Geral ou Diretor do clube do visitante.
   if not coalesce(fn_role() = 'diretor_geral' or fn_diretor_do_clube(v_visitante.clube_id), false) then
     raise exception 'Apenas o Diretor do clube pode matricular';
+  end if;
+
+  select * into v_clube from clubes where id = v_visitante.clube_id;
+  if not found then
+    raise exception 'Clube do visitante não encontrado';
   end if;
 
   if p_turma_id is not null then
@@ -527,15 +542,64 @@ begin
     end if;
   end if;
 
-  insert into oansistas (
-    nome, data_nascimento, clube_id, turma_id,
-    responsavel, contato, data_matricula, status
-  )
-  values (
-    v_visitante.nome, v_visitante.data_nascimento, v_visitante.clube_id, p_turma_id,
-    v_visitante.responsavel, v_visitante.contato, current_date, 'ativo'
-  )
-  returning * into v_oansista;
+  -- Visitante novo exige as 3 visitas (presentes). Transferências pulam essa etapa.
+  if v_visitante.oansista_origem_id is null then
+    select count(*) into v_visitas
+    from visitas
+    where visitante_id = p_visitante_id and presente = true;
+
+    if v_visitas < 3 then
+      raise exception 'A criança precisa concluir as 3 visitas antes da matrícula';
+    end if;
+
+    -- Bloqueio de re-matrícula mesmo se a situação for adulterada.
+    if exists (select 1 from oansistas where visitante_origem_id = p_visitante_id) then
+      raise exception 'Visitante já matriculado';
+    end if;
+  end if;
+
+  -- Todas as lições do clube precisam estar concluídas (comum aos dois casos).
+  select count(*) into v_licoes
+  from prova_ingresso_licoes
+  where visitante_id = p_visitante_id
+    and concluida = true
+    and licao between 1 and v_clube.qtd_licoes;
+
+  if v_licoes < v_clube.qtd_licoes then
+    raise exception 'A criança precisa concluir as % lições da Prova de Ingresso', v_clube.qtd_licoes;
+  end if;
+
+  if v_visitante.oansista_origem_id is null then
+    -- Matrícula comum: cria o oansista herdando os dados do visitante.
+    insert into oansistas (
+      nome, data_nascimento, clube_id, turma_id,
+      responsavel, contato, data_matricula, status, visitante_origem_id
+    )
+    values (
+      v_visitante.nome, v_visitante.data_nascimento, v_visitante.clube_id, p_turma_id,
+      v_visitante.responsavel, v_visitante.contato, current_date, 'ativo', p_visitante_id
+    )
+    returning * into v_oansista;
+  else
+    -- Transferência de clube: reativa o oansista no clube destino.
+    select * into v_oansista from oansistas where id = v_visitante.oansista_origem_id;
+    if not found then
+      raise exception 'Oansista de origem não encontrado';
+    end if;
+
+    if v_oansista.clube_id = v_visitante.clube_id and v_oansista.status = 'ativo' then
+      raise exception 'Visitante já matriculado';
+    end if;
+
+    update oansistas
+       set clube_id = v_visitante.clube_id,
+           turma_id = p_turma_id,
+           status = 'ativo',
+           visitante_origem_id = p_visitante_id,
+           updated_at = now()
+     where id = v_oansista.id
+     returning * into v_oansista;
+  end if;
 
   update visitantes
      set status = 'matriculado', updated_at = now()
@@ -547,6 +611,166 @@ $$;
 
 revoke execute on function fn_matricular_visitante(uuid, uuid) from public, anon;
 grant execute on function fn_matricular_visitante(uuid, uuid) to authenticated, service_role;
+
+-- ----------------------------------------------------------------------------
+-- TRANSFERÊNCIA DE CLUBE (mudança de faixa etária — RN 9)
+--  Cria o visitante no clube destino (status 'prova_ingresso', sem exigência de
+--  3 visitas) e marca o oansista como 'transferido'. Histórico em
+--  transferencias_clube. Autorização: diretor_geral ou diretor do clube de
+--  ORIGEM. Reversível via fn_cancelar_transferencia_clube.
+-- ----------------------------------------------------------------------------
+create or replace function fn_transferir_clube(
+  p_oansista_id      uuid,
+  p_clube_destino_id uuid,
+  p_motivo           text default null,
+  p_autorizado_por   uuid default auth.uid()
+)
+returns transferencias_clube
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_oansista oansistas%rowtype;
+  v_destino  clubes%rowtype;
+  v_registro transferencias_clube;
+begin
+  select * into v_oansista from oansistas where id = p_oansista_id;
+  if not found then
+    raise exception 'Oansista não encontrado';
+  end if;
+
+  if v_oansista.status <> 'ativo' then
+    raise exception 'Apenas oansistas ativos podem ser transferidos';
+  end if;
+
+  if not (fn_role() = 'diretor_geral' or fn_diretor_do_clube(v_oansista.clube_id)) then
+    raise exception 'Apenas o Diretor do clube pode transferir';
+  end if;
+
+  select * into v_destino from clubes where id = p_clube_destino_id;
+  if not found then
+    raise exception 'Clube de destino não encontrado';
+  end if;
+
+  if v_destino.id = v_oansista.clube_id then
+    raise exception 'O clube de destino deve ser diferente do clube atual';
+  end if;
+
+  if exists (
+    select 1 from visitantes v
+    where v.oansista_origem_id = p_oansista_id
+      and v.status in ('em_visitas', 'prova_ingresso')
+  ) then
+    raise exception 'Criança já possui uma transferência de clube em andamento';
+  end if;
+
+  insert into transferencias_clube (
+    oansista_id, clube_origem_id, clube_destino_id, turma_origem_id,
+    data, motivo, autorizado_por
+  )
+  values (
+    p_oansista_id, v_oansista.clube_id, v_destino.id, v_oansista.turma_id,
+    current_date, p_motivo, p_autorizado_por
+  )
+  returning * into v_registro;
+
+  insert into visitantes (
+    nome, data_nascimento, clube_id, indicado_por, responsavel, contato,
+    status, oansista_origem_id
+  )
+  values (
+    v_oansista.nome, v_oansista.data_nascimento, v_destino.id, null,
+    v_oansista.responsavel, v_oansista.contato, 'prova_ingresso', p_oansista_id
+  );
+
+  update oansistas
+     set status = 'transferido', turma_id = null, updated_at = now()
+   where id = p_oansista_id;
+
+  return v_registro;
+end;
+$$;
+
+grant execute on function fn_transferir_clube(uuid, uuid, text, uuid) to authenticated, service_role;
+
+-- ----------------------------------------------------------------------------
+-- REVERSÃO DE TRANSFERÊNCIA DE CLUBE (RN 9)
+--  Remove o visitante em andamento e reativa o oansista no clube de origem,
+--  restaurando a turma anterior. Autorização: diretor_geral ou diretor do
+--  clube de ORIGEM.
+-- ----------------------------------------------------------------------------
+create or replace function fn_cancelar_transferencia_clube(
+  p_oansista_id    uuid,
+  p_autorizado_por uuid default auth.uid()
+)
+returns oansistas
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_oansista oansistas%rowtype;
+  v_registro transferencias_clube%rowtype;
+begin
+  select * into v_oansista from oansistas where id = p_oansista_id;
+  if not found then
+    raise exception 'Oansista não encontrado';
+  end if;
+
+  if v_oansista.status <> 'transferido' then
+    raise exception 'A criança não está em processo de transferência';
+  end if;
+
+  if not (fn_role() = 'diretor_geral' or fn_diretor_do_clube(v_oansista.clube_id)) then
+    raise exception 'Apenas o Diretor do clube pode cancelar a transferência';
+  end if;
+
+  select * into v_registro
+  from transferencias_clube
+  where oansista_id = p_oansista_id and not revertida
+  order by created_at desc
+  limit 1;
+
+  if not found then
+    raise exception 'Transferência de clube não encontrada';
+  end if;
+
+  delete from visitantes
+  where oansista_origem_id = p_oansista_id
+    and status <> 'matriculado';
+
+  update transferencias_clube
+     set revertida = true, revertida_em = current_date
+   where id = v_registro.id;
+
+  update oansistas
+     set status = 'ativo',
+         turma_id = v_registro.turma_origem_id,
+         updated_at = now()
+   where id = p_oansista_id
+   returning * into v_oansista;
+
+  return v_oansista;
+end;
+$$;
+
+grant execute on function fn_cancelar_transferencia_clube(uuid, uuid) to authenticated, service_role;
+
+-- ----------------------------------------------------------------------------
+-- TRANSFERÊNCIAS DE CLUBE — leitura para diretores envolvidos; escrita apenas
+-- via RPC (security definer), sem política de insert/update/delete.
+-- ----------------------------------------------------------------------------
+alter table transferencias_clube enable row level security;
+
+create policy "transferencias_clube_select" on transferencias_clube
+  for select to authenticated
+  using (
+    fn_role() in ('diretor_geral', 'secretaria')
+    or fn_diretor_do_clube(clube_origem_id)
+    or fn_diretor_do_clube(clube_destino_id)
+  );
+
 
 -- ----------------------------------------------------------------------------
 -- FOLHA DE PROGRESSO INDIVIDUAL (docs/06-folha-individual.md)

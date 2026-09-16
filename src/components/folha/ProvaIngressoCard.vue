@@ -6,14 +6,14 @@ type LicaoRow = Database['public']['Tables']['prova_ingresso_licoes']['Row']
 const props = defineProps<{
   licoes: LicaoRow[]
   salvando?: number | null
+  totalLicoes?: number
 }>()
 
 const emit = defineEmits<{
   'salvar-licao': [licao: number, dataConclusao: string | null]
 }>()
 
-const TOTAL_LICOES = 10
-const NUMEROS = Array.from({ length: TOTAL_LICOES }, (_, i) => i + 1)
+const NUMEROS = Array.from({ length: props.totalLicoes ?? 10 }, (_, i) => i + 1)
 
 function licaoDe(numero: number): LicaoRow | undefined {
   return props.licoes.find(l => l.licao === numero)

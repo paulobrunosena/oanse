@@ -32,13 +32,14 @@ create type pendencia_status as enum ('pendente', 'entregue', 'cancelada');
 
 -- Clubes por faixa etária (seed fixo: 4 clubes)
 create table clubes (
-  id        uuid primary key default uuid_generate_v4(),
-  nome      text not null unique,          -- 'Ursinhos', 'Faíscas', 'Flamas', 'Tochas'
-  slug      text not null unique,
-  idade_min int  not null,
-  idade_max int  not null,
-  cor       text,                          -- identidade visual (hex)
-  ordem     int  not null,
+  id         uuid primary key default uuid_generate_v4(),
+  nome       text not null unique,          -- 'Ursinhos', 'Faíscas', 'Flamas', 'Tochas'
+  slug       text not null unique,
+  idade_min  int  not null,
+  idade_max  int  not null,
+  cor        text,                          -- identidade visual (hex)
+  ordem      int  not null,
+  qtd_licoes int  not null default 8,       -- lições da Prova de Ingresso (Ursinhos=2, Faíscas=6, Flamas=8, Tochas=8)
   created_at timestamptz not null default now()
 );
 
@@ -117,32 +118,34 @@ create table turmas (
 -- ----------------------------------------------------------------------------
 
 create table oansistas (
-  id             uuid primary key default uuid_generate_v4(),
-  nome           text not null,
-  data_nascimento date not null,
-  clube_id       uuid not null references clubes(id),
-  turma_id       uuid references turmas(id),   -- líder fixo = turma.lider_id
-  responsavel    text,
-  contato        text,
-  data_matricula date not null default current_date,
-  status         status_oansista not null default 'ativo',
-  observacoes    text,
-  created_at     timestamptz not null default now(),
-  updated_at     timestamptz not null default now()
+  id                  uuid primary key default uuid_generate_v4(),
+  nome                text not null,
+  data_nascimento     date not null,
+  clube_id            uuid not null references clubes(id),
+  turma_id            uuid references turmas(id),   -- líder fixo = turma.lider_id
+  responsavel         text,
+  contato             text,
+  data_matricula      date not null default current_date,
+  status              status_oansista not null default 'ativo',
+  visitante_origem_id uuid references visitantes(id), -- visitante que originou a matrícula (bloqueio de re-matrícula)
+  observacoes         text,
+  created_at          timestamptz not null default now(),
+  updated_at          timestamptz not null default now()
 );
 
 create table visitantes (
-  id             uuid primary key default uuid_generate_v4(),
-  nome           text not null,
-  data_nascimento date not null,
-  clube_id       uuid not null references clubes(id),  -- clube pretendido
-  indicado_por   uuid references oansistas(id),        -- quem convidou
-  responsavel    text,
-  contato        text,
-  status         status_visitante not null default 'em_visitas',
-  data_cadastro  date not null default current_date,
-  created_at     timestamptz not null default now(),
-  updated_at     timestamptz not null default now()
+  id                 uuid primary key default uuid_generate_v4(),
+  nome               text not null,
+  data_nascimento    date not null,
+  clube_id           uuid not null references clubes(id),  -- clube pretendido
+  indicado_por       uuid references oansistas(id),        -- quem convidou
+  oansista_origem_id uuid references oansistas(id),        -- transferência de clube: oansista de origem
+  responsavel        text,
+  contato            text,
+  status             status_visitante not null default 'em_visitas',
+  data_cadastro      date not null default current_date,
+  created_at         timestamptz not null default now(),
+  updated_at         timestamptz not null default now()
 );
 
 -- Acompanhamento das 3 primeiras visitas
@@ -156,7 +159,9 @@ create table visitas (
   unique (visitante_id, numero)
 );
 
--- Lições da Prova de Ingresso antes da matrícula oficial
+-- Lições da Prova de Ingresso antes da matrícula oficial.
+-- O número de lições é por clube (clubes.qtd_licoes); o trigger
+-- trg_validar_licao_prova impede gravar lição fora de 1..qtd_licoes.
 create table prova_ingresso_licoes (
   id           uuid primary key default uuid_generate_v4(),
   visitante_id uuid not null references visitantes(id) on delete cascade,
@@ -239,6 +244,25 @@ create table transferencias (
   motivo          text,
   autorizado_por  uuid not null references profiles(id), -- diretor do clube
   created_at      timestamptz not null default now()
+);
+
+-- Histórico de transferência de clube (mudança de faixa etária).
+-- RN 9: o oansista vira visitante no clube destino (pulando as 3 visitas) e é
+-- marcado 'transferido' no clube de origem; a matrícula final reativa o
+-- oansista no clube destino. Permite reversão (revertida/revertida_em).
+create table transferencias_clube (
+  id               uuid primary key default uuid_generate_v4(),
+  oansista_id      uuid not null references oansistas(id) on delete cascade,
+  clube_origem_id  uuid not null references clubes(id),
+  clube_destino_id uuid not null references clubes(id),
+  turma_origem_id  uuid references turmas(id),
+  data             date not null default current_date,
+  motivo           text,
+  autorizado_por   uuid not null references profiles(id),
+  revertida        boolean not null default false,
+  revertida_em     date,
+  created_at       timestamptz not null default now(),
+  check (clube_origem_id <> clube_destino_id)
 );
 
 -- ----------------------------------------------------------------------------
@@ -493,6 +517,9 @@ create index idx_jogos_evento         on jogos(evento_id);
 create index idx_jogo_resultados_jogo on jogo_resultados(jogo_id);
 create index idx_pendencias_status  on premios_pendentes(status);
 create index idx_visitas_visitante  on visitas(visitante_id);
+create index idx_visitantes_origem on visitantes(oansista_origem_id);
+create index idx_oansistas_visitante on oansistas(visitante_origem_id);
+create index idx_transferencias_clube_oansista on transferencias_clube(oansista_id);
 
 -- ----------------------------------------------------------------------------
 -- FUNÇÕES E TRIGGERS
@@ -1021,6 +1048,33 @@ create trigger trg_folha_pontos_jogos_presenca
 -- atualiza `premios.estoque` e grava `premios_movimentacoes`). Chamada pelo
 -- server/api com service_role (migration 0020). O alerta de estoque mínimo
 -- (estoque <= estoque_min) é derivado no painel da Secretaria.
+
+-- Prova de Ingresso: impede gravar lição fora do intervalo do clube
+-- (1..clubes.qtd_licoes). RN 8: o número de lições é por clube.
+create or replace function fn_validar_licao_prova()
+returns trigger language plpgsql security definer set search_path = public as $$
+declare
+  v_max int;
+begin
+  select c.qtd_licoes into v_max
+  from visitantes v
+  join clubes c on c.id = v.clube_id
+  where v.id = new.visitante_id;
+
+  if v_max is null then
+    raise exception 'Visitante não encontrado';
+  end if;
+
+  if new.licao < 1 or new.licao > v_max then
+    raise exception 'Lição fora do intervalo do clube (1..%)', v_max;
+  end if;
+
+  return new;
+end $$;
+
+create trigger trg_validar_licao_prova
+  before insert or update of licao on prova_ingresso_licoes
+  for each row execute function fn_validar_licao_prova();
 
 -- ----------------------------------------------------------------------------
 -- VIEWS

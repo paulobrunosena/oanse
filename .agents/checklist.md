@@ -72,6 +72,7 @@
 - [x] Folha de Visitantes: cadastro + 3 visitas
 - [x] Folha de Visitantes: lições da Prova de Ingresso
 - [x] Ação "matricular": converte visitante em oansista (RPC `fn_matricular_visitante`, migration 0017; autorização diretor_geral/diretor_clube validada dentro da função — smoke test local: diretor matricula OK, líder bloqueado)
+- [x] **Ajustes de Visitantes (RN 8/9, migration 0022, 2026-09-16)** — lições da Prova de Ingresso por clube (`clubes.qtd_licoes`: Ursinhos=2, Faíscas=6, Flamas=8, Tochas=8) + trigger `trg_validar_licao_prova` impede lição fora do intervalo; matrícula exige 3 visitas (presente) + todas as lições, com vínculo `oansistas.visitante_origem_id` bloqueando re-matrícula mesmo adulterando a situação; "Matriculado" removido do dropdown de situação; visitantes matriculados ocultos da lista (toggle); **transferência de clube/mudança de faixa etária** (RPC `fn_transferir_clube`: oansista vira visitante no destino pulando as 3 visitas, marca `transferido` e grava `transferencias_clube`; matrícula reativa o oansista no destino exigindo só as lições; reversão via `fn_cancelar_transferencia_clube`). Smoke test local cobre todos os cenários.
 - [x] Ranking do sábado por clube (pódio via `fn_ranking_do_encontro` + `RankingView`)
 - [ ] E2E: fluxo completo de um sábado simulado
 

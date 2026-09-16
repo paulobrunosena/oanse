@@ -1,19 +1,33 @@
 <script setup lang="ts">
-import { onMounted, reactive, ref } from 'vue'
+import { computed, onMounted, reactive, ref } from 'vue'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/composables/useAuth'
+import { useRole } from '@/composables/useRole'
 import { useToast } from '@/composables/useToast'
+import { useTransferenciaClube } from '@/composables/useTransferenciaClube'
 import type { Database } from '@/types/database.types'
 
 type Oansista = Database['public']['Tables']['oansistas']['Row']
 
 const { profile } = useAuth()
+const { isDiretorGeral, isDiretorClube } = useRole()
 const toast = useToast()
+const { transferir: transferirRpc, cancelar: cancelarRpc } = useTransferenciaClube()
 
 const oansistas = ref<(Oansista & { turma_nome: string | null })[]>([])
 const turmas = ref<{ id: string, nome: string }[]>([])
+const clubes = ref<{ id: string, nome: string }[]>([])
 const carregando = ref(true)
 const salvando = ref(false)
+
+const podeTransferir = computed(() => isDiretorGeral.value || isDiretorClube.value)
+
+const mostrarInativos = ref(false)
+const oansistasVisiveis = computed(() =>
+  mostrarInativos.value
+    ? oansistas.value
+    : oansistas.value.filter(o => o.status === 'ativo'),
+)
 
 async function carregar() {
   carregando.value = true
@@ -48,9 +62,18 @@ async function carregarTurmas() {
   turmas.value = data ?? []
 }
 
+async function carregarClubes() {
+  const { data } = await supabase
+    .from('clubes')
+    .select('id, nome')
+    .order('ordem')
+  clubes.value = data ?? []
+}
+
 onMounted(() => {
   carregar()
   carregarTurmas()
+  carregarClubes()
 })
 
 const idade = (nasc: string) => {
@@ -169,6 +192,67 @@ async function importarCsv() {
   toast.add({ title: `${registros.length} oansistas importados`, color: 'success' })
   await carregar()
 }
+
+// ---- Transferência de clube (mudança de faixa etária) ----
+const transferirModal = ref(false)
+const transferirSel = ref<Oansista | null>(null)
+const transferirDestino = ref<string | null>(null)
+const transferirMotivo = ref('')
+const transferindo = ref(false)
+
+const clubesDestino = computed(() =>
+  clubes.value.filter(c => c.id !== transferirSel.value?.clube_id),
+)
+
+function abrirTransferir(o: Oansista & { turma_nome: string | null }) {
+  transferirSel.value = o
+  transferirDestino.value = null
+  transferirMotivo.value = ''
+  transferirModal.value = true
+}
+
+async function confirmarTransferir() {
+  if (!transferirSel.value || !transferirDestino.value) return
+  transferindo.value = true
+  try {
+    await transferirRpc(
+      transferirSel.value.id,
+      transferirDestino.value,
+      transferirMotivo.value.trim() || null,
+    )
+    toast.add({ title: 'Criança transferida de clube', color: 'success' })
+    transferirModal.value = false
+    await carregar()
+  }
+  catch (e) {
+    toast.add({ title: 'Erro ao transferir', description: (e as { message?: string })?.message ?? 'Tente novamente', color: 'error' })
+  }
+  finally {
+    transferindo.value = false
+  }
+}
+
+const cancelandoTransferencia = ref(false)
+async function cancelarTransferencia(o: Oansista & { turma_nome: string | null }) {
+  cancelandoTransferencia.value = true
+  try {
+    await cancelarRpc(o.id)
+    toast.add({ title: 'Transferência cancelada', color: 'success' })
+    await carregar()
+  }
+  catch (e) {
+    toast.add({ title: 'Erro ao cancelar transferência', description: (e as { message?: string })?.message ?? 'Tente novamente', color: 'error' })
+  }
+  finally {
+    cancelandoTransferencia.value = false
+  }
+}
+
+const STATUS_TAG: Record<Oansista['status'], { label: string, severity: string }> = {
+  ativo: { label: 'Ativo', severity: 'success' },
+  inativo: { label: 'Inativo', severity: 'secondary' },
+  transferido: { label: 'Transferido', severity: 'warn' },
+}
 </script>
 
 <template>
@@ -182,7 +266,15 @@ async function importarCsv() {
           Crianças matriculadas no clube
         </p>
       </div>
-      <div class="flex gap-2">
+      <div class="flex items-center gap-2">
+        <div class="flex items-center gap-2">
+          <Checkbox
+            v-model="mostrarInativos"
+            :binary="true"
+            input-id="mostrar-inativos"
+          />
+          <label class="text-sm" for="mostrar-inativos">Mostrar inativos/transferidos</label>
+        </div>
         <Button
           icon="pi pi-upload"
           label="Importar CSV"
@@ -199,7 +291,7 @@ async function importarCsv() {
 
     <div class="overflow-x-auto">
       <DataTable
-        :value="oansistas"
+        :value="oansistasVisiveis"
         :loading="carregando"
         data-key="id"
         class="w-full"
@@ -218,14 +310,33 @@ async function importarCsv() {
       <Column header="Situação">
         <template #body="{ data }">
           <Tag
-            :severity="data.status === 'ativo' ? 'success' : 'secondary'"
-            :value="data.status === 'ativo' ? 'Ativo' : 'Inativo'"
+            :severity="STATUS_TAG[data.status as Oansista['status']].severity"
+            :value="STATUS_TAG[data.status as Oansista['status']].label"
           />
         </template>
       </Column>
-      <Column header="" style="width: 70px">
+      <Column header="" style="width: 110px">
         <template #body="{ data }">
-          <div class="flex justify-end">
+          <div class="flex justify-end gap-1">
+            <Button
+              v-if="podeTransferir && data.status === 'ativo'"
+              icon="pi pi-arrow-right"
+              text
+              rounded
+              size="small"
+              aria-label="Mudar de clube"
+              @click="abrirTransferir(data)"
+            />
+            <Button
+              v-if="podeTransferir && data.status === 'transferido'"
+              icon="pi pi-undo"
+              text
+              rounded
+              size="small"
+              :loading="cancelandoTransferencia"
+              aria-label="Cancelar transferência"
+              @click="cancelarTransferencia(data)"
+            />
             <Button
               icon="pi pi-pencil"
               text
@@ -379,6 +490,59 @@ async function importarCsv() {
           />
         </div>
       </div>
+    </Dialog>
+
+    <!-- Modal transferência de clube -->
+    <Dialog
+      v-model:visible="transferirModal"
+      header="Mudar de clube"
+      :modal="true"
+      class="w-full max-w-md"
+    >
+      <div
+        v-if="transferirSel"
+        class="flex flex-col gap-4"
+      >
+        <p class="text-sm text-surface-500">
+          {{ transferirSel.nome }} será transferido para outro clube. A criança
+          passa a acompanhar o novo clube como visitante (completando apenas as
+          lições da Prova de Ingresso — sem as 3 visitas).
+        </p>
+        <div class="flex flex-col gap-1">
+          <label class="text-sm font-medium">Clube de destino *</label>
+          <Select
+            v-model="transferirDestino"
+            :options="clubesDestino.map(c => ({ label: c.nome, value: c.id }))"
+            option-label="label"
+            option-value="value"
+            placeholder="Selecione o clube"
+            class="w-full"
+          />
+        </div>
+        <div class="flex flex-col gap-1">
+          <label class="text-sm font-medium">Motivo</label>
+          <Textarea
+            v-model="transferirMotivo"
+            class="w-full"
+            rows="2"
+          />
+        </div>
+      </div>
+      <template #footer>
+        <div class="flex justify-end gap-2">
+          <Button
+            label="Cancelar"
+            text
+            @click="transferirModal = false"
+          />
+          <Button
+            label="Transferir"
+            :loading="transferindo"
+            :disabled="!transferirDestino"
+            @click="confirmarTransferir"
+          />
+        </div>
+      </template>
     </Dialog>
   </div>
 </template>
