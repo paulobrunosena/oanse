@@ -16,11 +16,19 @@ const VISITANTES = [
   { id: 'v3', nome: 'Clara', data_nascimento: '2015-02-20', clube_id: 'c1', indicado_por: null, oansista_origem_id: null, responsavel: null, contato: null, status: 'matriculado', data_cadastro: '2026-09-01', created_at: '2026-09-01T00:00:00Z', updated_at: '2026-09-01T00:00:00Z' },
 ]
 
-const CLUBES = [{ id: 'c1', nome: 'Flamas', qtd_licoes: 8 }]
+const CLUBES = [
+  { id: 'c1', nome: 'Flamas', qtd_licoes: 8, idade_min: 9, idade_max: 10 },
+  { id: 'c2', nome: 'Faíscas', qtd_licoes: 6, idade_min: 6, idade_max: 8 },
+]
 
 const mocks = vi.hoisted(() => ({ supabase: null as any }))
 vi.mock('@/lib/supabase', () => ({
   get supabase() { return mocks.supabase },
+}))
+
+const confirmacao = vi.hoisted(() => ({ require: vi.fn() }))
+vi.mock('primevue/useconfirm', () => ({
+  useConfirm: () => confirmacao,
 }))
 
 const stubs = {
@@ -59,7 +67,12 @@ const stubs = {
     props: ['visible'],
     template: '<div class="dialog" v-if="visible"><slot /><slot name="footer" /></div>',
   },
-  InputText: { name: 'InputText', template: '<input />' },
+  InputText: {
+    name: 'InputText',
+    props: ['modelValue', 'type'],
+    emits: ['update:modelValue'],
+    template: '<input :type="type" :value="modelValue" @input="$emit(\'update:modelValue\', $event.target.value)" />',
+  },
   Select: {
     name: 'Select',
     props: ['options', 'optionLabel', 'optionValue', 'disabled'],
@@ -79,6 +92,15 @@ const stubs = {
   },
 }
 
+function nascimentoComIdade(anos: number): string {
+  const d = new Date()
+  d.setFullYear(d.getFullYear() - anos)
+  d.setDate(d.getDate() - 1)
+  const m = String(d.getMonth() + 1).padStart(2, '0')
+  const dia = String(d.getDate()).padStart(2, '0')
+  return `${d.getFullYear()}-${m}-${dia}`
+}
+
 async function montar() {
   const store = useAuthStore()
   store.setUser({ sub: 'u1' })
@@ -93,6 +115,7 @@ async function montar() {
 
 describe('VisitantesView', () => {
   beforeEach(() => {
+    confirmacao.require.mockReset()
     setActivePinia(createPinia())
     mocks.supabase = clienteSupabase({
       profiles: () => {
@@ -174,5 +197,49 @@ describe('VisitantesView', () => {
 
     const selects = wrapper.findAll('select.sel')
     expect(selects[1]!.attributes('disabled')).toBeUndefined()
+  })
+
+  it('mostra aviso e bloqueia o salvamento de criança nascida neste ano', async () => {
+    const wrapper = await montar()
+
+    const botaoNovo = wrapper.findAll('button').find(b => b.text() === 'Novo visitante')
+    await botaoNovo!.trigger('click')
+    await flushPromises()
+
+    await wrapper.find('form input').setValue('Ana')
+    await wrapper.find('form input[type="date"]').setValue(`${new Date().getFullYear()}-01-01`)
+    await flushPromises()
+
+    expect(wrapper.text()).toContain('nasceu neste ano')
+
+    await wrapper.find('form').trigger('submit')
+    await flushPromises()
+
+    expect(confirmacao.require).not.toHaveBeenCalled()
+    expect(mocks.supabase.builderDe('visitantes').insert).not.toHaveBeenCalled()
+  })
+
+  it('pede confirmação quando a idade corresponde a outro clube', async () => {
+    const wrapper = await montar()
+
+    const botaoNovo = wrapper.findAll('button').find(b => b.text() === 'Novo visitante')
+    await botaoNovo!.trigger('click')
+    await flushPromises()
+
+    await wrapper.find('form input').setValue('Ana')
+    await wrapper.find('form input[type="date"]').setValue(nascimentoComIdade(7))
+    await flushPromises()
+
+    await wrapper.find('form').trigger('submit')
+    await flushPromises()
+
+    expect(confirmacao.require).toHaveBeenCalledTimes(1)
+    const cfg = confirmacao.require.mock.calls[0]![0]!
+    expect(cfg.message).toContain('Faíscas')
+    expect(cfg.message).toContain('Flamas')
+
+    await cfg.accept()
+    await flushPromises()
+    expect(mocks.supabase.builderDe('visitantes').insert).toHaveBeenCalled()
   })
 })

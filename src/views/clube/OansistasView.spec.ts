@@ -22,13 +22,19 @@ const TURMAS = [
 ]
 
 const CLUBES = [
-  { id: 'c1', nome: 'Ursinhos' },
-  { id: 'c2', nome: 'Flamas' },
+  { id: 'c1', nome: 'Ursinhos', idade_min: 4, idade_max: 5 },
+  { id: 'c2', nome: 'Flamas', idade_min: 9, idade_max: 10 },
+  { id: 'c3', nome: 'Faíscas', idade_min: 6, idade_max: 8 },
 ]
 
 const mocks = vi.hoisted(() => ({ supabase: null as any }))
 vi.mock('@/lib/supabase', () => ({
   get supabase() { return mocks.supabase },
+}))
+
+const confirmacao = vi.hoisted(() => ({ require: vi.fn() }))
+vi.mock('primevue/useconfirm', () => ({
+  useConfirm: () => confirmacao,
 }))
 
 const stubs = {
@@ -67,7 +73,12 @@ const stubs = {
     props: ['visible'],
     template: '<div class="dialog" v-if="visible"><slot /><slot name="footer" /></div>',
   },
-  InputText: { name: 'InputText', template: '<input />' },
+  InputText: {
+    name: 'InputText',
+    props: ['modelValue', 'type'],
+    emits: ['update:modelValue'],
+    template: '<input :type="type" :value="modelValue" @input="$emit(\'update:modelValue\', $event.target.value)" />',
+  },
   Select: {
     name: 'Select',
     props: ['options', 'optionLabel', 'optionValue', 'modelValue'],
@@ -76,6 +87,15 @@ const stubs = {
   },
   Tag: { name: 'Tag', props: ['value', 'severity'], template: '<span class="tag">{{ value }}</span>' },
   Textarea: { name: 'Textarea', template: '<textarea />' },
+}
+
+function nascimentoComIdade(anos: number): string {
+  const d = new Date()
+  d.setFullYear(d.getFullYear() - anos)
+  d.setDate(d.getDate() - 1)
+  const m = String(d.getMonth() + 1).padStart(2, '0')
+  const dia = String(d.getDate()).padStart(2, '0')
+  return `${d.getFullYear()}-${m}-${dia}`
 }
 
 async function montarComPerfil() {
@@ -92,6 +112,7 @@ async function montarComPerfil() {
 
 describe('OansistasView', () => {
   beforeEach(() => {
+    confirmacao.require.mockReset()
     setActivePinia(createPinia())
     mocks.supabase = clienteSupabase({
       profiles: () => {
@@ -173,5 +194,49 @@ describe('OansistasView', () => {
       p_clube_destino_id: 'c2',
       p_motivo: undefined,
     })
+  })
+
+  it('mostra aviso e bloqueia o salvamento de criança nascida neste ano', async () => {
+    const wrapper = await montarComPerfil()
+
+    const botaoNovo = wrapper.findAll('button').find(b => b.text() === 'Novo')
+    await botaoNovo!.trigger('click')
+    await flushPromises()
+
+    await wrapper.find('form input').setValue('Ana')
+    await wrapper.find('form input[type="date"]').setValue(`${new Date().getFullYear()}-01-01`)
+    await flushPromises()
+
+    expect(wrapper.text()).toContain('nasceu neste ano')
+
+    await wrapper.find('form').trigger('submit')
+    await flushPromises()
+
+    expect(confirmacao.require).not.toHaveBeenCalled()
+    expect(mocks.supabase.builderDe('oansistas').insert).not.toHaveBeenCalled()
+  })
+
+  it('pede confirmação quando a idade corresponde a outro clube', async () => {
+    const wrapper = await montarComPerfil()
+
+    const botaoNovo = wrapper.findAll('button').find(b => b.text() === 'Novo')
+    await botaoNovo!.trigger('click')
+    await flushPromises()
+
+    await wrapper.find('form input').setValue('Ana')
+    await wrapper.find('form input[type="date"]').setValue(nascimentoComIdade(7))
+    await flushPromises()
+
+    await wrapper.find('form').trigger('submit')
+    await flushPromises()
+
+    expect(confirmacao.require).toHaveBeenCalledTimes(1)
+    const cfg = confirmacao.require.mock.calls[0]![0]!
+    expect(cfg.message).toContain('Faíscas')
+    expect(cfg.message).toContain('Ursinhos')
+
+    await cfg.accept()
+    await flushPromises()
+    expect(mocks.supabase.builderDe('oansistas').insert).toHaveBeenCalled()
   })
 })

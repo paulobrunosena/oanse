@@ -40,7 +40,7 @@ export function useVisitantes() {
   const licoes = ref<LicaoRow[]>([])
   const oansistas = ref<OansistaOpcao[]>([])
   const turmas = ref<TurmaOpcao[]>([])
-  const clubes = ref<Pick<ClubeRow, 'id' | 'nome' | 'qtd_licoes'>[]>([])
+  const clubes = ref<Pick<ClubeRow, 'id' | 'nome' | 'qtd_licoes' | 'idade_min' | 'idade_max'>[]>([])
   const clubeIdAtual = ref<string | null>(null)
   const carregando = ref(false)
 
@@ -79,7 +79,7 @@ export function useVisitantes() {
         supabase.from('visitantes').select('*').eq('clube_id', clubeId).order('nome'),
         supabase.from('oansistas').select('id, nome').eq('clube_id', clubeId).eq('status', 'ativo').order('nome'),
         supabase.from('turmas').select('id, nome').eq('clube_id', clubeId).eq('ativo', true).order('nome'),
-        supabase.from('clubes').select('id, nome, qtd_licoes').order('ordem'),
+        supabase.from('clubes').select('id, nome, qtd_licoes, idade_min, idade_max').order('ordem'),
       ])
       if (rVisitantes.error) throw rVisitantes.error
       if (rOansistas.error) throw rOansistas.error

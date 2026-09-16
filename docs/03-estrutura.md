@@ -133,14 +133,14 @@ oanse/
 │   │   ├── clube/
 │   │   │   ├── TurmasView.vue            # Diretor de Clube
 │   │   │   ├── LideresView.vue           # Diretor de Clube (catálogo da equipe)
-│   │   │   ├── OansistasView.vue         # Diretor de Clube (CRUD + import CSV + mudança de clube/faixa etária — transferir/cancelar)
+│   │   │   ├── OansistasView.vue         # Diretor de Clube (CRUD + import CSV + mudança de clube/faixa etária — transferir/cancelar + validação de idade/nascimento)
 │   │   │   ├── RemanejamentosView.vue    # Diretor de Clube
 │   │   │   ├── TransferenciasView.vue    # Diretor de Clube
 │   │   │   ├── JogosView.vue             # Líder de Jogos/Diretor Geral (stepper PrimeVue em 3 etapas: configuração → rodadas → placar final; vários eventos por sábado)
 │   │   │   ├── JogosCatalogoView.vue     # Líder de Jogos/Diretor Geral/Diretor de Clube (CRUD de nomes de jogos por clube)
 │   │   │   ├── RankingView.vue           # Diretor de Clube/Diretor Geral (ranking do sábado)
 │   │   │   ├── FolhaIndividualView.vue   # Diretor de Clube (Folha Individual: manuais/seções/blocos + progresso da criança) — rota /clube/folha-individual
-│   │   │   └── VisitantesView.vue        # Diretor de Clube/Líder (Folha de Visitantes: cadastro, 3 visitas, prova de ingresso por clube e matrícula; oculta matriculados; marca transferências) — rota /clube/visitantes
+│   │   │   └── VisitantesView.vue        # Diretor de Clube/Líder (Folha de Visitantes: cadastro, 3 visitas, prova de ingresso por clube e matrícula; oculta matriculados; marca transferências; valida idade/nascimento) — rota /clube/visitantes
 │   │   └── admin/
 │   │       ├── UsuariosView.vue          # Diretor Geral
 │   │       ├── ClubesView.vue            # Diretor Geral
@@ -188,6 +188,7 @@ oanse/
 │       ├── jogos.ts              # pontos do placar (100/70/50/40/0), cores pré-definidas, jogosDisponiveis (combo sem duplicar), gerarNomeEvento, corHex (+ jogos.spec.ts)
 │       ├── folhaIndividual.ts    # árvore normalizada da Folha Individual (manuais/seções/blocos + progresso), regras de conclusão/prêmio e rotuloItem (+ folhaIndividual.spec.ts)
 │       ├── data.ts               # formatação de datas + logoClube(slug) (+ data.spec.ts)
+│       ├── idade.ts              # idadeEmAnos, clubePorIdade e avaliarIdadeClube (validação de faixa etária por clube) (+ idade.spec.ts)
 │       ├── alerta.ts             # som de alerta leve (Web Audio) p/ novas pendências (+ alerta.spec.ts)
 │       └── sabado.ts             # último sábado no fuso local (cópia p/ client, se preciso)
 │

@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref } from 'vue'
+import { useConfirm } from 'primevue/useconfirm'
 import { useAuth } from '@/composables/useAuth'
 import { useRole } from '@/composables/useRole'
 import { useToast } from '@/composables/useToast'
 import { useVisitantes, type StatusVisitante } from '@/composables/useVisitantes'
+import { avaliarIdadeClube } from '@/utils/idade'
 import VisitaTracker from '@/components/folha/VisitaTracker.vue'
 import ProvaIngressoCard from '@/components/folha/ProvaIngressoCard.vue'
 import type { Database } from '@/types/database.types'
@@ -11,10 +13,11 @@ import type { Database } from '@/types/database.types'
 type VisitanteRow = Database['public']['Tables']['visitantes']['Row']
 
 const toast = useToast()
+const confirm = useConfirm()
 const { user, profile } = useAuth()
 const { isDiretorGeral, isDiretorClube } = useRole()
 const {
-  visitantes, oansistas, turmas, carregando, qtdLicoesAtual,
+  visitantes, oansistas, turmas, clubes, carregando, qtdLicoesAtual,
   visitasPorVisitante, licoesPorVisitante,
   carregar, salvarVisitante, salvarVisita, salvarLicao, matricular,
 } = useVisitantes()
@@ -111,6 +114,27 @@ const statusTravado = computed(() => {
   return !!v && (v.status === 'matriculado' || v.oansista_origem_id != null)
 })
 
+const avaliacaoIdade = computed(() =>
+  avaliarIdadeClube(clubes.value, form.data_nascimento, clubeId.value),
+)
+
+const hintIdade = computed<{ severidade: 'error' | 'warn', texto: string } | null>(() => {
+  const a = avaliacaoIdade.value
+  if (a.tipo === 'muito_novo') {
+    return { severidade: 'error', texto: 'A criança nasceu neste ano e ainda não pode ser cadastrada.' }
+  }
+  if (a.tipo === 'clube_diferente') {
+    return {
+      severidade: 'warn',
+      texto: `A idade corresponde ao clube ${a.clubeSugerido.nome} (${a.clubeSugerido.idade_min} a ${a.clubeSugerido.idade_max} anos).`,
+    }
+  }
+  if (a.tipo === 'fora_de_todas') {
+    return { severidade: 'warn', texto: 'A idade não corresponde a nenhuma faixa de clube.' }
+  }
+  return null
+})
+
 function abrirCriar() {
   editandoId.value = null
   Object.assign(form, { nome: '', data_nascimento: '', responsavel: '', contato: '', indicado_por: null, status: 'em_visitas' })
@@ -130,11 +154,8 @@ function abrirEdicao(v: VisitanteRow) {
   formModal.value = true
 }
 
-async function salvar() {
-  if (!form.nome.trim() || !form.data_nascimento || !clubeId.value) {
-    toast.add({ title: 'Nome e data de nascimento são obrigatórios', color: 'error' })
-    return
-  }
+async function persistirSalvar() {
+  if (!clubeId.value) return
   salvando.value = true
   try {
     await salvarVisitante({
@@ -157,6 +178,39 @@ async function salvar() {
   finally {
     salvando.value = false
   }
+}
+
+async function salvar() {
+  if (!form.nome.trim() || !form.data_nascimento || !clubeId.value) {
+    toast.add({ title: 'Nome e data de nascimento são obrigatórios', color: 'error' })
+    return
+  }
+
+  const avaliacao = avaliarIdadeClube(clubes.value, form.data_nascimento, clubeId.value)
+  if (avaliacao.tipo === 'muito_novo') {
+    toast.add({
+      title: 'Data de nascimento inválida',
+      description: 'A criança nasceu neste ano e ainda não pode ser cadastrada.',
+      color: 'error',
+    })
+    return
+  }
+  if (avaliacao.tipo === 'clube_diferente') {
+    const alvo = clubes.value.find(c => c.id === clubeId.value)?.nome ?? 'este clube'
+    confirm.require({
+      header: 'Idade de outro clube',
+      message: `A idade informada corresponde ao clube ${avaliacao.clubeSugerido.nome} (${avaliacao.clubeSugerido.idade_min} a ${avaliacao.clubeSugerido.idade_max} anos), e não a ${alvo}. Deseja cadastrar em ${alvo} mesmo assim?`,
+      icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'Sim, cadastrar',
+      rejectLabel: 'Cancelar',
+      acceptProps: { severity: 'warn' },
+      rejectProps: { severity: 'secondary', text: true },
+      accept: () => persistirSalvar(),
+    })
+    return
+  }
+
+  await persistirSalvar()
 }
 
 // ---- Detalhe ----
@@ -346,6 +400,13 @@ onMounted(() => {
           <div class="flex flex-col gap-1">
             <label class="text-sm font-medium">Data de nascimento *</label>
             <InputText v-model="form.data_nascimento" type="date" class="w-full" />
+            <small
+              v-if="hintIdade"
+              class="text-sm"
+              :class="hintIdade.severidade === 'error' ? 'text-red-600' : 'text-amber-600'"
+            >
+              {{ hintIdade.texto }}
+            </small>
           </div>
           <div class="flex flex-col gap-1">
             <label class="text-sm font-medium">Indicado por</label>

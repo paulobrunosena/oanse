@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref } from 'vue'
+import { useConfirm } from 'primevue/useconfirm'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/composables/useAuth'
 import { useRole } from '@/composables/useRole'
 import { useToast } from '@/composables/useToast'
 import { useTransferenciaClube } from '@/composables/useTransferenciaClube'
+import { avaliarIdadeClube } from '@/utils/idade'
 import type { Database } from '@/types/database.types'
 
 type Oansista = Database['public']['Tables']['oansistas']['Row']
@@ -12,11 +14,12 @@ type Oansista = Database['public']['Tables']['oansistas']['Row']
 const { profile } = useAuth()
 const { isDiretorGeral, isDiretorClube } = useRole()
 const toast = useToast()
+const confirm = useConfirm()
 const { transferir: transferirRpc, cancelar: cancelarRpc } = useTransferenciaClube()
 
 const oansistas = ref<(Oansista & { turma_nome: string | null })[]>([])
 const turmas = ref<{ id: string, nome: string }[]>([])
-const clubes = ref<{ id: string, nome: string }[]>([])
+const clubes = ref<{ id: string, nome: string, idade_min: number, idade_max: number }[]>([])
 const carregando = ref(true)
 const salvando = ref(false)
 
@@ -65,7 +68,7 @@ async function carregarTurmas() {
 async function carregarClubes() {
   const { data } = await supabase
     .from('clubes')
-    .select('id, nome')
+    .select('id, nome, idade_min, idade_max')
     .order('ordem')
   clubes.value = data ?? []
 }
@@ -117,11 +120,28 @@ function abrirEdicao(o: Oansista & { turma_nome: string | null }) {
   modal.value = true
 }
 
-async function salvar() {
-  if (!form.nome.trim() || !form.data_nascimento) {
-    toast.add({ title: 'Nome e data de nascimento são obrigatórios', color: 'error' })
-    return
+const avaliacaoIdade = computed(() =>
+  avaliarIdadeClube(clubes.value, form.data_nascimento, profile.value?.clube_id ?? null),
+)
+
+const hintIdade = computed<{ severidade: 'error' | 'warn', texto: string } | null>(() => {
+  const a = avaliacaoIdade.value
+  if (a.tipo === 'muito_novo') {
+    return { severidade: 'error', texto: 'A criança nasceu neste ano e ainda não pode ser cadastrada.' }
   }
+  if (a.tipo === 'clube_diferente') {
+    return {
+      severidade: 'warn',
+      texto: `A idade corresponde ao clube ${a.clubeSugerido.nome} (${a.clubeSugerido.idade_min} a ${a.clubeSugerido.idade_max} anos).`,
+    }
+  }
+  if (a.tipo === 'fora_de_todas') {
+    return { severidade: 'warn', texto: 'A idade não corresponde a nenhuma faixa de clube.' }
+  }
+  return null
+})
+
+async function persistirSalvar() {
   salvando.value = true
   const payload = {
     nome: form.nome.trim(),
@@ -144,6 +164,39 @@ async function salvar() {
   toast.add({ title: editando.value ? 'Oansista atualizado' : 'Oansista cadastrado', color: 'success' })
   modal.value = false
   await carregar()
+}
+
+async function salvar() {
+  if (!form.nome.trim() || !form.data_nascimento) {
+    toast.add({ title: 'Nome e data de nascimento são obrigatórios', color: 'error' })
+    return
+  }
+
+  const avaliacao = avaliarIdadeClube(clubes.value, form.data_nascimento, profile.value?.clube_id ?? null)
+  if (avaliacao.tipo === 'muito_novo') {
+    toast.add({
+      title: 'Data de nascimento inválida',
+      description: 'A criança nasceu neste ano e ainda não pode ser cadastrada.',
+      color: 'error',
+    })
+    return
+  }
+  if (avaliacao.tipo === 'clube_diferente') {
+    const alvo = clubes.value.find(c => c.id === profile.value?.clube_id)?.nome ?? 'este clube'
+    confirm.require({
+      header: 'Idade de outro clube',
+      message: `A idade informada corresponde ao clube ${avaliacao.clubeSugerido.nome} (${avaliacao.clubeSugerido.idade_min} a ${avaliacao.clubeSugerido.idade_max} anos), e não a ${alvo}. Deseja cadastrar em ${alvo} mesmo assim?`,
+      icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'Sim, cadastrar',
+      rejectLabel: 'Cancelar',
+      acceptProps: { severity: 'warn' },
+      rejectProps: { severity: 'secondary', text: true },
+      accept: () => persistirSalvar(),
+    })
+    return
+  }
+
+  await persistirSalvar()
 }
 
 // ---- Importação CSV ----
@@ -377,6 +430,13 @@ const STATUS_TAG: Record<Oansista['status'], { label: string, severity: string }
               type="date"
               class="w-full"
             />
+            <small
+              v-if="hintIdade"
+              class="text-sm"
+              :class="hintIdade.severidade === 'error' ? 'text-red-600' : 'text-amber-600'"
+            >
+              {{ hintIdade.texto }}
+            </small>
           </div>
           <div class="flex flex-col gap-1">
             <label class="text-sm font-medium">Turma</label>
