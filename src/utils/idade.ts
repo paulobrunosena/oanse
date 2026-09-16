@@ -61,3 +61,29 @@ export function avaliarIdadeClube(
 
   return { tipo: 'clube_diferente', clubeSugerido: sugerido }
 }
+
+/**
+ * Clube para o qual a criança deve progredir, baseado na idade atual.
+ * Retorna o clube cuja faixa contém a idade SOMENTE se ele vier depois do clube
+ * atual na ordem de `clubes` (progressão — ignora rebaixamento/regressão).
+ * Retorna null quando a criança ainda está no clube certo, já saiu de todas as
+ * faixas (ex.: acima da última) ou a data é inválida.
+ */
+export function clubeParaProgredir(
+  clubes: ClubeFaixa[],
+  nascimento: string,
+  clubeIdAtual: string,
+  referencia: Date = new Date(),
+): ClubeFaixa | null {
+  const idade = idadeEmAnos(nascimento, referencia)
+  if (idade === null || idade === 0) return null
+
+  const alvo = clubePorIdade(clubes, idade)
+  if (!alvo || alvo.id === clubeIdAtual) return null
+
+  const idxAtual = clubes.findIndex(c => c.id === clubeIdAtual)
+  const idxAlvo = clubes.findIndex(c => c.id === alvo.id)
+  if (idxAtual === -1 || idxAlvo === -1 || idxAlvo <= idxAtual) return null
+
+  return alvo
+}

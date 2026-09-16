@@ -133,7 +133,7 @@ oanse/
 │   │   ├── clube/
 │   │   │   ├── TurmasView.vue            # Diretor de Clube
 │   │   │   ├── LideresView.vue           # Diretor de Clube (catálogo da equipe)
-│   │   │   ├── OansistasView.vue         # Diretor de Clube (CRUD + import CSV + mudança de clube/faixa etária — transferir/cancelar + validação de idade/nascimento)
+│   │   │   ├── OansistasView.vue         # Diretor de Clube (CRUD + import CSV + mudança de clube/faixa etária — transferir/cancelar + progredir para o próximo clube por idade + validação de idade/nascimento)
 │   │   │   ├── RemanejamentosView.vue    # Diretor de Clube
 │   │   │   ├── TransferenciasView.vue    # Diretor de Clube
 │   │   │   ├── JogosView.vue             # Líder de Jogos/Diretor Geral (stepper PrimeVue em 3 etapas: configuração → rodadas → placar final; vários eventos por sábado)
@@ -188,7 +188,7 @@ oanse/
 │       ├── jogos.ts              # pontos do placar (100/70/50/40/0), cores pré-definidas, jogosDisponiveis (combo sem duplicar), gerarNomeEvento, corHex (+ jogos.spec.ts)
 │       ├── folhaIndividual.ts    # árvore normalizada da Folha Individual (manuais/seções/blocos + progresso), regras de conclusão/prêmio e rotuloItem (+ folhaIndividual.spec.ts)
 │       ├── data.ts               # formatação de datas + logoClube(slug) (+ data.spec.ts)
-│       ├── idade.ts              # idadeEmAnos, clubePorIdade e avaliarIdadeClube (validação de faixa etária por clube) (+ idade.spec.ts)
+│       ├── idade.ts              # idadeEmAnos, clubePorIdade, avaliarIdadeClube e clubeParaProgredir (validação de faixa etária por clube + sugestão de progressão) (+ idade.spec.ts)
 │       ├── alerta.ts             # som de alerta leve (Web Audio) p/ novas pendências (+ alerta.spec.ts)
 │       └── sabado.ts             # último sábado no fuso local (cópia p/ client, se preciso)
 │

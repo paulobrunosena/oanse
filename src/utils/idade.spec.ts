@@ -1,6 +1,6 @@
 // @vitest-environment node
 import { describe, expect, it } from 'vitest'
-import { avaliarIdadeClube, clubePorIdade, idadeEmAnos, type ClubeFaixa } from './idade'
+import { avaliarIdadeClube, clubeParaProgredir, clubePorIdade, idadeEmAnos, type ClubeFaixa } from './idade'
 
 const CLUBES: ClubeFaixa[] = [
   { id: 'c1', nome: 'Ursinhos', idade_min: 4, idade_max: 5 },
@@ -61,5 +61,31 @@ describe('avaliarIdadeClube', () => {
 
   it('retorna fora_de_todas para idade sem clube correspondente', () => {
     expect(avaliarIdadeClube(CLUBES, '2010-01-01', 'c2', REF).tipo).toBe('fora_de_todas') // 16 anos
+  })
+})
+
+describe('clubeParaProgredir', () => {
+  it('sugere o clube seguinte quando a idade avançou para a faixa à frente', () => {
+    expect(clubeParaProgredir(CLUBES, '2019-01-01', 'c1', REF)?.nome).toBe('Faíscas') // 7 anos, estava em Ursinhos
+  })
+
+  it('retorna null quando a idade ainda pertence ao clube atual', () => {
+    expect(clubeParaProgredir(CLUBES, '2022-01-01', 'c1', REF)).toBeNull() // 4 anos, segue em Ursinhos
+  })
+
+  it('pula clubes quando a idade avançou mais de uma faixa', () => {
+    expect(clubeParaProgredir(CLUBES, '2014-01-01', 'c2', REF)?.nome).toBe('Tochas') // 12 anos, do Faíscas direto p/ Tochas
+  })
+
+  it('retorna null para regressão (idade de clube anterior)', () => {
+    expect(clubeParaProgredir(CLUBES, '2022-01-01', 'c3', REF)).toBeNull() // 4 anos, mas está em Flamas
+  })
+
+  it('retorna null quando a idade saiu de todas as faixas', () => {
+    expect(clubeParaProgredir(CLUBES, '2010-01-01', 'c4', REF)).toBeNull() // 16 anos, acima de Tochas
+  })
+
+  it('retorna null para data inválida', () => {
+    expect(clubeParaProgredir(CLUBES, '', 'c1', REF)).toBeNull()
   })
 })

@@ -10,10 +10,19 @@ import { builder, clienteSupabase } from '../../../tests/helpers/supabase'
 
 const PERFIL = { id: 'u1', nome: 'Diretora Ursinhos', role: 'diretor_clube', clube_id: 'c1', ativo: true } as unknown as Profile
 
+function nascimentoComIdade(anos: number): string {
+  const d = new Date()
+  d.setFullYear(d.getFullYear() - anos)
+  d.setDate(d.getDate() - 1)
+  const m = String(d.getMonth() + 1).padStart(2, '0')
+  const dia = String(d.getDate()).padStart(2, '0')
+  return `${d.getFullYear()}-${m}-${dia}`
+}
+
 const OANSISTAS = [
-  { id: 'o1', nome: 'Ana', data_nascimento: '2018-05-10', turma_id: 't1', clube_id: 'c1', status: 'ativo', turma: { nome: 'Turma 1' } },
-  { id: 'o2', nome: 'Beto', data_nascimento: '2017-03-15', turma_id: null, clube_id: 'c1', status: 'ativo', turma: null },
-  { id: 'o3', nome: 'Caio', data_nascimento: '2016-01-02', turma_id: null, clube_id: 'c1', status: 'transferido', turma: null },
+  { id: 'o1', nome: 'Ana', data_nascimento: nascimentoComIdade(8), turma_id: 't1', clube_id: 'c1', status: 'ativo', turma: { nome: 'Turma 1' } },
+  { id: 'o2', nome: 'Beto', data_nascimento: nascimentoComIdade(9), turma_id: null, clube_id: 'c1', status: 'ativo', turma: null },
+  { id: 'o3', nome: 'Caio', data_nascimento: nascimentoComIdade(6), turma_id: null, clube_id: 'c1', status: 'transferido', turma: null },
 ]
 
 const TURMAS = [
@@ -87,15 +96,6 @@ const stubs = {
   },
   Tag: { name: 'Tag', props: ['value', 'severity'], template: '<span class="tag">{{ value }}</span>' },
   Textarea: { name: 'Textarea', template: '<textarea />' },
-}
-
-function nascimentoComIdade(anos: number): string {
-  const d = new Date()
-  d.setFullYear(d.getFullYear() - anos)
-  d.setDate(d.getDate() - 1)
-  const m = String(d.getMonth() + 1).padStart(2, '0')
-  const dia = String(d.getDate()).padStart(2, '0')
-  return `${d.getFullYear()}-${m}-${dia}`
 }
 
 async function montarComPerfil() {
@@ -182,7 +182,7 @@ describe('OansistasView', () => {
     await botaoTransferir!.trigger('click')
     await flushPromises()
 
-    await wrapper.find('select.sel').setValue('c2')
+    await wrapper.find('select.sel').setValue('c3')
     await flushPromises()
 
     const confirmar = wrapper.findAll('button').find(b => b.text() === 'Transferir')
@@ -191,9 +191,89 @@ describe('OansistasView', () => {
 
     expect(mocks.supabase.rpc).toHaveBeenCalledWith('fn_transferir_clube', {
       p_oansista_id: 'o1',
+      p_clube_destino_id: 'c3',
+      p_motivo: undefined,
+    })
+  })
+
+  it('pede confirmação ao transferir para clube de idade incompatível', async () => {
+    const wrapper = await montarComPerfil()
+
+    const botaoTransferir = wrapper.findAll('button').find(b => b.attributes('aria-label') === 'Mudar de clube')
+    await botaoTransferir!.trigger('click')
+    await flushPromises()
+
+    await wrapper.find('select.sel').setValue('c2')
+    await flushPromises()
+
+    const confirmar = wrapper.findAll('button').find(b => b.text() === 'Transferir')
+    await confirmar!.trigger('click')
+    await flushPromises()
+
+    expect(confirmacao.require).toHaveBeenCalledTimes(1)
+    const cfg = confirmacao.require.mock.calls[0]![0]!
+    expect(cfg.message).toContain('Faíscas')
+    expect(cfg.message).toContain('Flamas')
+    expect(mocks.supabase.rpc).not.toHaveBeenCalled()
+
+    await cfg.accept()
+    await flushPromises()
+    expect(mocks.supabase.rpc).toHaveBeenCalledWith('fn_transferir_clube', {
+      p_oansista_id: 'o1',
       p_clube_destino_id: 'c2',
       p_motivo: undefined,
     })
+  })
+
+  it('mostra o botão Progredir de clube e transfere ao confirmar', async () => {
+    mocks.supabase = clienteSupabase({
+      profiles: () => {
+        const b = builder<unknown>([])
+        b.singleData = PERFIL
+        return b
+      },
+      oansistas: () => builder([
+        { id: 'o1', nome: 'Ana', data_nascimento: nascimentoComIdade(8), turma_id: null, clube_id: 'c1', status: 'ativo', turma: null },
+      ]),
+      turmas: () => builder([]),
+      clubes: () => builder(CLUBES),
+    })
+    const wrapper = await montarComPerfil()
+
+    const btn = wrapper.findAll('button').find(b => b.attributes('aria-label') === 'Progredir de clube')
+    expect(btn).toBeDefined()
+    await btn!.trigger('click')
+    await flushPromises()
+
+    expect(confirmacao.require).toHaveBeenCalledTimes(1)
+    const cfg = confirmacao.require.mock.calls[0]![0]!
+    expect(cfg.message).toContain('Faíscas')
+
+    await cfg.accept()
+    await flushPromises()
+    expect(mocks.supabase.rpc).toHaveBeenCalledWith('fn_transferir_clube', {
+      p_oansista_id: 'o1',
+      p_clube_destino_id: 'c3',
+      p_motivo: 'Progressão de faixa etária',
+    })
+  })
+
+  it('não mostra Progredir quando a criança ainda está na faixa do clube', async () => {
+    mocks.supabase = clienteSupabase({
+      profiles: () => {
+        const b = builder<unknown>([])
+        b.singleData = PERFIL
+        return b
+      },
+      oansistas: () => builder([
+        { id: 'o1', nome: 'Ana', data_nascimento: nascimentoComIdade(5), turma_id: null, clube_id: 'c1', status: 'ativo', turma: null },
+      ]),
+      turmas: () => builder([]),
+      clubes: () => builder(CLUBES),
+    })
+    const wrapper = await montarComPerfil()
+
+    expect(wrapper.findAll('button').find(b => b.attributes('aria-label') === 'Progredir de clube')).toBeUndefined()
   })
 
   it('mostra aviso e bloqueia o salvamento de criança nascida neste ano', async () => {

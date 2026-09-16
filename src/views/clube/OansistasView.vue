@@ -6,7 +6,7 @@ import { useAuth } from '@/composables/useAuth'
 import { useRole } from '@/composables/useRole'
 import { useToast } from '@/composables/useToast'
 import { useTransferenciaClube } from '@/composables/useTransferenciaClube'
-import { avaliarIdadeClube } from '@/utils/idade'
+import { avaliarIdadeClube, clubeParaProgredir, idadeEmAnos, type ClubeFaixa } from '@/utils/idade'
 import type { Database } from '@/types/database.types'
 
 type Oansista = Database['public']['Tables']['oansistas']['Row']
@@ -257,6 +257,32 @@ const clubesDestino = computed(() =>
   clubes.value.filter(c => c.id !== transferirSel.value?.clube_id),
 )
 
+const avaliacaoTransferencia = computed(() =>
+  avaliarIdadeClube(
+    clubes.value,
+    transferirSel.value?.data_nascimento ?? '',
+    transferirDestino.value,
+  ),
+)
+
+const hintTransferencia = computed<{ severidade: 'error' | 'warn', texto: string } | null>(() => {
+  if (!transferirDestino.value) return null
+  const a = avaliacaoTransferencia.value
+  if (a.tipo === 'muito_novo') {
+    return { severidade: 'error', texto: 'A criança nasceu neste ano.' }
+  }
+  if (a.tipo === 'clube_diferente') {
+    return {
+      severidade: 'warn',
+      texto: `A idade corresponde ao clube ${a.clubeSugerido.nome} (${a.clubeSugerido.idade_min} a ${a.clubeSugerido.idade_max} anos).`,
+    }
+  }
+  if (a.tipo === 'fora_de_todas') {
+    return { severidade: 'warn', texto: 'A idade não corresponde a nenhuma faixa de clube.' }
+  }
+  return null
+})
+
 function abrirTransferir(o: Oansista & { turma_nome: string | null }) {
   transferirSel.value = o
   transferirDestino.value = null
@@ -264,7 +290,7 @@ function abrirTransferir(o: Oansista & { turma_nome: string | null }) {
   transferirModal.value = true
 }
 
-async function confirmarTransferir() {
+async function persistirTransferir() {
   if (!transferirSel.value || !transferirDestino.value) return
   transferindo.value = true
   try {
@@ -282,6 +308,66 @@ async function confirmarTransferir() {
   }
   finally {
     transferindo.value = false
+  }
+}
+
+function confirmarTransferir() {
+  if (!transferirSel.value || !transferirDestino.value) return
+
+  const avaliacao = avaliarIdadeClube(clubes.value, transferirSel.value.data_nascimento, transferirDestino.value)
+  if (avaliacao.tipo === 'muito_novo') {
+    toast.add({ title: 'Transferência bloqueada', description: 'A criança nasceu neste ano.', color: 'error' })
+    return
+  }
+  if (avaliacao.tipo === 'clube_diferente') {
+    const destino = clubes.value.find(c => c.id === transferirDestino.value)?.nome ?? 'este clube'
+    confirm.require({
+      header: 'Idade de outro clube',
+      message: `A idade informada corresponde ao clube ${avaliacao.clubeSugerido.nome} (${avaliacao.clubeSugerido.idade_min} a ${avaliacao.clubeSugerido.idade_max} anos), e não a ${destino}. Deseja transferir para ${destino} mesmo assim?`,
+      icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'Sim, transferir',
+      rejectLabel: 'Cancelar',
+      acceptProps: { severity: 'warn' },
+      rejectProps: { severity: 'secondary', text: true },
+      accept: () => persistirTransferir(),
+    })
+    return
+  }
+
+  void persistirTransferir()
+}
+
+// ---- Progressão de faixa etária (progredir para o próximo clube) ----
+const progredindoId = ref<string | null>(null)
+
+function confirmarProgredir(o: Oansista & { turma_nome: string | null }) {
+  const alvo = clubeParaProgredir(clubes.value, o.data_nascimento, o.clube_id)
+  if (!alvo) return
+  const anos = idadeEmAnos(o.data_nascimento)
+  confirm.require({
+    header: 'Progredir de clube',
+    message: `${o.nome} agora tem ${anos ?? '—'} anos e passou para a faixa do clube ${alvo.nome} (${alvo.idade_min} a ${alvo.idade_max} anos). Deseja progredir para ${alvo.nome}?`,
+    icon: 'pi pi-angle-double-right',
+    acceptLabel: 'Sim, progredir',
+    rejectLabel: 'Cancelar',
+    acceptProps: { severity: 'primary' },
+    rejectProps: { severity: 'secondary', text: true },
+    accept: () => progredir(o, alvo),
+  })
+}
+
+async function progredir(o: Oansista & { turma_nome: string | null }, alvo: ClubeFaixa) {
+  progredindoId.value = o.id
+  try {
+    await transferirRpc(o.id, alvo.id, 'Progressão de faixa etária')
+    toast.add({ title: `Criança progrediu para ${alvo.nome}`, color: 'success' })
+    await carregar()
+  }
+  catch (e) {
+    toast.add({ title: 'Erro ao progredir de clube', description: (e as { message?: string })?.message ?? 'Tente novamente', color: 'error' })
+  }
+  finally {
+    progredindoId.value = null
   }
 }
 
@@ -371,6 +457,16 @@ const STATUS_TAG: Record<Oansista['status'], { label: string, severity: string }
       <Column header="" style="width: 110px">
         <template #body="{ data }">
           <div class="flex justify-end gap-1">
+            <Button
+              v-if="podeTransferir && data.status === 'ativo' && clubeParaProgredir(clubes, data.data_nascimento, data.clube_id)"
+              icon="pi pi-angle-double-right"
+              text
+              rounded
+              size="small"
+              :loading="progredindoId === data.id"
+              aria-label="Progredir de clube"
+              @click="confirmarProgredir(data)"
+            />
             <Button
               v-if="podeTransferir && data.status === 'ativo'"
               icon="pi pi-arrow-right"
@@ -578,6 +674,13 @@ const STATUS_TAG: Record<Oansista['status'], { label: string, severity: string }
             placeholder="Selecione o clube"
             class="w-full"
           />
+          <small
+            v-if="hintTransferencia"
+            class="text-xs"
+            :class="hintTransferencia.severidade === 'error' ? 'text-red-600' : 'text-amber-600'"
+          >
+            {{ hintTransferencia.texto }}
+          </small>
         </div>
         <div class="flex flex-col gap-1">
           <label class="text-sm font-medium">Motivo</label>
