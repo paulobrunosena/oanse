@@ -1489,6 +1489,27 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      fn_criar_jogo: {
+        Args: {
+          p_clubes: string[]
+          p_criado_por?: string
+          p_encontro_id: string
+          p_nome: string
+        }
+        Returns: {
+          created_at: string
+          criado_por: string | null
+          evento_id: string
+          id: string
+          nome: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "jogos"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       fn_diretor_da_turma: { Args: { p_turma_id: string }; Returns: boolean }
       fn_diretor_do_clube: { Args: { p_clube_id: string }; Returns: boolean }
       fn_entregar_premio: {
