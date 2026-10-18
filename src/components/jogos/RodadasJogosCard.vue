@@ -20,9 +20,11 @@ const props = withDefaults(defineProps<{
   opcoesNomes: string[]
   pontosConfig?: PontosJogosConfig[]
   nomeInicial?: string
+  registrando?: boolean
 }>(), {
   pontosConfig: () => [],
   nomeInicial: '',
+  registrando: false,
 })
 
 const emit = defineEmits<{
@@ -35,9 +37,19 @@ const emit = defineEmits<{
 const nomeRodada = ref(props.nomeInicial)
 const placarRodada = reactive<Record<string, string>>({})
 
+function limparPlacar() {
+  for (const key of Object.keys(placarRodada)) delete placarRodada[key]
+}
+
 watch(() => props.nomeInicial, (nome) => {
   nomeRodada.value = nome
-  for (const key of Object.keys(placarRodada)) delete placarRodada[key]
+  limparPlacar()
+})
+
+// Só limpa o placar quando a rodada é de fato registrada (a lista cresce) —
+// assim uma falha não descarta as colocações digitadas.
+watch(() => props.rodadas.length, (atual, anterior) => {
+  if (anterior !== undefined && atual > anterior) limparPlacar()
 })
 
 const placarOpcoes = computed(() => [
@@ -50,6 +62,7 @@ const placarOpcoes = computed(() => [
 ])
 
 function registrar() {
+  if (props.registrando) return
   const resultados: RodadaResultadoInput[] = Object.entries(placarRodada)
     .filter(([, valor]) => valor !== '' && valor != null)
     .map(([corId, valor]) => ({
@@ -58,7 +71,6 @@ function registrar() {
       desclassificado: valor === 'desc',
     }))
   emit('registrar', { nome: nomeRodada.value.trim(), resultados })
-  for (const key of Object.keys(placarRodada)) delete placarRodada[key]
 }
 
 function resultadoDaCor(rodada: RodadaJogo, corId: string) {
@@ -137,7 +149,8 @@ function aoDefinirPlacar(rodada: RodadaJogo, corId: string, valor: string) {
       <Button
         icon="pi pi-check"
         label="Registrar rodada"
-        :disabled="!nomeRodada.trim()"
+        :loading="registrando"
+        :disabled="!nomeRodada.trim() || registrando"
         class="w-full sm:w-auto self-end"
         @click="registrar"
       />

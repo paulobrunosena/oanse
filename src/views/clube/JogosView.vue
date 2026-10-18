@@ -23,7 +23,7 @@ const {
   eventos, evento, rodadas, catalogo, ranking, carregarEventos, carregarCatalogo, selecionarEvento,
   criarEvento, excluirEvento, adicionarCor, removerCor,
   adicionarOansista, removerOansista,
-  adicionarRodada, excluirRodada, lancarResultado, removerResultado,
+  registrarRodada: registrarRodadaRpc, excluirRodada, lancarResultado, removerResultado,
   finalizarEvento, reabrirEvento,
 } = useJogos()
 
@@ -37,6 +37,7 @@ const novoNome = ref('')
 const novosClubes = ref<string[]>([])
 const novasCores = ref<string[]>([])
 const salvando = ref(false)
+const registrandoRodada = ref(false)
 
 /** Passo atual do stepper: 1 = configuração, 2 = rodadas, 3 = placar final. */
 const passo = ref(1)
@@ -214,12 +215,10 @@ async function acaoComAtualizacao(acao: () => Promise<unknown>, mensagemSucesso?
 }
 
 async function registrarRodada(registro: RodadaRegistro) {
-  if (!evento.value || !user.value?.sub) return
+  if (!evento.value || !user.value?.sub || registrandoRodada.value) return
+  registrandoRodada.value = true
   try {
-    const jogoId = await adicionarRodada(evento.value.id, registro.nome, user.value.sub)
-    for (const r of registro.resultados) {
-      await lancarResultado(jogoId, r.cor_id, { colocacao: r.colocacao, desclassificado: r.desclassificado })
-    }
+    await registrarRodadaRpc(evento.value.id, registro.nome, registro.resultados, user.value.sub)
     await carregarJogosDoEncontro()
     toast.add({ title: 'Rodada registrada', description: registro.nome, color: 'success' })
   }
@@ -229,6 +228,9 @@ async function registrarRodada(registro: RodadaRegistro) {
       description: (e as { message?: string })?.message ?? 'Tente novamente',
       color: 'error',
     })
+  }
+  finally {
+    registrandoRodada.value = false
   }
 }
 
@@ -417,6 +419,7 @@ onMounted(carregarTudo)
                   :opcoes-nomes="opcoesNomes"
                   :pontos-config="pontosConfig"
                   :nome-inicial="ultimoNome"
+                  :registrando="registrandoRodada"
                   @registrar="registrarRodada"
                   @excluir-rodada="excluirRodadaConfirmada"
                   @lancar-resultado="(jogoId, corId, resultado) => acaoComAtualizacao(() => lancarResultado(jogoId, corId, resultado))"

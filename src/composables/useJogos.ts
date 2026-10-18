@@ -244,13 +244,22 @@ export function useJogos() {
     if (error) throw error
   }
 
-  async function adicionarRodada(eventoId: string, nome: string, criadoPor: string): Promise<string> {
-    const { data, error } = await supabase
-      .from('jogos')
-      .insert({ evento_id: eventoId, nome, criado_por: criadoPor })
-      .select('id')
-      .single()
-    if (error || !data) throw error
+  async function registrarRodada(
+    eventoId: string,
+    nome: string,
+    resultados: { cor_id: string, colocacao: number | null, desclassificado: boolean }[],
+    criadoPor: string,
+  ): Promise<string> {
+    // RPC transacional (migration 0022): o jogo e todos os resultados entram
+    // numa só transação — falha no meio não deixa rodada parcial.
+    const { data, error } = await supabase.rpc('fn_registrar_rodada', {
+      p_evento_id: eventoId,
+      p_nome: nome,
+      p_resultados: resultados,
+      p_criado_por: criadoPor,
+    })
+    if (error) throw error
+    if (!data?.id) throw new Error('Erro ao registrar a rodada')
     return data.id
   }
 
@@ -339,7 +348,7 @@ export function useJogos() {
     criarEvento, atualizarEvento, excluirEvento,
     adicionarCor, removerCor,
     adicionarOansista, removerOansista,
-    adicionarRodada, excluirRodada,
+    registrarRodada, excluirRodada,
     lancarResultado, removerResultado,
     finalizarEvento, reabrirEvento,
     criarCatalogoItem, atualizarCatalogoItem, excluirCatalogoItem,

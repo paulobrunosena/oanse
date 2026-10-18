@@ -147,14 +147,38 @@ describe('useJogos', () => {
     })
   })
 
-  describe('adicionarRodada', () => {
-    it('insere a rodada e retorna o id', async () => {
-      mocks.supabase.builderDe('jogos').singleData = { id: 'j9' }
+  describe('registrarRodada', () => {
+    it('chama a RPC transacional fn_registrar_rodada com jogo e resultados', async () => {
+      mocks.supabase.rpc.mockReset()
+      mocks.supabase.rpc.mockResolvedValue({ data: { id: 'j9' }, error: null })
       const jogos = useJogos()
-      const id = await jogos.adicionarRodada('ev1', 'bonanza', 'p1')
+      const id = await jogos.registrarRodada(
+        'ev1',
+        'bonanza',
+        [
+          { cor_id: 'cor1', colocacao: 1, desclassificado: false },
+          { cor_id: 'cor2', colocacao: null, desclassificado: true },
+        ],
+        'p1',
+      )
       expect(id).toBe('j9')
-      const b = mocks.supabase.builderDe('jogos')
-      expect(b.insert).toHaveBeenCalledWith({ evento_id: 'ev1', nome: 'bonanza', criado_por: 'p1' })
+      expect(mocks.supabase.rpc).toHaveBeenCalledWith('fn_registrar_rodada', {
+        p_evento_id: 'ev1',
+        p_nome: 'bonanza',
+        p_resultados: [
+          { cor_id: 'cor1', colocacao: 1, desclassificado: false },
+          { cor_id: 'cor2', colocacao: null, desclassificado: true },
+        ],
+        p_criado_por: 'p1',
+      })
+    })
+
+    it('propaga o erro da RPC (nada é gravado pela metade)', async () => {
+      mocks.supabase.rpc.mockReset()
+      mocks.supabase.rpc.mockResolvedValue({ data: null, error: { message: 'Cor não pertence a este evento' } })
+      const jogos = useJogos()
+      await expect(jogos.registrarRodada('ev1', 'bonanza', [], 'p1'))
+        .rejects.toThrow('Cor não pertence a este evento')
     })
   })
 

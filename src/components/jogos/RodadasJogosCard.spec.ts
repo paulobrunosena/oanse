@@ -110,4 +110,39 @@ describe('RodadasJogosCard', () => {
     expect(controles).toBeDefined()
     expect(controles!.findAll('input.sel')).toHaveLength(4)
   })
+
+  it('preserva o placar digitado após emitir e limpa quando a rodada entra na lista', async () => {
+    const wrapper = mount(RodadasJogosCard, {
+      props: { rodadas: [], cores: CORES, opcoesNomes: ['maratona', 'bonanza'], nomeInicial: 'maratona' },
+      global: { stubs },
+    })
+    const inputs = wrapper.findAll('input.sel')
+    await inputs[1]!.setValue('1')
+    await inputs[2]!.setValue('2')
+
+    const registrar = wrapper.findAll('button').find(b => b.text().includes('Registrar rodada'))
+    await registrar!.trigger('click')
+    expect(wrapper.emitted('registrar')).toHaveLength(1)
+
+    // Enquanto a lista não cresce (ex.: falha no salvamento), o placar fica.
+    expect((wrapper.findAll('input.sel')[1]!.element as HTMLInputElement).value).toBe('1')
+    expect((wrapper.findAll('input.sel')[2]!.element as HTMLInputElement).value).toBe('2')
+
+    // Rodada registrada com sucesso -> a lista cresce e o placar é limpo.
+    await wrapper.setProps({ rodadas: RODADAS })
+    expect((wrapper.findAll('input.sel')[1]!.element as HTMLInputElement).value).toBe('')
+    expect((wrapper.findAll('input.sel')[2]!.element as HTMLInputElement).value).toBe('')
+  })
+
+  it('bloqueia novo envio enquanto está registrando (anti clique duplo)', async () => {
+    const wrapper = mount(RodadasJogosCard, {
+      props: { rodadas: [], cores: CORES, opcoesNomes: ['maratona'], nomeInicial: 'maratona', registrando: true },
+      global: { stubs },
+    })
+    const registrar = wrapper.findAll('button').find(b => b.text().includes('Registrar rodada'))
+    expect(registrar!.attributes('disabled')).toBeDefined()
+
+    await registrar!.trigger('click')
+    expect(wrapper.emitted('registrar')).toBeUndefined()
+  })
 })
