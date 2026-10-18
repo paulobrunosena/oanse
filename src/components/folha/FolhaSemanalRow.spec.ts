@@ -90,6 +90,27 @@ describe('FolhaSemanalRow', () => {
     expect(wrapper.find('.rounded-lg.border').classes()).toContain('bg-[var(--surface-card)]')
   })
 
+  it('re-sincroniza o formulário quando a folha muda (troca de sábado no seletor)', async () => {
+    const wrapper = mount(FolhaSemanalRow, {
+      props: props({ folha: folhaCompleta({ uniforme: true, biblia: true }) }),
+      global: { stubs },
+    })
+
+    const antes = wrapper.findAll('input[type="checkbox"]')
+    expect((antes[0]!.element as HTMLInputElement).checked).toBe(true)
+    expect((antes[1]!.element as HTMLInputElement).checked).toBe(true)
+
+    // Mesma criança, sábado novo (instância reaproveitada) — sem o watch o form
+    // ficaria com os valores do sábado anterior.
+    await wrapper.setProps({
+      folha: folhaCompleta({ id: 'f2', encontro_id: 'e2', uniforme: false, biblia: false, total: 10 }),
+    })
+
+    const depois = wrapper.findAll('input[type="checkbox"]')
+    expect((depois[0]!.element as HTMLInputElement).checked).toBe(false)
+    expect((depois[1]!.element as HTMLInputElement).checked).toBe(false)
+  })
+
   it('mostra o total apenas com a presença quando não há critérios', () => {
     const wrapper = mount(FolhaSemanalRow, { props: props(), global: { stubs } })
 

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, reactive } from 'vue'
+import { computed, reactive, watch } from 'vue'
 import type { Folha, FormFolha } from '@/composables/useFolhaSemanal'
 import { previewTotalFolha, type ItensPontuacaoMap } from '@/utils/pontos'
 import { corHex, posicaoLabel } from '@/utils/jogos'
@@ -14,18 +14,27 @@ const props = withDefaults(defineProps<{
 
 const emit = defineEmits<{ salvar: [form: FormFolha] }>()
 
-const form = reactive<FormFolha>({
-  uniforme: props.folha?.uniforme ?? false,
-  biblia: props.folha?.biblia ?? false,
-  ebd: props.folha?.ebd ?? false,
-  manual: props.folha?.manual ?? false,
-  conduta: props.folha?.conduta ?? false,
-  leitura_biblica: props.folha?.leitura_biblica ?? false,
-  visitantes_convidados: props.folha?.visitantes_convidados ?? 0,
-  secoes_sem_ajuda: props.folha?.secoes_sem_ajuda ?? 0,
-  secoes_com_ajuda: props.folha?.secoes_com_ajuda ?? 0,
-  atividade_extra: props.folha?.atividade_extra ?? 0,
-})
+function valoresIniciais(f: Folha | null): FormFolha {
+  return {
+    uniforme: f?.uniforme ?? false,
+    biblia: f?.biblia ?? false,
+    ebd: f?.ebd ?? false,
+    manual: f?.manual ?? false,
+    conduta: f?.conduta ?? false,
+    leitura_biblica: f?.leitura_biblica ?? false,
+    visitantes_convidados: f?.visitantes_convidados ?? 0,
+    secoes_sem_ajuda: f?.secoes_sem_ajuda ?? 0,
+    secoes_com_ajuda: f?.secoes_com_ajuda ?? 0,
+    atividade_extra: f?.atividade_extra ?? 0,
+  }
+}
+
+const form = reactive<FormFolha>(valoresIniciais(props.folha))
+
+// A instância é reaproveitada ao trocar o sábado no seletor (mesma lista de
+// oansistas) — sem re-sincronizar, o formulário ficaria com os valores do
+// sábado anterior e o "Salvar" gravaria dados errados na semana nova.
+watch(() => props.folha, (f) => Object.assign(form, valoresIniciais(f)))
 
 const sujo = computed(() => {
   const f = props.folha
