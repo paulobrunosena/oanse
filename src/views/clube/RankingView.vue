@@ -3,10 +3,12 @@ import { computed, onMounted, ref } from 'vue'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/composables/useAuth'
 import { useEncontro } from '@/composables/useEncontro'
+import { useToast } from '@/composables/useToast'
 import { ordenarGeral, useRanking, type LinhaRanking } from '@/composables/useRanking'
 import EncontroSeletor from '@/components/encontro/EncontroSeletor.vue'
 
 const { profile } = useAuth()
+const toast = useToast()
 const { encontro, encontros, carregando: carregandoEncontro, carregar: carregarEncontro, selecionar } = useEncontro()
 const { linhas, carregando, carregar } = useRanking()
 
@@ -53,11 +55,19 @@ function classePosicao(posicao: number): string {
 
 async function carregarTudo() {
   carregandoInicial.value = true
-  const { data } = await supabase.from('clubes').select('id, nome').order('ordem')
-  clubes.value = data ?? []
-  await carregarEncontro()
-  if (encontro.value) await carregar(encontro.value.id)
-  carregandoInicial.value = false
+  try {
+    const { data, error } = await supabase.from('clubes').select('id, nome').order('ordem')
+    if (error) throw error
+    clubes.value = data ?? []
+    await carregarEncontro()
+    if (encontro.value) await carregar(encontro.value.id)
+  }
+  catch (e) {
+    toast.add({ title: 'Erro ao carregar o ranking', description: (e as { message?: string })?.message ?? 'Tente novamente', color: 'error' })
+  }
+  finally {
+    carregandoInicial.value = false
+  }
 }
 
 async function aoSelecionarEncontro(id: string) {

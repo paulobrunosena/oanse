@@ -18,27 +18,36 @@ const salvando = ref(false)
 
 async function carregar() {
   carregando.value = true
-  const { data } = await supabase
-    .from('turmas')
-    .select('*, lider:profiles!turmas_lider_id_fkey(nome), oansistas(count)')
-    .eq('clube_id', profile.value!.clube_id!)
-    .order('nome')
-  turmas.value = (data ?? []).map(t => ({
-    ...t,
-    lider_nome: (t.lider as unknown as { nome: string } | null)?.nome ?? null,
-    qtd_oansistas: (t.oansistas as unknown as { count: number }[] | null)?.[0]?.count ?? 0,
-  }))
-  carregando.value = false
+  try {
+    const { data, error } = await supabase
+      .from('turmas')
+      .select('*, lider:profiles!turmas_lider_id_fkey(nome), oansistas(count)')
+      .eq('clube_id', profile.value!.clube_id!)
+      .order('nome')
+    if (error) throw error
+    turmas.value = (data ?? []).map(t => ({
+      ...t,
+      lider_nome: (t.lider as unknown as { nome: string } | null)?.nome ?? null,
+      qtd_oansistas: (t.oansistas as unknown as { count: number }[] | null)?.[0]?.count ?? 0,
+    }))
+  }
+  catch (e) {
+    toast.add({ title: 'Erro ao carregar as turmas', description: (e as { message?: string })?.message ?? 'Tente novamente', color: 'error' })
+  }
+  finally {
+    carregando.value = false
+  }
 }
 
 async function carregarLideres() {
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from('profiles')
     .select('*')
     .eq('clube_id', profile.value!.clube_id!)
     .eq('role', 'lider')
     .eq('ativo', true)
     .order('nome')
+  if (error) throw error
   lideres.value = data ?? []
 }
 

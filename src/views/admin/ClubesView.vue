@@ -14,9 +14,17 @@ const carregando = ref(true)
 
 async function carregar() {
   carregando.value = true
-  const { data } = await supabase.from('clubes').select('*').order('ordem')
-  clubes.value = data ?? []
-  carregando.value = false
+  try {
+    const { data, error } = await supabase.from('clubes').select('*').order('ordem')
+    if (error) throw error
+    clubes.value = data ?? []
+  }
+  catch (e) {
+    toast.add({ title: 'Erro ao carregar os clubes', description: (e as { message?: string })?.message ?? 'Tente novamente', color: 'error' })
+  }
+  finally {
+    carregando.value = false
+  }
 }
 
 onMounted(carregar)

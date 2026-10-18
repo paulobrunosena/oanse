@@ -36,15 +36,19 @@ export function useRelatorioPremiacoes() {
 
   async function carregar(de: string, ate: string) {
     carregando.value = true
-    const { data, error } = await supabase
-      .from('folha_premio_progresso')
-      .select('id, data_recebimento, oansistas(nome, clubes(nome)), folha_blocos(premio_nome)')
-      .gte('data_recebimento', de)
-      .lte('data_recebimento', ate)
-      .order('data_recebimento')
-    if (error) throw error
-    premiacoes.value = ((data ?? []) as unknown as LinhaPremiacao[]).map(normalizarPremiacao)
-    carregando.value = false
+    try {
+      const { data, error } = await supabase
+        .from('folha_premio_progresso')
+        .select('id, data_recebimento, oansistas(nome, clubes(nome)), folha_blocos(premio_nome)')
+        .gte('data_recebimento', de)
+        .lte('data_recebimento', ate)
+        .order('data_recebimento')
+      if (error) throw error
+      premiacoes.value = ((data ?? []) as unknown as LinhaPremiacao[]).map(normalizarPremiacao)
+    }
+    finally {
+      carregando.value = false
+    }
   }
 
   return { premiacoes, carregando, carregar }

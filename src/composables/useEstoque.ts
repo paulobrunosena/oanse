@@ -51,15 +51,19 @@ export function useEstoque() {
 
   async function carregar(premioId?: string) {
     carregando.value = true
-    let query = supabase
-      .from('premios_movimentacoes')
-      .select('id, tipo, quantidade, observacao, created_at, premio_id, premios(nome), profiles(nome)')
-    if (premioId) query = query.eq('premio_id', premioId)
-    query = query.order('created_at', { ascending: false })
-    const { data, error } = await query
-    if (error) throw error
-    movimentacoes.value = ((data ?? []) as unknown as LinhaMovimentacao[]).map(normalizarMovimentacao)
-    carregando.value = false
+    try {
+      let query = supabase
+        .from('premios_movimentacoes')
+        .select('id, tipo, quantidade, observacao, created_at, premio_id, premios(nome), profiles(nome)')
+      if (premioId) query = query.eq('premio_id', premioId)
+      query = query.order('created_at', { ascending: false })
+      const { data, error } = await query
+      if (error) throw error
+      movimentacoes.value = ((data ?? []) as unknown as LinhaMovimentacao[]).map(normalizarMovimentacao)
+    }
+    finally {
+      carregando.value = false
+    }
   }
 
   async function registrar(

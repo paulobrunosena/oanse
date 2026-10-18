@@ -25,10 +25,14 @@ export function usePremios() {
 
   async function carregar() {
     carregando.value = true
-    const { data, error } = await supabase.from('premios').select('*').order('nome')
-    if (error) throw error
-    premios.value = data ?? []
-    carregando.value = false
+    try {
+      const { data, error } = await supabase.from('premios').select('*').order('nome')
+      if (error) throw error
+      premios.value = data ?? []
+    }
+    finally {
+      carregando.value = false
+    }
   }
 
   async function criar(dados: PremioForm) {

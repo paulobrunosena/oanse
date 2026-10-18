@@ -101,6 +101,8 @@ async function carregarClubesEConfig() {
     supabase.from('clubes').select('*').order('ordem'),
     supabase.from('jogos_pontos_config').select('*'),
   ])
+  if (rClubes.error) throw rClubes.error
+  if (rConfig.error) throw rConfig.error
   clubes.value = rClubes.data ?? []
   pontosConfig.value = (rConfig.data ?? []) as PontosJogosConfig[]
 }
@@ -113,11 +115,12 @@ type LinhaOansista = {
 }
 
 async function carregarOansistas() {
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from('oansistas')
     .select('id, nome, clube_id, clubes(nome, cor)')
     .eq('status', 'ativo')
     .order('nome')
+  if (error) throw error
   oansistas.value = ((data ?? []) as unknown as LinhaOansista[]).map(o => ({
     id: o.id,
     nome: o.nome,
@@ -133,10 +136,17 @@ async function carregarJogosDoEncontro() {
 
 async function carregarTudo() {
   carregandoInicial.value = true
-  await Promise.all([carregarClubesEConfig(), carregarCatalogo(), carregarOansistas()])
-  await carregarEncontro()
-  await carregarJogosDoEncontro()
-  carregandoInicial.value = false
+  try {
+    await Promise.all([carregarClubesEConfig(), carregarCatalogo(), carregarOansistas()])
+    await carregarEncontro()
+    await carregarJogosDoEncontro()
+  }
+  catch (e) {
+    toast.add({ title: 'Erro ao carregar os jogos', description: (e as { message?: string })?.message ?? 'Tente novamente', color: 'error' })
+  }
+  finally {
+    carregandoInicial.value = false
+  }
 }
 
 async function aoSelecionarEncontro(id: string) {

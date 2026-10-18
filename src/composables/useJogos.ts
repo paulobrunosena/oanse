@@ -147,31 +147,35 @@ export function useJogos() {
 
   async function carregarEventos(encontroId: string) {
     carregando.value = true
-    encontroIdAtual.value = encontroId
-    const { data, error } = await supabase
-      .from('eventos_jogos')
-      .select(`
-        id, encontro_id, nome, status, criado_por,
-        evento_jogos_clubes(clube_id, clubes(nome, slug, cor)),
-        evento_jogos_cores(
-          id, cor,
-          evento_jogos_cores_oansistas(oansista_id, oansistas(nome, clube_id, clubes(nome, cor)))
-        )
-      `)
-      .eq('encontro_id', encontroId)
-      .order('created_at')
-    if (error) throw error
-    eventos.value = ((data ?? []) as unknown as LinhaEvento[]).map(normalizarEvento)
+    try {
+      encontroIdAtual.value = encontroId
+      const { data, error } = await supabase
+        .from('eventos_jogos')
+        .select(`
+          id, encontro_id, nome, status, criado_por,
+          evento_jogos_clubes(clube_id, clubes(nome, slug, cor)),
+          evento_jogos_cores(
+            id, cor,
+            evento_jogos_cores_oansistas(oansista_id, oansistas(nome, clube_id, clubes(nome, cor)))
+          )
+        `)
+        .eq('encontro_id', encontroId)
+        .order('created_at')
+      if (error) throw error
+      eventos.value = ((data ?? []) as unknown as LinhaEvento[]).map(normalizarEvento)
 
-    const atual = evento.value?.id
-    const proximo = eventos.value.find(e => e.id === atual) ?? eventos.value[0] ?? null
-    evento.value = proximo
-    eventoIdAtual.value = proximo?.id ?? null
-    carregando.value = false
+      const atual = evento.value?.id
+      const proximo = eventos.value.find(e => e.id === atual) ?? eventos.value[0] ?? null
+      evento.value = proximo
+      eventoIdAtual.value = proximo?.id ?? null
 
-    if (evento.value) {
-      await carregarRodadas(evento.value.id)
-      await carregarRanking(evento.value.id)
+      if (evento.value) {
+        await carregarRodadas(evento.value.id)
+        await carregarRanking(evento.value.id)
+      }
+    }
+    finally {
+      carregando.value = false
     }
   }
 

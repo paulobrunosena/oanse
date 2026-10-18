@@ -26,15 +26,21 @@ export function useFolhaSemanal() {
 
   async function carregar(encontroId: string, oansistaIds: string[]) {
     carregando.value = true
-    const [rItens, rFolhas] = await Promise.all([
-      supabase.from('itens_pontuacao').select('*').eq('ativo', true),
-      oansistaIds.length
-        ? supabase.from('folhas_semanais').select('*').eq('encontro_id', encontroId).in('oansista_id', oansistaIds)
-        : Promise.resolve({ data: [] as Folha[] }),
-    ])
-    itens.value = rItens.data ?? []
-    folhas.value = rFolhas.data ?? []
-    carregando.value = false
+    try {
+      const [rItens, rFolhas] = await Promise.all([
+        supabase.from('itens_pontuacao').select('*').eq('ativo', true),
+        oansistaIds.length
+          ? supabase.from('folhas_semanais').select('*').eq('encontro_id', encontroId).in('oansista_id', oansistaIds)
+          : Promise.resolve({ data: [] as Folha[], error: null }),
+      ])
+      if (rItens.error) throw rItens.error
+      if (rFolhas.error) throw rFolhas.error
+      itens.value = rItens.data ?? []
+      folhas.value = rFolhas.data ?? []
+    }
+    finally {
+      carregando.value = false
+    }
   }
 
   function folhaDe(oansistaId: string): Folha | undefined {

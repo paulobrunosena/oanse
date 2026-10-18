@@ -17,12 +17,20 @@ const form = reactive({ data: '', motivo: '' })
 
 async function carregar() {
   carregando.value = true
-  const { data } = await supabase
-    .from('dias_sem_oanse')
-    .select('*')
-    .order('data', { ascending: false })
-  dias.value = data ?? []
-  carregando.value = false
+  try {
+    const { data, error } = await supabase
+      .from('dias_sem_oanse')
+      .select('*')
+      .order('data', { ascending: false })
+    if (error) throw error
+    dias.value = data ?? []
+  }
+  catch (e) {
+    toast.add({ title: 'Erro ao carregar o calendário', description: (e as { message?: string })?.message ?? 'Tente novamente', color: 'error' })
+  }
+  finally {
+    carregando.value = false
+  }
 }
 
 onMounted(carregar)

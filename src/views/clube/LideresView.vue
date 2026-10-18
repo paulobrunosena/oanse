@@ -2,29 +2,39 @@
 import { onMounted, ref } from 'vue'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/composables/useAuth'
+import { useToast } from '@/composables/useToast'
 import type { Database } from '@/types/database.types'
 
 type Profile = Database['public']['Tables']['profiles']['Row']
 
 const { profile } = useAuth()
+const toast = useToast()
 
 const lideres = ref<(Profile & { turma_nome: string | null })[]>([])
 const carregando = ref(true)
 
 async function carregar() {
   carregando.value = true
-  const { data } = await supabase
-    .from('profiles')
-    .select('*, turma:turmas!turmas_lider_id_fkey(nome)')
-    .eq('clube_id', profile.value!.clube_id!)
-    .eq('role', 'lider')
-    .eq('ativo', true)
-    .order('nome')
-  lideres.value = (data ?? []).map(l => ({
-    ...l,
-    turma_nome: (l.turma as unknown as { nome: string } | null)?.nome ?? null,
-  }))
-  carregando.value = false
+  try {
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('*, turma:turmas!turmas_lider_id_fkey(nome)')
+      .eq('clube_id', profile.value!.clube_id!)
+      .eq('role', 'lider')
+      .eq('ativo', true)
+      .order('nome')
+    if (error) throw error
+    lideres.value = (data ?? []).map(l => ({
+      ...l,
+      turma_nome: (l.turma as unknown as { nome: string } | null)?.nome ?? null,
+    }))
+  }
+  catch (e) {
+    toast.add({ title: 'Erro ao carregar os líderes', description: (e as { message?: string })?.message ?? 'Tente novamente', color: 'error' })
+  }
+  finally {
+    carregando.value = false
+  }
 }
 
 onMounted(carregar)

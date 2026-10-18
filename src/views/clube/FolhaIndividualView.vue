@@ -38,12 +38,13 @@ function mensagem(e: unknown): string {
 
 async function carregarTurmaDoLider(): Promise<string | null> {
   if (!user.value?.sub) return null
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from('turmas')
     .select('id')
     .eq('lider_id', user.value.sub)
     .eq('ativo', true)
     .maybeSingle()
+  if (error) throw error
   return data?.id ?? null
 }
 
@@ -53,21 +54,23 @@ async function carregarOansistas() {
   if (isLider.value) {
     const turmaId = await carregarTurmaDoLider()
     if (!turmaId) return
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from('oansistas')
       .select('id, nome')
       .eq('turma_id', turmaId)
       .eq('status', 'ativo')
       .order('nome')
+    if (error) throw error
     oansistas.value = data ?? []
     return
   }
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from('oansistas')
     .select('id, nome')
     .eq('clube_id', clubeId.value)
     .eq('status', 'ativo')
     .order('nome')
+  if (error) throw error
   oansistas.value = data ?? []
 }
 
@@ -78,11 +81,18 @@ async function selecionar(id: string) {
 
 async function carregarTudo() {
   carregandoInicial.value = true
-  if (clubeId.value) {
-    await Promise.all([carregar(clubeId.value), carregarOansistas()])
-    if (oansistas.value.length > 0) await selecionar(oansistas.value[0]!.id)
+  try {
+    if (clubeId.value) {
+      await Promise.all([carregar(clubeId.value), carregarOansistas()])
+      if (oansistas.value.length > 0) await selecionar(oansistas.value[0]!.id)
+    }
   }
-  carregandoInicial.value = false
+  catch (e) {
+    toast.add({ title: 'Erro ao carregar a folha individual', description: (e as { message?: string })?.message ?? 'Tente novamente', color: 'error' })
+  }
+  finally {
+    carregandoInicial.value = false
+  }
 }
 
 async function onSalvarItem(blocoId: string, itemNum: number, data: string | null) {

@@ -29,9 +29,11 @@ describe('usePremios', () => {
 
   it('propaga erro ao carregar', async () => {
     mocks.supabase = clienteSupabase({ premios: () => builder(null, new Error('boom')) })
-    const { carregar } = usePremios()
+    const { carregar, carregando } = usePremios()
 
     await expect(carregar()).rejects.toThrow('boom')
+    // O loading não pode ficar preso após um erro (Onda 3).
+    expect(carregando.value).toBe(false)
   })
 
   it('cria um prêmio', async () => {

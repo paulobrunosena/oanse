@@ -31,13 +31,21 @@ const opcoesRole: { label: string, value: UserRole }[] = [
 
 async function carregar() {
   carregando.value = true
-  const [lista, clubesData] = await Promise.all([
-    apiFetch<Usuario[]>('/api/usuarios'),
-    supabase.from('clubes').select('id, nome, cor').order('ordem'),
-  ])
-  usuarios.value = lista
-  clubes.value = clubesData.data ?? []
-  carregando.value = false
+  try {
+    const [lista, clubesData] = await Promise.all([
+      apiFetch<Usuario[]>('/api/usuarios'),
+      supabase.from('clubes').select('id, nome, cor').order('ordem'),
+    ])
+    if (clubesData.error) throw clubesData.error
+    usuarios.value = lista
+    clubes.value = clubesData.data ?? []
+  }
+  catch (e) {
+    toast.add({ title: 'Erro ao carregar usuários', description: (e as { message?: string })?.message ?? 'Tente novamente', color: 'error' })
+  }
+  finally {
+    carregando.value = false
+  }
 }
 
 onMounted(carregar)

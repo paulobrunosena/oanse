@@ -34,16 +34,18 @@ export const useEncontroStore = defineStore('encontro', () => {
   const erro = ref<string | null>(null)
 
   async function carregarHistorico() {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from('encontros')
       .select('*')
       .order('data', { ascending: false })
       .limit(26)
+    if (error) throw error
     encontros.value = data ?? []
   }
 
   async function carregarDiasSemOanse() {
-    const { data } = await supabase.from('dias_sem_oanse').select('data')
+    const { data, error } = await supabase.from('dias_sem_oanse').select('data')
+    if (error) throw error
     diasSemOanse.value = (data ?? []).map(d => d.data)
   }
 

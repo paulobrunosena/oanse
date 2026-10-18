@@ -43,27 +43,30 @@ const dataFormatada = computed(() => {
 
 async function carregarTurma() {
   if (!user.value?.sub) return
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from('turmas')
     .select('id, nome')
     .eq('lider_id', user.value.sub)
     .eq('ativo', true)
     .maybeSingle()
+  if (error) throw error
   turma.value = data ?? null
 
   if (!turma.value && encontro.value) {
-    const { data: rem } = await supabase
+    const { data: rem, error: errRem } = await supabase
       .from('remanejamentos_temporarios')
       .select('turma_id')
       .eq('encontro_id', encontro.value.id)
       .eq('lider_substituto_id', user.value.sub)
       .maybeSingle()
+    if (errRem) throw errRem
     if (rem) {
-      const { data: t } = await supabase
+      const { data: t, error: errTurma } = await supabase
         .from('turmas')
         .select('id, nome')
         .eq('id', rem.turma_id)
         .maybeSingle()
+      if (errTurma) throw errTurma
       turma.value = t ?? null
     }
   }
@@ -74,12 +77,13 @@ async function carregarOansistas() {
     oansistas.value = []
     return
   }
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from('oansistas')
     .select('*')
     .eq('turma_id', turma.value.id)
     .eq('status', 'ativo')
     .order('nome')
+  if (error) throw error
   oansistas.value = data ?? []
 }
 
@@ -89,24 +93,32 @@ async function carregarPresencas() {
     return
   }
   const ids = oansistas.value.map(o => o.id)
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from('presencas')
     .select('*')
     .eq('encontro_id', encontro.value.id)
     .in('oansista_id', ids)
+  if (error) throw error
   presencas.value = data ?? []
 }
 
 async function carregarTudo() {
   carregando.value = true
-  await carregarEncontro()
-  await carregarTurma()
-  await carregarOansistas()
-  await carregarPresencas()
-  if (encontro.value) {
-    await carregarFolhas(encontro.value.id, oansistas.value.map(o => o.id))
+  try {
+    await carregarEncontro()
+    await carregarTurma()
+    await carregarOansistas()
+    await carregarPresencas()
+    if (encontro.value) {
+      await carregarFolhas(encontro.value.id, oansistas.value.map(o => o.id))
+    }
   }
-  carregando.value = false
+  catch (e) {
+    toast.add({ title: 'Erro ao carregar a folha', description: (e as { message?: string })?.message ?? 'Tente novamente', color: 'error' })
+  }
+  finally {
+    carregando.value = false
+  }
 }
 
 async function aoSelecionarEncontro(id: string) {

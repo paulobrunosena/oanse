@@ -17,25 +17,34 @@ const salvando = ref(false)
 
 async function carregar() {
   carregando.value = true
-  const { data } = await supabase
-    .from('oansistas')
-    .select('*, turma:turmas(nome)')
-    .eq('clube_id', profile.value!.clube_id!)
-    .order('nome')
-  oansistas.value = (data ?? []).map(o => ({
-    ...o,
-    turma_nome: (o.turma as unknown as { nome: string } | null)?.nome ?? null,
-  }))
-  carregando.value = false
+  try {
+    const { data, error } = await supabase
+      .from('oansistas')
+      .select('*, turma:turmas(nome)')
+      .eq('clube_id', profile.value!.clube_id!)
+      .order('nome')
+    if (error) throw error
+    oansistas.value = (data ?? []).map(o => ({
+      ...o,
+      turma_nome: (o.turma as unknown as { nome: string } | null)?.nome ?? null,
+    }))
+  }
+  catch (e) {
+    toast.add({ title: 'Erro ao carregar os oansistas', description: (e as { message?: string })?.message ?? 'Tente novamente', color: 'error' })
+  }
+  finally {
+    carregando.value = false
+  }
 }
 
 async function carregarTurmas() {
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from('turmas')
     .select('id, nome')
     .eq('clube_id', profile.value!.clube_id!)
     .eq('ativo', true)
     .order('nome')
+  if (error) throw error
   turmas.value = data ?? []
 }
 

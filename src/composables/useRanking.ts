@@ -39,18 +39,22 @@ export function useRanking() {
 
   async function carregar(encontroId: string) {
     carregando.value = true
-    const { data, error } = await supabase.rpc('fn_ranking_do_encontro', {
-      p_encontro_id: encontroId,
-    })
-    if (error) throw error
-    linhas.value = (data ?? []).map(r => ({
-      clube_nome: r.clube_nome,
-      oansista_id: r.oansista_id,
-      oansista_nome: r.oansista_nome,
-      total: r.total,
-      posicao: Number(r.posicao),
-    }))
-    carregando.value = false
+    try {
+      const { data, error } = await supabase.rpc('fn_ranking_do_encontro', {
+        p_encontro_id: encontroId,
+      })
+      if (error) throw error
+      linhas.value = (data ?? []).map(r => ({
+        clube_nome: r.clube_nome,
+        oansista_id: r.oansista_id,
+        oansista_nome: r.oansista_nome,
+        total: r.total,
+        posicao: Number(r.posicao),
+      }))
+    }
+    finally {
+      carregando.value = false
+    }
   }
 
   return { linhas, carregando, carregar }

@@ -16,13 +16,22 @@ const salvando = ref(false)
 
 async function carregar() {
   carregando.value = true
-  const [it, cfg] = await Promise.all([
-    supabase.from('itens_pontuacao').select('*').order('pontos', { ascending: false }),
-    supabase.from('jogos_pontos_config').select('*').order('colocacao'),
-  ])
-  itens.value = it.data ?? []
-  configJogos.value = cfg.data ?? []
-  carregando.value = false
+  try {
+    const [it, cfg] = await Promise.all([
+      supabase.from('itens_pontuacao').select('*').order('pontos', { ascending: false }),
+      supabase.from('jogos_pontos_config').select('*').order('colocacao'),
+    ])
+    if (it.error) throw it.error
+    if (cfg.error) throw cfg.error
+    itens.value = it.data ?? []
+    configJogos.value = cfg.data ?? []
+  }
+  catch (e) {
+    toast.add({ title: 'Erro ao carregar as configurações', description: (e as { message?: string })?.message ?? 'Tente novamente', color: 'error' })
+  }
+  finally {
+    carregando.value = false
+  }
 }
 
 onMounted(carregar)

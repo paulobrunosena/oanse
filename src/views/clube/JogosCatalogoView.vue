@@ -35,17 +35,25 @@ const opcoesClubes = computed(() =>
 
 async function carregarTudo() {
   carregando.value = true
-  const [rClubes] = await Promise.all([
-    supabase.from('clubes').select('*').order('ordem'),
-    carregarCatalogo(),
-  ])
-  clubes.value = rClubes.data ?? []
+  try {
+    const [rClubes] = await Promise.all([
+      supabase.from('clubes').select('*').order('ordem'),
+      carregarCatalogo(),
+    ])
+    if (rClubes.error) throw rClubes.error
+    clubes.value = rClubes.data ?? []
 
-  const clubeId = isDiretorClube.value && profile.value?.clube_id
-    ? profile.value.clube_id
-    : clubes.value[0]?.id ?? ''
-  clubeSelecionado.value = clubeId
-  carregando.value = false
+    const clubeId = isDiretorClube.value && profile.value?.clube_id
+      ? profile.value.clube_id
+      : clubes.value[0]?.id ?? ''
+    clubeSelecionado.value = clubeId
+  }
+  catch (e) {
+    toast.add({ title: 'Erro ao carregar o catálogo de jogos', description: (e as { message?: string })?.message ?? 'Tente novamente', color: 'error' })
+  }
+  finally {
+    carregando.value = false
+  }
 }
 
 async function adicionar() {

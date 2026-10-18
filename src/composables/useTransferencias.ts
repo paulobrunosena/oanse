@@ -37,43 +37,50 @@ export function useTransferencias() {
 
   async function carregar(clubeId: string) {
     carregando.value = true
-    const [rOansistas, rTurmas, rHistorico] = await Promise.all([
-      supabase.from('oansistas')
-        .select('id, nome, turma_id, turma:turmas!oansistas_turma_id_fkey(nome)')
-        .eq('clube_id', clubeId)
-        .eq('status', 'ativo')
-        .order('nome'),
-      supabase.from('turmas')
-        .select('id, nome, lider_id')
-        .eq('clube_id', clubeId)
-        .eq('ativo', true)
-        .order('nome'),
-      supabase.from('transferencias')
-        .select(`
-          id, data, motivo,
-          oansista:oansistas(nome),
-          origem:turmas!transferencias_turma_origem_id_fkey(nome),
-          destino:turmas!transferencias_turma_destino_id_fkey(nome)
-        `)
-        .order('created_at', { ascending: false })
-        .limit(50),
-    ])
-    oansistas.value = (rOansistas.data ?? []).map(o => ({
-      id: o.id,
-      nome: o.nome,
-      turma_id: o.turma_id,
-      turma_nome: (o.turma as unknown as { nome: string } | null)?.nome ?? null,
-    }))
-    turmas.value = rTurmas.data ?? []
-    historico.value = (rHistorico.data ?? []).map(t => ({
-      id: t.id,
-      data: t.data,
-      motivo: t.motivo,
-      oansista_nome: (t.oansista as unknown as { nome: string } | null)?.nome ?? null,
-      origem_nome: (t.origem as unknown as { nome: string } | null)?.nome ?? null,
-      destino_nome: (t.destino as unknown as { nome: string } | null)?.nome ?? null,
-    }))
-    carregando.value = false
+    try {
+      const [rOansistas, rTurmas, rHistorico] = await Promise.all([
+        supabase.from('oansistas')
+          .select('id, nome, turma_id, turma:turmas!oansistas_turma_id_fkey(nome)')
+          .eq('clube_id', clubeId)
+          .eq('status', 'ativo')
+          .order('nome'),
+        supabase.from('turmas')
+          .select('id, nome, lider_id')
+          .eq('clube_id', clubeId)
+          .eq('ativo', true)
+          .order('nome'),
+        supabase.from('transferencias')
+          .select(`
+            id, data, motivo,
+            oansista:oansistas(nome),
+            origem:turmas!transferencias_turma_origem_id_fkey(nome),
+            destino:turmas!transferencias_turma_destino_id_fkey(nome)
+          `)
+          .order('created_at', { ascending: false })
+          .limit(50),
+      ])
+      if (rOansistas.error) throw rOansistas.error
+      if (rTurmas.error) throw rTurmas.error
+      if (rHistorico.error) throw rHistorico.error
+      oansistas.value = (rOansistas.data ?? []).map(o => ({
+        id: o.id,
+        nome: o.nome,
+        turma_id: o.turma_id,
+        turma_nome: (o.turma as unknown as { nome: string } | null)?.nome ?? null,
+      }))
+      turmas.value = rTurmas.data ?? []
+      historico.value = (rHistorico.data ?? []).map(t => ({
+        id: t.id,
+        data: t.data,
+        motivo: t.motivo,
+        oansista_nome: (t.oansista as unknown as { nome: string } | null)?.nome ?? null,
+        origem_nome: (t.origem as unknown as { nome: string } | null)?.nome ?? null,
+        destino_nome: (t.destino as unknown as { nome: string } | null)?.nome ?? null,
+      }))
+    }
+    finally {
+      carregando.value = false
+    }
   }
 
   async function transferir(

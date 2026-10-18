@@ -24,31 +24,38 @@ export function useRemanejamentos() {
 
   async function carregar(clubeId: string, encontroId: string) {
     carregando.value = true
-    const [rTurmas, rLideres, rRem] = await Promise.all([
-      supabase.from('turmas')
-        .select('id, nome, lider_id, lider:profiles!turmas_lider_id_fkey(nome)')
-        .eq('clube_id', clubeId)
-        .eq('ativo', true)
-        .order('nome'),
-      supabase.from('profiles')
-        .select('id, nome')
-        .eq('clube_id', clubeId)
-        .eq('role', 'lider')
-        .eq('ativo', true)
-        .order('nome'),
-      supabase.from('remanejamentos_temporarios')
-        .select('*')
-        .eq('encontro_id', encontroId),
-    ])
-    turmas.value = (rTurmas.data ?? []).map(t => ({
-      id: t.id,
-      nome: t.nome,
-      lider_id: t.lider_id,
-      lider_nome: (t.lider as unknown as { nome: string } | null)?.nome ?? null,
-    }))
-    lideres.value = rLideres.data ?? []
-    remanejamentos.value = rRem.data ?? []
-    carregando.value = false
+    try {
+      const [rTurmas, rLideres, rRem] = await Promise.all([
+        supabase.from('turmas')
+          .select('id, nome, lider_id, lider:profiles!turmas_lider_id_fkey(nome)')
+          .eq('clube_id', clubeId)
+          .eq('ativo', true)
+          .order('nome'),
+        supabase.from('profiles')
+          .select('id, nome')
+          .eq('clube_id', clubeId)
+          .eq('role', 'lider')
+          .eq('ativo', true)
+          .order('nome'),
+        supabase.from('remanejamentos_temporarios')
+          .select('*')
+          .eq('encontro_id', encontroId),
+      ])
+      if (rTurmas.error) throw rTurmas.error
+      if (rLideres.error) throw rLideres.error
+      if (rRem.error) throw rRem.error
+      turmas.value = (rTurmas.data ?? []).map(t => ({
+        id: t.id,
+        nome: t.nome,
+        lider_id: t.lider_id,
+        lider_nome: (t.lider as unknown as { nome: string } | null)?.nome ?? null,
+      }))
+      lideres.value = rLideres.data ?? []
+      remanejamentos.value = rRem.data ?? []
+    }
+    finally {
+      carregando.value = false
+    }
   }
 
   function remanejamentoDe(turmaId: string): Remanejamento | undefined {
