@@ -47,23 +47,24 @@ onMounted(async () => {
     <div class="mt-8 grid gap-4 sm:grid-cols-2">
       <Card>
         <template #title>
-          <span class="font-semibold">Fase 1 em construção</span>
+          <span class="font-semibold">Tudo em um só lugar</span>
         </template>
         <template #content>
           <p class="text-sm text-surface-500">
-            As telas de administração (usuários, clubes, configurações), turmas e
-            oansistas estão sendo implementadas.
+            Chamada e Folha Semanal do sábado, ranking, módulo de jogos, Folha
+            Individual dos clubes, visitantes e o painel da Secretaria (prêmios,
+            pendências e estoque) estão disponíveis no menu.
           </p>
         </template>
       </Card>
       <Card>
         <template #title>
-          <span class="font-semibold">Próximas fases</span>
+          <span class="font-semibold">Próximos passos</span>
         </template>
         <template #content>
           <p class="text-sm text-surface-500">
-            Fase 2: Lançamento Semanal (chamada e Folha Semanal).
-            Fase 3: Painel da Secretaria. Fase 4: Jogos e Ranking.
+            Relatórios acumulados de frequência e premiações, instalação no
+            celular (PWA) e fila offline da chamada.
           </p>
         </template>
       </Card>

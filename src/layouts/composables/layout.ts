@@ -20,13 +20,27 @@ interface LayoutState {
   activePath: string | null
 }
 
+const TEMA_ESCURO_KEY = 'oanse-tema-escuro'
+
+function temaEscuroSalvo(): boolean {
+  try {
+    return localStorage.getItem(TEMA_ESCURO_KEY) === '1'
+  }
+  catch {
+    return false
+  }
+}
+
 const layoutConfig = reactive<LayoutConfig>({
   preset: 'Aura',
   primary: 'emerald',
   surface: null,
-  darkTheme: false,
+  darkTheme: temaEscuroSalvo(),
   menuMode: 'static',
 })
+
+// Aplica o tema salvo já no boot (o toggle também troca a classe).
+document.documentElement.classList.toggle('app-dark', layoutConfig.darkTheme)
 
 const layoutState = reactive<LayoutState>({
   staticMenuInactive: false,
@@ -43,7 +57,13 @@ const layoutState = reactive<LayoutState>({
 export function useLayout() {
   const executeDarkModeToggle = () => {
     layoutConfig.darkTheme = !layoutConfig.darkTheme
-    document.documentElement.classList.toggle('app-dark')
+    document.documentElement.classList.toggle('app-dark', layoutConfig.darkTheme)
+    try {
+      localStorage.setItem(TEMA_ESCURO_KEY, layoutConfig.darkTheme ? '1' : '0')
+    }
+    catch {
+      // localStorage indisponível (modo privado) — o tema vale só na sessão.
+    }
   }
 
   const toggleDarkMode = () => {

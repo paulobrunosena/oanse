@@ -28,7 +28,9 @@ app.use(PrimeVue, {
 app.use(ToastService)
 app.use(ConfirmationService)
 
-app.mount('#app')
+// Aguarda a primeira navegação (guards de sessão/perfil) antes de montar —
+// evita o flash de shell vazio/rota errada na abertura.
+router.isReady().then(() => app.mount('#app'))
 
 // Mantém a sessão sincronizada (login/logout/refresh de token)
 supabase.auth.onAuthStateChange((_evento, sessao) => {

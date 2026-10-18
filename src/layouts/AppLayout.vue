@@ -34,5 +34,4 @@ const containerClass = computed(() => ({
       @click="hideMobileMenu"
     />
   </div>
-  <Toast position="top-right" />
 </template>
