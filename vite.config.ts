@@ -21,6 +21,18 @@ export default defineConfig({
     },
   },
   server: {
+    // Pré-transforma as telas/componentes no start do dev server para o Vite
+    // descobrir (e pré-otimizar) as deps do PrimeVue que o unplugin-vue-components
+    // injeta no transform. Sem isso, a primeira navegação para cada tela pode
+    // disparar "optimized dependencies changed. reloading" no meio do clique —
+    // o reload cancela a navegação e a tela só abre no 2º clique.
+    warmup: {
+      clientFiles: [
+        './src/views/**/*.vue',
+        './src/layouts/**/*.vue',
+        './src/components/**/*.vue',
+      ],
+    },
     proxy: {
       // Backend local (server/index.ts, h3) — ver server/README.md
       '/api': 'http://localhost:8787',
