@@ -147,3 +147,49 @@
 - [x] **Integridade de dados (2026-10-17, Onda 2)** — migration `0022_integridade_dados.sql`: (1) `fn_recalcular_pontos_jogos_encontro` agora ZERA cor/posição/pontos de quem está presente mas saiu do evento (criança removida da cor continuava pontuando); (2) exclusões (rodada/cor/evento) recalculam APÓS a cascata (BEFORE DELETE guarda o encontro em `set_config`; AFTER DELETE de `jogos`/`evento_jogos_cores`/`eventos_jogos` recalcula — antes o trigger não achava o registro apagado e os pontos ficavam velhos); (3) `trg_folha_total` sem lista de colunas — PATCH isolado de `total` gravava valor arbitrário; (4) `trg_validar_item_num` limita `item_num` à quantidade do bloco (itens extras geravam prêmio indevido); (5) `fn_entregar_premio` com `FOR UPDATE` + estoque obrigatório + baixa verificada (entrega dupla/sem estoque não passa nem gera saída fantasma); (6) RPC transacional `fn_registrar_rodada` (jogo + resultados numa transação) usada pelo `useJogos`; card com `registrando` e placar preservado em caso de falha; `ChamadaView` ignora clique duplo no toggle (`:disabled` no lugar do `:loading` inexistente do ToggleSwitch). Smoke SQL local cobre a matriz (pontos ao sair/remover rodada/evento, PATCH de total, item_num, entrega sem estoque e dupla); specs ajustados/novos em `useJogos`, `RodadasJogosCard` e `ChamadaView`. Lint/typecheck/364 testes + build verdes.
 - [x] **UX/robustez (2026-10-17, Onda 3)** — (1) **Loadings e erros**: `carregando` sempre resetado via `finally` e erros propagados/checados nos composables (`usePremios`, `useRanking`, `usePendencias`, `useRelatorioPremiacoes`, `useEstoque`, `useFolhaSemanal`, `useRemanejamentos`, `useTransferencias`, `useJogos`) e nas telas (admin e clube) — antes uma falha deixava spinner eterno e/ou mostrava lista vazia como se não houvesse dados; agora a tela mostra toast de erro e continua utilizável. (2) **Folha Semanal**: `FolhaSemanalRow` re-sincroniza o formulário quando a `folha` muda (trocar o sábado reaproveitava a instância e mantinha os valores antigos — risco de gravar dados errados na semana nova). (3) **Realtime do painel de pendências**: o callback agora usa o `atualizar` da tela (com os filtros de status/clube), em vez de refazer a busca sem filtros; rejeição do refetch não vira unhandled rejection. (4) **Login**: contas de teste só aparecem em DEV. (5) **Layout**: `Toast` renderizado uma única vez (removido do AppLayout), tema escuro persistido em `localStorage` e aplicado no boot. (6) `app.mount` só depois de `router.isReady()` (sem flash de shell vazio). (7) Dashboard com texto atualizado (fases 0–4 entregues). Specs novos/ajustados: LoginView, layout (tema), FolhaSemanalRow (re-sync), usePendencias (recarregar/filtros), usePremios (loading após erro). Lint/typecheck/371 testes + build verdes.
 - [x] **Infra/deploy (2026-10-17, Onda 4)** — (1) `vercel.json` ganhou o fallback SPA (`/((?!api/).*)` → `/index.html`, para F5/link direto em rota profunda) além do rewrite da API, e headers de segurança (nosniff, X-Frame-Options, Referrer-Policy, Permissions-Policy); (2) CI endurecido: `permissions: contents: read`, `concurrency` (cancela run antigo do mesmo ref), `supabase/setup-cli` pinado em `2.121.0` e **drift check dos types** — `supabase gen types` + `scripts/comparar-types.mjs` normalizam formatação/versão do CLI e falham se o types commitado divergir do schema (validado local: exit 0; `tests/types-drift.spec.ts` cobre o comparador, inclusive o caso de drift); (3) migration `0023_indices.sql`: remove 14 índices redundantes (prefixo de UNIQUE), cria índices para FKs sem cobertura (destaque `eventos_jogos.encontro_id`, perdido na 0012) e o composto `premios_pendentes(status, clube_id, data_geracao desc)` do painel; (4) env de produção: `resolverConfigSupabase` (`src/lib/env.ts`) falha no build sem `VITE_SUPABASE_URL`/`VITE_SUPABASE_ANON_KEY` em vez de cair silenciosamente no localhost (spec novo); (5) limites de consulta com comentário: pendências (200 mais recentes) e movimentações (100 por prêmio). **Deploy em si continua pendente**: aplicar 0021/0022/0023 no Supabase Cloud e desligar o signup público no painel. Lint/typecheck/378 testes + build verdes.
+
+
+## Backlog da auditoria (2026-10-17)
+
+> Achados das 4 varreduras da auditoria (servidor/segurança, camada de dados,
+> SQL/RLS e frontend) que **ainda não** foram corrigidos. As ondas 1–4 (segurança,
+> integridade, UX e infra) estão concluídas e registradas acima.
+>
+> **Retomando em outra máquina:** `git pull` → `npm ci` (se as deps mudaram) →
+> `npx supabase start` + `npx supabase db reset` (aplica as migrations 0021–0023
+> que talvez não existam no banco local) → `npm run dev` + `npm run dev:api`.
+
+### Deploy produção (detalhamento do item da Fase 4)
+
+- [ ] Aplicar as migrations 0021–0023 no Supabase Cloud (`supabase db push`) e conferir se o ambiente tem o catálogo base (hoje seed-only — mover para migration idempotente)
+- [ ] Desligar "Allow new users to sign up" no painel (Authentication > Email)
+- [ ] Configurar na Vercel: `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` (front) e `VITE_SUPABASE_SERVICE_ROLE_KEY` (server) — o build agora falha se faltar no front
+- [ ] Validar em preview deployment: F5 em rota profunda (fallback SPA), headers de segurança, login/logout e painel da Secretaria
+
+### Banco (integridade e concorrência)
+
+- [ ] Triggers de coerência de clube: `oansistas.turma_id`, `turmas.lider_id` e `remanejamentos_temporarios.lider_substituto_id` (a RLS concede acesso por esses vínculos sem validar se são do mesmo clube); e garantir 1 cor por criança no evento + clube participante
+- [ ] RN 6/7 no banco: trigger em `encontros` (sábado e fora de `dias_sem_oanse`) e `with check` dos lançamentos exigindo encontro ativo (hoje só a rota impede)
+- [ ] Escritas derivadas: `jogo_resultados.pontos` gravável sem recálculo; colunas de auditoria reescrevíveis (`presencas.lider_registrante_id`, `folhas_semanais.registrado_por`); `premios_movimentacoes` aceita insert direto pelo cliente (histórico divergente do saldo)
+- [ ] Concorrência: `fn_criar_evento_jogos` (advisory lock por encontro) e `fn_matricular_visitante` (lock + validar status `desistente` + exigir turma — sem turma a criança fica invisível para todos os líderes)
+- [ ] `premios` unique `(tipo, nivel, secao)` furada com NULL; decidir regra de pendência por bloco vs por prêmio
+- [ ] `encontros.ativo = false` deixa o sábado inutilizável (insert bate no unique): tratar `23505` reativando o registro
+- [ ] `fn_recalcular_pontos_jogos_encontro` sem placement para config incompleta (hoje erro `not null` pouco claro)
+
+### Servidor / rotas
+
+- [ ] `DELETE /api/usuarios/:id` quebra com histórico (FKs para `profiles`) e o cascade apaga a auditoria de estoque — trocar por desativação (`ban_duration` + `ativo = false`)
+- [ ] Rate limit nas rotas `/api` e cache curto do JWT (hoje cada request faz `auth.getUser` para o GoTrue)
+- [ ] Erros internos do Postgres/GoTrue vazam `error.message` e sempre como HTTP 400 — mapear para 500 genérico + log
+- [ ] `supabaseAdmin()` cria um client novo a cada chamada (singleton resolve)
+- [ ] `apiFetch` sem timeout/AbortController; 401 não desloga nem redireciona para `/login`
+
+### Frontend
+
+- [ ] Acessibilidade: ~49 labels sem `for`/`input-id`, controles sem nome acessível e sem landmarks (`header`/`main`/`nav`)
+- [ ] Corridas de carregamento (token de requisição ao trocar sábado/criança); `PendenciasView` pode vazar assinatura se desmontar durante o `onMounted`; realtime sem refetch em reconexão
+- [ ] Duplo clique restante (catálogo de jogos, calendário, usuários, turmas) + confirmação ao excluir "sem Oanse" + validar que a data é sábado no calendário
+- [ ] `diretor_geral` (sem clube) vê telas de Clube vazias (`profile.clube_id!` nulo) — tratar explicitamente
+- [ ] Chamada: falha ao criar a folha deixa presença sem folha (retry bate no unique e mostra erro cru) — consistência local ou RPC
+- [ ] Testes faltantes: `router/guards.ts`, `CalendarioView`, `TransferenciasView`, `VisitantesView`
+- [ ] Ajustes menores: cores hardcoded fora dos tokens, `severity="warning"` inválida (é `warn`), idade em UTC, desempate do "ranking geral" divergente do banco, bundle (`manualChunks`/sourcemap)
