@@ -102,11 +102,12 @@ let cancelarRealtime: (() => Promise<unknown>) | null = null
 onMounted(async () => {
   await carregarClubes()
   await atualizar()
+  // `atualizar` refaz a busca com os filtros ativos (status/clube) da tela.
   cancelarRealtime = inscrever((payload) => {
     if (payload.eventType === 'INSERT' && payload.new?.status === 'pendente') {
       notificarNovaPendencia()
     }
-  })
+  }, atualizar)
 })
 
 onBeforeUnmount(() => {

@@ -110,4 +110,25 @@ describe('usePendencias', () => {
 
     expect(aoChegar).toHaveBeenCalledWith(payload)
   })
+
+  it('usa o recarregar informado (com os filtros da tela) ao chegar evento', () => {
+    const { inscrever } = usePendencias()
+    const recarregar = vi.fn(async () => {})
+    inscrever(undefined, recarregar)
+
+    const handler = canal.on.mock.calls[0]![2]
+    handler({ eventType: 'UPDATE', new: { status: 'entregue' } })
+
+    expect(recarregar).toHaveBeenCalledTimes(1)
+  })
+
+  it('não deixa rejeição do recarregar virar unhandled rejection', async () => {
+    const { inscrever } = usePendencias()
+    const recarregar = vi.fn(async () => { throw new Error('boom') })
+    inscrever(undefined, recarregar)
+
+    const handler = canal.on.mock.calls[0]![2]
+    expect(() => handler({ eventType: 'UPDATE', new: {} })).not.toThrow()
+    await Promise.resolve()
+  })
 })

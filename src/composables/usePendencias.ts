@@ -50,19 +50,31 @@ export function usePendencias() {
 
   async function carregar(status?: PendenciaStatus, clubeId?: string) {
     carregando.value = true
-    let query = supabase
-      .from('premios_pendentes')
-      .select('id, status, data_geracao, data_entrega, oansistas(nome), premios(nome, tipo), clubes(nome)')
-    if (status) query = query.eq('status', status)
-    if (clubeId) query = query.eq('clube_id', clubeId)
-    query = query.order('data_geracao', { ascending: false })
-    const { data, error } = await query
-    if (error) throw error
-    pendencias.value = ((data ?? []) as unknown as LinhaPendencia[]).map(normalizarPendencia)
-    carregando.value = false
+    try {
+      let query = supabase
+        .from('premios_pendentes')
+        .select('id, status, data_geracao, data_entrega, oansistas(nome), premios(nome, tipo), clubes(nome)')
+      if (status) query = query.eq('status', status)
+      if (clubeId) query = query.eq('clube_id', clubeId)
+      query = query.order('data_geracao', { ascending: false })
+      const { data, error } = await query
+      if (error) throw error
+      pendencias.value = ((data ?? []) as unknown as LinhaPendencia[]).map(normalizarPendencia)
+    }
+    finally {
+      carregando.value = false
+    }
   }
 
-  function inscrever(aoChegar?: (payload: { eventType: string, new: Record<string, unknown> }) => void) {
+  /**
+   * Assina o Realtime. `recarregar` permite à tela refazer a busca com os
+   * filtros ativos (antes o callback chamava `carregar()` sem filtros e a lista
+   * filtrada era substituída pela completa a cada evento).
+   */
+  function inscrever(
+    aoChegar?: (payload: { eventType: string, new: Record<string, unknown> }) => void,
+    recarregar?: () => Promise<void>,
+  ) {
     const canal = supabase
       .channel('pendencias-realtime')
       .on(
@@ -70,7 +82,8 @@ export function usePendencias() {
         { event: '*', schema: 'public', table: 'premios_pendentes' },
         (payload: { eventType: string, new: Record<string, unknown> }) => {
           aoChegar?.(payload)
-          carregar()
+          // Erro aqui não pode virar unhandled rejection no callback do canal.
+          void (recarregar ?? carregar)().catch(() => undefined)
         },
       )
       .subscribe()
