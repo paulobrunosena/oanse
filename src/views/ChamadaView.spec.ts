@@ -32,7 +32,12 @@ const stubs = {
   Card: { name: 'Card', template: '<div><slot name="content" /></div>' },
   Avatar: { name: 'Avatar', props: ['label'], template: '<span>{{ label }}</span>' },
   Tag: { name: 'Tag', props: ['value'], template: '<span>{{ value }}</span>' },
-  ToggleSwitch: { name: 'ToggleSwitch', props: ['modelValue'], template: '<input type="checkbox" />' },
+  ToggleSwitch: {
+    name: 'ToggleSwitch',
+    props: ['modelValue', 'disabled'],
+    emits: ['update:modelValue'],
+    template: '<input type="checkbox" :disabled="disabled" @change="$emit(\'update:modelValue\', !modelValue)" />',
+  },
 }
 
 describe('ChamadaView', () => {
@@ -76,5 +81,30 @@ describe('ChamadaView', () => {
     expect(header!.classes()).toContain('flex-col')
     expect(header!.classes()).toContain('sm:justify-between')
     expect(header!.find('h1')?.text()).toBe('Chamada')
+  })
+
+  it('ignora o clique duplo no toggle enquanto o lançamento está em andamento', async () => {
+    const store = useAuthStore()
+    store.setUser({ sub: 'l1' })
+
+    // Segura a resposta do insert para o 2º clique acontecer com o 1º pendente.
+    let liberar: (v: { data: unknown, error: null }) => void = () => {}
+    mocks.supabase.builderDe('presencas').single.mockImplementation(
+      () => new Promise(res => { liberar = res }),
+    )
+
+    const wrapper = mount(ChamadaView, {
+      global: { stubs, plugins: [PrimeVue, ToastService] },
+    })
+    await flushPromises()
+
+    const toggle = wrapper.findAll('input[type="checkbox"]')[0]!
+    await toggle.trigger('change')
+    await toggle.trigger('change')
+
+    liberar({ data: { id: 'p1' }, error: null })
+    await flushPromises()
+
+    expect(mocks.supabase.builderDe('presencas').insert).toHaveBeenCalledTimes(1)
   })
 })

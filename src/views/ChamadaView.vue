@@ -115,6 +115,7 @@ async function aoSelecionarEncontro(id: string) {
 
 async function alternar(o: Oansista) {
   if (!encontro.value || !user.value?.sub) return
+  if (salvandoId.value) return // evita clique duplo durante o lançamento
   salvandoId.value = o.id
   const existente = presencaPorOansista.value.get(o.id)
 
@@ -277,7 +278,7 @@ onMounted(carregarTudo)
             />
             <ToggleSwitch
               :model-value="presente(o)"
-              :loading="salvandoId === o.id"
+              :disabled="salvandoId === o.id"
               @update:model-value="alternar(o)"
             />
           </div>
