@@ -53,7 +53,8 @@ oanse/
 │   │   ├── 0017_matricular_visitante.sql  # RPC fn_matricular_visitante (converte visitante em oansista)
 │   │   ├── 0018_folha_premio_vincular.sql # folha_blocos.premio_id → premios + índice único premios(nome)
 │   │   ├── 0019_folha_premio_pendencia.sql # pendência por bloco (trigger) + entrega transacional (fn_entregar_premio)
-│   │   └── 0020_estoque_movimentacoes.sql # movimentação manual de estoque (fn_movimentar_estoque) + FK feito_por → profiles
+│   │   ├── 0020_estoque_movimentacoes.sql # movimentação manual de estoque (fn_movimentar_estoque) + FK feito_por → profiles
+│   │   └── 0021_seguranca_autorizacao.sql # signup sem papel do cliente, `ativo` na autorização, checagens NULL-safe, EXECUTE restrito (RPCs server-only + anon fora) e gate nos rankings
 │   └── seed.sql                  # clubes, itens de pontuação, config de jogos, catálogo, catálogo de prêmios, usuários teste
 │
 ├── public/                       # assets estáticos servidos na raiz (/)
@@ -190,7 +191,7 @@ oanse/
 │   ├── api/
 │   │   ├── encontros/atual.ts    # cria/obtém sábado corrente (RN 7)
 │   │   ├── encontros/retro.ts    # backfill de "sábado perdido" (POST; RN 6)
-│   │   ├── transferencias.ts     # transferência permanente (RPC 0006)
+│   │   ├── transferencias.ts     # transferência permanente (RPC 0006 + autorização na borda 0021)
 │   │   └── usuarios/
 │   │       ├── index.ts          # GET lista + POST cria usuário (service_role)
 │   │       └── [id].ts           # DELETE exclui usuário (service_role)
@@ -199,7 +200,8 @@ oanse/
 │   │       └── movimentacoes.post.ts # entrada/saída de estoque (RPC fn_movimentar_estoque, service_role)
 │   │   # (planejado) remanejamentos.post.ts
 │   ├── types/database.types.ts   # cópia dos tipos p/ o servidor
-│   └── utils/sabado.ts           # último sábado no fuso local (puro; sabado.spec.ts)
+│   ├── utils/sabado.ts           # último sábado no fuso local + semanasAtras do backfill (puro; sabado.spec.ts)
+│   └── utils/autorizacao.ts      # autorização das rotas admin: gestão de usuários, transferência e backfill (puro; autorizacao.spec.ts)
 │
 ├── api/index.ts                  # Vercel Function única: exporta toNodeListener(app h3)
 │
@@ -221,7 +223,7 @@ oanse/
 
 - Framework: **vitest + @vue/test-utils + happy-dom** (vitest puro, sem nuxt). Rodar com `npm run test`.
 - Arquivos `*.spec.ts` ficam **ao lado do código** (mesma pasta).
-- **Lógica pura** (`utils/pontos.ts`, `utils/jogos.ts`, `utils/folhaIndividual.ts`, `utils/data.ts`, `server/utils/sabado.ts`): testes de unidade simples com pragma `// @vitest-environment node`.
+- **Lógica pura** (`utils/pontos.ts`, `utils/jogos.ts`, `utils/folhaIndividual.ts`, `utils/data.ts`, `server/utils/sabado.ts`, `server/utils/autorizacao.ts`): testes de unidade simples com pragma `// @vitest-environment node`.
 - **Stores**: `setActivePinia(createPinia())` no `beforeEach` + `vi.mock('@/lib/supabase')` (getter reatribuível) + helper `tests/helpers/supabase.ts`.
 - **Composables**: mock de `@/lib/supabase` + `global.fetch` para as rotas `apiFetch`; testa-se a fachada `useX()`.
 - **Componentes**: `mount` com stubs dos componentes PrimeVue (`global: { stubs: { Select: ..., Button: ... } }`).
