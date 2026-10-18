@@ -59,6 +59,8 @@ describe('usePendencias', () => {
     expect(mocks.supabase.from).toHaveBeenCalledWith('premios_pendentes')
     expect(pendencias.value).toHaveLength(1)
     expect(pendencias.value[0]!.oansista_nome).toBe('Ana')
+    // Onda 4: painel limitado às 200 mais recentes.
+    expect(mocks.supabase.builderDe('premios_pendentes').limit).toHaveBeenCalledWith(200)
   })
 
   it('aplica o filtro de status quando informado', async () => {

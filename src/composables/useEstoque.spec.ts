@@ -59,6 +59,8 @@ describe('useEstoque', () => {
     expect(movimentacoes.value).toHaveLength(1)
     expect(movimentacoes.value[0]!.premio_nome).toBe('Botão vermelho 01')
     expect(movimentacoes.value[0]!.feito_por_nome).toBe('Secretária')
+    // Onda 4: histórico do diálogo limitado às 100 mais recentes.
+    expect(mocks.supabase.builderDe('premios_movimentacoes').limit).toHaveBeenCalledWith(100)
   })
 
   it('filtra por prêmio quando informado', async () => {

@@ -56,7 +56,8 @@ export function usePendencias() {
         .select('id, status, data_geracao, data_entrega, oansistas(nome), premios(nome, tipo), clubes(nome)')
       if (status) query = query.eq('status', status)
       if (clubeId) query = query.eq('clube_id', clubeId)
-      query = query.order('data_geracao', { ascending: false })
+      // Painel mostra as 200 mais recentes; o histórico completo fica no relatório.
+      query = query.order('data_geracao', { ascending: false }).limit(200)
       const { data, error } = await query
       if (error) throw error
       pendencias.value = ((data ?? []) as unknown as LinhaPendencia[]).map(normalizarPendencia)

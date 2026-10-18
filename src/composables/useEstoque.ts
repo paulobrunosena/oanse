@@ -56,7 +56,8 @@ export function useEstoque() {
         .from('premios_movimentacoes')
         .select('id, tipo, quantidade, observacao, created_at, premio_id, premios(nome), profiles(nome)')
       if (premioId) query = query.eq('premio_id', premioId)
-      query = query.order('created_at', { ascending: false })
+      // O diálogo de estoque mostra as 100 movimentações mais recentes do prêmio.
+      query = query.order('created_at', { ascending: false }).limit(100)
       const { data, error } = await query
       if (error) throw error
       movimentacoes.value = ((data ?? []) as unknown as LinhaMovimentacao[]).map(normalizarMovimentacao)
