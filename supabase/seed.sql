@@ -311,7 +311,9 @@ where p.nome = b.premio_nome
 
 -- ============================================================================
 -- Usuários de teste (senha: oanse123). O trigger on_auth_user_created cria o
--- profile a partir dos metadados; depois vinculamos o clube onde aplicável.
+-- profile com o papel padrão ('lider') e NÃO lê mais o papel do metadata
+-- (migration 0021) — o papel/clube são definidos explicitamente aqui, já que o
+-- seed roda como usuário confiável (postgres).
 -- ============================================================================
 
 create or replace function seed_auth_user(
@@ -331,7 +333,7 @@ begin
           now(), '', '', '', '', '',
           now(), now(),
           '{"provider":"email","providers":["email"]}'::jsonb,
-          jsonb_build_object('nome', p_nome, 'telefone', p_telefone, 'role', p_role));
+          jsonb_build_object('nome', p_nome, 'telefone', p_telefone));
 
   insert into auth.identities (id, user_id, provider_id, identity_data, provider,
                                last_sign_in_at, created_at, updated_at)
@@ -341,8 +343,9 @@ begin
 
   if p_clube_slug is not null then
     select id into v_clube from clubes where slug = p_clube_slug;
-    update profiles set clube_id = v_clube where id = v_uid;
   end if;
+
+  update profiles set role = p_role::user_role, clube_id = v_clube where id = v_uid;
 
   return v_uid;
 end $$;

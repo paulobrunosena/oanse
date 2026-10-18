@@ -510,7 +510,9 @@ create trigger trg_folhas_updated     before update on folhas_semanais for each 
 create trigger trg_eventos_jogos_updated before update on eventos_jogos for each row execute function fn_set_updated_at();
 create trigger trg_folha_observacoes_updated before update on folha_observacoes for each row execute function fn_set_updated_at();
 
--- Cria profile automaticamente no signup (role/nome vindos dos metadados)
+-- Cria profile automaticamente no signup. O papel é SEMPRE 'lider': nunca vem
+-- de raw_user_meta_data (o cliente controla esse metadata no signup —
+-- migration 0021). O papel real é definido pelo admin em server/api/usuarios.
 create or replace function fn_handle_new_user()
 returns trigger language plpgsql security definer set search_path = public as $$
 begin
@@ -519,7 +521,7 @@ begin
     new.id,
     coalesce(new.raw_user_meta_data->>'nome', new.email),
     new.raw_user_meta_data->>'telefone',
-    coalesce((new.raw_user_meta_data->>'role')::user_role, 'lider')
+    'lider'
   );
   return new;
 end $$;
@@ -658,7 +660,7 @@ begin
     raise exception 'Selecione ao menos 2 cores participantes';
   end if;
 
-  if not (fn_role() in ('lider_jogos', 'diretor_geral')) then
+  if not coalesce(fn_role() in ('lider_jogos', 'diretor_geral'), false) then
     raise exception 'Apenas o líder de jogos pode criar o evento de jogos';
   end if;
 
@@ -693,7 +695,9 @@ begin
 end;
 $$;
 
-grant execute on function fn_criar_evento_jogos(uuid, text, uuid[], text[], uuid) to authenticated;
+-- RPC do cliente: apenas autenticado (anon perde o EXECUTE — migration 0021).
+revoke execute on function fn_criar_evento_jogos(uuid, text, uuid[], text[], uuid) from public, anon;
+grant execute on function fn_criar_evento_jogos(uuid, text, uuid[], text[], uuid) to authenticated, service_role;
 
 -- Garante (em qualquer via de entrada) que um clube não entra em dois eventos
 -- do mesmo sábado.
@@ -723,20 +727,29 @@ create trigger trg_clube_evento_duplicado
   for each row execute function fn_validar_clube_sem_evento_no_sabado();
 
 -- Ranking das cores do evento (anúncio do placar no final da programação)
+-- Gate de papel (migration 0021): líder/anon não podem ler o ranking do evento.
 create or replace function fn_ranking_cores_do_evento(p_evento_id uuid)
 returns table (cor text, pontos bigint, posicao bigint)
-language sql stable security definer set search_path = public as $$
-  select c.cor,
-         coalesce(sum(r.pontos), 0) as pontos,
-         rank() over (order by coalesce(sum(r.pontos), 0) desc, c.cor)
-  from evento_jogos_cores c
-  left join jogo_resultados r on r.cor_id = c.id
-  where c.evento_id = p_evento_id
-  group by c.id, c.cor
-  order by 2 desc, c.cor;
+language plpgsql stable security definer set search_path = public as $$
+begin
+  if not coalesce(fn_role() in ('lider_jogos', 'diretor_geral'), false) then
+    raise exception 'Sem permissão para ver o ranking do evento';
+  end if;
+
+  return query
+    select c.cor,
+           coalesce(sum(r.pontos), 0) as pontos,
+           rank() over (order by coalesce(sum(r.pontos), 0) desc, c.cor)
+      from evento_jogos_cores c
+      left join jogo_resultados r on r.cor_id = c.id
+     where c.evento_id = p_evento_id
+     group by c.id, c.cor
+     order by 2 desc, c.cor;
+end;
 $$;
 
-grant execute on function fn_ranking_cores_do_evento(uuid) to authenticated;
+revoke execute on function fn_ranking_cores_do_evento(uuid) from public, anon;
+grant execute on function fn_ranking_cores_do_evento(uuid) to authenticated, service_role;
 
 -- Recalcula cor_time e posicao_jogos das folhas do encontro; pontos_jogos é
 -- atribuído pela COLOCAÇÃO da equipe da criança no ranking (itens_pontuacao
@@ -867,6 +880,11 @@ create trigger trg_folha_pontos_jogos_presenca
 -- estoque + movimentação + data na folha), chamada pelo server/api com
 -- service_role. (O legado fn_gerar_pendencia_premio/trg_gerar_pendencia_premio
 -- foi removido na migration 0015.)
+--
+-- Endurecimento (migration 0021): `fn_entregar_premio`/`fn_movimentar_estoque`
+-- exigem perfil ATIVO e o EXECUTE é exclusivo do service_role (revogado de
+-- PUBLIC/anon/authenticated); `trg_folha_item_pendencia` virou SECURITY DEFINER
+-- e as funções de recálculo também só rodam pelo sistema/service_role.
 
 -- Movimentação manual de estoque (Fase 3, polimento): `fn_movimentar_estoque`
 -- registra entrada/saída de forma transacional (valida autorização — apenas

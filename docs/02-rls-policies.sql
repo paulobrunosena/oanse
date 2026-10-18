@@ -15,37 +15,45 @@ returns profiles language sql stable security definer set search_path = public a
   select * from profiles where id = auth.uid();
 $$;
 
+-- `ativo` incluso (migration 0021): usuário desativado perde o papel/clube e,
+-- com isso, toda a RLS e as RPCs que dependem destes helpers.
 create or replace function fn_role()
 returns user_role language sql stable security definer set search_path = public as $$
-  select role from profiles where id = auth.uid();
+  select role from profiles where id = auth.uid() and ativo;
 $$;
 
 create or replace function fn_clube_id()
 returns uuid language sql stable security definer set search_path = public as $$
-  select clube_id from profiles where id = auth.uid();
+  select clube_id from profiles where id = auth.uid() and ativo;
 $$;
 
 -- LÃ­der Ã© titular da turma?
 create or replace function fn_lider_da_turma(p_turma_id uuid)
 returns boolean language sql stable security definer set search_path = public as $$
   select exists (
-    select 1 from turmas
-    where id = p_turma_id and lider_id = auth.uid() and ativo
+    select 1
+      from turmas t
+      join profiles p on p.id = auth.uid() and p.ativo
+     where t.id = p_turma_id and t.lider_id = auth.uid() and t.ativo
   );
 $$;
 
 -- LÃ­der Ã© titular OU substituto da turma naquele encontro? (RN: remanejamento)
 create or replace function fn_responsavel_pela_turma(p_turma_id uuid, p_encontro_id uuid)
 returns boolean language sql stable security definer set search_path = public as $$
-  select exists (
-    select 1 from turmas
-    where id = p_turma_id and lider_id = auth.uid() and ativo
-  ) or exists (
-    select 1 from remanejamentos_temporarios rt
-    where rt.turma_id = p_turma_id
-      and rt.encontro_id = p_encontro_id
-      and rt.lider_substituto_id = auth.uid()
-  );
+  select exists (select 1 from profiles p where p.id = auth.uid() and p.ativo)
+     and (
+       exists (
+         select 1 from turmas
+         where id = p_turma_id and lider_id = auth.uid() and ativo
+       )
+       or exists (
+         select 1 from remanejamentos_temporarios rt
+         where rt.turma_id = p_turma_id
+           and rt.encontro_id = p_encontro_id
+           and rt.lider_substituto_id = auth.uid()
+       )
+     );
 $$;
 
 -- LÃ­der Ã© responsÃ¡vel pelo oansista (titular ou substituto) no encontro?
@@ -74,8 +82,10 @@ $$;
 create or replace function fn_substituto_da_turma(p_turma_id uuid)
 returns boolean language sql stable security definer set search_path = public as $$
   select exists (
-    select 1 from remanejamentos_temporarios
-    where turma_id = p_turma_id and lider_substituto_id = auth.uid()
+    select 1
+      from remanejamentos_temporarios rt
+      join profiles p on p.id = auth.uid() and p.ativo
+     where rt.turma_id = p_turma_id and rt.lider_substituto_id = auth.uid()
   );
 $$;
 
@@ -416,16 +426,24 @@ declare
   v_destino     turmas%rowtype;
   v_registro    transferencias;
 begin
-  if not (
-    fn_role() = 'diretor_geral'
-    or fn_diretor_do_clube((select clube_id from oansistas where id = p_oansista_id))
-  ) then
-    raise exception 'Apenas o Diretor do clube pode transferir';
-  end if;
-
   select * into v_oansista from oansistas where id = p_oansista_id;
   if not found then
     raise exception 'Oansista não encontrado';
+  end if;
+
+  -- Autorização pelo perfil informado (a rota chama com service_role, onde
+  -- auth.uid() é NULL) e NULL-safe: sem perfil ativo => nega (migration 0021).
+  if not exists (
+    select 1
+      from profiles p
+     where p.id = p_autorizado_por
+       and p.ativo
+       and (
+         p.role = 'diretor_geral'
+         or (p.role = 'diretor_clube' and p.clube_id = v_oansista.clube_id)
+       )
+  ) then
+    raise exception 'Apenas o Diretor do clube pode transferir';
   end if;
 
   select * into v_destino from turmas where id = p_turma_destino_id and ativo;
@@ -461,7 +479,9 @@ begin
 end;
 $$;
 
-grant execute on function fn_transferir_oansista(uuid, uuid, text, uuid) to authenticated, service_role;
+-- RPC exclusiva do servidor (rota com service_role): cliente perde o EXECUTE.
+revoke execute on function fn_transferir_oansista(uuid, uuid, text, uuid) from public, anon, authenticated;
+grant execute on function fn_transferir_oansista(uuid, uuid, text, uuid) to service_role;
 
 -- ----------------------------------------------------------------------------
 -- MATRÍCULA DE VISITANTE (Folha de Visitantes — Fase 2)
@@ -494,7 +514,7 @@ begin
     raise exception 'Visitante já está matriculado';
   end if;
 
-  if not (fn_role() = 'diretor_geral' or fn_diretor_do_clube(v_visitante.clube_id)) then
+  if not coalesce(fn_role() = 'diretor_geral' or fn_diretor_do_clube(v_visitante.clube_id), false) then
     raise exception 'Apenas o Diretor do clube pode matricular';
   end if;
 
@@ -525,6 +545,7 @@ begin
 end;
 $$;
 
+revoke execute on function fn_matricular_visitante(uuid, uuid) from public, anon;
 grant execute on function fn_matricular_visitante(uuid, uuid) to authenticated, service_role;
 
 -- ----------------------------------------------------------------------------
@@ -749,16 +770,26 @@ returns table (
   oansista_nome  text,
   total          int,
   posicao        bigint
-) language sql stable security definer set search_path = public as $$
-  select c.nome, o.id, o.nome, f.total,
-         rank() over (partition by o.clube_id order by f.total desc, o.nome)
-  from folhas_semanais f
-  join oansistas o on o.id = f.oansista_id
-  join clubes c    on c.id = o.clube_id
-  where f.encontro_id = p_encontro_id;
+) language plpgsql stable security definer set search_path = public as $$
+begin
+  -- Gate de papel (migration 0021): antes qualquer autenticado lia nome e
+  -- pontuação de TODAS as crianças de TODOS os clubes.
+  if not coalesce(fn_role() in ('diretor_geral', 'diretor_clube'), false) then
+    raise exception 'Sem permissão para ver o ranking do encontro';
+  end if;
+
+  return query
+    select c.nome, o.id, o.nome, f.total,
+           rank() over (partition by o.clube_id order by f.total desc, o.nome)
+    from folhas_semanais f
+    join oansistas o on o.id = f.oansista_id
+    join clubes c    on c.id = o.clube_id
+    where f.encontro_id = p_encontro_id;
+end;
 $$;
 
-grant execute on function fn_ranking_do_encontro(uuid) to authenticated;
+revoke execute on function fn_ranking_do_encontro(uuid) from public, anon;
+grant execute on function fn_ranking_do_encontro(uuid) to authenticated, service_role;
 
 -- ----------------------------------------------------------------------------
 -- GRANTS (migration 0003_grants.sql)
@@ -774,3 +805,20 @@ grant usage, select on all sequences in schema public to authenticated, service_
 -- Pendências de prêmios: leitura + atualização de status pela Secretaria;
 -- INSERT acontece apenas via trigger (security definer) — negado ao cliente.
 revoke insert, delete on premios_pendentes from authenticated;
+
+-- Endurecimento (migration 0021): RPCs exclusivas do servidor não são
+-- executáveis pelo cliente (o default do Postgres era EXECUTE para PUBLIC, o
+-- que incluía anon/authenticated) e os recálculos internos só rodam via
+-- trigger/service_role. Mesmo tratamento de PUBLIC/anon nas RPCs do cliente é
+-- feito junto de cada função (blocos revoke/grant acima).
+revoke execute on function fn_entregar_premio(uuid, uuid, text) from public, anon, authenticated;
+grant execute on function fn_entregar_premio(uuid, uuid, text) to service_role;
+
+revoke execute on function fn_movimentar_estoque(uuid, text, integer, uuid, text) from public, anon, authenticated;
+grant execute on function fn_movimentar_estoque(uuid, text, integer, uuid, text) to service_role;
+
+revoke execute on function fn_recalcular_pendencia_premio(uuid, uuid) from public, anon, authenticated;
+grant execute on function fn_recalcular_pendencia_premio(uuid, uuid) to service_role;
+
+revoke execute on function fn_recalcular_pontos_jogos_encontro(uuid) from public, anon, authenticated;
+grant execute on function fn_recalcular_pontos_jogos_encontro(uuid) to service_role;
