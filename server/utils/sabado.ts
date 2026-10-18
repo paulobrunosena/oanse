@@ -45,3 +45,15 @@ export function validarDataRetroativa(data: string, hoje = new Date()): { ok: bo
   if (data > sabadoCorrente(hoje)) return { ok: false, motivo: 'A data não pode estar no futuro' }
   return { ok: true }
 }
+
+/**
+ * Quantos sábados `data` está atrás do sábado corrente (0 = sábado corrente).
+ * `null` para data inválida. Usado pela rota `/api/encontros/retro` para
+ * limitar o backfill ao mesmo horizonte da tela (últimas 12 semanas).
+ */
+export function semanasAtras(data: string, hoje = new Date()): number | null {
+  const dt = parseDataLocal(data)
+  const sabadoAtual = parseDataLocal(sabadoCorrente(hoje))
+  if (!dt || !sabadoAtual) return null
+  return Math.round((sabadoAtual.getTime() - dt.getTime()) / (7 * 24 * 60 * 60 * 1000))
+}

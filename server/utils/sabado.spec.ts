@@ -1,6 +1,6 @@
 // @vitest-environment node
 import { describe, expect, it } from 'vitest'
-import { ehSabado, parseDataLocal, sabadoCorrente, validarDataRetroativa } from './sabado'
+import { ehSabado, parseDataLocal, sabadoCorrente, semanasAtras, validarDataRetroativa } from './sabado'
 
 // Datas construídas em meia-noite local => resultado independente do fuso.
 describe('sabadoCorrente', () => {
@@ -77,5 +77,22 @@ describe('validarDataRetroativa', () => {
 
   it('rejeita data futura (além do sábado corrente)', () => {
     expect(validarDataRetroativa('2026-08-29', sabado)).toEqual({ ok: false, motivo: 'A data não pode estar no futuro' })
+  })
+})
+
+describe('semanasAtras', () => {
+  const quarta = new Date(2026, 9, 14) // quarta 14/10/2026 (sábado corrente: 10/10)
+
+  it('conta os sábados atrás do sábado corrente', () => {
+    expect(semanasAtras('2026-10-10', quarta)).toBe(0)
+    expect(semanasAtras('2026-10-03', quarta)).toBe(1)
+    expect(semanasAtras('2026-09-12', quarta)).toBe(4)
+    expect(semanasAtras('2026-07-18', quarta)).toBe(12)
+    expect(semanasAtras('2026-07-11', quarta)).toBe(13)
+  })
+
+  it('devolve null para data inválida', () => {
+    expect(semanasAtras('2026-02-30', quarta)).toBeNull()
+    expect(semanasAtras('abc', quarta)).toBeNull()
   })
 })

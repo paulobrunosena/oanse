@@ -1,6 +1,7 @@
 import { createError, defineEventHandler, readBody } from 'h3'
 import type { Database } from '../../types/database.types'
-import { validarDataRetroativa } from '../../utils/sabado'
+import { semanasAtras, validarDataRetroativa } from '../../utils/sabado'
+import { podeCriarEncontroRetroativo } from '../../utils/autorizacao'
 import { supabaseAdmin } from '../../lib/supabaseAdmin'
 import { getUsuarioDoRequest } from '../../lib/auth'
 
@@ -39,6 +40,23 @@ export default defineEventHandler(async (event) => {
   }
 
   const admin = supabaseAdmin()
+
+  // Autorização: apenas perfis operacionais ativos podem registrar o backfill.
+  const { data: perfil } = await admin
+    .from('profiles')
+    .select('role, ativo, clube_id')
+    .eq('id', claims.sub)
+    .single()
+
+  if (!podeCriarEncontroRetroativo(perfil)) {
+    throw createError({ statusCode: 403, statusMessage: 'Sem permissão para registrar um sábado perdido' })
+  }
+
+  // Mesmo horizonte da tela (últimas 12 semanas) — evita backfill arbitrário.
+  const semanas = semanasAtras(data)
+  if (semanas === null || semanas > 12) {
+    throw createError({ statusCode: 400, statusMessage: 'Só é possível registrar sábados das últimas 12 semanas' })
+  }
 
   const { data: diaSemOanse } = await admin
     .from('dias_sem_oanse')

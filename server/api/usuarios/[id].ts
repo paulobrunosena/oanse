@@ -1,6 +1,7 @@
 import { createError, defineEventHandler, getRouterParam } from 'h3'
 import { supabaseAdmin } from '../../lib/supabaseAdmin'
 import { getUsuarioDoRequest } from '../../lib/auth'
+import { podeGerenciarUsuarios } from '../../utils/autorizacao'
 
 /**
  * DELETE: exclui usuário (auth + profile via cascade) — Diretor Geral.
@@ -24,11 +25,11 @@ export default defineEventHandler(async (event) => {
 
   const { data: perfil } = await admin
     .from('profiles')
-    .select('role')
+    .select('role, ativo, clube_id')
     .eq('id', claims.sub)
     .single()
 
-  if (perfil?.role !== 'diretor_geral') {
+  if (!podeGerenciarUsuarios(perfil)) {
     throw createError({ statusCode: 403, statusMessage: 'Apenas o Diretor Geral pode excluir usuários' })
   }
 

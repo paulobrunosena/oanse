@@ -1,11 +1,13 @@
 import { createError, defineEventHandler, readBody } from 'h3'
 import type { H3Event } from 'h3'
+import type { Database } from '../../types/database.types'
 import { supabaseAdmin } from '../../lib/supabaseAdmin'
 import { getUsuarioDoRequest } from '../../lib/auth'
+import { podeGerenciarUsuarios } from '../../utils/autorizacao'
 
-type UserRole = 'diretor_geral' | 'secretaria' | 'diretor_clube' | 'lider'
+type UserRole = Database['public']['Enums']['user_role']
 
-const ROLES_VALIDAS: UserRole[] = ['diretor_geral', 'secretaria', 'diretor_clube', 'lider']
+const ROLES_VALIDAS: UserRole[] = ['diretor_geral', 'secretaria', 'diretor_clube', 'lider', 'lider_jogos']
 
 async function precisaSerDiretorGeral(event: H3Event) {
   const claims = await getUsuarioDoRequest(event)
@@ -15,10 +17,10 @@ async function precisaSerDiretorGeral(event: H3Event) {
   const admin = supabaseAdmin()
   const { data: perfil } = await admin
     .from('profiles')
-    .select('role')
+    .select('role, ativo, clube_id')
     .eq('id', claims.sub)
     .single()
-  if (perfil?.role !== 'diretor_geral') {
+  if (!podeGerenciarUsuarios(perfil)) {
     throw createError({ statusCode: 403, statusMessage: 'Apenas o Diretor Geral pode gerenciar usuários' })
   }
   return { claims, admin }
@@ -61,19 +63,19 @@ async function listar(event: H3Event) {
 async function criar(event: H3Event) {
   const { admin } = await precisaSerDiretorGeral(event)
 
-  const body = await readBody<{
+  const body = ((await readBody<{
     nome?: string
     email?: string
     senha?: string
     telefone?: string
     role?: UserRole
     clube_id?: string | null
-  }>(event)
+  }>(event).catch(() => null)) ?? {})
 
-  const nome = body.nome?.trim()
-  const email = body.email?.trim().toLowerCase()
-  const senha = body.senha ?? ''
-  const role = body.role ?? 'lider'
+  const nome = typeof body.nome === 'string' ? body.nome.trim() : ''
+  const email = typeof body.email === 'string' ? body.email.trim().toLowerCase() : ''
+  const senha = typeof body.senha === 'string' ? body.senha : ''
+  const role = (body.role ?? 'lider') as UserRole
 
   if (!nome || !email || senha.length < 6 || !ROLES_VALIDAS.includes(role)) {
     throw createError({
@@ -86,10 +88,11 @@ async function criar(event: H3Event) {
     email,
     password: senha,
     email_confirm: true,
+    // O trigger fn_handle_new_user cria o profile com papel 'lider' e ignora
+    // o metadata (migration 0021) — o papel/clube são definidos abaixo.
     user_metadata: {
       nome,
-      telefone: body.telefone?.trim() || null,
-      role,
+      telefone: typeof body.telefone === 'string' ? body.telefone.trim() || null : null,
     },
   })
 
@@ -100,9 +103,19 @@ async function criar(event: H3Event) {
     throw createError({ statusCode: 400, statusMessage: mensagem })
   }
 
-  // Trigger criou o profile; vincula o clube quando aplicável
-  if (body.clube_id) {
-    await admin.from('profiles').update({ clube_id: body.clube_id }).eq('id', novoUsuario.user.id)
+  // Define papel e clube explicitamente; se falhar, desfaz a criação para não
+  // deixar um usuário com papel padrão ('lider') fora do combinado.
+  const { error: errPerfil } = await admin
+    .from('profiles')
+    .update({ role, clube_id: body.clube_id ?? null })
+    .eq('id', novoUsuario.user.id)
+
+  if (errPerfil) {
+    await admin.auth.admin.deleteUser(novoUsuario.user.id).catch(() => undefined)
+    throw createError({
+      statusCode: 500,
+      statusMessage: 'Não foi possível definir o perfil do usuário; a criação foi desfeita',
+    })
   }
 
   return { id: novoUsuario.user.id, email }
