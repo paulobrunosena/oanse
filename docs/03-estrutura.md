@@ -13,7 +13,8 @@ oanse/
 ├── eslint.config.mjs             # flat config (ts + vue)
 ├── vite.config.ts                # plugin-vue + tailwindcss + auto-import PrimeVue (unplugin-vue-components + PrimeVueResolver) + alias @/src + proxy /api -> :8787
 ├── vitest.config.ts              # happy-dom + alias @ + mesmo auto-import PrimeVue (dts off)
-├── vercel.json                   # rewrite /api/* -> /api/index (function única h3)
+├── vercel.json                   # rewrites (/api/* -> function h3; SPA -> /index.html) + headers de segurança
+├── scripts/                      # comparar-types.mjs (drift check dos types gerados vs schema — usado no CI)
 ├── package.json
 ├── tsconfig.json                 # app (src + tests) — vue-tsc (npm run typecheck)
 ├── tsconfig.node.json            # server/ + api/ + vite/vitest config (tsc -p, incluso no typecheck)
@@ -55,7 +56,8 @@ oanse/
 │   │   ├── 0019_folha_premio_pendencia.sql # pendência por bloco (trigger) + entrega transacional (fn_entregar_premio)
 │   │   ├── 0020_estoque_movimentacoes.sql # movimentação manual de estoque (fn_movimentar_estoque) + FK feito_por → profiles
 │   │   ├── 0021_seguranca_autorizacao.sql # signup sem papel do cliente, `ativo` na autorização, checagens NULL-safe, EXECUTE restrito (RPCs server-only + anon fora) e gate nos rankings
-│   │   └── 0022_integridade_dados.sql    # recálculo zera quem saiu do evento, exclusões recalculam pós-cascata, total sempre recalculado, teto de item_num, entrega com lock/estoque verificado e RPC fn_registrar_rodada
+│   │   ├── 0022_integridade_dados.sql    # recálculo zera quem saiu do evento, exclusões recalculam pós-cascata, total sempre recalculado, teto de item_num, entrega com lock/estoque verificado e RPC fn_registrar_rodada
+│   │   └── 0023_indices.sql              # remove índices redundantes (prefixo de UNIQUE), cobre FKs sem índice e o composto do painel de pendências
 │   └── seed.sql                  # clubes, itens de pontuação, config de jogos, catálogo, catálogo de prêmios, usuários teste
 │
 ├── public/                       # assets estáticos servidos na raiz (/)
