@@ -1630,6 +1630,27 @@ export type Database = {
         Args: { p_encontro: string }
         Returns: undefined
       }
+      fn_registrar_rodada: {
+        Args: {
+          p_criado_por?: string
+          p_evento_id: string
+          p_nome: string
+          p_resultados: Json
+        }
+        Returns: {
+          created_at: string
+          criado_por: string | null
+          evento_id: string
+          id: string
+          nome: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "jogos"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       fn_responsavel_pela_turma: {
         Args: { p_encontro_id: string; p_turma_id: string }
         Returns: boolean
