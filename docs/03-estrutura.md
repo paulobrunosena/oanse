@@ -116,11 +116,11 @@ oanse/
 │   │   ├── AppMenu.vue           # menu lateral por perfil (RBAC via useRole)
 │   │   ├── AppMenuItem.vue       # item de menu recursivo (modelo do Sakai)
 │   │   ├── AppFooter.vue         # rodapé
-│   │   └── composables/layout.ts # estado do layout (menu mode, dark, sidebar)
+│   │   └── composables/layout.ts # estado do layout (menu mode, dark persistido em localStorage, sidebar) (+ layout.spec.ts)
 │   │
 │   ├── views/                    # espelha as rotas
-│   │   ├── LoginView.vue
-│   │   ├── DashboardView.vue     # dashboard por perfil
+│   │   ├── LoginView.vue         # contas de teste só em DEV (import.meta.env.DEV) (+ spec.ts)
+│   │   ├── DashboardView.vue     # dashboard por perfil (texto reflete as fases entregues)
 │   │   ├── ChamadaView.vue       # Líder (com seletor de sábado)
 │   │   ├── FolhaSemanalView.vue  # Líder (com seletor de sábado)
 │   │   ├── clube/
