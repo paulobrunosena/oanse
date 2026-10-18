@@ -331,6 +331,8 @@ create table folha_item_progresso (
   created_at     timestamptz not null default now(),
   unique (oansista_id, bloco_id, item_num)
 );
+-- Migration 0022: trg_validar_item_num limita item_num a folha_blocos.quantidade
+-- (itens "extras" davam bloco completo e geravam prêmio indevido).
 
 create table folha_premio_progresso (
   id               uuid primary key default uuid_generate_v4(),
@@ -591,10 +593,10 @@ begin
   return new;
 end $$;
 
+-- Sem lista de colunas (migration 0022): qualquer UPDATE passa pelo trigger —
+-- inclusive um PATCH isolado do `total`, que antes gravava valor arbitrário.
 create trigger trg_folha_total
-  before insert or update of presenca_id, uniforme, biblia, ebd, manual, conduta,
-                          leitura_biblica, visitantes_convidados, secoes_sem_ajuda,
-                          secoes_com_ajuda, cor_time, atividade_extra, pontos_jogos
+  before insert or update
   on folhas_semanais
   for each row execute function fn_calcular_total_folha();
 
@@ -699,6 +701,74 @@ $$;
 revoke execute on function fn_criar_evento_jogos(uuid, text, uuid[], text[], uuid) from public, anon;
 grant execute on function fn_criar_evento_jogos(uuid, text, uuid[], text[], uuid) to authenticated, service_role;
 
+-- Registro transacional da rodada (migration 0022): jogo + resultados numa só
+-- transação; valida que as cores pertencem ao evento e a colocação (1..4).
+-- p_resultados: [{ "cor_id": "...", "colocacao": 1|null, "desclassificado": false }, ...]
+create or replace function fn_registrar_rodada(
+  p_evento_id  uuid,
+  p_nome       text,
+  p_resultados jsonb,
+  p_criado_por uuid default auth.uid()
+)
+returns jogos
+language plpgsql security definer set search_path = public as $$
+declare
+  v_jogo      jogos;
+  v_elem      jsonb;
+  v_cor_id    uuid;
+  v_colocacao int;
+begin
+  if not coalesce(fn_role() in ('lider_jogos', 'diretor_geral'), false) then
+    raise exception 'Apenas o líder de jogos pode registrar rodadas';
+  end if;
+
+  if nullif(trim(p_nome), '') is null then
+    raise exception 'Informe o jogo/atividade da rodada';
+  end if;
+
+  if not exists (select 1 from eventos_jogos where id = p_evento_id) then
+    raise exception 'Evento não encontrado';
+  end if;
+
+  insert into jogos (evento_id, nome, criado_por)
+  values (p_evento_id, trim(p_nome), p_criado_por)
+  returning * into v_jogo;
+
+  if p_resultados is not null then
+    for v_elem in select * from jsonb_array_elements(p_resultados) loop
+      v_cor_id := (v_elem->>'cor_id')::uuid;
+
+      if not exists (
+        select 1 from evento_jogos_cores
+        where id = v_cor_id and evento_id = p_evento_id
+      ) then
+        raise exception 'Cor não pertence a este evento';
+      end if;
+
+      v_colocacao := case
+        when v_elem->>'colocacao' is null or v_elem->>'colocacao' = 'null' then null
+        else (v_elem->>'colocacao')::int
+      end;
+
+      if v_colocacao is not null and (v_colocacao < 1 or v_colocacao > 4) then
+        raise exception 'Colocação inválida (1 a 4)';
+      end if;
+
+      insert into jogo_resultados (jogo_id, cor_id, colocacao, desclassificado)
+      values (
+        v_jogo.id, v_cor_id, v_colocacao,
+        coalesce((v_elem->>'desclassificado')::boolean, false)
+      );
+    end loop;
+  end if;
+
+  return v_jogo;
+end;
+$$;
+
+revoke execute on function fn_registrar_rodada(uuid, text, jsonb, uuid) from public, anon;
+grant execute on function fn_registrar_rodada(uuid, text, jsonb, uuid) to authenticated, service_role;
+
 -- Garante (em qualquer via de entrada) que um clube não entra em dois eventos
 -- do mesmo sábado.
 create or replace function fn_validar_clube_sem_evento_no_sabado()
@@ -759,7 +829,8 @@ grant execute on function fn_ranking_cores_do_evento(uuid) to authenticated, ser
 -- informativos (cor não pontua). Roda por qualquer via de entrada:
 -- resultado lançado/alterado/removido, criança entrando/saindo/trocando de cor,
 -- folha criada depois dos jogos e alternância de presença (presente <=> falta).
--- Só atualiza folhas de crianças PRESENTES (ausente fica zerado — RN 1).
+-- Só atualiza folhas de crianças PRESENTES (ausente fica zerado — RN 1);
+-- presença SEM evento no sábado também é zerada (migration 0022).
 create or replace function fn_recalcular_pontos_jogos_encontro(p_encontro uuid)
 returns void
 language plpgsql security definer set search_path = public as $$
@@ -798,6 +869,25 @@ begin
      and exists (
        select 1 from presencas pr where pr.id = f.presenca_id and pr.presente
      );
+
+  -- Quem saiu do evento (criança removida da cor, cor/rodada/evento excluído)
+  -- volta a zero — antes continuava pontuando (migration 0022).
+  update folhas_semanais f
+     set pontos_jogos  = 0,
+         cor_time      = null,
+         posicao_jogos = null
+   where f.encontro_id = p_encontro
+     and exists (
+       select 1 from presencas pr where pr.id = f.presenca_id and pr.presente
+     )
+     and not exists (
+       select 1
+         from evento_jogos_cores_oansistas i
+         join evento_jogos_cores c on c.id = i.cor_id
+         join eventos_jogos ev on ev.id = c.evento_id
+        where ev.encontro_id = p_encontro
+          and i.oansista_id = f.oansista_id
+     );
 end;
 $$;
 
@@ -827,6 +917,42 @@ $$;
 create trigger trg_propagar_pontos_jogos
   after insert or update or delete on jogo_resultados
   for each row execute function fn_propagar_pontos_jogos();
+
+-- Exclusões (rodada, cor, evento): quando o cascade apaga os registros, o
+-- trigger acima não resolve mais o encontro — o BEFORE DELETE guarda o id em
+-- set_config e o AFTER DELETE recalcula (migration 0022).
+create or replace function fn_guardar_encontro_do_delete()
+returns trigger language plpgsql security definer set search_path = public as $$
+declare
+  v_encontro uuid;
+begin
+  if TG_TABLE_NAME = 'eventos_jogos' then
+    v_encontro := old.encontro_id;
+  else
+    select ev.encontro_id into v_encontro from eventos_jogos ev where ev.id = old.evento_id;
+  end if;
+
+  if v_encontro is not null then
+    perform set_config('oanse.recalcular_encontro', v_encontro::text, true);
+  end if;
+  return old;
+end;
+$$;
+
+create or replace function fn_recalcular_encontro_do_delete()
+returns trigger language plpgsql security definer set search_path = public as $$
+declare
+  v_encontro uuid := nullif(current_setting('oanse.recalcular_encontro', true), '')::uuid;
+begin
+  if v_encontro is not null then
+    perform fn_recalcular_pontos_jogos_encontro(v_encontro);
+  end if;
+  return old;
+end;
+$$;
+
+-- (triggers criados em jogos, evento_jogos_cores e eventos_jogos: guardar no
+-- BEFORE DELETE + recalcular no AFTER DELETE com fn_* acima)
 
 create or replace function fn_propagar_pontos_jogos_integrantes()
 returns trigger language plpgsql security definer set search_path = public as $$
@@ -885,6 +1011,9 @@ create trigger trg_folha_pontos_jogos_presenca
 -- exigem perfil ATIVO e o EXECUTE é exclusivo do service_role (revogado de
 -- PUBLIC/anon/authenticated); `trg_folha_item_pendencia` virou SECURITY DEFINER
 -- e as funções de recálculo também só rodam pelo sistema/service_role.
+-- Integridade (migration 0022): `fn_entregar_premio` trava a pendência
+-- (FOR UPDATE — entrega concorrente não duplica), exige estoque para QUALQUER
+-- prêmio e faz baixa verificada (nunca grava saída sem baixar o estoque).
 
 -- Movimentação manual de estoque (Fase 3, polimento): `fn_movimentar_estoque`
 -- registra entrada/saída de forma transacional (valida autorização — apenas
