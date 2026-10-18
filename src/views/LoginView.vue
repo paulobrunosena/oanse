@@ -11,6 +11,9 @@ const state = reactive({ email: '', password: '' })
 const carregando = ref(false)
 const erro = ref<string | null>(null)
 
+// Lista de conveniência local (senha do seed): nunca em produção.
+const mostrarContasTeste = import.meta.env.DEV
+
 const contasTeste = [
   { email: 'diretor@oanse.local', perfil: 'Diretor Geral' },
   { email: 'secretaria@oanse.local', perfil: 'Secretaria' },
@@ -112,7 +115,7 @@ onMounted(() => {
       </template>
     </Card>
 
-    <Card>
+    <Card v-if="mostrarContasTeste">
       <template #content>
         <p class="text-xs font-semibold text-surface-500 mb-2">
           Contas de teste (senha: oanse123)
