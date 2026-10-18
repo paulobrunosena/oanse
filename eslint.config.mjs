@@ -36,10 +36,11 @@ export default tseslint.config(
     },
   },
   {
-    files: ['**/*.{ts,mts,cts,vue}'],
+    files: ['**/*.{ts,mts,cts,mjs,vue}'],
     rules: {
       // TypeScript/vue-tsc já checa tipos/globais; no-undef duplica e gera falsos
-      // positivos para globals do DOM (Event, HTMLElement, document, window...).
+      // positivos para globals do DOM (Event, HTMLElement, document, window...)
+      // e do Node nos scripts (.mjs em scripts/).
       'no-undef': 'off',
     },
   },

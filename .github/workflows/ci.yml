@@ -5,6 +5,13 @@ on:
     branches: [master]
   pull_request:
 
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   lint:
     name: Lint e Typecheck
@@ -61,13 +68,20 @@ jobs:
 
       - uses: supabase/setup-cli@v1
         with:
-          version: latest
+          # Pinado para CI reproduzível (mesma versão usada no desenvolvimento).
+          version: 2.121.0
 
       - name: Subir stack Supabase local
         run: supabase start
 
       - name: Aplicar migrations + seed
         run: supabase db reset
+
+      - name: Types em dia com o schema (drift check)
+        run: |
+          supabase gen types typescript --local > /tmp/types.gen.ts
+          node scripts/comparar-types.mjs /tmp/types.gen.ts src/types/database.types.ts
+          diff -q src/types/database.types.ts server/types/database.types.ts
 
       - name: Assert - todas as tabelas public com RLS habilitado
         run: |
