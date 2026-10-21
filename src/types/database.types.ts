@@ -1,1886 +1,1166 @@
-export type Json =
-  | string
-  | number
-  | boolean
-  | null
-  | { [key: string]: Json | undefined }
-  | Json[]
+
+export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[]
 
 export type Database = {
-  graphql_public: {
-    Tables: {
-      [_ in never]: never
+  
+  "graphql_public": {
+          Tables: {
+            [_ in never]: never
+          }
+          Views: {
+            [_ in never]: never
+          }
+          Functions: {
+            "graphql":
+{ Args: { "extensions"?: Json,"operationName"?: string,"query"?: string,"variables"?: Json }; Returns: Json
+                           }
+          }
+          Enums: {
+            [_ in never]: never
+          }
+          CompositeTypes: {
+            [_ in never]: never
+          }
+        },"public": {
+          Tables: {
+            "clubes": {
+                  Row: {
+                    "cor": string | null,"created_at": string,"id": string,"idade_max": number,"idade_min": number,"nome": string,"ordem": number,"qtd_licoes": number,"slug": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "cor"?: string | null,"created_at"?: string,"id"?: string,"idade_max": number,"idade_min": number,"nome": string,"ordem": number,"qtd_licoes"?: number,"slug": string
+                  }
+                  Update: {
+                    "cor"?: string | null,"created_at"?: string,"id"?: string,"idade_max"?: number,"idade_min"?: number,"nome"?: string,"ordem"?: number,"qtd_licoes"?: number,"slug"?: string
+                  }
+                  Relationships: [
+                    
+                  ]
+                },"dias_sem_oanse": {
+                  Row: {
+                    "created_at": string,"data": string,"id": string,"motivo": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"data": string,"id"?: string,"motivo"?: string | null
+                  }
+                  Update: {
+                    "created_at"?: string,"data"?: string,"id"?: string,"motivo"?: string | null
+                  }
+                  Relationships: [
+                    
+                  ]
+                },"encontros": {
+                  Row: {
+                    "ativo": boolean,"created_at": string,"data": string,"id": string,"tema": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "ativo"?: boolean,"created_at"?: string,"data": string,"id"?: string,"tema"?: string | null
+                  }
+                  Update: {
+                    "ativo"?: boolean,"created_at"?: string,"data"?: string,"id"?: string,"tema"?: string | null
+                  }
+                  Relationships: [
+                    
+                  ]
+                },"evento_jogos_clubes": {
+                  Row: {
+                    "clube_id": string,"evento_id": string,"id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "clube_id": string,"evento_id": string,"id"?: string
+                  }
+                  Update: {
+                    "clube_id"?: string,"evento_id"?: string,"id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "evento_jogos_clubes_clube_id_fkey"
+      columns: ["clube_id"]
+isOneToOne: false
+      referencedRelation: "clubes"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "evento_jogos_clubes_evento_id_fkey"
+      columns: ["evento_id"]
+isOneToOne: false
+      referencedRelation: "eventos_jogos"
+      referencedColumns: ["id"]
     }
-    Views: {
-      [_ in never]: never
+                  ]
+                },"evento_jogos_cores": {
+                  Row: {
+                    "cor": string,"evento_id": string,"id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "cor": string,"evento_id": string,"id"?: string
+                  }
+                  Update: {
+                    "cor"?: string,"evento_id"?: string,"id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "evento_jogos_cores_evento_id_fkey"
+      columns: ["evento_id"]
+isOneToOne: false
+      referencedRelation: "eventos_jogos"
+      referencedColumns: ["id"]
     }
-    Functions: {
-      graphql: {
-        Args: {
-          extensions?: Json
-          operationName?: string
-          query?: string
-          variables?: Json
-        }
-        Returns: Json
-      }
+                  ]
+                },"evento_jogos_cores_oansistas": {
+                  Row: {
+                    "cor_id": string,"id": string,"oansista_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "cor_id": string,"id"?: string,"oansista_id": string
+                  }
+                  Update: {
+                    "cor_id"?: string,"id"?: string,"oansista_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "evento_jogos_cores_oansistas_cor_id_fkey"
+      columns: ["cor_id"]
+isOneToOne: false
+      referencedRelation: "evento_jogos_cores"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "evento_jogos_cores_oansistas_oansista_id_fkey"
+      columns: ["oansista_id"]
+isOneToOne: false
+      referencedRelation: "oansistas"
+      referencedColumns: ["id"]
     }
-    Enums: {
-      [_ in never]: never
+                  ]
+                },"eventos_jogos": {
+                  Row: {
+                    "created_at": string,"criado_por": string | null,"encontro_id": string,"id": string,"nome": string,"status": string,"updated_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"criado_por"?: string | null,"encontro_id": string,"id"?: string,"nome": string,"status"?: string,"updated_at"?: string
+                  }
+                  Update: {
+                    "created_at"?: string,"criado_por"?: string | null,"encontro_id"?: string,"id"?: string,"nome"?: string,"status"?: string,"updated_at"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "eventos_jogos_criado_por_fkey"
+      columns: ["criado_por"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "eventos_jogos_encontro_id_fkey"
+      columns: ["encontro_id"]
+isOneToOne: false
+      referencedRelation: "encontros"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "eventos_jogos_encontro_id_fkey"
+      columns: ["encontro_id"]
+isOneToOne: false
+      referencedRelation: "v_ranking_semanal"
+      referencedColumns: ["encontro_id"]
     }
-    CompositeTypes: {
-      [_ in never]: never
+                  ]
+                },"folha_blocos": {
+                  Row: {
+                    "id": string,"nome": string,"ordem": number,"premio_id": string | null,"premio_nome": string,"quantidade": number,"secao_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "id"?: string,"nome": string,"ordem": number,"premio_id"?: string | null,"premio_nome": string,"quantidade": number,"secao_id": string
+                  }
+                  Update: {
+                    "id"?: string,"nome"?: string,"ordem"?: number,"premio_id"?: string | null,"premio_nome"?: string,"quantidade"?: number,"secao_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "folha_blocos_premio_id_fkey"
+      columns: ["premio_id"]
+isOneToOne: false
+      referencedRelation: "premios"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "folha_blocos_secao_id_fkey"
+      columns: ["secao_id"]
+isOneToOne: false
+      referencedRelation: "folha_secoes"
+      referencedColumns: ["id"]
     }
-  }
-  public: {
-    Tables: {
-      clubes: {
-        Row: {
-          cor: string | null
-          created_at: string
-          id: string
-          idade_max: number
-          idade_min: number
-          nome: string
-          ordem: number
-          qtd_licoes: number
-          slug: string
-        }
-        Insert: {
-          cor?: string | null
-          created_at?: string
-          id?: string
-          idade_max: number
-          idade_min: number
-          nome: string
-          ordem: number
-          qtd_licoes?: number
-          slug: string
-        }
-        Update: {
-          cor?: string | null
-          created_at?: string
-          id?: string
-          idade_max?: number
-          idade_min?: number
-          nome?: string
-          ordem?: number
-          qtd_licoes?: number
-          slug?: string
-        }
-        Relationships: []
-      }
-      dias_sem_oanse: {
-        Row: {
-          created_at: string
-          data: string
-          id: string
-          motivo: string | null
-        }
-        Insert: {
-          created_at?: string
-          data: string
-          id?: string
-          motivo?: string | null
-        }
-        Update: {
-          created_at?: string
-          data?: string
-          id?: string
-          motivo?: string | null
-        }
-        Relationships: []
-      }
-      encontros: {
-        Row: {
-          ativo: boolean
-          created_at: string
-          data: string
-          id: string
-          tema: string | null
-        }
-        Insert: {
-          ativo?: boolean
-          created_at?: string
-          data: string
-          id?: string
-          tema?: string | null
-        }
-        Update: {
-          ativo?: boolean
-          created_at?: string
-          data?: string
-          id?: string
-          tema?: string | null
-        }
-        Relationships: []
-      }
-      evento_jogos_clubes: {
-        Row: {
-          clube_id: string
-          evento_id: string
-          id: string
-        }
-        Insert: {
-          clube_id: string
-          evento_id: string
-          id?: string
-        }
-        Update: {
-          clube_id?: string
-          evento_id?: string
-          id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "evento_jogos_clubes_clube_id_fkey"
-            columns: ["clube_id"]
-            isOneToOne: false
-            referencedRelation: "clubes"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "evento_jogos_clubes_evento_id_fkey"
-            columns: ["evento_id"]
-            isOneToOne: false
-            referencedRelation: "eventos_jogos"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      evento_jogos_cores: {
-        Row: {
-          cor: string
-          evento_id: string
-          id: string
-        }
-        Insert: {
-          cor: string
-          evento_id: string
-          id?: string
-        }
-        Update: {
-          cor?: string
-          evento_id?: string
-          id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "evento_jogos_cores_evento_id_fkey"
-            columns: ["evento_id"]
-            isOneToOne: false
-            referencedRelation: "eventos_jogos"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      evento_jogos_cores_oansistas: {
-        Row: {
-          cor_id: string
-          id: string
-          oansista_id: string
-        }
-        Insert: {
-          cor_id: string
-          id?: string
-          oansista_id: string
-        }
-        Update: {
-          cor_id?: string
-          id?: string
-          oansista_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "evento_jogos_cores_oansistas_cor_id_fkey"
-            columns: ["cor_id"]
-            isOneToOne: false
-            referencedRelation: "evento_jogos_cores"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "evento_jogos_cores_oansistas_oansista_id_fkey"
-            columns: ["oansista_id"]
-            isOneToOne: false
-            referencedRelation: "oansistas"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      eventos_jogos: {
-        Row: {
-          created_at: string
-          criado_por: string | null
-          encontro_id: string
-          id: string
-          nome: string
-          status: string
-          updated_at: string
-        }
-        Insert: {
-          created_at?: string
-          criado_por?: string | null
-          encontro_id: string
-          id?: string
-          nome: string
-          status?: string
-          updated_at?: string
-        }
-        Update: {
-          created_at?: string
-          criado_por?: string | null
-          encontro_id?: string
-          id?: string
-          nome?: string
-          status?: string
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "eventos_jogos_criado_por_fkey"
-            columns: ["criado_por"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "eventos_jogos_encontro_id_fkey"
-            columns: ["encontro_id"]
-            isOneToOne: false
-            referencedRelation: "encontros"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "eventos_jogos_encontro_id_fkey"
-            columns: ["encontro_id"]
-            isOneToOne: false
-            referencedRelation: "v_ranking_semanal"
-            referencedColumns: ["encontro_id"]
-          },
-        ]
-      }
-      folha_blocos: {
-        Row: {
-          id: string
-          nome: string
-          ordem: number
-          premio_id: string | null
-          premio_nome: string
-          quantidade: number
-          secao_id: string
-        }
-        Insert: {
-          id?: string
-          nome: string
-          ordem: number
-          premio_id?: string | null
-          premio_nome: string
-          quantidade: number
-          secao_id: string
-        }
-        Update: {
-          id?: string
-          nome?: string
-          ordem?: number
-          premio_id?: string | null
-          premio_nome?: string
-          quantidade?: number
-          secao_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "folha_blocos_premio_id_fkey"
-            columns: ["premio_id"]
-            isOneToOne: false
-            referencedRelation: "premios"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "folha_blocos_secao_id_fkey"
-            columns: ["secao_id"]
-            isOneToOne: false
-            referencedRelation: "folha_secoes"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      folha_item_progresso: {
-        Row: {
-          bloco_id: string
-          created_at: string
-          data_conclusao: string
-          id: string
-          item_num: number
-          oansista_id: string
-          registrado_por: string
-        }
-        Insert: {
-          bloco_id: string
-          created_at?: string
-          data_conclusao?: string
-          id?: string
-          item_num: number
-          oansista_id: string
-          registrado_por: string
-        }
-        Update: {
-          bloco_id?: string
-          created_at?: string
-          data_conclusao?: string
-          id?: string
-          item_num?: number
-          oansista_id?: string
-          registrado_por?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "folha_item_progresso_bloco_id_fkey"
-            columns: ["bloco_id"]
-            isOneToOne: false
-            referencedRelation: "folha_blocos"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "folha_item_progresso_oansista_id_fkey"
-            columns: ["oansista_id"]
-            isOneToOne: false
-            referencedRelation: "oansistas"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "folha_item_progresso_registrado_por_fkey"
-            columns: ["registrado_por"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      folha_manuais: {
-        Row: {
-          clube_id: string
-          created_at: string
-          id: string
-          nome: string
-          ordem: number
-        }
-        Insert: {
-          clube_id: string
-          created_at?: string
-          id?: string
-          nome: string
-          ordem: number
-        }
-        Update: {
-          clube_id?: string
-          created_at?: string
-          id?: string
-          nome?: string
-          ordem?: number
-        }
-        Relationships: [
-          {
-            foreignKeyName: "folha_manuais_clube_id_fkey"
-            columns: ["clube_id"]
-            isOneToOne: false
-            referencedRelation: "clubes"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      folha_observacoes: {
-        Row: {
-          id: string
-          manual_id: string
-          oansista_id: string
-          texto: string | null
-          updated_at: string
-        }
-        Insert: {
-          id?: string
-          manual_id: string
-          oansista_id: string
-          texto?: string | null
-          updated_at?: string
-        }
-        Update: {
-          id?: string
-          manual_id?: string
-          oansista_id?: string
-          texto?: string | null
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "folha_observacoes_manual_id_fkey"
-            columns: ["manual_id"]
-            isOneToOne: false
-            referencedRelation: "folha_manuais"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "folha_observacoes_oansista_id_fkey"
-            columns: ["oansista_id"]
-            isOneToOne: false
-            referencedRelation: "oansistas"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      folha_premio_progresso: {
-        Row: {
-          bloco_id: string
-          created_at: string
-          data_recebimento: string
-          id: string
-          oansista_id: string
-          registrado_por: string
-        }
-        Insert: {
-          bloco_id: string
-          created_at?: string
-          data_recebimento?: string
-          id?: string
-          oansista_id: string
-          registrado_por: string
-        }
-        Update: {
-          bloco_id?: string
-          created_at?: string
-          data_recebimento?: string
-          id?: string
-          oansista_id?: string
-          registrado_por?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "folha_premio_progresso_bloco_id_fkey"
-            columns: ["bloco_id"]
-            isOneToOne: false
-            referencedRelation: "folha_blocos"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "folha_premio_progresso_oansista_id_fkey"
-            columns: ["oansista_id"]
-            isOneToOne: false
-            referencedRelation: "oansistas"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "folha_premio_progresso_registrado_por_fkey"
-            columns: ["registrado_por"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      folha_secoes: {
-        Row: {
-          id: string
-          manual_id: string
-          nome: string
-          ordem: number
-          tipo: string
-        }
-        Insert: {
-          id?: string
-          manual_id: string
-          nome: string
-          ordem: number
-          tipo?: string
-        }
-        Update: {
-          id?: string
-          manual_id?: string
-          nome?: string
-          ordem?: number
-          tipo?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "folha_secoes_manual_id_fkey"
-            columns: ["manual_id"]
-            isOneToOne: false
-            referencedRelation: "folha_manuais"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      folhas_semanais: {
-        Row: {
-          atividade_extra: number
-          biblia: boolean
-          conduta: boolean
-          cor_time: string | null
-          created_at: string
-          ebd: boolean
-          encontro_id: string
-          id: string
-          leitura_biblica: boolean
-          manual: boolean
-          oansista_id: string
-          pontos_jogos: number
-          posicao_jogos: number | null
-          presenca_id: string
-          registrado_por: string
-          secoes_com_ajuda: number
-          secoes_sem_ajuda: number
-          total: number
-          uniforme: boolean
-          updated_at: string
-          visitantes_convidados: number
-        }
-        Insert: {
-          atividade_extra?: number
-          biblia?: boolean
-          conduta?: boolean
-          cor_time?: string | null
-          created_at?: string
-          ebd?: boolean
-          encontro_id: string
-          id?: string
-          leitura_biblica?: boolean
-          manual?: boolean
-          oansista_id: string
-          pontos_jogos?: number
-          posicao_jogos?: number | null
-          presenca_id: string
-          registrado_por: string
-          secoes_com_ajuda?: number
-          secoes_sem_ajuda?: number
-          total?: number
-          uniforme?: boolean
-          updated_at?: string
-          visitantes_convidados?: number
-        }
-        Update: {
-          atividade_extra?: number
-          biblia?: boolean
-          conduta?: boolean
-          cor_time?: string | null
-          created_at?: string
-          ebd?: boolean
-          encontro_id?: string
-          id?: string
-          leitura_biblica?: boolean
-          manual?: boolean
-          oansista_id?: string
-          pontos_jogos?: number
-          posicao_jogos?: number | null
-          presenca_id?: string
-          registrado_por?: string
-          secoes_com_ajuda?: number
-          secoes_sem_ajuda?: number
-          total?: number
-          uniforme?: boolean
-          updated_at?: string
-          visitantes_convidados?: number
-        }
-        Relationships: [
-          {
-            foreignKeyName: "folhas_semanais_encontro_id_fkey"
-            columns: ["encontro_id"]
-            isOneToOne: false
-            referencedRelation: "encontros"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "folhas_semanais_encontro_id_fkey"
-            columns: ["encontro_id"]
-            isOneToOne: false
-            referencedRelation: "v_ranking_semanal"
-            referencedColumns: ["encontro_id"]
-          },
-          {
-            foreignKeyName: "folhas_semanais_oansista_id_fkey"
-            columns: ["oansista_id"]
-            isOneToOne: false
-            referencedRelation: "oansistas"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "folhas_semanais_presenca_id_fkey"
-            columns: ["presenca_id"]
-            isOneToOne: false
-            referencedRelation: "presencas"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "folhas_semanais_registrado_por_fkey"
-            columns: ["registrado_por"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      itens_pontuacao: {
-        Row: {
-          ativo: boolean
-          chave: string
-          descricao: string
-          pontos: number
-        }
-        Insert: {
-          ativo?: boolean
-          chave: string
-          descricao: string
-          pontos?: number
-        }
-        Update: {
-          ativo?: boolean
-          chave?: string
-          descricao?: string
-          pontos?: number
-        }
-        Relationships: []
-      }
-      jogo_resultados: {
-        Row: {
-          colocacao: number | null
-          cor_id: string
-          created_at: string
-          desclassificado: boolean
-          id: string
-          jogo_id: string
-          pontos: number
-        }
-        Insert: {
-          colocacao?: number | null
-          cor_id: string
-          created_at?: string
-          desclassificado?: boolean
-          id?: string
-          jogo_id: string
-          pontos?: number
-        }
-        Update: {
-          colocacao?: number | null
-          cor_id?: string
-          created_at?: string
-          desclassificado?: boolean
-          id?: string
-          jogo_id?: string
-          pontos?: number
-        }
-        Relationships: [
-          {
-            foreignKeyName: "jogo_resultados_cor_id_fkey"
-            columns: ["cor_id"]
-            isOneToOne: false
-            referencedRelation: "evento_jogos_cores"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "jogo_resultados_jogo_id_fkey"
-            columns: ["jogo_id"]
-            isOneToOne: false
-            referencedRelation: "jogos"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      jogos: {
-        Row: {
-          created_at: string
-          criado_por: string | null
-          evento_id: string
-          id: string
-          nome: string
-        }
-        Insert: {
-          created_at?: string
-          criado_por?: string | null
-          evento_id: string
-          id?: string
-          nome: string
-        }
-        Update: {
-          created_at?: string
-          criado_por?: string | null
-          evento_id?: string
-          id?: string
-          nome?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "jogos_criado_por_fkey"
-            columns: ["criado_por"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "jogos_evento_id_fkey"
-            columns: ["evento_id"]
-            isOneToOne: false
-            referencedRelation: "eventos_jogos"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      jogos_catalogo: {
-        Row: {
-          clube_id: string
-          created_at: string
-          id: string
-          nome: string
-        }
-        Insert: {
-          clube_id: string
-          created_at?: string
-          id?: string
-          nome: string
-        }
-        Update: {
-          clube_id?: string
-          created_at?: string
-          id?: string
-          nome?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "jogos_catalogo_clube_id_fkey"
-            columns: ["clube_id"]
-            isOneToOne: false
-            referencedRelation: "clubes"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      jogos_pontos_config: {
-        Row: {
-          colocacao: number
-          desclassificado: boolean
-          pontos: number
-        }
-        Insert: {
-          colocacao: number
-          desclassificado?: boolean
-          pontos: number
-        }
-        Update: {
-          colocacao?: number
-          desclassificado?: boolean
-          pontos?: number
-        }
-        Relationships: []
-      }
-      oansistas: {
-        Row: {
-          clube_id: string
-          contato: string | null
-          created_at: string
-          data_matricula: string
-          data_nascimento: string
-          id: string
-          nome: string
-          observacoes: string | null
-          responsavel: string | null
-          status: Database["public"]["Enums"]["status_oansista"]
-          turma_id: string | null
-          updated_at: string
-          visitante_origem_id: string | null
-        }
-        Insert: {
-          clube_id: string
-          contato?: string | null
-          created_at?: string
-          data_matricula?: string
-          data_nascimento: string
-          id?: string
-          nome: string
-          observacoes?: string | null
-          responsavel?: string | null
-          status?: Database["public"]["Enums"]["status_oansista"]
-          turma_id?: string | null
-          updated_at?: string
-          visitante_origem_id?: string | null
-        }
-        Update: {
-          clube_id?: string
-          contato?: string | null
-          created_at?: string
-          data_matricula?: string
-          data_nascimento?: string
-          id?: string
-          nome?: string
-          observacoes?: string | null
-          responsavel?: string | null
-          status?: Database["public"]["Enums"]["status_oansista"]
-          turma_id?: string | null
-          updated_at?: string
-          visitante_origem_id?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "oansistas_clube_id_fkey"
-            columns: ["clube_id"]
-            isOneToOne: false
-            referencedRelation: "clubes"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "oansistas_turma_id_fkey"
-            columns: ["turma_id"]
-            isOneToOne: false
-            referencedRelation: "turmas"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "oansistas_visitante_origem_id_fkey"
-            columns: ["visitante_origem_id"]
-            isOneToOne: false
-            referencedRelation: "visitantes"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      premios: {
-        Row: {
-          ativo: boolean
-          created_at: string
-          descricao: string | null
-          estoque: number
-          estoque_min: number
-          id: string
-          nivel: number | null
-          nome: string
-          secao: number | null
-          tipo: Database["public"]["Enums"]["premio_tipo"]
-        }
-        Insert: {
-          ativo?: boolean
-          created_at?: string
-          descricao?: string | null
-          estoque?: number
-          estoque_min?: number
-          id?: string
-          nivel?: number | null
-          nome: string
-          secao?: number | null
-          tipo: Database["public"]["Enums"]["premio_tipo"]
-        }
-        Update: {
-          ativo?: boolean
-          created_at?: string
-          descricao?: string | null
-          estoque?: number
-          estoque_min?: number
-          id?: string
-          nivel?: number | null
-          nome?: string
-          secao?: number | null
-          tipo?: Database["public"]["Enums"]["premio_tipo"]
-        }
-        Relationships: []
-      }
-      premios_movimentacoes: {
-        Row: {
-          created_at: string
-          feito_por: string
-          id: string
-          observacao: string | null
-          premio_id: string
-          quantidade: number
-          tipo: string
-        }
-        Insert: {
-          created_at?: string
-          feito_por: string
-          id?: string
-          observacao?: string | null
-          premio_id: string
-          quantidade: number
-          tipo: string
-        }
-        Update: {
-          created_at?: string
-          feito_por?: string
-          id?: string
-          observacao?: string | null
-          premio_id?: string
-          quantidade?: number
-          tipo?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "premios_movimentacoes_feito_por_fkey"
-            columns: ["feito_por"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "premios_movimentacoes_premio_id_fkey"
-            columns: ["premio_id"]
-            isOneToOne: false
-            referencedRelation: "premios"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      premios_pendentes: {
-        Row: {
-          bloco_id: string | null
-          clube_id: string
-          data_entrega: string | null
-          data_geracao: string
-          entregue_por: string | null
-          id: string
-          oansista_id: string
-          observacao: string | null
-          premio_id: string
-          status: Database["public"]["Enums"]["pendencia_status"]
-        }
-        Insert: {
-          bloco_id?: string | null
-          clube_id: string
-          data_entrega?: string | null
-          data_geracao?: string
-          entregue_por?: string | null
-          id?: string
-          oansista_id: string
-          observacao?: string | null
-          premio_id: string
-          status?: Database["public"]["Enums"]["pendencia_status"]
-        }
-        Update: {
-          bloco_id?: string | null
-          clube_id?: string
-          data_entrega?: string | null
-          data_geracao?: string
-          entregue_por?: string | null
-          id?: string
-          oansista_id?: string
-          observacao?: string | null
-          premio_id?: string
-          status?: Database["public"]["Enums"]["pendencia_status"]
-        }
-        Relationships: [
-          {
-            foreignKeyName: "premios_pendentes_bloco_id_fkey"
-            columns: ["bloco_id"]
-            isOneToOne: false
-            referencedRelation: "folha_blocos"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "premios_pendentes_clube_id_fkey"
-            columns: ["clube_id"]
-            isOneToOne: false
-            referencedRelation: "clubes"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "premios_pendentes_entregue_por_fkey"
-            columns: ["entregue_por"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "premios_pendentes_oansista_id_fkey"
-            columns: ["oansista_id"]
-            isOneToOne: false
-            referencedRelation: "oansistas"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "premios_pendentes_premio_id_fkey"
-            columns: ["premio_id"]
-            isOneToOne: false
-            referencedRelation: "premios"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      presencas: {
-        Row: {
-          created_at: string
-          encontro_id: string
-          id: string
-          lider_registrante_id: string
-          oansista_id: string
-          observacao: string | null
-          presente: boolean
-        }
-        Insert: {
-          created_at?: string
-          encontro_id: string
-          id?: string
-          lider_registrante_id: string
-          oansista_id: string
-          observacao?: string | null
-          presente?: boolean
-        }
-        Update: {
-          created_at?: string
-          encontro_id?: string
-          id?: string
-          lider_registrante_id?: string
-          oansista_id?: string
-          observacao?: string | null
-          presente?: boolean
-        }
-        Relationships: [
-          {
-            foreignKeyName: "presencas_encontro_id_fkey"
-            columns: ["encontro_id"]
-            isOneToOne: false
-            referencedRelation: "encontros"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "presencas_encontro_id_fkey"
-            columns: ["encontro_id"]
-            isOneToOne: false
-            referencedRelation: "v_ranking_semanal"
-            referencedColumns: ["encontro_id"]
-          },
-          {
-            foreignKeyName: "presencas_lider_registrante_id_fkey"
-            columns: ["lider_registrante_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "presencas_oansista_id_fkey"
-            columns: ["oansista_id"]
-            isOneToOne: false
-            referencedRelation: "oansistas"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      profiles: {
-        Row: {
-          ativo: boolean
-          clube_id: string | null
-          created_at: string
-          id: string
-          nome: string
-          role: Database["public"]["Enums"]["user_role"]
-          telefone: string | null
-          updated_at: string
-        }
-        Insert: {
-          ativo?: boolean
-          clube_id?: string | null
-          created_at?: string
-          id: string
-          nome: string
-          role?: Database["public"]["Enums"]["user_role"]
-          telefone?: string | null
-          updated_at?: string
-        }
-        Update: {
-          ativo?: boolean
-          clube_id?: string | null
-          created_at?: string
-          id?: string
-          nome?: string
-          role?: Database["public"]["Enums"]["user_role"]
-          telefone?: string | null
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "profiles_clube_id_fkey"
-            columns: ["clube_id"]
-            isOneToOne: false
-            referencedRelation: "clubes"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      prova_ingresso_licoes: {
-        Row: {
-          concluida: boolean
-          data_conclusao: string | null
-          id: string
-          licao: number
-          registrado_por: string | null
-          visitante_id: string
-        }
-        Insert: {
-          concluida?: boolean
-          data_conclusao?: string | null
-          id?: string
-          licao: number
-          registrado_por?: string | null
-          visitante_id: string
-        }
-        Update: {
-          concluida?: boolean
-          data_conclusao?: string | null
-          id?: string
-          licao?: number
-          registrado_por?: string | null
-          visitante_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "prova_ingresso_licoes_registrado_por_fkey"
-            columns: ["registrado_por"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "prova_ingresso_licoes_visitante_id_fkey"
-            columns: ["visitante_id"]
-            isOneToOne: false
-            referencedRelation: "visitantes"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      remanejamentos_temporarios: {
-        Row: {
-          created_at: string
-          criado_por: string
-          encontro_id: string
-          id: string
-          lider_substituto_id: string
-          lider_titular_id: string
-          turma_id: string
-        }
-        Insert: {
-          created_at?: string
-          criado_por: string
-          encontro_id: string
-          id?: string
-          lider_substituto_id: string
-          lider_titular_id: string
-          turma_id: string
-        }
-        Update: {
-          created_at?: string
-          criado_por?: string
-          encontro_id?: string
-          id?: string
-          lider_substituto_id?: string
-          lider_titular_id?: string
-          turma_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "remanejamentos_temporarios_criado_por_fkey"
-            columns: ["criado_por"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "remanejamentos_temporarios_encontro_id_fkey"
-            columns: ["encontro_id"]
-            isOneToOne: false
-            referencedRelation: "encontros"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "remanejamentos_temporarios_encontro_id_fkey"
-            columns: ["encontro_id"]
-            isOneToOne: false
-            referencedRelation: "v_ranking_semanal"
-            referencedColumns: ["encontro_id"]
-          },
-          {
-            foreignKeyName: "remanejamentos_temporarios_lider_substituto_id_fkey"
-            columns: ["lider_substituto_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "remanejamentos_temporarios_lider_titular_id_fkey"
-            columns: ["lider_titular_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "remanejamentos_temporarios_turma_id_fkey"
-            columns: ["turma_id"]
-            isOneToOne: false
-            referencedRelation: "turmas"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      transferencias: {
-        Row: {
-          autorizado_por: string
-          created_at: string
-          data: string
-          id: string
-          lider_destino_id: string | null
-          lider_origem_id: string | null
-          motivo: string | null
-          oansista_id: string
-          tipo: Database["public"]["Enums"]["transferencia_tipo"]
-          turma_destino_id: string | null
-          turma_origem_id: string | null
-        }
-        Insert: {
-          autorizado_por: string
-          created_at?: string
-          data?: string
-          id?: string
-          lider_destino_id?: string | null
-          lider_origem_id?: string | null
-          motivo?: string | null
-          oansista_id: string
-          tipo: Database["public"]["Enums"]["transferencia_tipo"]
-          turma_destino_id?: string | null
-          turma_origem_id?: string | null
-        }
-        Update: {
-          autorizado_por?: string
-          created_at?: string
-          data?: string
-          id?: string
-          lider_destino_id?: string | null
-          lider_origem_id?: string | null
-          motivo?: string | null
-          oansista_id?: string
-          tipo?: Database["public"]["Enums"]["transferencia_tipo"]
-          turma_destino_id?: string | null
-          turma_origem_id?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "transferencias_autorizado_por_fkey"
-            columns: ["autorizado_por"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "transferencias_lider_destino_id_fkey"
-            columns: ["lider_destino_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "transferencias_lider_origem_id_fkey"
-            columns: ["lider_origem_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "transferencias_oansista_id_fkey"
-            columns: ["oansista_id"]
-            isOneToOne: false
-            referencedRelation: "oansistas"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "transferencias_turma_destino_id_fkey"
-            columns: ["turma_destino_id"]
-            isOneToOne: false
-            referencedRelation: "turmas"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "transferencias_turma_origem_id_fkey"
-            columns: ["turma_origem_id"]
-            isOneToOne: false
-            referencedRelation: "turmas"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      transferencias_clube: {
-        Row: {
-          autorizado_por: string
-          clube_destino_id: string
-          clube_origem_id: string
-          created_at: string
-          data: string
-          id: string
-          motivo: string | null
-          oansista_id: string
-          revertida: boolean
-          revertida_em: string | null
-          turma_origem_id: string | null
-        }
-        Insert: {
-          autorizado_por: string
-          clube_destino_id: string
-          clube_origem_id: string
-          created_at?: string
-          data?: string
-          id?: string
-          motivo?: string | null
-          oansista_id: string
-          revertida?: boolean
-          revertida_em?: string | null
-          turma_origem_id?: string | null
-        }
-        Update: {
-          autorizado_por?: string
-          clube_destino_id?: string
-          clube_origem_id?: string
-          created_at?: string
-          data?: string
-          id?: string
-          motivo?: string | null
-          oansista_id?: string
-          revertida?: boolean
-          revertida_em?: string | null
-          turma_origem_id?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "transferencias_clube_autorizado_por_fkey"
-            columns: ["autorizado_por"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "transferencias_clube_clube_destino_id_fkey"
-            columns: ["clube_destino_id"]
-            isOneToOne: false
-            referencedRelation: "clubes"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "transferencias_clube_clube_origem_id_fkey"
-            columns: ["clube_origem_id"]
-            isOneToOne: false
-            referencedRelation: "clubes"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "transferencias_clube_oansista_id_fkey"
-            columns: ["oansista_id"]
-            isOneToOne: false
-            referencedRelation: "oansistas"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "transferencias_clube_turma_origem_id_fkey"
-            columns: ["turma_origem_id"]
-            isOneToOne: false
-            referencedRelation: "turmas"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      turmas: {
-        Row: {
-          ativo: boolean
-          clube_id: string
-          created_at: string
-          id: string
-          lider_id: string
-          nome: string
-        }
-        Insert: {
-          ativo?: boolean
-          clube_id: string
-          created_at?: string
-          id?: string
-          lider_id: string
-          nome: string
-        }
-        Update: {
-          ativo?: boolean
-          clube_id?: string
-          created_at?: string
-          id?: string
-          lider_id?: string
-          nome?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "turmas_clube_id_fkey"
-            columns: ["clube_id"]
-            isOneToOne: false
-            referencedRelation: "clubes"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "turmas_lider_id_fkey"
-            columns: ["lider_id"]
-            isOneToOne: true
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      visitantes: {
-        Row: {
-          clube_id: string
-          contato: string | null
-          created_at: string
-          data_cadastro: string
-          data_nascimento: string
-          id: string
-          indicado_por: string | null
-          nome: string
-          oansista_origem_id: string | null
-          responsavel: string | null
-          status: Database["public"]["Enums"]["status_visitante"]
-          updated_at: string
-        }
-        Insert: {
-          clube_id: string
-          contato?: string | null
-          created_at?: string
-          data_cadastro?: string
-          data_nascimento: string
-          id?: string
-          indicado_por?: string | null
-          nome: string
-          oansista_origem_id?: string | null
-          responsavel?: string | null
-          status?: Database["public"]["Enums"]["status_visitante"]
-          updated_at?: string
-        }
-        Update: {
-          clube_id?: string
-          contato?: string | null
-          created_at?: string
-          data_cadastro?: string
-          data_nascimento?: string
-          id?: string
-          indicado_por?: string | null
-          nome?: string
-          oansista_origem_id?: string | null
-          responsavel?: string | null
-          status?: Database["public"]["Enums"]["status_visitante"]
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "visitantes_clube_id_fkey"
-            columns: ["clube_id"]
-            isOneToOne: false
-            referencedRelation: "clubes"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "visitantes_indicado_por_fkey"
-            columns: ["indicado_por"]
-            isOneToOne: false
-            referencedRelation: "oansistas"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "visitantes_oansista_origem_id_fkey"
-            columns: ["oansista_origem_id"]
-            isOneToOne: false
-            referencedRelation: "oansistas"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      visitas: {
-        Row: {
-          data_visita: string
-          id: string
-          numero: number
-          observacao: string | null
-          presente: boolean
-          visitante_id: string
-        }
-        Insert: {
-          data_visita?: string
-          id?: string
-          numero: number
-          observacao?: string | null
-          presente?: boolean
-          visitante_id: string
-        }
-        Update: {
-          data_visita?: string
-          id?: string
-          numero?: number
-          observacao?: string | null
-          presente?: boolean
-          visitante_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "visitas_visitante_id_fkey"
-            columns: ["visitante_id"]
-            isOneToOne: false
-            referencedRelation: "visitantes"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
+                  ]
+                },"folha_item_progresso": {
+                  Row: {
+                    "bloco_id": string,"created_at": string,"data_conclusao": string,"id": string,"item_num": number,"oansista_id": string,"registrado_por": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "bloco_id": string,"created_at"?: string,"data_conclusao"?: string,"id"?: string,"item_num": number,"oansista_id": string,"registrado_por": string
+                  }
+                  Update: {
+                    "bloco_id"?: string,"created_at"?: string,"data_conclusao"?: string,"id"?: string,"item_num"?: number,"oansista_id"?: string,"registrado_por"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "folha_item_progresso_bloco_id_fkey"
+      columns: ["bloco_id"]
+isOneToOne: false
+      referencedRelation: "folha_blocos"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "folha_item_progresso_oansista_id_fkey"
+      columns: ["oansista_id"]
+isOneToOne: false
+      referencedRelation: "oansistas"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "folha_item_progresso_registrado_por_fkey"
+      columns: ["registrado_por"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
     }
-    Views: {
-      v_premios_pendentes: {
-        Row: {
-          clube_nome: string | null
-          data_entrega: string | null
-          data_geracao: string | null
-          estoque: number | null
-          id: string | null
-          oansista_nome: string | null
-          premio_nome: string | null
-          premio_tipo: Database["public"]["Enums"]["premio_tipo"] | null
-          status: Database["public"]["Enums"]["pendencia_status"] | null
-        }
-        Relationships: []
-      }
-      v_ranking_semanal: {
-        Row: {
-          clube_id: string | null
-          clube_nome: string | null
-          encontro_data: string | null
-          encontro_id: string | null
-          oansista_id: string | null
-          oansista_nome: string | null
-          posicao: number | null
-          total: number | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "folhas_semanais_oansista_id_fkey"
-            columns: ["oansista_id"]
-            isOneToOne: false
-            referencedRelation: "oansistas"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "oansistas_clube_id_fkey"
-            columns: ["clube_id"]
-            isOneToOne: false
-            referencedRelation: "clubes"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
+                  ]
+                },"folha_manuais": {
+                  Row: {
+                    "clube_id": string,"created_at": string,"id": string,"nome": string,"ordem": number
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "clube_id": string,"created_at"?: string,"id"?: string,"nome": string,"ordem": number
+                  }
+                  Update: {
+                    "clube_id"?: string,"created_at"?: string,"id"?: string,"nome"?: string,"ordem"?: number
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "folha_manuais_clube_id_fkey"
+      columns: ["clube_id"]
+isOneToOne: false
+      referencedRelation: "clubes"
+      referencedColumns: ["id"]
     }
-    Functions: {
-      fn_cancelar_transferencia_clube: {
-        Args: { p_autorizado_por?: string; p_oansista_id: string }
-        Returns: {
-          clube_id: string
-          contato: string | null
-          created_at: string
-          data_matricula: string
-          data_nascimento: string
-          id: string
-          nome: string
-          observacoes: string | null
-          responsavel: string | null
-          status: Database["public"]["Enums"]["status_oansista"]
-          turma_id: string | null
-          updated_at: string
-          visitante_origem_id: string | null
-        }
-        SetofOptions: {
-          from: "*"
-          to: "oansistas"
-          isOneToOne: true
-          isSetofReturn: false
-        }
-      }
-      fn_clube_id: { Args: never; Returns: string }
-      fn_criar_evento_jogos: {
-        Args: {
-          p_clubes: string[]
-          p_cores: string[]
-          p_criado_por?: string
-          p_encontro_id: string
-          p_nome: string
-        }
-        Returns: {
-          created_at: string
-          criado_por: string | null
-          encontro_id: string
-          id: string
-          nome: string
-          status: string
-          updated_at: string
-        }
-        SetofOptions: {
-          from: "*"
-          to: "eventos_jogos"
-          isOneToOne: true
-          isSetofReturn: false
-        }
-      }
-      fn_criar_jogo: {
-        Args: {
-          p_clubes: string[]
-          p_criado_por?: string
-          p_encontro_id: string
-          p_nome: string
-        }
-        Returns: {
-          created_at: string
-          criado_por: string | null
-          evento_id: string
-          id: string
-          nome: string
-        }
-        SetofOptions: {
-          from: "*"
-          to: "jogos"
-          isOneToOne: true
-          isSetofReturn: false
-        }
-      }
-      fn_diretor_da_turma: { Args: { p_turma_id: string }; Returns: boolean }
-      fn_diretor_do_clube: { Args: { p_clube_id: string }; Returns: boolean }
-      fn_entregar_premio: {
-        Args: {
-          p_autorizado_por: string
-          p_observacao?: string
-          p_pendencia_id: string
-        }
-        Returns: {
-          bloco_id: string | null
-          clube_id: string
-          data_entrega: string | null
-          data_geracao: string
-          entregue_por: string | null
-          id: string
-          oansista_id: string
-          observacao: string | null
-          premio_id: string
-          status: Database["public"]["Enums"]["pendencia_status"]
-        }
-        SetofOptions: {
-          from: "*"
-          to: "premios_pendentes"
-          isOneToOne: true
-          isSetofReturn: false
-        }
-      }
-      fn_frequencia_acumulada: {
-        Args: { p_ate: string; p_de: string }
-        Returns: {
-          clube_nome: string
-          faltas: number
-          oansista_id: string
-          oansista_nome: string
-          presencas: number
-          total_encontros: number
-          turma_nome: string
-        }[]
-      }
-      fn_lider_da_turma: { Args: { p_turma_id: string }; Returns: boolean }
-      fn_matricular_visitante: {
-        Args: { p_turma_id?: string; p_visitante_id: string }
-        Returns: {
-          clube_id: string
-          contato: string | null
-          created_at: string
-          data_matricula: string
-          data_nascimento: string
-          id: string
-          nome: string
-          observacoes: string | null
-          responsavel: string | null
-          status: Database["public"]["Enums"]["status_oansista"]
-          turma_id: string | null
-          updated_at: string
-          visitante_origem_id: string | null
-        }
-        SetofOptions: {
-          from: "*"
-          to: "oansistas"
-          isOneToOne: true
-          isSetofReturn: false
-        }
-      }
-      fn_movimentar_estoque: {
-        Args: {
-          p_autorizado_por: string
-          p_observacao?: string
-          p_premio_id: string
-          p_quantidade: number
-          p_tipo: string
-        }
-        Returns: {
-          created_at: string
-          feito_por: string
-          id: string
-          observacao: string | null
-          premio_id: string
-          quantidade: number
-          tipo: string
-        }
-        SetofOptions: {
-          from: "*"
-          to: "premios_movimentacoes"
-          isOneToOne: true
-          isSetofReturn: false
-        }
-      }
-      fn_perfil: {
-        Args: never
-        Returns: {
-          ativo: boolean
-          clube_id: string | null
-          created_at: string
-          id: string
-          nome: string
-          role: Database["public"]["Enums"]["user_role"]
-          telefone: string | null
-          updated_at: string
-        }
-        SetofOptions: {
-          from: "*"
-          to: "profiles"
-          isOneToOne: true
-          isSetofReturn: false
-        }
-      }
-      fn_ranking_cores_do_evento: {
-        Args: { p_evento_id: string }
-        Returns: {
-          cor: string
-          pontos: number
-          posicao: number
-        }[]
-      }
-      fn_ranking_do_encontro: {
-        Args: { p_encontro_id: string }
-        Returns: {
-          clube_nome: string
-          oansista_id: string
-          oansista_nome: string
-          posicao: number
-          total: number
-        }[]
-      }
-      fn_recalcular_pendencia_premio: {
-        Args: { p_bloco_id: string; p_oansista_id: string }
-        Returns: undefined
-      }
-      fn_recalcular_pontos_jogos_encontro: {
-        Args: { p_encontro: string }
-        Returns: undefined
-      }
-      fn_registrar_rodada: {
-        Args: {
-          p_criado_por?: string
-          p_evento_id: string
-          p_nome: string
-          p_resultados: Json
-        }
-        Returns: {
-          created_at: string
-          criado_por: string | null
-          evento_id: string
-          id: string
-          nome: string
-        }
-        SetofOptions: {
-          from: "*"
-          to: "jogos"
-          isOneToOne: true
-          isSetofReturn: false
-        }
-      }
-      fn_responsavel_pela_turma: {
-        Args: { p_encontro_id: string; p_turma_id: string }
-        Returns: boolean
-      }
-      fn_responsavel_pelo_oansista: {
-        Args: { p_encontro_id: string; p_oansista_id: string }
-        Returns: boolean
-      }
-      fn_role: {
-        Args: never
-        Returns: Database["public"]["Enums"]["user_role"]
-      }
-      fn_substituto_da_turma: { Args: { p_turma_id: string }; Returns: boolean }
-      fn_transferir_clube: {
-        Args: {
-          p_autorizado_por?: string
-          p_clube_destino_id: string
-          p_motivo?: string
-          p_oansista_id: string
-        }
-        Returns: {
-          autorizado_por: string
-          clube_destino_id: string
-          clube_origem_id: string
-          created_at: string
-          data: string
-          id: string
-          motivo: string | null
-          oansista_id: string
-          revertida: boolean
-          revertida_em: string | null
-          turma_origem_id: string | null
-        }
-        SetofOptions: {
-          from: "*"
-          to: "transferencias_clube"
-          isOneToOne: true
-          isSetofReturn: false
-        }
-      }
-      fn_transferir_oansista: {
-        Args: {
-          p_autorizado_por?: string
-          p_motivo?: string
-          p_oansista_id: string
-          p_turma_destino_id: string
-        }
-        Returns: {
-          autorizado_por: string
-          created_at: string
-          data: string
-          id: string
-          lider_destino_id: string | null
-          lider_origem_id: string | null
-          motivo: string | null
-          oansista_id: string
-          tipo: Database["public"]["Enums"]["transferencia_tipo"]
-          turma_destino_id: string | null
-          turma_origem_id: string | null
-        }
-        SetofOptions: {
-          from: "*"
-          to: "transferencias"
-          isOneToOne: true
-          isSetofReturn: false
-        }
-      }
+                  ]
+                },"folha_observacoes": {
+                  Row: {
+                    "id": string,"manual_id": string,"oansista_id": string,"texto": string | null,"updated_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "id"?: string,"manual_id": string,"oansista_id": string,"texto"?: string | null,"updated_at"?: string
+                  }
+                  Update: {
+                    "id"?: string,"manual_id"?: string,"oansista_id"?: string,"texto"?: string | null,"updated_at"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "folha_observacoes_manual_id_fkey"
+      columns: ["manual_id"]
+isOneToOne: false
+      referencedRelation: "folha_manuais"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "folha_observacoes_oansista_id_fkey"
+      columns: ["oansista_id"]
+isOneToOne: false
+      referencedRelation: "oansistas"
+      referencedColumns: ["id"]
     }
-    Enums: {
-      pendencia_status: "pendente" | "entregue" | "cancelada"
-      premio_tipo: "manual" | "botom" | "premio"
-      status_oansista: "ativo" | "inativo" | "transferido"
-      status_visitante:
-        | "em_visitas"
-        | "prova_ingresso"
-        | "matriculado"
-        | "desistente"
-      transferencia_tipo: "temporaria" | "permanente"
-      user_role:
-        | "diretor_geral"
-        | "secretaria"
-        | "diretor_clube"
-        | "lider"
-        | "lider_jogos"
+                  ]
+                },"folha_premio_progresso": {
+                  Row: {
+                    "bloco_id": string,"created_at": string,"data_recebimento": string,"id": string,"oansista_id": string,"registrado_por": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "bloco_id": string,"created_at"?: string,"data_recebimento"?: string,"id"?: string,"oansista_id": string,"registrado_por": string
+                  }
+                  Update: {
+                    "bloco_id"?: string,"created_at"?: string,"data_recebimento"?: string,"id"?: string,"oansista_id"?: string,"registrado_por"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "folha_premio_progresso_bloco_id_fkey"
+      columns: ["bloco_id"]
+isOneToOne: false
+      referencedRelation: "folha_blocos"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "folha_premio_progresso_oansista_id_fkey"
+      columns: ["oansista_id"]
+isOneToOne: false
+      referencedRelation: "oansistas"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "folha_premio_progresso_registrado_por_fkey"
+      columns: ["registrado_por"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
     }
-    CompositeTypes: {
-      [_ in never]: never
+                  ]
+                },"folha_secoes": {
+                  Row: {
+                    "id": string,"manual_id": string,"nome": string,"ordem": number,"tipo": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "id"?: string,"manual_id": string,"nome": string,"ordem": number,"tipo"?: string
+                  }
+                  Update: {
+                    "id"?: string,"manual_id"?: string,"nome"?: string,"ordem"?: number,"tipo"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "folha_secoes_manual_id_fkey"
+      columns: ["manual_id"]
+isOneToOne: false
+      referencedRelation: "folha_manuais"
+      referencedColumns: ["id"]
     }
-  }
+                  ]
+                },"folhas_semanais": {
+                  Row: {
+                    "atividade_extra": number,"biblia": boolean,"conduta": boolean,"cor_time": string | null,"created_at": string,"ebd": boolean,"encontro_id": string,"id": string,"leitura_biblica": boolean,"manual": boolean,"oansista_id": string,"pontos_jogos": number,"posicao_jogos": number | null,"presenca_id": string,"registrado_por": string,"secoes_com_ajuda": number,"secoes_sem_ajuda": number,"total": number,"uniforme": boolean,"updated_at": string,"visitantes_convidados": number
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "atividade_extra"?: number,"biblia"?: boolean,"conduta"?: boolean,"cor_time"?: string | null,"created_at"?: string,"ebd"?: boolean,"encontro_id": string,"id"?: string,"leitura_biblica"?: boolean,"manual"?: boolean,"oansista_id": string,"pontos_jogos"?: number,"posicao_jogos"?: number | null,"presenca_id": string,"registrado_por": string,"secoes_com_ajuda"?: number,"secoes_sem_ajuda"?: number,"total"?: number,"uniforme"?: boolean,"updated_at"?: string,"visitantes_convidados"?: number
+                  }
+                  Update: {
+                    "atividade_extra"?: number,"biblia"?: boolean,"conduta"?: boolean,"cor_time"?: string | null,"created_at"?: string,"ebd"?: boolean,"encontro_id"?: string,"id"?: string,"leitura_biblica"?: boolean,"manual"?: boolean,"oansista_id"?: string,"pontos_jogos"?: number,"posicao_jogos"?: number | null,"presenca_id"?: string,"registrado_por"?: string,"secoes_com_ajuda"?: number,"secoes_sem_ajuda"?: number,"total"?: number,"uniforme"?: boolean,"updated_at"?: string,"visitantes_convidados"?: number
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "folhas_semanais_encontro_id_fkey"
+      columns: ["encontro_id"]
+isOneToOne: false
+      referencedRelation: "encontros"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "folhas_semanais_encontro_id_fkey"
+      columns: ["encontro_id"]
+isOneToOne: false
+      referencedRelation: "v_ranking_semanal"
+      referencedColumns: ["encontro_id"]
+    },{
+      foreignKeyName: "folhas_semanais_oansista_id_fkey"
+      columns: ["oansista_id"]
+isOneToOne: false
+      referencedRelation: "oansistas"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "folhas_semanais_presenca_id_fkey"
+      columns: ["presenca_id"]
+isOneToOne: false
+      referencedRelation: "presencas"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "folhas_semanais_registrado_por_fkey"
+      columns: ["registrado_por"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"itens_pontuacao": {
+                  Row: {
+                    "ativo": boolean,"chave": string,"descricao": string,"pontos": number
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "ativo"?: boolean,"chave": string,"descricao": string,"pontos"?: number
+                  }
+                  Update: {
+                    "ativo"?: boolean,"chave"?: string,"descricao"?: string,"pontos"?: number
+                  }
+                  Relationships: [
+                    
+                  ]
+                },"jogo_resultados": {
+                  Row: {
+                    "colocacao": number | null,"cor_id": string,"created_at": string,"desclassificado": boolean,"id": string,"jogo_id": string,"pontos": number
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "colocacao"?: number | null,"cor_id": string,"created_at"?: string,"desclassificado"?: boolean,"id"?: string,"jogo_id": string,"pontos"?: number
+                  }
+                  Update: {
+                    "colocacao"?: number | null,"cor_id"?: string,"created_at"?: string,"desclassificado"?: boolean,"id"?: string,"jogo_id"?: string,"pontos"?: number
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "jogo_resultados_cor_id_fkey"
+      columns: ["cor_id"]
+isOneToOne: false
+      referencedRelation: "evento_jogos_cores"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "jogo_resultados_jogo_id_fkey"
+      columns: ["jogo_id"]
+isOneToOne: false
+      referencedRelation: "jogos"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"jogos": {
+                  Row: {
+                    "created_at": string,"criado_por": string | null,"evento_id": string,"id": string,"nome": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"criado_por"?: string | null,"evento_id": string,"id"?: string,"nome": string
+                  }
+                  Update: {
+                    "created_at"?: string,"criado_por"?: string | null,"evento_id"?: string,"id"?: string,"nome"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "jogos_criado_por_fkey"
+      columns: ["criado_por"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "jogos_evento_id_fkey"
+      columns: ["evento_id"]
+isOneToOne: false
+      referencedRelation: "eventos_jogos"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"jogos_catalogo": {
+                  Row: {
+                    "clube_id": string,"created_at": string,"id": string,"nome": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "clube_id": string,"created_at"?: string,"id"?: string,"nome": string
+                  }
+                  Update: {
+                    "clube_id"?: string,"created_at"?: string,"id"?: string,"nome"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "jogos_catalogo_clube_id_fkey"
+      columns: ["clube_id"]
+isOneToOne: false
+      referencedRelation: "clubes"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"jogos_pontos_config": {
+                  Row: {
+                    "colocacao": number,"desclassificado": boolean,"pontos": number
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "colocacao": number,"desclassificado"?: boolean,"pontos": number
+                  }
+                  Update: {
+                    "colocacao"?: number,"desclassificado"?: boolean,"pontos"?: number
+                  }
+                  Relationships: [
+                    
+                  ]
+                },"oansistas": {
+                  Row: {
+                    "clube_id": string,"contato": string | null,"created_at": string,"data_matricula": string,"data_nascimento": string,"id": string,"nome": string,"observacoes": string | null,"responsavel": string | null,"status": Database["public"]['Enums']["status_oansista"],"turma_id": string | null,"updated_at": string,"visitante_origem_id": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "clube_id": string,"contato"?: string | null,"created_at"?: string,"data_matricula"?: string,"data_nascimento": string,"id"?: string,"nome": string,"observacoes"?: string | null,"responsavel"?: string | null,"status"?: Database["public"]['Enums']["status_oansista"],"turma_id"?: string | null,"updated_at"?: string,"visitante_origem_id"?: string | null
+                  }
+                  Update: {
+                    "clube_id"?: string,"contato"?: string | null,"created_at"?: string,"data_matricula"?: string,"data_nascimento"?: string,"id"?: string,"nome"?: string,"observacoes"?: string | null,"responsavel"?: string | null,"status"?: Database["public"]['Enums']["status_oansista"],"turma_id"?: string | null,"updated_at"?: string,"visitante_origem_id"?: string | null
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "oansistas_clube_id_fkey"
+      columns: ["clube_id"]
+isOneToOne: false
+      referencedRelation: "clubes"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "oansistas_turma_id_fkey"
+      columns: ["turma_id"]
+isOneToOne: false
+      referencedRelation: "turmas"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "oansistas_visitante_origem_id_fkey"
+      columns: ["visitante_origem_id"]
+isOneToOne: false
+      referencedRelation: "visitantes"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"premios": {
+                  Row: {
+                    "ativo": boolean,"created_at": string,"descricao": string | null,"estoque": number,"estoque_min": number,"id": string,"nivel": number | null,"nome": string,"secao": number | null,"tipo": Database["public"]['Enums']["premio_tipo"]
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "ativo"?: boolean,"created_at"?: string,"descricao"?: string | null,"estoque"?: number,"estoque_min"?: number,"id"?: string,"nivel"?: number | null,"nome": string,"secao"?: number | null,"tipo": Database["public"]['Enums']["premio_tipo"]
+                  }
+                  Update: {
+                    "ativo"?: boolean,"created_at"?: string,"descricao"?: string | null,"estoque"?: number,"estoque_min"?: number,"id"?: string,"nivel"?: number | null,"nome"?: string,"secao"?: number | null,"tipo"?: Database["public"]['Enums']["premio_tipo"]
+                  }
+                  Relationships: [
+                    
+                  ]
+                },"premios_movimentacoes": {
+                  Row: {
+                    "created_at": string,"feito_por": string,"id": string,"observacao": string | null,"premio_id": string,"quantidade": number,"tipo": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"feito_por": string,"id"?: string,"observacao"?: string | null,"premio_id": string,"quantidade": number,"tipo": string
+                  }
+                  Update: {
+                    "created_at"?: string,"feito_por"?: string,"id"?: string,"observacao"?: string | null,"premio_id"?: string,"quantidade"?: number,"tipo"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "premios_movimentacoes_feito_por_fkey"
+      columns: ["feito_por"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "premios_movimentacoes_premio_id_fkey"
+      columns: ["premio_id"]
+isOneToOne: false
+      referencedRelation: "premios"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"premios_pendentes": {
+                  Row: {
+                    "bloco_id": string | null,"clube_id": string,"data_entrega": string | null,"data_geracao": string,"entregue_por": string | null,"id": string,"oansista_id": string,"observacao": string | null,"premio_id": string,"status": Database["public"]['Enums']["pendencia_status"]
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "bloco_id"?: string | null,"clube_id": string,"data_entrega"?: string | null,"data_geracao"?: string,"entregue_por"?: string | null,"id"?: string,"oansista_id": string,"observacao"?: string | null,"premio_id": string,"status"?: Database["public"]['Enums']["pendencia_status"]
+                  }
+                  Update: {
+                    "bloco_id"?: string | null,"clube_id"?: string,"data_entrega"?: string | null,"data_geracao"?: string,"entregue_por"?: string | null,"id"?: string,"oansista_id"?: string,"observacao"?: string | null,"premio_id"?: string,"status"?: Database["public"]['Enums']["pendencia_status"]
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "premios_pendentes_bloco_id_fkey"
+      columns: ["bloco_id"]
+isOneToOne: false
+      referencedRelation: "folha_blocos"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "premios_pendentes_clube_id_fkey"
+      columns: ["clube_id"]
+isOneToOne: false
+      referencedRelation: "clubes"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "premios_pendentes_entregue_por_fkey"
+      columns: ["entregue_por"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "premios_pendentes_oansista_id_fkey"
+      columns: ["oansista_id"]
+isOneToOne: false
+      referencedRelation: "oansistas"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "premios_pendentes_premio_id_fkey"
+      columns: ["premio_id"]
+isOneToOne: false
+      referencedRelation: "premios"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"presencas": {
+                  Row: {
+                    "created_at": string,"encontro_id": string,"id": string,"lider_registrante_id": string,"oansista_id": string,"observacao": string | null,"presente": boolean
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"encontro_id": string,"id"?: string,"lider_registrante_id": string,"oansista_id": string,"observacao"?: string | null,"presente"?: boolean
+                  }
+                  Update: {
+                    "created_at"?: string,"encontro_id"?: string,"id"?: string,"lider_registrante_id"?: string,"oansista_id"?: string,"observacao"?: string | null,"presente"?: boolean
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "presencas_encontro_id_fkey"
+      columns: ["encontro_id"]
+isOneToOne: false
+      referencedRelation: "encontros"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "presencas_encontro_id_fkey"
+      columns: ["encontro_id"]
+isOneToOne: false
+      referencedRelation: "v_ranking_semanal"
+      referencedColumns: ["encontro_id"]
+    },{
+      foreignKeyName: "presencas_lider_registrante_id_fkey"
+      columns: ["lider_registrante_id"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "presencas_oansista_id_fkey"
+      columns: ["oansista_id"]
+isOneToOne: false
+      referencedRelation: "oansistas"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"profiles": {
+                  Row: {
+                    "ativo": boolean,"clube_id": string | null,"created_at": string,"id": string,"nome": string,"role": Database["public"]['Enums']["user_role"],"telefone": string | null,"updated_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "ativo"?: boolean,"clube_id"?: string | null,"created_at"?: string,"id": string,"nome": string,"role"?: Database["public"]['Enums']["user_role"],"telefone"?: string | null,"updated_at"?: string
+                  }
+                  Update: {
+                    "ativo"?: boolean,"clube_id"?: string | null,"created_at"?: string,"id"?: string,"nome"?: string,"role"?: Database["public"]['Enums']["user_role"],"telefone"?: string | null,"updated_at"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "profiles_clube_id_fkey"
+      columns: ["clube_id"]
+isOneToOne: false
+      referencedRelation: "clubes"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"prova_ingresso_licoes": {
+                  Row: {
+                    "concluida": boolean,"data_conclusao": string | null,"id": string,"licao": number,"registrado_por": string | null,"visitante_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "concluida"?: boolean,"data_conclusao"?: string | null,"id"?: string,"licao": number,"registrado_por"?: string | null,"visitante_id": string
+                  }
+                  Update: {
+                    "concluida"?: boolean,"data_conclusao"?: string | null,"id"?: string,"licao"?: number,"registrado_por"?: string | null,"visitante_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "prova_ingresso_licoes_registrado_por_fkey"
+      columns: ["registrado_por"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "prova_ingresso_licoes_visitante_id_fkey"
+      columns: ["visitante_id"]
+isOneToOne: false
+      referencedRelation: "visitantes"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"remanejamentos_temporarios": {
+                  Row: {
+                    "created_at": string,"criado_por": string,"encontro_id": string,"id": string,"lider_substituto_id": string,"lider_titular_id": string,"turma_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"criado_por": string,"encontro_id": string,"id"?: string,"lider_substituto_id": string,"lider_titular_id": string,"turma_id": string
+                  }
+                  Update: {
+                    "created_at"?: string,"criado_por"?: string,"encontro_id"?: string,"id"?: string,"lider_substituto_id"?: string,"lider_titular_id"?: string,"turma_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "remanejamentos_temporarios_criado_por_fkey"
+      columns: ["criado_por"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "remanejamentos_temporarios_encontro_id_fkey"
+      columns: ["encontro_id"]
+isOneToOne: false
+      referencedRelation: "encontros"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "remanejamentos_temporarios_encontro_id_fkey"
+      columns: ["encontro_id"]
+isOneToOne: false
+      referencedRelation: "v_ranking_semanal"
+      referencedColumns: ["encontro_id"]
+    },{
+      foreignKeyName: "remanejamentos_temporarios_lider_substituto_id_fkey"
+      columns: ["lider_substituto_id"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "remanejamentos_temporarios_lider_titular_id_fkey"
+      columns: ["lider_titular_id"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "remanejamentos_temporarios_turma_id_fkey"
+      columns: ["turma_id"]
+isOneToOne: false
+      referencedRelation: "turmas"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"transferencias": {
+                  Row: {
+                    "autorizado_por": string,"created_at": string,"data": string,"id": string,"lider_destino_id": string | null,"lider_origem_id": string | null,"motivo": string | null,"oansista_id": string,"tipo": Database["public"]['Enums']["transferencia_tipo"],"turma_destino_id": string | null,"turma_origem_id": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "autorizado_por": string,"created_at"?: string,"data"?: string,"id"?: string,"lider_destino_id"?: string | null,"lider_origem_id"?: string | null,"motivo"?: string | null,"oansista_id": string,"tipo": Database["public"]['Enums']["transferencia_tipo"],"turma_destino_id"?: string | null,"turma_origem_id"?: string | null
+                  }
+                  Update: {
+                    "autorizado_por"?: string,"created_at"?: string,"data"?: string,"id"?: string,"lider_destino_id"?: string | null,"lider_origem_id"?: string | null,"motivo"?: string | null,"oansista_id"?: string,"tipo"?: Database["public"]['Enums']["transferencia_tipo"],"turma_destino_id"?: string | null,"turma_origem_id"?: string | null
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "transferencias_autorizado_por_fkey"
+      columns: ["autorizado_por"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "transferencias_lider_destino_id_fkey"
+      columns: ["lider_destino_id"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "transferencias_lider_origem_id_fkey"
+      columns: ["lider_origem_id"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "transferencias_oansista_id_fkey"
+      columns: ["oansista_id"]
+isOneToOne: false
+      referencedRelation: "oansistas"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "transferencias_turma_destino_id_fkey"
+      columns: ["turma_destino_id"]
+isOneToOne: false
+      referencedRelation: "turmas"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "transferencias_turma_origem_id_fkey"
+      columns: ["turma_origem_id"]
+isOneToOne: false
+      referencedRelation: "turmas"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"transferencias_clube": {
+                  Row: {
+                    "autorizado_por": string,"clube_destino_id": string,"clube_origem_id": string,"created_at": string,"data": string,"id": string,"motivo": string | null,"oansista_id": string,"revertida": boolean,"revertida_em": string | null,"turma_origem_id": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "autorizado_por": string,"clube_destino_id": string,"clube_origem_id": string,"created_at"?: string,"data"?: string,"id"?: string,"motivo"?: string | null,"oansista_id": string,"revertida"?: boolean,"revertida_em"?: string | null,"turma_origem_id"?: string | null
+                  }
+                  Update: {
+                    "autorizado_por"?: string,"clube_destino_id"?: string,"clube_origem_id"?: string,"created_at"?: string,"data"?: string,"id"?: string,"motivo"?: string | null,"oansista_id"?: string,"revertida"?: boolean,"revertida_em"?: string | null,"turma_origem_id"?: string | null
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "transferencias_clube_autorizado_por_fkey"
+      columns: ["autorizado_por"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "transferencias_clube_clube_destino_id_fkey"
+      columns: ["clube_destino_id"]
+isOneToOne: false
+      referencedRelation: "clubes"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "transferencias_clube_clube_origem_id_fkey"
+      columns: ["clube_origem_id"]
+isOneToOne: false
+      referencedRelation: "clubes"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "transferencias_clube_oansista_id_fkey"
+      columns: ["oansista_id"]
+isOneToOne: false
+      referencedRelation: "oansistas"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "transferencias_clube_turma_origem_id_fkey"
+      columns: ["turma_origem_id"]
+isOneToOne: false
+      referencedRelation: "turmas"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"turmas": {
+                  Row: {
+                    "ativo": boolean,"clube_id": string,"created_at": string,"id": string,"lider_id": string,"nome": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "ativo"?: boolean,"clube_id": string,"created_at"?: string,"id"?: string,"lider_id": string,"nome": string
+                  }
+                  Update: {
+                    "ativo"?: boolean,"clube_id"?: string,"created_at"?: string,"id"?: string,"lider_id"?: string,"nome"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "turmas_clube_id_fkey"
+      columns: ["clube_id"]
+isOneToOne: false
+      referencedRelation: "clubes"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "turmas_lider_id_fkey"
+      columns: ["lider_id"]
+isOneToOne: true
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"visitantes": {
+                  Row: {
+                    "clube_id": string,"contato": string | null,"created_at": string,"data_cadastro": string,"data_nascimento": string,"id": string,"indicado_por": string | null,"nome": string,"oansista_origem_id": string | null,"responsavel": string | null,"status": Database["public"]['Enums']["status_visitante"],"updated_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "clube_id": string,"contato"?: string | null,"created_at"?: string,"data_cadastro"?: string,"data_nascimento": string,"id"?: string,"indicado_por"?: string | null,"nome": string,"oansista_origem_id"?: string | null,"responsavel"?: string | null,"status"?: Database["public"]['Enums']["status_visitante"],"updated_at"?: string
+                  }
+                  Update: {
+                    "clube_id"?: string,"contato"?: string | null,"created_at"?: string,"data_cadastro"?: string,"data_nascimento"?: string,"id"?: string,"indicado_por"?: string | null,"nome"?: string,"oansista_origem_id"?: string | null,"responsavel"?: string | null,"status"?: Database["public"]['Enums']["status_visitante"],"updated_at"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "visitantes_clube_id_fkey"
+      columns: ["clube_id"]
+isOneToOne: false
+      referencedRelation: "clubes"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "visitantes_indicado_por_fkey"
+      columns: ["indicado_por"]
+isOneToOne: false
+      referencedRelation: "oansistas"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "visitantes_oansista_origem_id_fkey"
+      columns: ["oansista_origem_id"]
+isOneToOne: false
+      referencedRelation: "oansistas"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"visitas": {
+                  Row: {
+                    "data_visita": string,"id": string,"numero": number,"observacao": string | null,"presente": boolean,"visitante_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "data_visita"?: string,"id"?: string,"numero": number,"observacao"?: string | null,"presente"?: boolean,"visitante_id": string
+                  }
+                  Update: {
+                    "data_visita"?: string,"id"?: string,"numero"?: number,"observacao"?: string | null,"presente"?: boolean,"visitante_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "visitas_visitante_id_fkey"
+      columns: ["visitante_id"]
+isOneToOne: false
+      referencedRelation: "visitantes"
+      referencedColumns: ["id"]
+    }
+                  ]
+                }
+          }
+          Views: {
+            "v_premios_pendentes": {
+                  Row: {
+                    "clube_nome": string | null,"data_entrega": string | null,"data_geracao": string | null,"estoque": number | null,"id": string | null,"oansista_nome": string | null,"premio_nome": string | null,"premio_tipo": Database["public"]['Enums']["premio_tipo"] | null,"status": Database["public"]['Enums']["pendencia_status"] | null
+                  }
+                  ComputedFields: never
+                  Relationships: [
+                    
+                  ]
+                },"v_ranking_semanal": {
+                  Row: {
+                    "clube_id": string | null,"clube_nome": string | null,"encontro_data": string | null,"encontro_id": string | null,"oansista_id": string | null,"oansista_nome": string | null,"posicao": number | null,"total": number | null
+                  }
+                  ComputedFields: never
+                  Relationships: [
+                    {
+      foreignKeyName: "folhas_semanais_oansista_id_fkey"
+      columns: ["oansista_id"]
+isOneToOne: false
+      referencedRelation: "oansistas"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "oansistas_clube_id_fkey"
+      columns: ["clube_id"]
+isOneToOne: false
+      referencedRelation: "clubes"
+      referencedColumns: ["id"]
+    }
+                  ]
+                }
+          }
+          Functions: {
+            "fn_cancelar_transferencia_clube":
+{ Args: { "p_autorizado_por"?: string,"p_oansista_id": string }; Returns: {
+              "clube_id": string,
+"contato": string | null,
+"created_at": string,
+"data_matricula": string,
+"data_nascimento": string,
+"id": string,
+"nome": string,
+"observacoes": string | null,
+"responsavel": string | null,
+"status": Database["public"]['Enums']["status_oansista"],
+"turma_id": string | null,
+"updated_at": string,
+"visitante_origem_id": string | null
+            }
+                          SetofOptions: {
+        from: "*"
+        to: "oansistas"
+        isOneToOne: true
+        isSetofReturn: false
+      } },
+"fn_clube_id":
+{ Args: Record<PropertyKey, never>; Returns: string
+                           },
+"fn_criar_evento_jogos":
+{ Args: { "p_clubes": (string)[],"p_cores": (string)[],"p_criado_por"?: string,"p_encontro_id": string,"p_nome": string }; Returns: {
+              "created_at": string,
+"criado_por": string | null,
+"encontro_id": string,
+"id": string,
+"nome": string,
+"status": string,
+"updated_at": string
+            }
+                          SetofOptions: {
+        from: "*"
+        to: "eventos_jogos"
+        isOneToOne: true
+        isSetofReturn: false
+      } },
+"fn_criar_jogo":
+{ Args: { "p_clubes": (string)[],"p_criado_por"?: string,"p_encontro_id": string,"p_nome": string }; Returns: {
+              "created_at": string,
+"criado_por": string | null,
+"evento_id": string,
+"id": string,
+"nome": string
+            }
+                          SetofOptions: {
+        from: "*"
+        to: "jogos"
+        isOneToOne: true
+        isSetofReturn: false
+      } },
+"fn_diretor_da_turma":
+{ Args: { "p_turma_id": string }; Returns: boolean
+                           },
+"fn_diretor_do_clube":
+{ Args: { "p_clube_id": string }; Returns: boolean
+                           },
+"fn_entregar_premio":
+{ Args: { "p_autorizado_por": string,"p_observacao"?: string,"p_pendencia_id": string }; Returns: {
+              "bloco_id": string | null,
+"clube_id": string,
+"data_entrega": string | null,
+"data_geracao": string,
+"entregue_por": string | null,
+"id": string,
+"oansista_id": string,
+"observacao": string | null,
+"premio_id": string,
+"status": Database["public"]['Enums']["pendencia_status"]
+            }
+                          SetofOptions: {
+        from: "*"
+        to: "premios_pendentes"
+        isOneToOne: true
+        isSetofReturn: false
+      } },
+"fn_frequencia_acumulada":
+{ Args: { "p_ate": string,"p_de": string }; Returns: {
+              "clube_nome": string,"faltas": number,"oansista_id": string,"oansista_nome": string,"presencas": number,"total_encontros": number,"turma_nome": string
+            }[]
+                           },
+"fn_lider_da_turma":
+{ Args: { "p_turma_id": string }; Returns: boolean
+                           },
+"fn_matricular_visitante":
+{ Args: { "p_turma_id"?: string,"p_visitante_id": string }; Returns: {
+              "clube_id": string,
+"contato": string | null,
+"created_at": string,
+"data_matricula": string,
+"data_nascimento": string,
+"id": string,
+"nome": string,
+"observacoes": string | null,
+"responsavel": string | null,
+"status": Database["public"]['Enums']["status_oansista"],
+"turma_id": string | null,
+"updated_at": string,
+"visitante_origem_id": string | null
+            }
+                          SetofOptions: {
+        from: "*"
+        to: "oansistas"
+        isOneToOne: true
+        isSetofReturn: false
+      } },
+"fn_movimentar_estoque":
+{ Args: { "p_autorizado_por": string,"p_observacao"?: string,"p_premio_id": string,"p_quantidade": number,"p_tipo": string }; Returns: {
+              "created_at": string,
+"feito_por": string,
+"id": string,
+"observacao": string | null,
+"premio_id": string,
+"quantidade": number,
+"tipo": string
+            }
+                          SetofOptions: {
+        from: "*"
+        to: "premios_movimentacoes"
+        isOneToOne: true
+        isSetofReturn: false
+      } },
+"fn_perfil":
+{ Args: Record<PropertyKey, never>; Returns: {
+              "ativo": boolean,
+"clube_id": string | null,
+"created_at": string,
+"id": string,
+"nome": string,
+"role": Database["public"]['Enums']["user_role"],
+"telefone": string | null,
+"updated_at": string
+            }
+                          SetofOptions: {
+        from: "*"
+        to: "profiles"
+        isOneToOne: true
+        isSetofReturn: false
+      } },
+"fn_ranking_cores_do_evento":
+{ Args: { "p_evento_id": string }; Returns: {
+              "cor": string,"pontos": number,"posicao": number
+            }[]
+                           },
+"fn_ranking_do_encontro":
+{ Args: { "p_encontro_id": string }; Returns: {
+              "clube_nome": string,"oansista_id": string,"oansista_nome": string,"posicao": number,"total": number
+            }[]
+                           },
+"fn_recalcular_pendencia_premio":
+{ Args: { "p_bloco_id": string,"p_oansista_id": string }; Returns: undefined
+                           },
+"fn_recalcular_pontos_jogos_encontro":
+{ Args: { "p_encontro": string }; Returns: undefined
+                           },
+"fn_registrar_rodada":
+{ Args: { "p_criado_por"?: string,"p_evento_id": string,"p_nome": string,"p_resultados": Json }; Returns: {
+              "created_at": string,
+"criado_por": string | null,
+"evento_id": string,
+"id": string,
+"nome": string
+            }
+                          SetofOptions: {
+        from: "*"
+        to: "jogos"
+        isOneToOne: true
+        isSetofReturn: false
+      } },
+"fn_responsavel_pela_turma":
+{ Args: { "p_encontro_id": string,"p_turma_id": string }; Returns: boolean
+                           },
+"fn_responsavel_pelo_oansista":
+{ Args: { "p_encontro_id": string,"p_oansista_id": string }; Returns: boolean
+                           },
+"fn_role":
+{ Args: Record<PropertyKey, never>; Returns: Database["public"]['Enums']["user_role"]
+                           },
+"fn_substituto_da_turma":
+{ Args: { "p_turma_id": string }; Returns: boolean
+                           },
+"fn_transferir_clube":
+{ Args: { "p_autorizado_por"?: string,"p_clube_destino_id": string,"p_motivo"?: string,"p_oansista_id": string }; Returns: {
+              "autorizado_por": string,
+"clube_destino_id": string,
+"clube_origem_id": string,
+"created_at": string,
+"data": string,
+"id": string,
+"motivo": string | null,
+"oansista_id": string,
+"revertida": boolean,
+"revertida_em": string | null,
+"turma_origem_id": string | null
+            }
+                          SetofOptions: {
+        from: "*"
+        to: "transferencias_clube"
+        isOneToOne: true
+        isSetofReturn: false
+      } },
+"fn_transferir_oansista":
+{ Args: { "p_autorizado_por"?: string,"p_motivo"?: string,"p_oansista_id": string,"p_turma_destino_id": string }; Returns: {
+              "autorizado_por": string,
+"created_at": string,
+"data": string,
+"id": string,
+"lider_destino_id": string | null,
+"lider_origem_id": string | null,
+"motivo": string | null,
+"oansista_id": string,
+"tipo": Database["public"]['Enums']["transferencia_tipo"],
+"turma_destino_id": string | null,
+"turma_origem_id": string | null
+            }
+                          SetofOptions: {
+        from: "*"
+        to: "transferencias"
+        isOneToOne: true
+        isSetofReturn: false
+      } }
+          }
+          Enums: {
+            "pendencia_status": "pendente"|"entregue"|"cancelada","premio_tipo": "manual"|"botom"|"premio","status_oansista": "ativo"|"inativo"|"transferido","status_visitante": "em_visitas"|"prova_ingresso"|"matriculado"|"desistente","transferencia_tipo": "temporaria"|"permanente","user_role": "diretor_geral"|"secretaria"|"diretor_clube"|"lider"|"lider_jogos"
+          }
+          CompositeTypes: {
+            [_ in never]: never
+          }
+        }
 }
 
-type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
+type DatabaseWithoutInternals = Omit<Database, '__InternalSupabase'>
 
 type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
 
@@ -1888,139 +1168,111 @@ export type Tables<
   DefaultSchemaTableNameOrOptions extends
     | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends (DefaultSchemaTableNameOrOptions extends {
+  TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
         DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
-    : never) = never,
-> = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
-}
+    : never = never
+> = DefaultSchemaTableNameOrOptions extends { schema: keyof DatabaseWithoutInternals }
   ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
       DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
       Row: infer R
     }
     ? R
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
-        DefaultSchema["Views"])
-    ? (DefaultSchema["Tables"] &
-        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
-        Row: infer R
-      }
-      ? R
-      : never
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
+  ? (DefaultSchema["Tables"] & DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
+      Row: infer R
+    }
+    ? R
     : never
+  : never
 
 export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends (DefaultSchemaTableNameOrOptions extends {
+  TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never) = never,
-> = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
-}
+    : never = never
+> = DefaultSchemaTableNameOrOptions extends { schema: keyof DatabaseWithoutInternals }
   ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Insert: infer I
     }
     ? I
     : never
   : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
-    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
-        Insert: infer I
-      }
-      ? I
-      : never
+  ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+      Insert: infer I
+    }
+    ? I
     : never
+  : never
 
 export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends (DefaultSchemaTableNameOrOptions extends {
+  TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never) = never,
-> = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
-}
+    : never = never
+> = DefaultSchemaTableNameOrOptions extends { schema: keyof DatabaseWithoutInternals }
   ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Update: infer U
     }
     ? U
     : never
   : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
-    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
-        Update: infer U
-      }
-      ? U
-      : never
+  ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+      Update: infer U
+    }
+    ? U
     : never
+  : never
 
 export type Enums<
   DefaultSchemaEnumNameOrOptions extends
     | keyof DefaultSchema["Enums"]
     | { schema: keyof DatabaseWithoutInternals },
-  EnumName extends (DefaultSchemaEnumNameOrOptions extends {
+  EnumName extends DefaultSchemaEnumNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
-    : never) = never,
-> = DefaultSchemaEnumNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
-}
+    : never = never
+> = DefaultSchemaEnumNameOrOptions extends { schema: keyof DatabaseWithoutInternals }
   ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
   : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
-    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
-    : never
+  ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
+  : never
 
 export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
     | keyof DefaultSchema["CompositeTypes"]
     | { schema: keyof DatabaseWithoutInternals },
-  CompositeTypeName extends (PublicCompositeTypeNameOrOptions extends {
+  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
-    : never) = never,
-> = PublicCompositeTypeNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
-}
+    : never = never
+> = PublicCompositeTypeNameOrOptions extends { schema: keyof DatabaseWithoutInternals }
   ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
   : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
-    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
-    : never
+  ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
+  : never
 
 export const Constants = {
-  graphql_public: {
-    Enums: {},
-  },
-  public: {
-    Enums: {
-      pendencia_status: ["pendente", "entregue", "cancelada"],
-      premio_tipo: ["manual", "botom", "premio"],
-      status_oansista: ["ativo", "inativo", "transferido"],
-      status_visitante: [
-        "em_visitas",
-        "prova_ingresso",
-        "matriculado",
-        "desistente",
-      ],
-      transferencia_tipo: ["temporaria", "permanente"],
-      user_role: [
-        "diretor_geral",
-        "secretaria",
-        "diretor_clube",
-        "lider",
-        "lider_jogos",
-      ],
-    },
-  },
+  "graphql_public": {
+          Enums: {
+            
+          }
+        },"public": {
+          Enums: {
+            "pendencia_status": ["pendente", "entregue", "cancelada"],"premio_tipo": ["manual", "botom", "premio"],"status_oansista": ["ativo", "inativo", "transferido"],"status_visitante": ["em_visitas", "prova_ingresso", "matriculado", "desistente"],"transferencia_tipo": ["temporaria", "permanente"],"user_role": ["diretor_geral", "secretaria", "diretor_clube", "lider", "lider_jogos"]
+          }
+        }
 } as const
-
