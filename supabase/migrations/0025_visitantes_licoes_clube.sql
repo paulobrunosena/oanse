@@ -97,7 +97,7 @@ begin
   end if;
 
   -- Autorização: Diretor Geral ou Diretor do clube do visitante.
-  if not (fn_role() = 'diretor_geral' or fn_diretor_do_clube(v_visitante.clube_id)) then
+  if not coalesce(fn_role() = 'diretor_geral' or fn_diretor_do_clube(v_visitante.clube_id), false) then
     raise exception 'Apenas o Diretor do clube pode matricular';
   end if;
 
@@ -215,7 +215,7 @@ begin
   end if;
 
   -- Autorização: Diretor Geral ou Diretor do clube de ORIGEM da criança.
-  if not (fn_role() = 'diretor_geral' or fn_diretor_do_clube(v_oansista.clube_id)) then
+  if not coalesce(fn_role() = 'diretor_geral' or fn_diretor_do_clube(v_oansista.clube_id), false) then
     raise exception 'Apenas o Diretor do clube pode transferir';
   end if;
 
@@ -292,7 +292,7 @@ begin
   end if;
 
   -- Autorização: Diretor Geral ou Diretor do clube de ORIGEM.
-  if not (fn_role() = 'diretor_geral' or fn_diretor_do_clube(v_oansista.clube_id)) then
+  if not coalesce(fn_role() = 'diretor_geral' or fn_diretor_do_clube(v_oansista.clube_id), false) then
     raise exception 'Apenas o Diretor do clube pode cancelar a transferência';
   end if;
 

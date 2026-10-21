@@ -644,7 +644,7 @@ begin
     raise exception 'Apenas oansistas ativos podem ser transferidos';
   end if;
 
-  if not (fn_role() = 'diretor_geral' or fn_diretor_do_clube(v_oansista.clube_id)) then
+  if not coalesce(fn_role() = 'diretor_geral' or fn_diretor_do_clube(v_oansista.clube_id), false) then
     raise exception 'Apenas o Diretor do clube pode transferir';
   end if;
 
@@ -722,7 +722,7 @@ begin
     raise exception 'A criança não está em processo de transferência';
   end if;
 
-  if not (fn_role() = 'diretor_geral' or fn_diretor_do_clube(v_oansista.clube_id)) then
+  if not coalesce(fn_role() = 'diretor_geral' or fn_diretor_do_clube(v_oansista.clube_id), false) then
     raise exception 'Apenas o Diretor do clube pode cancelar a transferência';
   end if;
 
