@@ -76,7 +76,7 @@
 > (itens configuráveis `jogo_1_lugar`..`jogo_4_lugar`, default 5/4/3/2 — migrations
 > 0013/0014) e o ranking das cores segue pela soma das rodadas (`jogos_pontos_config`).
 > **Relatório de frequência acumulada (2026-09-16):** implementado via RPC
-> `fn_frequencia_acumulada` (migration 0021) com escopo por perfil e tela
+> `fn_frequencia_acumulada` (migration 0024) com escopo por perfil e tela
 > `/secretaria/relatorio-frequencia`. Pendentes: relatório de premiações
 > acumuladas, PWA, offline e deploy de produção.
 

@@ -1076,7 +1076,7 @@ create trigger trg_validar_licao_prova
   before insert or update of licao on prova_ingresso_licoes
   for each row execute function fn_validar_licao_prova();
 
--- Congela a situação de visitantes já matriculados (migration 0023).
+-- Congela a situação de visitantes já matriculados (migration 0026).
 -- RN 8: uma vez matriculado (status 'matriculado'), o registro vira histórico e
 -- a situação NÃO é mais editável. Também protege o visitante vindo de
 -- transferência de clube (oansista_origem_id preenchido): a situação só evolui
