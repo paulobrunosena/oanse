@@ -64,6 +64,20 @@ npx supabase gen types typescript --local > src/types/database.types.ts  # após
 > habilitar via `settings-store.json` (`EnableIntegrationWithDefaultWslDistro`/
 > `IntegratedWslDistros`), reinicie o Docker Desktop (`docker desktop stop/start`).
 
+> **Sintoma "não consigo parar/remover o container no Docker Desktop":** é a MESMA
+> falta de WSL Integration. O stack é criado de dentro do WSL (label
+> `desktop.docker.io/wsl-distro: Ubuntu`), então o Docker Desktop roda
+> `docker compose down/stop` dentro do Ubuntu, onde o `docker` não existe sem a
+> integração — o botão falha e os containers parecem "rodar para sempre". A forma
+> correta de parar é `npx supabase stop` (shell interativo do WSL), não o botão do
+> Docker Desktop.
+
+> **Serviços do stack local (reduzidos):** o `npx supabase start` sobe só o que o
+> app usa — `db`, `kong`, `auth` (gotrue), `rest` (postgrest), `realtime` — mais
+> `studio` + `pg_meta` e `mailpit` (ferramentas de dev). `storage`, `vector` e
+> `analytics` (logflare) ficam **desativados** no `supabase/config.toml` porque o
+> app não usa Storage, embeddings nem Logs/Analytics. Não reative sem justificativa.
+
 ## Arquitetura e regras invioláveis
 
 1. **RLS-first.** O frontend usa SOMENTE a chave `anon`. Toda autorização vive nas políticas RLS (`supabase/migrations/0002_rls.sql`). Nunca confie apenas em `src/router/guards.ts` — ele é UX, não segurança.
